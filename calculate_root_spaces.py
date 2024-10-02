@@ -1,62 +1,50 @@
 # Code to determine root systems, root spaces, and root subgroups
 
 import numpy
-from sympy import (symbols, MatrixSymbol, Matrix, trace, shape, solve, 
+from sympy import (symbols, MatrixSymbol, Matrix, trace, shape, solve, sqrt, 
                    pprint, Identity, ZeroMatrix, BlockMatrix)
-from sympy.physics.quantum.dagger import Dagger
 from itertools import product
 from matrix_utility import is_diagonal
 
 def main():
     
-    # ###########
-    # ## WORKS 
-    # ###########
-    # n_range = (2,3,4)
-    # SL_root_calc_test(n_range)
+    ###########
+    ## WORKS ##
+    ###########
+    n_range = (2,3,4)
+    SL_root_calc_test(n_range)
     
-    # ###########
-    # ## WORKS 
-    # ###########
-    # ## SO_n_q is split if n=2q or n=2q+1,
-    # ##   quasi-split if n=2q+2,
-    # ##   and neither if n>2q+2
-    # q_range = (2,3)
-    # SO_split_root_calc_test(q_range)
+    ###########
+    ## WORKS ##
+    ###########
+    ## SO_n_q is split if n=2q or n=2q+1,
+    ##   quasi-split if n=2q+2,
+    ##   and neither if n>2q+2
+    q_range = (2,3)
+    SO_split_root_calc_test(q_range)
     
-    # ###########
-    # ## WORKS 
-    # ###########
-    # ## SO_n_q is split if n=2q or n=2q+1,
-    # ##   quasi-split if n=2q+2,
-    # ##   and neither if n>2q+2
-    # q_range = (1,2)
-    # n_width = 2
-    # SO_nonsplit_root_calc_test(q_range,n_width)
+    ###########
+    ## WORKS ## 
+    ###########
+    ## SO_n_q is split if n=2q or n=2q+1,
+    ##   quasi-split if n=2q+2,
+    ##   and neither if n>2q+2
+    q_range = (1,2)
+    n_width = 2
+    SO_nonsplit_root_calc_test(q_range,n_width)
     
-    ########################################
-    ## WORKS PARTIALLY
-    ## This is still not properly identifying roots such as
-    ## (2,0,0,0) or (-2,0,0,0) or (0,2,0,0) or (0,-2,0,0)
-    ########################################
+    ###########
+    ## WORKS ##
+    ###########
     ## SU_n_q is quasi-split when n=2q, and not quasi-split when n>2q
-    # q_range = (2,3)
-    q_range = range(2,3) # just 2
+    q_range = (2,3)
     SU_quasisplit_root_calc_test(q_range)
 
-    # ########################################
-    # ## WORKS PARTIALLY
-    # ########################################
     # ## SU_n_q is quasi-split when n=2q, and not quasi-split when n>2q
-    # q_range = (2,3)
-    # n_cap = 1
-    # SU_nonquasisplit_root_calc_test(q_range,n_cap)
-
-    # Next task: get things to work for eps=-1
-    # Tasks:
-    #   Get special unitary calculations to work for eps=1. Currently not finding some of the root spaces.
-    #   Get special unitary calculations to work for eps=-1, currently resulting in errors.
-
+    q_range = (2,3)
+    n_cap = 1
+    SU_nonquasisplit_root_calc_test(q_range,n_cap)
+    
 def SL_root_calc_test(n_range):
     # demonstration of SL_n calculations
     print("Computing roots and root spaces for special linear groups...\n")
@@ -104,36 +92,36 @@ def SU_quasisplit_root_calc_test(q_range):
     # demonstration of SU_n_q calculations for quasi-split groups
     print("Computing roots and root spaces for quasisplit special unitary groups...\n")
     
-    # for eps in (-1,1):
-    eps = 1 ### eps = -1 causes errors in solve()
-    
     for q in q_range:
         n=2*q
-        SU_n_q_roots = determine_SU_roots(n,q,eps)
-        
-        print("Roots for SU_" + str(n) + "_" + str(q) + ":",end =" ")
-        pprint(parse_root_pairs(SU_n_q_roots,'roots'))    
-        
-        print("\nRoot spaces for SU_" + str(n) + "_" + str(q) + ":")
-        pprint(parse_root_pairs(SU_n_q_roots,'root_spaces'))
+        for eps in (1,-1):
+            SU_n_q_roots = determine_SU_roots(n,q,eps)
+            
+            name_string = "SU_" + str(n) + "_" + str(q) + " with eps = " + str(eps)+":"
+            
+            print("Roots for " + name_string,end =" ")
+            pprint(parse_root_pairs(SU_n_q_roots,'roots'))    
+            
+            print("\nRoot spaces for " + name_string)
+            pprint(parse_root_pairs(SU_n_q_roots,'root_spaces'))
     print("Done with computing roots and root spaces for quasisplit special unitary groups.\n")
 
 def SU_nonquasisplit_root_calc_test(q_range,n_cap):
     # demonstration of SU_n_q calculations for non-quasi-split groups
     print("Computing roots and root spaces for non-quasisplit special unitary groups...\n")
     
-    # for eps in (-1,1):
-    eps = 1 ### eps = -1 doesn't work right now, not sure why
-    
     for q in q_range:
         for n in range(2*q+1,2*q+1+n_cap):
-            SU_n_q_roots = determine_SU_roots(n,q,eps)
-            
-            print("Roots for SU_" + str(n) + "_" + str(q) + ":",end =" ")
-            pprint(parse_root_pairs(SU_n_q_roots,'roots'))    
-            
-            print("\nRoot spaces for SU_" + str(n) + "_" + str(q) + ":")
-            pprint(parse_root_pairs(SU_n_q_roots,'root_spaces'))
+            for eps in (1,-1):
+                SU_n_q_roots = determine_SU_roots(n,q,eps)
+                
+                name_string = "SU_" + str(n) + "_" + str(q) + " with eps = " + str(eps)+":"
+                
+                print("Roots for " + name_string,end =" ")
+                pprint(parse_root_pairs(SU_n_q_roots,'roots'))    
+                
+                print("\nRoot spaces for " + name_string)
+                pprint(parse_root_pairs(SU_n_q_roots,'root_spaces'))
     print("Done with computing roots and root spaces for non-quasisplit special unitary groups.\n")
 
 def determine_SU_roots(n,q,eps):
@@ -185,11 +173,18 @@ def determine_SU_roots(n,q,eps):
     
     # Setting up the generic Lie algebra element
     x = Matrix(MatrixSymbol('x',n,n))
-    # Would like to do:
-    # x = Matrix(MatrixSymbol('x',n,n),complex=True)
-    # but this doesn't seem to be supported
-    x_conjugate_transpose = Dagger(x)
-    lie_algebra_condition = x_conjugate_transpose*H+H*x
+    y = Matrix(MatrixSymbol('y',n,n))
+    variables_to_solve_for = []
+    for i in range(n):
+        for j in range(n):
+            variables_to_solve_for.append(x[i,j])
+            variables_to_solve_for.append(y[i,j])
+    d = symbols('d')
+    pe = sqrt(d) # primitive element
+    z = x+pe*y
+    z_conjugate = x-pe*y
+    z_conjugate_transpose = z_conjugate.T
+    lie_algebra_condition = z_conjugate_transpose*H+H*z
     
     # Setting up the generic torus element
     # The diagonal torus we will use in SU_{n,q}(k,H) is diagonal matrices of the block form
@@ -205,7 +200,7 @@ def determine_SU_roots(n,q,eps):
     s = Matrix(numpy.diag(diagonal_entries))
 
     # Do the calculations
-    return determine_roots(s,x,lie_algebra_condition,list_of_characters)
+    return determine_roots(s,z,lie_algebra_condition,list_of_characters,variables_to_solve_for)
 
 def determine_SO_roots(n,q):
     # Calculate roots and root spaces for SO_{n,q}(k,B)
@@ -271,7 +266,7 @@ def determine_SO_roots(n,q):
     s = Matrix(numpy.diag(diagonal_entries))
     
     # Do the calculations
-    return determine_roots(s,x,lie_algebra_condition,list_of_characters)
+    return determine_roots(s,x,lie_algebra_condition,list_of_characters,x)
 
 def determine_SL_roots(n):
     # Calculate roots and root spaces for SL_n
@@ -296,9 +291,13 @@ def determine_SL_roots(n):
     s = Matrix(numpy.diag(torus_variables))
     
     # Doing the calculations
-    return determine_roots(s,x,lie_algebra_condition,list_of_characters)
+    return determine_roots(s,x,lie_algebra_condition,list_of_characters,x)
     
-def determine_roots(generic_torus_element,generic_lie_algebra_element,lie_algebra_condition,list_of_characters):
+def determine_roots(generic_torus_element,
+                    generic_lie_algebra_element,
+                    lie_algebra_condition,
+                    list_of_characters,
+                    variables_to_solve_for):
 
     # Caculate roots and root spaces
     # return in a list of pairs format, where the first entry is the root,
@@ -309,55 +308,38 @@ def determine_roots(generic_torus_element,generic_lie_algebra_element,lie_algebr
     x = generic_lie_algebra_element
     LHS = s*x*s**(-1)
     
-    # pprint(s)
-    # pprint(x)
-    # pprint(LHS)
+    # variables_to_solve_for = []
+    # for i in range(len(x)):
+    #     for j in range(len(x)):
+    #         variables_to_solve_for.append(x[i,j])
     
     for alpha in list_of_characters:
         alpha_of_s = evaluate_character(alpha,s)
         
         if alpha_of_s != 1: # ignore cases where the character is trivial
-            RHS = alpha_of_s*x
-            # relations.append(LHS-RHS)
-            # my_equations = relations[:] + list(LHS-RHS)
+            RHS = alpha_of_s*Matrix(x)
             my_equations = [lie_algebra_condition,LHS-RHS]
+            solutions_list = solve(my_equations,variables_to_solve_for,dict=True)
+            # solutions_list = solve(my_equations,x,dict=True)
             
-            # pprint(alpha)
-            # pprint(alpha_of_s)
-            # pprint(RHS)
-            # pprint(my_equations)
-            
-            solutions_list = solve(my_equations,x,dict=True)
-            
-            # print(len(solutions_list))
-            # print(type(solutions_list))
-            # print(type(solutions_list[0]))
-            # print("\n")
-            # pprint(solutions)
-            
-            # if len(solutions_list) == 0:
-            #     # Nothing to see here, I think this means no solutions
-            #     print("no solutions")
-                
-            # elif len(solutions_list) >= 2:
-            #     # I think this is impossible
-            #     assert(false)
-            
+            # pprint(solutions_list)
+        
             if len(solutions_list) == 1:
                 solutions_dictionary = solutions_list[0]
+                
         
                 if len(solutions_dictionary)>0:
             
                     # check that not all variables are zero
                     all_zero = True
-                    for variable in x:
+                    for variable in variables_to_solve_for:
                         if not(variable in solutions_dictionary.keys()) or solutions_dictionary[variable] != 0: 
                             all_zero = False
                             break
                     
                     # For nonzero characters with a solution, add as a root
                     if not(all_zero):
-                        generic_root_space_element = x
+                        generic_root_space_element = Matrix(x)
                         for var,value in solutions_dictionary.items():
                             generic_root_space_element = generic_root_space_element.subs(var,value)
                         roots_and_root_spaces.append([alpha, generic_root_space_element])
@@ -365,7 +347,7 @@ def determine_roots(generic_torus_element,generic_lie_algebra_element,lie_algebr
             else:
                 # I don't think this is possible, but if it happens I want to know
                 print("An unexpected error occured with the length of the solution set.")
-                assert(false)
+                assert(False)
                     
     return roots_and_root_spaces
     
@@ -433,6 +415,7 @@ def parse_root_pairs(root_list, what_to_get):
     
     else:
         assert(false)
+
 
 if __name__ == "__main__":
     main()

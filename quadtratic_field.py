@@ -1,6 +1,6 @@
 # A class to model elements of a quadratic field extension
 
-from sympy import symbols
+from sympy import symbols, sqrt
 
 # Quadratic field extension element
 class qfee: 
@@ -11,6 +11,8 @@ class qfee:
         self.imag = imag
     
     def __str__(q):
+        # Get a string version of q
+        # This is necessary for use in print statements
         return str(q.real+q.imag*q.primitive_element)
     
     def __eq__(q1,q2):
@@ -18,7 +20,6 @@ class qfee:
         return (q1.primitive_element == q2.primitive_element and
                 q1.real == q2.real and
                 q1.imag == q2.imag)
-                
         
     def __add__(q1, q2):
         # Add two elements of the same quadratic field extension
@@ -42,12 +43,16 @@ class qfee:
         product_imag_part = q1.real*q2.imag + q1.imag*q2.real
         return qfee(q1.primitive_element,product_real_part,product_imag_part)
         
+    def conj(q):
+        # Conjugate q, i.e. replace the primitive element with its negative
+        return qfee(q.primitive_element,q.real,-q.imag)
+
     def run_tests():
         # INCOMPLETE
         print("Testing class qfee (quadratic field extension element)...")
         
-        d = symbols('d')
-        pe = d**(1/2)
+        d = symbols('d') # non-square in arbitrary field k
+        pe = sqrt(d) # primitive element
         
         q1 = qfee(pe,1,1)
         q2 = qfee(pe,1,2)
@@ -65,14 +70,15 @@ class qfee:
         # Testing multiplication
         assert(q5*q1 == q1)
         assert(q5*q4 == q4)
-        
-        print(q7)
-        print(q1*q2)
-        
         assert(q1*q2 == q7)
         
-        print("All tests passed.")
+        # Test negation
+        # INCOMPLETE
         
+        # Test conjugation
+        # INCOMPLETE
+        
+        print("All tests passed.")
         
 if __name__ == "__main__":
     qfee.run_tests()
