@@ -1,4 +1,5 @@
 # A class to model elements of a quadratic field extension
+# DEPRECATED, no longer necessary
 
 from sympy import symbols, sqrt
 
