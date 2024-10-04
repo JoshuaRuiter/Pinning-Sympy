@@ -4,7 +4,7 @@ import numpy
 from sympy import (symbols, MatrixSymbol, Matrix, trace, shape, solve, sqrt, 
                    pprint, Identity, ZeroMatrix, BlockMatrix)
 from itertools import product
-from matrix_utility import is_diagonal
+from matrix_utility import is_diagonal, evaluate_character
 
 def main():
     
@@ -350,28 +350,7 @@ def determine_roots(generic_torus_element,
                 assert(False)
                     
     return roots_and_root_spaces
-    
-def evaluate_character(character,torus_element):
-    # Evaluate a character at a particular torus element
-    # Character needs to be in the form of a vector like [1,0,0]
-    # Torus element should be a diagonal matrix
-    
-    my_shape = shape(torus_element)
-    
-    # torus_element should be a square matrix
-    assert(my_shape[0]==my_shape[1])
-    
-    # torus_element size should match character length
-    assert(my_shape[0]==len(character))
-    
-    # torus element should be diagonal
-    assert(is_diagonal(torus_element))
-    
-    return_value = 1;
-    for i in range(len(character)):
-        return_value = return_value * torus_element[i,i]**character[i]
-    
-    return return_value
+
 
 def generate_character_list(character_length, upper_bound, padded_zeros):
     # Return a list of all possible integer vectors of length character_length
