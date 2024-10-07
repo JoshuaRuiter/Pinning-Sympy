@@ -2,7 +2,8 @@ from sympy import zeros, eye, prod
 from sympy.liealgebras.root_system import RootSystem
 from pprint import pprint
 from pinned_group import pinned_group
-from matrix_utility import is_diagonal, root_sum
+from matrix_utility import is_diagonal
+from root_system_utility import root_sum, scale_root
 
 def group_builder_tests():
     # Run some tests
@@ -82,6 +83,21 @@ def build_special_linear_group(matrix_size):
                 return u*v
             else: # so i==l
                 return -u*v
+            
+    def weyl_group_element_map_SL(matrix_size,root_system,form_matrix,alpha,u):
+        return (root_subgroup_map_SL(matrix_size,root_system,form_matrix,alpha,u)*
+                root_subgroup_map_SL(matrix_size,root_system,form_matrix,scale_root(-1,alpha),-1/u)*
+                root_subgroup_map_SL(matrix_size,root_system,form_matrix,alpha,u))
+    
+    def weyl_group_coefficient_map_SL(matrix_size,root_system,form_matrix,alpha,beta,v):
+        i = alpha.index(1)
+        # j = alpha.index(-1)
+        k = beta.index(1)
+        l = beta.index(-1)
+        if i==k or i==l:
+            return -v
+        else:
+            return v
     
     return pinned_group(name_string,
                         matrix_size,
@@ -94,7 +110,9 @@ def build_special_linear_group(matrix_size):
                         root_space_map_SL,
                         root_subgroup_map_SL,
                         torus_element_map_SL,
-                        commutator_coefficient_map_SL)
+                        commutator_coefficient_map_SL,
+                        weyl_group_element_map_SL,
+                        weyl_group_coefficient_map_SL)
     
     
 def build_special_orthogonal_group(size):

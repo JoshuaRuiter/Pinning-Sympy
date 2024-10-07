@@ -1,6 +1,7 @@
-from sympy import symbols, symarray, Matrix, eye
+from sympy import symbols, symarray, Matrix, eye, zeros, simplify
 from pprint import pprint
-from matrix_utility import evaluate_character, integer_linear_combos, scale_root, root_sum
+from matrix_utility import evaluate_character
+from root_system_utility import integer_linear_combos, scale_root, root_sum, reflect_root
 
 class pinned_group:
     
@@ -16,7 +17,9 @@ class pinned_group:
                  root_space_map,
                  root_subgroup_map,
                  torus_element_map,
-                 commutator_coefficient_map):
+                 commutator_coefficient_map,
+                 weyl_group_element_map,
+                 weyl_group_coefficient_map):
         # Build a pinned group from scratch by providing all inputs
         
         self.name_string = name_string
@@ -37,11 +40,10 @@ class pinned_group:
         self.torus_element_map = torus_element_map
         
         self.commutator_coefficient_map = commutator_coefficient_map
+        self.weyl_group_element_map = weyl_group_element_map
+        self.weyl_group_coefficient_map = weyl_group_coefficient_map
         
-        # WeylGroupMap
         # HomDefectCoefficientMap
-        # CommutatorCoefficientMap
-        # WeylGroupCoefficientMap
     
     def run_tests(self):
         print("\nRunning tests to verify a pinning of the " + self.name_string + "...")
@@ -49,33 +51,29 @@ class pinned_group:
         self.test_root_space_maps_are_almost_homomorphisms()
         self.test_torus_conjugation()
         self.test_commutator_formula()
-        self.test_weyl_group_elements()
-        
+        self.test_weyl_group()   
         print("All tests complete.")
         
     def test_basics(self):
         print("\tRunning basic tests...")
+        u = symbols('u')
     
         print("\t\tChecking root spaces belong to the Lie algebra...",end='')
         for root in self.root_list:
-            u = symbols('u')
             X = self.root_space_map(self.matrix_size,self.root_system,self.form_matrix,root,u)
             assert(self.is_lie_algebra_element(X))
         print("done.")
         
         print("\t\tChecking root subgroups belong to the group...",end='')
         for root in self.root_list:
-            u = symbols('u')
             X_u = self.root_subgroup_map(self.matrix_size,self.root_system,self.form_matrix,root,u)
             assert(self.is_group_element(X_u))   
         print("done.")
-        
-        print("\tBasic tests passed.")
-        
+
     def test_root_space_maps_are_almost_homomorphisms(self):
         print("\tChecking root space spaces are (almost) homomorphisms...",end='')
+        u,v = symbols('u v ')
         for root in self.root_list:
-            u,v = symbols('u v ')
             X_u = self.root_space_map(self.matrix_size,self.root_system,self.form_matrix,root,u)
             X_v = self.root_space_map(self.matrix_size,self.root_system,self.form_matrix,root,v)
             X_u_plus_v = self.root_space_map(self.matrix_size,self.root_system,self.form_matrix,root,u+v)
@@ -87,10 +85,10 @@ class pinned_group:
         
         vec_t = Matrix(symarray('t',self.root_system_rank))
         t = self.torus_element_map(self.matrix_size,self.root_system_rank,vec_t)
+        u = symbols('u')
         
         for alpha in self.root_list:
             alpha_of_t = evaluate_character(alpha,t)
-            u = symbols('u')
             
             # Torus conjugation on the Lie algebra/root spaces
             X_u = self.root_space_map(self.matrix_size,self.root_system,self.form_matrix,alpha,u)
@@ -136,32 +134,40 @@ class pinned_group:
                         
                         # Check that i*alpha+j*beta = root
                         assert(root_sum(scale_root(alpha,i),scale_root(beta,j)) == root)
-                        
+
                         # Compute the commutator coefficient that should arise
                         N = self.commutator_coefficient_map(self.matrix_size,self.root_system,self.form_matrix,alpha,beta,i,j,u,v);
                         my_sum = root_sum(alpha,beta)
                         RHS = RHS * self.root_subgroup_map(self.matrix_size,self.root_system,self.form_matrix,my_sum,N)
-                
-                    # print("\n")
-                    # pprint(alpha)
-                    # pprint(x_alpha_u)
-                    # pprint(x_alpha_u**(-1))
-                    # print("\n")
-                    # pprint(beta)
-                    # pprint(x_beta_v)
-                    # pprint(x_beta_v**(-1))
-                    # print("\n")
-                    # pprint(LHS)
-                    # print("\n")
-                    # pprint(RHS)
-            
                     assert(LHS==RHS)
             
         print("done.")
         
-    def test_weyl_group_elements(self):
+    def test_weyl_group(self):
+        print("\tRunning tests related to Weyl group elements...")
+        u,v = symbols('u v ')
+        
         print("\t\tChecking Weyl group elements normalize the torus...",end='')
-        for root in self.root_list:
-            u = symbols('u')
-            # PLACEHOLDER
+        vec_t = Matrix(symarray('t',self.root_system_rank))
+        t = self.torus_element_map(self.matrix_size,self.root_system_rank,vec_t)
+        for alpha in self.root_list:
+            w_alpha_u = self.weyl_group_element_map(self.matrix_size,self.root_system,self.form_matrix,alpha,u)
+            conjugation = w_alpha_u * t * (w_alpha_u**(-1))
+            assert(self.is_torus_element(conjugation))
         print("done.")
+        
+        print("\t\tChecking Weyl group conjugation formula...",end='')
+        for alpha in self.root_list:
+            w_alpha_1 = self.weyl_group_element_map(self.matrix_size,self.root_system,self.form_matrix,alpha,1)
+            for beta in self.root_list:
+                x_beta_v = self.root_subgroup_map(self.matrix_size,self.root_system,self.form_matrix,beta,v)
+                LHS = w_alpha_1 * x_beta_v * (w_alpha_1**(-1))
+                
+                reflected_root = reflect_root(alpha,beta)
+                weyl_group_coeff = self.weyl_group_coefficient_map(self.matrix_size,self.root_system,self.form_matrix,alpha,beta,v)
+                RHS = self.root_subgroup_map(self.matrix_size,self.root_system,self.form_matrix,reflected_root,weyl_group_coeff)
+                
+                assert(simplify(LHS-RHS)==zeros(self.matrix_size))
+                
+        print("done.")
+        
