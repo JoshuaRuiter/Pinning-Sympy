@@ -1,6 +1,6 @@
-from sympy import symbols, symarray, Matrix
+from sympy import symbols, symarray, Matrix, eye
 from pprint import pprint
-from matrix_utility import evaluate_character
+from matrix_utility import evaluate_character, integer_linear_combos, scale_root, root_sum
 
 class pinned_group:
     
@@ -15,7 +15,8 @@ class pinned_group:
                  root_space_dimension,
                  root_space_map,
                  root_subgroup_map,
-                 torus_element_map):
+                 torus_element_map,
+                 commutator_coefficient_map):
         # Build a pinned group from scratch by providing all inputs
         
         self.name_string = name_string
@@ -34,7 +35,9 @@ class pinned_group:
         self.root_space_map = root_space_map
         self.root_subgroup_map = root_subgroup_map
         self.torus_element_map = torus_element_map
-                
+        
+        self.commutator_coefficient_map = commutator_coefficient_map
+        
         # WeylGroupMap
         # HomDefectCoefficientMap
         # CommutatorCoefficientMap
@@ -45,6 +48,8 @@ class pinned_group:
         self.test_basics()
         self.test_root_space_maps_are_almost_homomorphisms()
         self.test_torus_conjugation()
+        self.test_commutator_formula()
+        self.test_weyl_group_elements()
         
         print("All tests complete.")
         
@@ -99,4 +104,64 @@ class pinned_group:
             RHS2 = self.root_subgroup_map(self.matrix_size,self.root_system,self.form_matrix,alpha,alpha_of_t*u)
 
             assert(LHS2==RHS2)
+        print("done.")
+        
+    def test_commutator_formula(self):
+        print("\tChecking commutator formula...",end='')
+
+        u, v = symbols('u v ')
+        for alpha in self.root_list:
+            x_alpha_u = self.root_subgroup_map(self.matrix_size,self.root_system,self.form_matrix,alpha,u)
+            for beta in self.root_list:
+                # Commutator formula only applies when the two roots
+                # not scalar multiples of each other
+                if alpha != beta and alpha != scale_root(-1,beta):
+                            
+                    x_beta_v = self.root_subgroup_map(self.matrix_size,self.root_system,self.form_matrix,beta,v)
+                    LHS = x_alpha_u*x_beta_v*(x_alpha_u**(-1))*(x_beta_v**(-1))
+                    
+                    # This gets a list of all positive integer linear combinations of alpha and beta
+                    # that are in the root system. 
+                    # It is formatted as a dictionary where keys are tuples (i,j) and the value 
+                    # associated to a key (i,j) is the root i*alpha+j*beta
+                    linear_combos = integer_linear_combos(self.root_list,alpha,beta)
+                    
+                    # The right hand side is a product over positive integer lienar combinations of alpha and beta
+                    # with coefficients depending on some function N(alpha,beta,i,j,u,v)
+                    RHS = eye(self.matrix_size)
+                    for key in linear_combos:
+                        i = key[0]
+                        j = key[1]
+                        root = linear_combos[key]
+                        
+                        # Check that i*alpha+j*beta = root
+                        assert(root_sum(scale_root(alpha,i),scale_root(beta,j)) == root)
+                        
+                        # Compute the commutator coefficient that should arise
+                        N = self.commutator_coefficient_map(self.matrix_size,self.root_system,self.form_matrix,alpha,beta,i,j,u,v);
+                        my_sum = root_sum(alpha,beta)
+                        RHS = RHS * self.root_subgroup_map(self.matrix_size,self.root_system,self.form_matrix,my_sum,N)
+                
+                    # print("\n")
+                    # pprint(alpha)
+                    # pprint(x_alpha_u)
+                    # pprint(x_alpha_u**(-1))
+                    # print("\n")
+                    # pprint(beta)
+                    # pprint(x_beta_v)
+                    # pprint(x_beta_v**(-1))
+                    # print("\n")
+                    # pprint(LHS)
+                    # print("\n")
+                    # pprint(RHS)
+            
+                    assert(LHS==RHS)
+            
+        print("done.")
+        
+    def test_weyl_group_elements(self):
+        print("\t\tChecking Weyl group elements normalize the torus...",end='')
+        for root in self.root_list:
+            u = symbols('u')
+            # PLACEHOLDER
         print("done.")

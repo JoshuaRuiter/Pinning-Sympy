@@ -2,13 +2,14 @@ from sympy import zeros, eye, prod
 from sympy.liealgebras.root_system import RootSystem
 from pprint import pprint
 from pinned_group import pinned_group
-from matrix_utility import is_diagonal
+from matrix_utility import is_diagonal, root_sum
 
 def group_builder_tests():
     # Run some tests
     
-    SL_2 = build_special_linear_group(2)
-    SL_2.run_tests()
+    for n in (2,3,4):
+        SL_n = build_special_linear_group(n)
+        SL_n.run_tests()
 
 def build_special_linear_group(matrix_size):
     # Build a pinned_group object representing the special linear group SL_n
@@ -64,6 +65,23 @@ def build_special_linear_group(matrix_size):
             t[i,i] = my_vec[i]
         t[matrix_size-1,matrix_size-1] = 1/prod(my_vec)
         return t
+
+    def commutator_coefficient_map_SL(matrix_size,root_system,form_matrix,alpha,beta,p,q,u,v):
+        # Return the coefficient arising from taking the commutator of transvection matrices
+        root_list = list(root_system.all_roots().values())
+        if not(root_sum(alpha,beta) in root_list):
+            return 0
+        else:
+            i = alpha.index(1)
+            j = alpha.index(-1)
+            k = beta.index(1)
+            l = beta.index(-1)
+            assert((j==k and i!=l) or 
+                   (j!=k and i==l))
+            if j==k:
+                return u*v
+            else: # so i==l
+                return -u*v
     
     return pinned_group(name_string,
                         matrix_size,
@@ -75,7 +93,8 @@ def build_special_linear_group(matrix_size):
                         root_space_dimension_SL,
                         root_space_map_SL,
                         root_subgroup_map_SL,
-                        torus_element_map_SL)
+                        torus_element_map_SL,
+                        commutator_coefficient_map_SL)
     
     
 def build_special_orthogonal_group(size):
