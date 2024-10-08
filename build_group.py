@@ -238,6 +238,15 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
                         commutator_coefficient_map_SO,
                         weyl_group_element_map_SO,
                         weyl_group_coefficient_map_SO)
+
+    def is_lie_algebra_element_SO(my_matrix):
+        # check it is skew-symmetric; M.T should return the transpose of M
+        # (Joshua) This is not quite right, needs to check that (X^t)*B*X=B and det(X)=1
+        #           where B is the associated form matrix
+        return my_matrix.T == -1*my_matrix
+
+    def is_group_element_SO(my_matrix):
+        return (my_matrix.T*my_matrix== eye(matrix_size)) and (my_matrix.det()==1)
     
 def build_special_unitary_group(matrix_size,root_system_rank,epsilon):
     # Build a pinned_group object representing the special unitary group SU_{n,q}(k,H)
