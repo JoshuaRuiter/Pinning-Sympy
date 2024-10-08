@@ -124,6 +124,8 @@ def build_special_orthogonal_group(matrix_size):
     root_system = RootSystem("A"+str(root_system_rank))
     form_matrix = zeros(matrix_size)
     
+    def is_lie_algebra_element_SO(my_matrix):
+        return my_matrix.T == -1*my_matrix
     
 def build_special_unitary_group(size):
     # INCOMPLETE
