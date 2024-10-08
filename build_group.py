@@ -4,6 +4,7 @@ from pprint import pprint
 from pinned_group import pinned_group
 from matrix_utility import is_diagonal
 from root_system_utility import root_sum, scale_root
+import math
 
 def group_builder_tests():
     # Run some tests
@@ -115,9 +116,14 @@ def build_special_linear_group(matrix_size):
                         weyl_group_coefficient_map_SL)
     
     
-def build_special_orthogonal_group(size):
-    # INCOMPLETE
-    x=0
+def build_special_orthogonal_group(matrix_size):
+    # Build a pinned_group object representing the special orthogonal group SO_n
+    
+    name_string = "special orthogonal group of size " + str(matrix_size)
+    root_system_rank = math.floor(matrix_size/2)-1
+    root_system = RootSystem("A"+str(root_system_rank))
+    form_matrix = zeros(matrix_size)
+    
     
 def build_special_unitary_group(size):
     # INCOMPLETE
