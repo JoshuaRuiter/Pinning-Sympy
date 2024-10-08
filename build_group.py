@@ -125,7 +125,11 @@ def build_special_orthogonal_group(matrix_size):
     form_matrix = zeros(matrix_size)
     
     def is_lie_algebra_element_SO(my_matrix):
+        # check it is skew-symmetric; M.T should return the transpose of M
         return my_matrix.T == -1*my_matrix
+
+    def is_group_element_SO(my_matrix):
+        return (my_matrix.T*my_matrix== eye(matrix_size)) and (my_matrix.det()==1)
     
 def build_special_unitary_group(size):
     # INCOMPLETE
