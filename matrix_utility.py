@@ -36,4 +36,3 @@ def evaluate_character(character,torus_element):
     
     return return_value
 
-    

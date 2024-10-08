@@ -1,31 +1,22 @@
 # Code to determine root systems, root spaces, and root subgroups
 
 import numpy
-from sympy import (symbols, MatrixSymbol, Matrix, trace, shape, solve, sqrt, 
+from sympy import (symbols, MatrixSymbol, Matrix, trace, solve, sqrt, 
                    pprint, Identity, ZeroMatrix, BlockMatrix)
 from itertools import product
 from matrix_utility import is_diagonal, evaluate_character
 
 def main():
     
-    ###########
-    ## WORKS ##
-    ###########
     n_range = (2,3,4)
     SL_root_calc_test(n_range)
     
-    ###########
-    ## WORKS ##
-    ###########
     ## SO_n_q is split if n=2q or n=2q+1,
     ##   quasi-split if n=2q+2,
     ##   and neither if n>2q+2
     q_range = (2,3)
     SO_split_root_calc_test(q_range)
     
-    ###########
-    ## WORKS ## 
-    ###########
     ## SO_n_q is split if n=2q or n=2q+1,
     ##   quasi-split if n=2q+2,
     ##   and neither if n>2q+2
@@ -33,9 +24,6 @@ def main():
     n_width = 2
     SO_nonsplit_root_calc_test(q_range,n_width)
     
-    ###########
-    ## WORKS ##
-    ###########
     ## SU_n_q is quasi-split when n=2q, and not quasi-split when n>2q
     q_range = (2,3)
     SU_quasisplit_root_calc_test(q_range)

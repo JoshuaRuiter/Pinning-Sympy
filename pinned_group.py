@@ -8,7 +8,7 @@ class pinned_group:
     def __init__(self, 
                  name_string, 
                  matrix_size,
-                 form_matrix,
+                 form,
                  root_system,
                  is_lie_algebra_element,
                  is_group_element,
@@ -24,7 +24,13 @@ class pinned_group:
         
         self.name_string = name_string
         self.matrix_size = matrix_size
-        self.form_matrix = form_matrix
+        self.form = form
+        self.form_matrix = self.form.matrix # I want to get rid of this,
+                                            # but it requires changing a lot of
+                                            # things in the tests below,
+                                            # do this eventually
+                                            # Basically, I think we should only pass self.form
+                                            # as an argument, not the matrix itself
         
         self.root_system = root_system
         self.root_system_rank = len(root_system.simple_roots())
