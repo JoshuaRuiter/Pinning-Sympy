@@ -1,0 +1,288 @@
+\documentclass[12pt]{article}
+\pagestyle{plain}
+\topmargin=-0.5in
+\textheight=9in
+\evensidemargin=-1in
+\oddsidemargin=0in
+\setlength{\textwidth}{6.5in}
+
+\usepackage{graphicx}
+\usepackage[shortlabels]{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{bm}
+\usepackage{amssymb}
+\usepackage{tikz-cd}
+\usepackage{framed}
+\usepackage{mdframed}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\G}{\mathbb{G}}
+
+\newcommand{\sig}{\sigma}
+\newcommand{\lam}{\lambda}
+\newcommand{\eps}{\varepsilon}
+
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\lb}{\left\{}
+\newcommand{\rb}{\right\}}
+\newcommand{\lab}{\left|}
+\newcommand{\rab}{\right|}
+\newcommand{\la}{\left\langle}
+\newcommand{\ra}{\right\rangle}
+
+\newcommand{\tbf}{\textbf}
+\newcommand{\noi}{\noindent}
+\newcommand{\incomplete}{\textcolor{red}{INCOMPLETE}}
+
+\newcommand{\inv}{^{-1}}
+\newcommand{\sm}{\setminus}
+\newcommand{\wt}{\widetilde}
+\newcommand{\wh}{\widehat}
+\newcommand{\ov}{\overline}
+
+\newcommand{\frakg}{\mathfrak{g}}
+
+\DeclareMathOperator{\Gal}{Gal}
+\DeclareMathOperator{\Id}{Id}
+\DeclareMathOperator{\SL}{SL}
+\DeclareMathOperator{\GL}{GL}
+\DeclareMathOperator{\SO}{SO}
+\DeclareMathOperator{\SU}{SU}
+
+\setlength\parindent{0pt}
+
+\title{Pinning-Sympy \\
+	Development roadmap}
+\author{Joshua Ruiter}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\newpage
+
+\section{Files}
+
+Color coding: Black = mostly done, {\color{blue} blue = some work to be done}, {\color{red} red = far from done.}
+
+\begin{mdframed}[linecolor=red]
+\tbf{Name:} build\_group
+
+\smallskip
+
+\tbf{Purpose:} Methods for quickly constructing pinned\_group objects of special linear, special orthogonal, and special unitary groups.
+
+\smallskip
+
+\tbf{Technical notes:} The special linear group is just $\SL_n(K) = \lb X \in \GL_n(K) : \det(X) = 1 \rb$. The special orthogonal groups of interest are as follows. Fix a field $K$, and a vector space $V$ over $K$, and a symmetric nondegenerate isotropic bilinear form $b$ on $V$. Without loss of generality, we can assume that the matrix of $b$ has the form
+\[
+	B = \begin{pmatrix}
+		0 & I_q & 0 \\
+		I_q & 0 & 0 \\
+		0 & 0 & C
+	\end{pmatrix}
+\]
+The special orthogonal group of $b$ is $\lb \tau \in SL(V) : b(\tau v, \tau w) = b(v, w) \text{ for all } v,w \rb$. More concretely, the matrix version of this is the group
+\[
+	\SO_{n,q}(K,B) = \lb X \in \SL_n(K) : X^T B X = B \rb
+\]
+Technically, $\SO_{n,q}(-,B)$ is a functor from $K$-algebras to groups, which sends a $K$-algebra $R$ to the group
+\[
+	\SO_{n,q}(R,B) = \lb X \in \SL_n(R) : X^T B X = B \rb
+\]
+But for the most part, we can just work with the group of $K$-points. 
+
+The special unitary groups of interest are as follows. Fix a quadratic field extension $L/K$, and a vector space $V$ over $L$, and a nondegenerate hermitian or skew-hermitian isotropic form $h$ on $V$. Without loss of generality, we can assume that the matrix of $h$ has the form
+\[
+	H = \begin{pmatrix}
+		0 & I_q & 0 \\
+		\eps I_q & 0 & 0 \\
+		0 & 0 & C
+	\end{pmatrix}
+\]
+The special unitary group of $h$ is $\lb \tau \in SL(L) : h(\tau v, \tau w) = h(v,w) \text{ for all } v,w \rb$. More concretely, the matrix version of this is the group
+\[
+	\SU_{n,q}(L,H) = \lb X \in \SL_n(L) : X^* H X = H \rb
+\]
+where $X^*$ is the conjugate transpose. As with the orthogonal groups, technically $\SU_{n,q}(-,H)$ is a functor from $K$-algebras to groups, which sends a $K$-algebra $R$ to the group
+\[
+	\SU_{n,q}(R,H) = \lb X \in \SL_n(R \otimes_K L) : X^* H X = H \rb
+\]
+But as with orthogonal groups, it is mostly enough to consider the group of $K$-points. (This is potentially confusing -- the group of $K$-points of $\SU_{n,q}(-,H)$ consists of matrices with entries in $L$, not just in $K$, because of the tensor up to $L$.)
+
+\smallskip
+
+\tbf{Status and future work:} Implementation for special linear groups is essentially complete. Special orthogonal groups are next up, then special unitary groups.
+\end{mdframed}
+
+\begin{mdframed}[linecolor=black]
+\tbf{Name:} calculate\_root\_spaces
+
+\smallskip
+
+\tbf{Purpose:} Do root space calculations for special linear, special orthogonal, and special unitary groups.
+
+\smallskip
+
+\tbf{Technical notes:} Let $G$ be a algebraic $K$-group with Lie algebra $\frakg$, and let $S \subset G$ be a maximal $k$-split torus. Then $S$ acts on $\frakg$ by conjugation.
+\[
+	S \times \frakg \to \frakg \qquad s \cdot X = sXs \inv
+\]
+A character of $S$ is a morphism of algebraic $k$-groups $S \to \G_m$. The characters of $S$ form an abelian group, $X(S)$. In all examples dealt with in Pinning-Sympy, $S$ is a subset of the diagonal subgroup of $G$, so $X(S)$ is a subgroup of the free abelian group generated by $\alpha_1, \ldots, \alpha_n$ where $\alpha_i:S \to k^\times$ is the map which picks off the $i$th diagonal entry. For $\alpha \in X(S)$, define
+\[
+	\frakg_\alpha = \lb X \in \frakg: sXs \inv = \alpha(s) X \text{ for all } s \in S \rb
+\]
+Think of $\frakg_\alpha$ as a generalized eigenspace. Elemetents of $\frakg_\alpha$ are like simultaneous eigenvectors for all elements $s \in S$, except that the eigenvalue is allowed to vary with $s$. For all $\alpha$, $\frakg_\alpha$ is a vector subspace of $\frakg$. For all but finitely many $\alpha$, $\frakg_\alpha$ is just the zero subspace. The $\alpha \in X(S)$ so that $\frakg_\alpha \neq \lb 0 \rb$ are called roots. If $\alpha$ is a root, the associated space $\frakg_\alpha$ is called the root space.
+
+If the field $K$ is algebraically closed and characteristic zero, then root spaces are always one-dimensional (over $K$). This fact is critical to the classification of semisimple Lie algebras over $\C$, for example. However, in situations dealt with in Pinning-Sympy, the root spaces may have dimension greater than one.
+
+The purpose of calculate\_root\_spaces is to run calculations to determine the nonzero $\frakg_\alpha$ for special linear, special orthogonal, and special unitary groups.
+
+\smallskip
+
+\tbf{Status and future work:} Probably complete. Mostly useful at this point as a reference for example code blocks.
+
+\end{mdframed}
+
+\begin{mdframed}[linecolor=black]
+\tbf{Name:} matrix\_utility
+
+\tbf{Purpose:} Miscellaneous stand-alone functions related to matrices.
+
+\tbf{Status and future work:} Everything currently works as intended. Add functions as needed.
+\end{mdframed}
+
+\begin{mdframed}[linecolor=red]
+\tbf{Name:} nondegenerate\_isotropic\_form
+
+\smallskip
+
+\tbf{Purpose:} Custom class/data type to represent a nondegenerate isotropic form on a vector space.
+
+\smallskip
+
+\tbf{Technical notes:} Let $V$ be a finite-dimensional vector space over a field $K$. A symmetric bilinear form on $V$ is a $K$-bilinear map $b:V \times V \to K$ such that $b(v,w) = b(w,v)$. It is isotropic if $b(v,v) = 0$ for some $v \neq 0$. It is degenerate if the linear function $b_v:V \to K, b_v(w) = b(v,w)$ is identically zero for some $v \in V$, and nondegenerate if not. Given a basis $\lb e_1, \ldots, e_n \rb$ of $V$, there is a matrix associated to $b$, given by $B_{ij} = b(e_i, e_j)$. $B_{ij}$ is symmetric if and only if $b$, and $B$ is invertible if and only if $b$ is nondegenerate.
+
+\smallskip
+\smallskip
+
+Now consider a quadratic extension $L/K$, and assume $V$ is a vector space over $L$. A hermitian form on $V$ is a $K$-bilinear map $h:V \times V \to L$ such that $h(v,w) = \ov{h(w,v)}$, where the bar denotes conjugation on $L$. The form is instead skew-hermitian if $h(v,w) = -\ov{h(w,v)}$. Degeneracy and isotropy are defined as for symmetric bilinear forms.
+
+\smallskip
+\smallskip
+
+Using some theory, every nondegenerate isotropic symmetric bilinear form is equivalent to one whose matrix has the block form below, where $q$ is the Witt index of $b$, $I_q$ is the $(q \times q)$ identity matrix, and $C$ is an invertible diagonal matrix (with entries in $K$).
+\[
+	B = \begin{pmatrix}
+		0 & I_q & 0 \\
+		I_q & 0 & 0 \\
+		0 & 0 & C
+	\end{pmatrix}
+\]
+Similarly, every nondegenerate isotropic (skew)-hermitian form is equivalent to one whose matrix has the block form below, where $q$ is again the Witt index, $\eps = 1$ for hermitian and $\eps = -1$ for skew-hermitian, and $C$ is an invertible diagonal matrix (with entries in $L$). More precisely, $\ov C = \eps C$, so entries of $C$ are ``purely real" in the hermitian case and ``purely imaginary" in the skew-hermitian case.
+\[
+	H = \begin{pmatrix}
+		0 & I_q & 0 \\
+		\eps I_q & 0 & 0 \\
+		0 & 0 & C
+	\end{pmatrix}
+\]
+\smallskip
+
+\tbf{Status and future work:} Achieves all needed functions for the moment, but will definitely need expanding.
+\end{mdframed}
+
+\begin{mdframed}[linecolor=red]
+\tbf{Name:} pinned\_group
+
+\smallskip
+
+\tbf{Purpose:} Custom class/data type to represent a matrix group and a large amount of associated data.
+
+\smallskip
+
+\tbf{Technical notes:} Let $G$ be an algebraic $K$-group with root system $\Phi$. A pinning of $G$ is a collection of morphisms $X_\alpha:V_\alpha \to G$ for each root $\alpha \in \Phi$, satisfying several conditions. $X_\alpha$ is a morphism of schemes, and $V_\alpha$ is a scheme such that $V_\alpha(K)$ is a $K$-vector space and $G$ is an algebraic $K$-group scheme so $G(K)$ is a group. But it is oke for the notation to get sloppy and identify $X_\alpha$ (the morphism of schemes) with the map $X_\alpha(K):V_\alpha(K) \to G(K)$, which is more concrete. 
+
+The dimension of $V_\alpha(K)$ is equal to the dimension of the root space $\frakg_\alpha$. The conditions on $X_\alpha$ are as follows:
+\begin{enumerate}
+	\item $X_\alpha(0) = 1$
+	\item ($X_\alpha$ is roughly a homomorphism) For $u,v \in V_\alpha(K)$
+	\[	
+		X_\alpha(u) \cdot X_\alpha(v) = X_\alpha(u+v)
+	\]
+	(This is not true all the time, sometimes there is an extra term) \incomplete
+	\item (Torus conjugation formula) For $s \in S(K)$ and $u \in V_\alpha(K)$,
+	\[
+		s \cdot X_\alpha(u) \cdot s \inv = X_\alpha \Big( \alpha(s) u \Big)
+	\]
+	\item (Commutator formula) For every $\alpha, \beta \in \Phi$ with $\alpha \neq c\beta$ for any scalar $c$, there are homogeneous polynomial maps
+	\[
+		N_{ij}^{\alpha \beta}:V_\alpha(K) \times V_\beta(K) \to V_{\alpha+\beta}(K)
+	\]
+	such that for any $u \in V_\alpha(K)$ and $v \in V_\beta(K)$ we have
+	\[
+		\Big[ X_\alpha(u), X_\beta(v) \Big] = \prod_{ \substack{ i, j \ge 1 \\ i \alpha+j\beta \in \Phi}} X_{i \alpha + j\beta} \Big( N_{ij}^{\alpha \beta}(u,v) \Big)
+	\]
+\end{enumerate}
+There is also another condition which is not strictly necessary for a pinning, but very useful to have if possible.
+\begin{enumerate}[resume]
+	\item (Weyl group conjugation formula) For every $\alpha \in \Phi$, there is a Weyl group element $w_\alpha \in G(K)$ such belongs to the subgroup generated by $X_\alpha(V_\alpha(K))$ and $X_{-\alpha}(V_{-\alpha}(K))$ and such that for every $\beta \in \Phi$ and $v \in V_{\beta}(K)$, we have
+	\[
+		w_\alpha \cdot X_{\beta}(v) \cdot w_\alpha \inv = X_{\sig_\alpha(\beta)} \Big( \varphi_{\alpha \beta}(v) \Big)
+	\]
+	where $\sig_\alpha:\Phi \to \Phi$ is reflection across the hyperplane perpendicular to $\alpha$, and $\varphi_{\alpha \beta}:V_{\beta} \to V_{\sig_\alpha(\beta)}$ is some invertible linear function. (Note that $\sig_\alpha$ permutes roots of the same length, which means that $\beta$ and $\sig_\alpha(\beta)$ have root spaces of equal dimension.)
+\end{enumerate}
+
+The tests in pinned\_group are designed to check all of these formulas hold.
+
+\smallskip
+
+\tbf{Status and future work:} Implementation for special linear groups is essentially complete. Special orthogonal groups are next up, then special unitary groups.
+\end{mdframed}
+
+\begin{mdframed}[linecolor=blue]
+\tbf{Name:} quadratic\_field
+
+\smallskip
+
+\tbf{Purpose:} Custom class/data type to model an element of a quadratic field extension. 
+
+\smallskip
+
+\tbf{Technical notes:} A quadratic extension of a field $K$ is a field $L = K(\sqrt{d})$ for some non-square $d \in K$, i.e. $L = \lb a + b \sqrt{d} : a, b \in K \rb$. The Galois group $\Gal(L/K)$ is order two, with elements $\Id_L$ and $\sig$ where $\sig(a+b\sqrt{d}) = a - b \sqrt{d}$. The nontrivial automorphism $\sig$ is typically called conjugation. Informally speaking, elements of the form $a+0\sqrt{d}$ are called ``real" and elements of the form $0+b\sqrt{d}$ are called ``purely imaginary." The general setting of a quadratic extension is not too different from examples like $K=\R$ and $L = \C$, or $K = \Q$ and $L = \Q(\sqrt{d})$.
+
+\smallskip
+
+\tbf{Status and future work:} Basic operations such as addition, negation, subtraction, multiplication, and conjugation are implemented. Division not yet implemented. Minimal tests are implemented, but more could be good.
+
+\end{mdframed}
+
+\begin{mdframed}[linecolor=black]
+\tbf{Name:} root\_system\_utility
+
+\tbf{Purpose:} Miscellaneous stand-alone functions related to roots and root systems.
+
+\tbf{Status and future work:} Everything currently works as intended. Add functions as needed.
+\end{mdframed}
+
+%\begin{mdframed}
+%\tbf{Name:} 
+%
+%\tbf{Purpose:}
+%
+%\tbf{Status and future work:}
+%\end{mdframed}
+
+\newpage
+
+\end{document}
