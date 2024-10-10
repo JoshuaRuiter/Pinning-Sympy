@@ -1,10 +1,11 @@
 \documentclass[12pt]{article}
 \pagestyle{plain}
-\topmargin=-0.5in
-\textheight=9in
-\evensidemargin=-1in
-\oddsidemargin=0in
-\setlength{\textwidth}{6.5in}
+%\topmargin=-0.5in
+%\textheight=9in
+%\evensidemargin=-1.5in
+%\oddsidemargin=0in
+%\setlength{\textwidth}{6.5in}
+\usepackage[top=2cm, bottom=2cm, left=1.4cm, right=1.4cm]{geometry}
 
 \usepackage{graphicx}
 \usepackage[shortlabels]{enumitem}
@@ -71,6 +72,61 @@
 
 \newpage
 
+\section{To do list}
+
+\begin{itemize}
+	\item nondegenerate\_isotropic\_form
+	\begin{itemize}
+		\item Implement an ``evaluate this form on two vectors" method
+		\item Implement an ``evaluate the anisotropic part of this form on two vectors" method
+	\end{itemize}
+	\item pinned\_group
+	\begin{itemize}
+		\item Currently, all of the tests work for special linear groups, but in order to get them to also work for special orthogonal and special unitary groups, we will need to change how the root\_subgroup\_map takes inputs. Current version (October 10, 2024) requires single variable inputs, but root spaces for orthogonal/unitary groups need not be one dimensional, so this needs to be accounted for.
+	\end{itemize}
+	\item build\_group
+	\begin{itemize}
+		\item Write various internal methods for build\_special\_orthogonal\_group, from 
+
+		is\_lie\_algebra\_element\_SO down to torus\_element\_map\
+
+		\item Work out commutator coefficients for special orthogonal groups, 
+
+and write commutator\_coefficient\_map\_SO
+
+		\item Work out Weyl group elements for special orthogonal groups, 
+
+and write weyl\_group\_element\_map\_SO
+
+		\item Work out Weyl group conjugation coefficients for special orthogonal groups, 
+
+and write weyl\_group\_coefficient\_map\_SO
+
+		\item Write various internal methods for build\_special\_unitary\_group, from 
+
+		is\_lie\_algebra\_element\_SU down to torus\_element\_map\_SU
+
+		\item Work out commutator coefficients for special unitary groups, 
+
+and write commutator\_coefficient\_map\_SU
+
+		\item Work out Weyl group elements for special unitary groups, 
+
+and write weyl\_group\_element\_map\_SU
+
+		\item Work out Weyl group conjugation coefficients for special unitary groups, 
+
+and write weyl\_group\_coefficient\_map\_SU
+	\end{itemize}
+	\item Root systems -- we may need to implement a custom root system class, because the built-in Sympy class only covers reduced root systems, i.e. root systems $\Phi$ where for $\alpha \in \Phi$, $\Phi \cap \R \alpha = \lb \pm \alpha \rb$. However, the root system for a non-quasi-split special unitary group is non-reduced. It is a ``type BC" root system, which includes $\pm \alpha, \pm 2\alpha$ for some roots.
+
+	One possible approach is to build a custom root system class extending the Sympy class, although this sounds a bit sophisticated and potentially tricky.
+
+	\item In order to calculate commutator coefficients, Weyl group elements, and Weyl group coefficients, perhaps we should write something akin to calculate\_root\_spaces which can do this programmatically and extract the coefficients.
+\end{itemize}
+
+\newpage
+
 \section{Files}
 
 Color coding: Black = mostly done, {\color{blue} blue = some work to be done}, {\color{red} red = far from done.}
@@ -103,13 +159,13 @@ Technically, $\SO_{n,q}(-,B)$ is a functor from $K$-algebras to groups, which se
 But for the most part, we can just work with the group of $K$-points. 
 
 The special unitary groups of interest are as follows. Fix a quadratic field extension $L/K$, and a vector space $V$ over $L$, and a nondegenerate hermitian or skew-hermitian isotropic form $h$ on $V$. Without loss of generality, we can assume that the matrix of $h$ has the form
-\[
+\begin{align*}
 	H = \begin{pmatrix}
 		0 & I_q & 0 \\
 		\eps I_q & 0 & 0 \\
 		0 & 0 & C
 	\end{pmatrix}
-\]
+\end{align*}
 The special unitary group of $h$ is $\lb \tau \in SL(L) : h(\tau v, \tau w) = h(v,w) \text{ for all } v,w \rb$. More concretely, the matrix version of this is the group
 \[
 	\SU_{n,q}(L,H) = \lb X \in \SL_n(L) : X^* H X = H \rb

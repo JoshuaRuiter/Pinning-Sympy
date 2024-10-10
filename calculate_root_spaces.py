@@ -345,15 +345,9 @@ def generate_character_list(character_length, upper_bound, padded_zeros):
     #   with entries ranging from -upper_bound to +upper_bound
     # The last few digits are all zeros, so the number of entries that 
     #   can vary are just character_length-padded_zeros 
-    
     return [nontrivial_character+(0,)*padded_zeros for 
             nontrivial_character in product(range(-upper_bound,upper_bound+1),
                                                   repeat=character_length-padded_zeros)]
-    
-    # possible_values = range(-upper_bound,upper_bound+1)
-    # nontrivial_part = product(possible_values,repeat=character_length-padded_zeros)
-    # character_list = list(product(possible_values,repeat=character_length-padded_zeros))
-    return character_list
 
 def generate_variable_names(name_string, upper_bound, dimensions):
     # generate a list of variable name strings

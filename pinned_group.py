@@ -20,6 +20,7 @@ class pinned_group:
                  commutator_coefficient_map,
                  weyl_group_element_map,
                  weyl_group_coefficient_map):
+        
         # Build a pinned group from scratch by providing all inputs
         
         self.name_string = name_string
