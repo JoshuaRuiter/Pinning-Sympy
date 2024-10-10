@@ -10,10 +10,12 @@ import math
 def group_builder_tests():
     # Run some tests
     
-    # Special linear groups
-    for n in (2,3,4):
-        SL_n = build_special_linear_group(n)
-        SL_n.run_tests()
+    ###########################
+    ## SPECIAL LINEAR GROUPS ##
+    ###########################
+    # for n in (2,3,4):
+    #     SL_n = build_special_linear_group(n)
+    #     SL_n.run_tests()
         
     # Some split special orthogonal groups (n=2q or n=2q+1)
     for q in (2,3):
@@ -56,16 +58,17 @@ def build_special_linear_group(matrix_size):
     root_system = RootSystem("A"+str(root_system_rank))
     
     # Special linear groups don't have an associated bilinear or hermitian form,
-    # so we use a nondegenerate_isotropic_form with dimension -1 as a placeholder object
-    form = nondegenerate_isotropic_form(-1,0,0,0,0)
+    # so we use a nondegenerate_isotropic_form with nonsense values
+    # dimension -1 and epsilon=2 as a placeholder object
+    form = nondegenerate_isotropic_form(-1,0,100,0,0)
     
-    def is_lie_algebra_element_SL(my_matrix):
+    def is_lie_algebra_element_SL(my_matrix,form):
         return my_matrix.trace()==0
     
-    def is_group_element_SL(my_matrix):
+    def is_group_element_SL(my_matrix,form):
         return my_matrix.det()==1
     
-    def is_torus_element_SL(my_matrix):
+    def is_torus_element_SL(my_matrix,form):
         return (my_matrix.det()==1 and 
                 is_diagonal(my_matrix))
     
@@ -73,7 +76,7 @@ def build_special_linear_group(matrix_size):
         # All root spaces in SL_n have dimension 1
         return 1
     
-    def root_space_map_SL(matrix_size,root_system,form_matrix,root,my_input):
+    def root_space_map_SL(matrix_size,root_system,form,root,my_input):
         # Given a root alpha for the A_n root system,
         # output an element of the associated root space.
         # That is, output the matrix with my_input in
@@ -88,12 +91,12 @@ def build_special_linear_group(matrix_size):
         my_output[i,j] = my_input
         return my_output
 
-    def root_subgroup_map_SL(matrix_size,root_system,form_matrix,root,my_input):
+    def root_subgroup_map_SL(matrix_size,root_system,form,root,my_input):
         # Given a root alpha for the A_n root system,
         # output an element of the associated root subgroup.
         # That is, output the matrix with my_input in one off-diagonal
         # entry, 1's the diagonal, and zeros elsewhere.
-        return eye(matrix_size) + root_space_map_SL(matrix_size,root_system,form_matrix,root,my_input)
+        return eye(matrix_size) + root_space_map_SL(matrix_size,root_system,form,root,my_input)
     
     def torus_element_map_SL(matrix_size,root_system_rank,my_vec):
         # Output a torus element of the usual diagonal subgroup of SL
@@ -184,21 +187,36 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
     anisotropic_variables = symbols('c:'+str(matrix_size-2*root_system_rank))
     form = nondegenerate_isotropic_form(matrix_size,root_system_rank,0,anisotropic_variables,0)
     
-    def is_lie_algebra_element_SO():
-        # PLACEHOLDER
-        x=0
+    def is_lie_algebra_element_SO(my_matrix,form):
+        X = my_matrix
+        B = form.matrix
+        return (X.transpose*B == -X*B)
         
-    def is_group_element_SO():
-        # PLACEHOLDER
-        x=0
+    def is_group_element_SO(my_matrix,form):
+        X = my_matrix
+        B = form.matrix
+        return (X.transpose * B * X == B)
     
     def is_torus_element_SO():
         # PLACEHOLDER
         x=0
         
-    def root_space_dimension_SO():
-        # PLACEHOLDER
-        x=0
+    def root_space_dimension_SO(matrix_size,root_system,root):
+        # The root system associated with a special orthogonal group SO_n_q is
+        # type B. In type B, there are two kinds of roots: 
+            # Long roots of the form (0,...,0,1,0,...,0,-1,0,...,0), and
+            # Short roots of the form (0,...,0,1,0,...,0) or (0,...,0,-1,0,...,0)
+        # The root space associated to a long root is 1-dimensional,
+        # the root space associated to a short root has dimension n-2q,
+        # where n is the size of the matrices and q is the Witt index
+        my_sum = abs(sum(root))
+        if my_sum == 0 or my_sum == 2:
+            return 1
+        elif my_sum == 1:
+            root_system_rank = len(root_system.simple_roots())
+            return matrix_size - 2*root_system_rank
+        else:
+            raise Exception('Unexpected root for special orthogonal group.')
         
     def root_space_map_SO():
         # PLACEHOLDER

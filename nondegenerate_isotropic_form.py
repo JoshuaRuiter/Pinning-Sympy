@@ -46,6 +46,9 @@ class nondegenerate_isotropic_form:
             self.name_string = 'skew-hermitian'
             self.matrix = self.build_hermitian_matrix(self.dimension,self.witt_index,self.epsilon,
                                                       self.anisotropic_vector, self.primitive_element)
+        elif self.epsilon == 100:
+            # Nonsense value of epsilon, just flag for 
+            x=0
             
         else:
             raise Exception('Invalid type flag for nondegenerate isotropic form')
