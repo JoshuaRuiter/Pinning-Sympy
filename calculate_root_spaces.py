@@ -17,12 +17,12 @@ def main():
     q_range = (2,3)
     SO_split_root_calc_test(q_range)
     
-    ## SO_n_q is split if n=2q or n=2q+1,
-    ##   quasi-split if n=2q+2,
-    ##   and neither if n>2q+2
-    q_range = (1,2)
-    n_width = 2
-    SO_nonsplit_root_calc_test(q_range,n_width)
+    # ## SO_n_q is split if n=2q or n=2q+1,
+    # ##   quasi-split if n=2q+2,
+    # ##   and neither if n>2q+2
+    # q_range = (1,2)
+    # n_width = 2
+    # SO_nonsplit_root_calc_test(q_range,n_width)
     
     # ## SU_n_q is quasi-split when n=2q, and not quasi-split when n>2q
     # q_range = (2,3)

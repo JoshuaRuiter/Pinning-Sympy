@@ -68,9 +68,6 @@ class pinned_group:
         for root in self.root_list:
             dim = self.root_space_dimension(self.matrix_size,self.root_system,root)
             u = symarray('u',dim)
-            
-            print(root)
-            
             X = self.root_space_map(self.matrix_size,self.root_system,self.form,root,u)
             assert(self.is_lie_algebra_element(X,self.form))
         print("done.")
@@ -186,3 +183,12 @@ class pinned_group:
                 
         print("done.")
         
+    def display_root_spaces(self):
+        for alpha in self.root_list:            
+            dim = self.root_space_dimension(self.matrix_size,self.root_system,alpha)
+            u = symarray('u',dim)
+            X_alpha_u = self.root_space_map(self.matrix_size,self.root_system,self.form,alpha,u)
+            print("\nRoot: ")
+            print(alpha)            
+            print("\nGeneric element of root space: " )
+            pprint(X_alpha_u)

@@ -22,6 +22,7 @@ def group_builder_tests():
     for q in (2,3):
         for n in (2*q,2*q+1):
             SO_n_q = build_special_orthogonal_group(n,q)
+            SO_n_q.display_root_spaces()
             SO_n_q.run_tests()
     
     # Some non-split special orthogonal groups 
