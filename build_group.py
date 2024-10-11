@@ -5,6 +5,7 @@ from pinned_group import pinned_group
 from matrix_utility import is_diagonal
 from root_system_utility import root_sum, scale_root
 from nondegenerate_isotropic_form import nondegenerate_isotropic_form
+from numpy import shape
 import math
 
 def group_builder_tests():
@@ -13,9 +14,9 @@ def group_builder_tests():
     ###########################
     ## SPECIAL LINEAR GROUPS ##
     ###########################
-    # for n in (2,3,4):
-    #     SL_n = build_special_linear_group(n)
-    #     SL_n.run_tests()
+    for n in (2,3,4):
+        SL_n = build_special_linear_group(n)
+        SL_n.run_tests()
         
     # Some split special orthogonal groups (n=2q or n=2q+1)
     for q in (2,3):
@@ -72,7 +73,7 @@ def build_special_linear_group(matrix_size):
         return (my_matrix.det()==1 and 
                 is_diagonal(my_matrix))
     
-    def root_space_dimension_SL(root):
+    def root_space_dimension_SL(matrix_size,root_system,root):
         # All root spaces in SL_n have dimension 1
         return 1
     
@@ -98,18 +99,20 @@ def build_special_linear_group(matrix_size):
         # entry, 1's the diagonal, and zeros elsewhere.
         return eye(matrix_size) + root_space_map_SL(matrix_size,root_system,form,root,my_input)
     
-    def torus_element_map_SL(matrix_size,root_system_rank,my_vec):
+    def torus_element_map_SL(matrix_size,root_system,my_vec):
         # Output a torus element of the usual diagonal subgroup of SL
         # using a vector of rank my_vec
         # the length of my_vec must match the root_system_rank
-        assert(len(my_vec)==root_system_rank)
-        t = zeros(root_system_rank+1)
+        root_system_rank = len(root_system.simple_roots())
+        assert(len(my_vec) == root_system_rank)
+        assert(matrix_size == root_system_rank+1)
+        t = zeros(matrix_size)
         for i in range(root_system_rank):
             t[i,i] = my_vec[i]
         t[matrix_size-1,matrix_size-1] = 1/prod(my_vec)
         return t
 
-    def commutator_coefficient_map_SL(matrix_size,root_system,form_matrix,alpha,beta,p,q,u,v):
+    def commutator_coefficient_map_SL(matrix_size,root_system,form,alpha,beta,p,q,u,v):
         # Return the coefficient arising from taking the commutator of transvection matrices
         root_list = list(root_system.all_roots().values())
         if not(root_sum(alpha,beta) in root_list):
@@ -126,12 +129,12 @@ def build_special_linear_group(matrix_size):
             else: # so i==l
                 return -u*v
             
-    def weyl_group_element_map_SL(matrix_size,root_system,form_matrix,alpha,u):
-        return (root_subgroup_map_SL(matrix_size,root_system,form_matrix,alpha,u)*
-                root_subgroup_map_SL(matrix_size,root_system,form_matrix,scale_root(-1,alpha),-1/u)*
-                root_subgroup_map_SL(matrix_size,root_system,form_matrix,alpha,u))
+    def weyl_group_element_map_SL(matrix_size,root_system,form,alpha,u):
+        return (root_subgroup_map_SL(matrix_size,root_system,form,alpha,u)*
+                root_subgroup_map_SL(matrix_size,root_system,form,scale_root(-1,alpha),-1/u)*
+                root_subgroup_map_SL(matrix_size,root_system,form,alpha,u))
     
-    def weyl_group_coefficient_map_SL(matrix_size,root_system,form_matrix,alpha,beta,v):
+    def weyl_group_coefficient_map_SL(matrix_size,root_system,form,alpha,beta,v):
         i = alpha.index(1)
         # j = alpha.index(-1)
         k = beta.index(1)
@@ -190,17 +193,35 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
     def is_lie_algebra_element_SO(my_matrix,form):
         X = my_matrix
         B = form.matrix
-        return (X.transpose*B == -X*B)
+        
+        print("\n")
+        pprint(X)
+        pprint(B)
+        pprint(X.T)
+        pprint(X.T*B)
+        pprint(-X*B)
+        
+        return (X.T*B == -X*B)
         
     def is_group_element_SO(my_matrix,form):
         X = my_matrix
         B = form.matrix
         return (X.transpose * B * X == B)
     
-    def is_torus_element_SO():
-        # PLACEHOLDER
-        x=0
+    def is_torus_element_SO(matrix_size,root_system,matrix_to_test):
+        root_system_rank = len(root_system.simple_roots())
         
+        if shape(matrix_to_test != (matrix_size,matrix_size)):
+            return False
+        
+        for i in range(root_system_rank):
+            if (matrix_to_test[i,i]*matrix_to_test[root_system_rank+i,root_system_rank+i]!=1):
+                return False
+        for j in range(matrix_size - 2*root_system_rank):
+            if (matrix_to_test[2*root_system_rank+j,2*root_system_rank+j]!=1):
+                return False
+        return True
+            
     def root_space_dimension_SO(matrix_size,root_system,root):
         # The root system associated with a special orthogonal group SO_n_q is
         # type B. In type B, there are two kinds of roots: 
@@ -218,17 +239,106 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
         else:
             raise Exception('Unexpected root for special orthogonal group.')
         
-    def root_space_map_SO():
-        # PLACEHOLDER
-        x=0
+    def root_space_map_SO(matrix_size, root_system, form, alpha, v):
+        # Return a generic element of the root space in the special orthogogal Lie algebra
+        # associated to the root alpha, with input v
         
-    def root_subgroup_map_SO():
-        # PLACEHOLDER
-        x=0
+        n = matrix_size
+        q = len(root_system.simple_roots()) # The rank of the root system
+        output_matrix = zeros(matrix_size)
+        vec_C = form.anisotropic_vector
         
-    def torus_element_map_SO():
-        # PLACEHOLDER
-        x=0
+        assert(n >= 2*q)
+        assert(len(v) == root_space_dimension_SO(n,root_system,alpha))
+        # v must be a vector of length 1 if alpha is a long root,
+        # and v must be a vectof of length n-2q if alpha is a short root
+        
+        sum_type = sum(alpha) 
+            # 0,2, or -2 for long roots
+            # 1 or -1 for short roots
+        
+        if sum_type == 0:
+            # alpha is a long root, of the form
+            # (0,..,0,1,0,...,0,-1,0,...,0)
+            # In this case, v should just be a "scalar" (really a vector of length 1)
+            assert(len(v) == 1)
+            
+            i = alpha.index(1)
+            j = alpha.index(-1)
+            output_matrix[i,j] = v[0]
+            output_matrix[q+j,q+i] = -v[0]
+            
+        elif sum_type == 2:
+            # alpha is a long root, of the form
+            # (0,..,0,1,0,...,0,1,0,...,0)
+            # In this case, v should just be a "scalar" (really a vector of length 1)
+            assert(len(v) == 1)
+            
+            # This gets the locations of both 1's
+            my_indices = [k for k,val in enumerate(alpha) if val==1]
+            i = my_indices[0]
+            j = my_indices[1]
+            output_matrix[i,q+j] = v[0]
+            output_matrix[j,q+i] = -v[0]
+            
+        elif sum_type == -2:
+            # alpha is a long root, of the form
+            # (0,..,0,-1,0,...,0,-1,0,...,0)
+            # In this case, v should just be a "scalar" (really a vector of length 1)
+            assert(len(v) == 1)
+            
+            # This gets the locations of both 1's
+            my_indices = [k for k,val in enumerate(alpha) if val==-1]
+            i = my_indices[0]
+            j = my_indices[1]
+            output_matrix[i+q,j] = v[0]
+            output_matrix[j+q,i] = -v[0]
+            
+        elif sum_type == 1:
+            # alpha is a short root, of the form
+            # (0,...0,1,0,...,0)
+            # In this case, v should be a vector of length n-2q
+            assert(len(v) == n-2*q)
+            
+            i = alpha.index(1)
+            for s in range(n-2*q):
+                output_matrix[i,2*q+s] = -vec_C[s]*v[s]
+                output_matrix[2*q+s,i] = v[s]
+        
+        elif sum_type == -1:
+            # alpha is a short root, of the form
+            # (0,...0,-1,0,...,0)
+            # In this case, v should be a vector of length n-2q
+            assert(len(v) == n-2*q)
+        
+            i = alpha.index(-1)
+            for s in range(n-2*q):
+                output_matrix[q+i,2*q+s] = -vec_C[s]*v[s]
+                output_matrix[2*q+s,i] = v[s]
+        
+        else:
+            raise Exception('Unexpected root in special orthogonal group')
+            
+        return output_matrix
+        
+    def root_subgroup_map_SO(matrix_size, root_system, form, alpha, v):
+        # In general, this is just the matrix exponential of
+        # root_space_map_SO of the same inputs
+        # In this case, we know that the 3rd power is zero,
+        # so we just go out to the second power
+        X_v = root_space_map_SO(matrix_size, root_system, form, alpha, v)
+        return eye(matrix_size) + X_v + 1/2*X_v**2
+        
+    def torus_element_map_SO(matrix_size, root_system, vec_t):
+        root_system_rank = len(root_system.simple_roots())
+        assert(root_system_rank == len(vec_t))
+        my_matrix = zeros(matrix_size)
+        for i in range(root_system_rank):
+            my_matrix[i,i] = vec_t[i]
+            my_matrix[root_system_rank+i,root_system_rank+i] = 1/vec_t[i]
+        for j in range(matrix_size - 2*root_system_rank):
+            my_matrix[2*root_system_rank + j,2*root_system_rank+j] = 1
+        return my_matrix
         
     def commutator_coefficient_map_SO():
         # PLACEHOLDER

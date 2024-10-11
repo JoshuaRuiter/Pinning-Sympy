@@ -63,24 +63,32 @@ class pinned_group:
         
     def test_basics(self):
         print("\tRunning basic tests...")
-        u = symbols('u')
     
         print("\t\tChecking root spaces belong to the Lie algebra...",end='')
         for root in self.root_list:
+            dim = self.root_space_dimension(self.matrix_size,self.root_system,root)
+            u = symarray('u',dim)
+            
+            print(root)
+            
             X = self.root_space_map(self.matrix_size,self.root_system,self.form,root,u)
             assert(self.is_lie_algebra_element(X,self.form))
         print("done.")
         
         print("\t\tChecking root subgroups belong to the group...",end='')
         for root in self.root_list:
+            dim = self.root_space_dimension(self.matrix_size,self.root_system,root)
+            u = symarray('u',dim)
             X_u = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,root,u)
             assert(self.is_group_element(X_u,self.form))   
         print("done.")
 
     def test_root_space_maps_are_almost_homomorphisms(self):
         print("\tChecking root space spaces are (almost) homomorphisms...",end='')
-        u,v = symbols('u v ')
         for root in self.root_list:
+            dim = self.root_space_dimension(self.matrix_size,self.root_system,root)
+            u = symarray('u',dim)
+            v = symarray('v',dim)
             X_u = self.root_space_map(self.matrix_size,self.root_system,self.form,root,u)
             X_v = self.root_space_map(self.matrix_size,self.root_system,self.form,root,v)
             X_u_plus_v = self.root_space_map(self.matrix_size,self.root_system,self.form,root,u+v)
@@ -91,7 +99,7 @@ class pinned_group:
         print("\tChecking torus conjugation formula...",end='')
         
         vec_t = Matrix(symarray('t',self.root_system_rank))
-        t = self.torus_element_map(self.matrix_size,self.root_system_rank,vec_t)
+        t = self.torus_element_map(self.matrix_size,self.root_system,vec_t)
         u = symbols('u')
         
         for alpha in self.root_list:
@@ -156,7 +164,7 @@ class pinned_group:
         
         print("\t\tChecking Weyl group elements normalize the torus...",end='')
         vec_t = Matrix(symarray('t',self.root_system_rank))
-        t = self.torus_element_map(self.matrix_size,self.root_system_rank,vec_t)
+        t = self.torus_element_map(self.matrix_size,self.root_system,vec_t)
         for alpha in self.root_list:
             w_alpha_u = self.weyl_group_element_map(self.matrix_size,self.root_system,self.form,alpha,u)
             conjugation = w_alpha_u * t * (w_alpha_u**(-1))

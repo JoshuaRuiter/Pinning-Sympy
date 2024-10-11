@@ -75,6 +75,10 @@
 \section{To do list}
 
 \begin{itemize}
+	\item I think we need to implement our own class for root systems. The built-in Sympy class is nice for some things, but doesn't store roots in the way that I would like. For example, with 4x4 special orthogonal group with Witt index 2, the root system is type $B_2$. The built-in Sympy root system class represents this root system as four vectors of length 2. But I would prefer to represent it as four vectors of length 4, with some zeros padded onto the ends.
+
+	Even ignoring the small stuff, eventually we'll need non-reduced root systems for special unitary groups, which the built-in class definitely doesn't handle.
+
 	\item nondegenerate\_isotropic\_form
 	\begin{itemize}
 		\item Implement an ``evaluate this form on two vectors" method

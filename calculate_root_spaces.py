@@ -8,8 +8,8 @@ from matrix_utility import is_diagonal, evaluate_character
 
 def main():
     
-    n_range = (2,3,4)
-    SL_root_calc_test(n_range)
+    # n_range = (2,3,4)
+    # SL_root_calc_test(n_range)
     
     ## SO_n_q is split if n=2q or n=2q+1,
     ##   quasi-split if n=2q+2,
@@ -24,14 +24,14 @@ def main():
     n_width = 2
     SO_nonsplit_root_calc_test(q_range,n_width)
     
-    ## SU_n_q is quasi-split when n=2q, and not quasi-split when n>2q
-    q_range = (2,3)
-    SU_quasisplit_root_calc_test(q_range)
-
     # ## SU_n_q is quasi-split when n=2q, and not quasi-split when n>2q
-    q_range = (2,3)
-    n_cap = 1
-    SU_nonquasisplit_root_calc_test(q_range,n_cap)
+    # q_range = (2,3)
+    # SU_quasisplit_root_calc_test(q_range)
+
+    # # ## SU_n_q is quasi-split when n=2q, and not quasi-split when n>2q
+    # q_range = (2,3)
+    # n_cap = 1
+    # SU_nonquasisplit_root_calc_test(q_range,n_cap)
     
 def SL_root_calc_test(n_range):
     # demonstration of SL_n calculations
