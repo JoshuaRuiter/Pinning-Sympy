@@ -1,5 +1,9 @@
 from numpy import array, dot
 
+###########################
+# THIS FILE IS DEPRECATED #
+###########################
+
 def integer_linear_combos(root_list,alpha,beta):
     # Return a list of all positive integer linear combinations
     # of two roots alpha and beta within a list of roots
