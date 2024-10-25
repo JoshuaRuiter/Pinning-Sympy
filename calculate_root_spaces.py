@@ -14,22 +14,22 @@ def main():
     ## SO_n_q is split if n=2q or n=2q+1,
     ##   quasi-split if n=2q+2,
     ##   and neither if n>2q+2
-    q_range = (2,3)
+    q_range = [2]
     SO_split_root_calc_test(q_range)
     
     # ## SO_n_q is split if n=2q or n=2q+1,
     # ##   quasi-split if n=2q+2,
     # ##   and neither if n>2q+2
-    # q_range = (1,2)
+    # q_range = [1,2]
     # n_width = 2
     # SO_nonsplit_root_calc_test(q_range,n_width)
     
     # ## SU_n_q is quasi-split when n=2q, and not quasi-split when n>2q
-    # q_range = (2,3)
+    # q_range = [2,3]
     # SU_quasisplit_root_calc_test(q_range)
 
     # # ## SU_n_q is quasi-split when n=2q, and not quasi-split when n>2q
-    # q_range = (2,3)
+    # q_range = [2,3]
     # n_cap = 1
     # SU_nonquasisplit_root_calc_test(q_range,n_cap)
     
@@ -232,8 +232,8 @@ def determine_SO_roots(n,q):
     Z_qd = ZeroMatrix(q,n-2*q) # d=n-2q
     Z_dq = ZeroMatrix(n-2*q,q) # d=n-2q
     B = Matrix(BlockMatrix([[Z_qq,I_q,Z_qd],
-                     [I_q,Z_qq,Z_qd],
-                     [Z_dq,Z_dq,C]]))
+                            [I_q,Z_qq,Z_qd],
+                            [Z_dq,Z_dq,C]]))
     
     # Setting up the generic Lie algebra element
     x = Matrix(MatrixSymbol('x',n,n))

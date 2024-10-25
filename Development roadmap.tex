@@ -75,41 +75,13 @@
 
 \section{To do list}
 
+\subsection{High priority}
+
 \begin{itemize}
-	\item \sout{I think we need to implement our own class for root systems. The built-in Sympy class is nice for some things, but doesn't store roots in the way that I would like. For example, with 4x4 special orthogonal group with Witt index 2, the root system is type $B_2$. The built-in Sympy root system class represents this root system as four vectors of length 2. But I would prefer to represent it as four vectors of length 4, with some zeros padded onto the ends.}
+	\item In order to calculate commutator coefficients, Weyl group elements, and Weyl group coefficients, perhaps we should write something akin to calculate\_root\_spaces which can do this programmatically and extract the coefficients.
+
+	\item Complete group builder functions for special unitary groups.
 	\begin{itemize}
-		\item \sout{Transfer rootlinearcombos stuff to root system class}
-	\end{itemize}
-
-	\sout{Even ignoring the small stuff, eventually we'll need non-reduced root systems for special unitary groups, which the built-in class definitely doesn't handle.}
-
-	\item nondegenerate\_isotropic\_form
-	\begin{itemize}
-		\item Implement an ``evaluate this form on two vectors" method
-		\item Implement an ``evaluate the anisotropic part of this form on two vectors" method
-	\end{itemize}
-	\item pinned\_group
-	\begin{itemize}
-		\item Currently, all of the tests work for special linear groups, but in order to get them to also work for special orthogonal and special unitary groups, we will need to change how the root\_subgroup\_map takes inputs. Current version (October 10, 2024) requires single variable inputs, but root spaces for orthogonal/unitary groups need not be one dimensional, so this needs to be accounted for.
-	\end{itemize}
-	\item build\_group
-	\begin{itemize}
-		\item Write various internal methods for build\_special\_orthogonal\_group, from 
-
-		is\_lie\_algebra\_element\_SO down to torus\_element\_map\
-
-		\item Work out commutator coefficients for special orthogonal groups, 
-
-and write commutator\_coefficient\_map\_SO
-
-		\item Work out Weyl group elements for special orthogonal groups, 
-
-and write weyl\_group\_element\_map\_SO
-
-		\item Work out Weyl group conjugation coefficients for special orthogonal groups, 
-
-and write weyl\_group\_coefficient\_map\_SO
-
 		\item Write various internal methods for build\_special\_unitary\_group, from 
 
 		is\_lie\_algebra\_element\_SU down to torus\_element\_map\_SU
@@ -126,11 +98,49 @@ and write weyl\_group\_element\_map\_SU
 
 and write weyl\_group\_coefficient\_map\_SU
 	\end{itemize}
-	\item Root systems -- we may need to implement a custom root system class, because the built-in Sympy class only covers reduced root systems, i.e. root systems $\Phi$ where for $\alpha \in \Phi$, $\Phi \cap \R \alpha = \lb \pm \alpha \rb$. However, the root system for a non-quasi-split special unitary group is non-reduced. It is a ``type BC" root system, which includes $\pm \alpha, \pm 2\alpha$ for some roots.
+\end{itemize}
 
-	One possible approach is to build a custom root system class extending the Sympy class, although this sounds a bit sophisticated and potentially tricky.
+\subsection{Medium priority}
 
-	\item In order to calculate commutator coefficients, Weyl group elements, and Weyl group coefficients, perhaps we should write something akin to calculate\_root\_spaces which can do this programmatically and extract the coefficients.
+\begin{itemize}
+	\item nondegenerate\_isotropic\_form
+	\begin{itemize}
+		\item Implement an ``evaluate this form on two vectors" method
+		\item Implement an ``evaluate the anisotropic part of this form on two vectors" method
+	\end{itemize}
+
+	\item Complete group builder functions for special orthogonal groups.
+	\begin{itemize}
+		\item \sout{Write various internal methods for build\_special\_orthogonal\_group, from 
+
+		is\_lie\_algebra\_element\_SO down to torus\_element\_map}
+
+		\item Work out commutator coefficients for special orthogonal groups, 
+
+and write commutator\_coefficient\_map\_SO
+
+		\item Work out Weyl group elements for special orthogonal groups, 
+
+and write weyl\_group\_element\_map\_SO
+
+		\item Work out Weyl group conjugation coefficients for special orthogonal groups, 
+
+and write weyl\_group\_coefficient\_map\_SO
+
+	\end{itemize}
+\end{itemize}
+
+\subsection{Low priority}
+\begin{itemize}
+	\item Implement constructor/builders for types D, E, F, and G root systems.
+\end{itemize}
+
+\subsection{Completed}
+\begin{itemize}
+	\item Implement a custom root system class (still lacks type D, E, F, G).
+	\item Implement something to automatically calculate and output roots and root spaces for special linear, special orthogonal, and special unitary groups.
+	\item Create a custom class to represent pinned groups and run tests to verify pinning properties.
+	\item Create a group builder method for special linaer groups.
 \end{itemize}
 
 \newpage
@@ -329,14 +339,6 @@ The tests in pinned\_group are designed to check all of these formulas hold.
 
 \tbf{Status and future work:} Basic operations such as addition, negation, subtraction, multiplication, and conjugation are implemented. Division not yet implemented. Minimal tests are implemented, but more could be good.
 
-\end{mdframed}
-
-\begin{mdframed}[linecolor=black]
-\tbf{Name:} root\_system\_utility
-
-\tbf{Purpose:} Miscellaneous stand-alone functions related to roots and root systems.
-
-\tbf{Status and future work:} Everything currently works as intended. Add functions as needed.
 \end{mdframed}
 
 %\begin{mdframed}

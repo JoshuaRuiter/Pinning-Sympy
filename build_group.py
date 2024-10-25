@@ -1,12 +1,11 @@
 from sympy import zeros, eye, prod, sqrt, symbols
-from sympy.liealgebras.root_system import RootSystem
 from pprint import pprint
 from pinned_group import pinned_group
 from matrix_utility import is_diagonal
-from root_system_utility import root_sum, scale_root
 from nondegenerate_isotropic_form import nondegenerate_isotropic_form
+import numpy as np
 from numpy import shape
-import math
+from root_system import root_system
 
 def group_builder_tests():
     # Run some tests
@@ -22,7 +21,10 @@ def group_builder_tests():
     for q in (2,3):
         for n in (2*q,2*q+1):
             SO_n_q = build_special_orthogonal_group(n,q)
-            SO_n_q.display_root_spaces()
+            
+            # Only for investigation purposes
+            # SO_n_q.display_root_spaces() 
+            
             SO_n_q.run_tests()
     
     # Some non-split special orthogonal groups 
@@ -57,7 +59,7 @@ def build_special_linear_group(matrix_size):
     
     name_string = "special linear group of size " + str(matrix_size)
     root_system_rank = matrix_size-1
-    root_system = RootSystem("A"+str(root_system_rank))
+    A_r = root_system('A',root_system_rank,matrix_size)
     
     # Special linear groups don't have an associated bilinear or hermitian form,
     # so we use a nondegenerate_isotropic_form with nonsense values
@@ -87,8 +89,8 @@ def build_special_linear_group(matrix_size):
         # with two nonzero entries, 1 and -1.
         assert(len(root)==matrix_size)
         assert(sum(root)==0)
-        i = root.index(1)
-        j = root.index(-1)
+        i = list(root).index(1)
+        j = list(root).index(-1)
         my_output = zeros(matrix_size)
         my_output[i,j] = my_input
         return my_output
@@ -104,7 +106,7 @@ def build_special_linear_group(matrix_size):
         # Output a torus element of the usual diagonal subgroup of SL
         # using a vector of rank my_vec
         # the length of my_vec must match the root_system_rank
-        root_system_rank = len(root_system.simple_roots())
+        root_system_rank = root_system.rank
         assert(len(my_vec) == root_system_rank)
         assert(matrix_size == root_system_rank+1)
         t = zeros(matrix_size)
@@ -115,14 +117,13 @@ def build_special_linear_group(matrix_size):
 
     def commutator_coefficient_map_SL(matrix_size,root_system,form,alpha,beta,p,q,u,v):
         # Return the coefficient arising from taking the commutator of transvection matrices
-        root_list = list(root_system.all_roots().values())
-        if not(root_sum(alpha,beta) in root_list):
+        if not(root_system.is_root(alpha+beta)):
             return 0
         else:
-            i = alpha.index(1)
-            j = alpha.index(-1)
-            k = beta.index(1)
-            l = beta.index(-1)
+            i = list(alpha).index(1)
+            j = list(alpha).index(-1)
+            k = list(beta).index(1)
+            l = list(beta).index(-1)
             assert((j==k and i!=l) or 
                    (j!=k and i==l))
             if j==k:
@@ -132,14 +133,14 @@ def build_special_linear_group(matrix_size):
             
     def weyl_group_element_map_SL(matrix_size,root_system,form,alpha,u):
         return (root_subgroup_map_SL(matrix_size,root_system,form,alpha,u)*
-                root_subgroup_map_SL(matrix_size,root_system,form,scale_root(-1,alpha),-1/u)*
+                root_subgroup_map_SL(matrix_size,root_system,form,-1*alpha,-1/u)*
                 root_subgroup_map_SL(matrix_size,root_system,form,alpha,u))
     
     def weyl_group_coefficient_map_SL(matrix_size,root_system,form,alpha,beta,v):
-        i = alpha.index(1)
-        # j = alpha.index(-1)
-        k = beta.index(1)
-        l = beta.index(-1)
+        i = list(alpha).index(1)
+        # j = list(alpha).index(-1)
+        k = list(beta).index(1)
+        l = list(beta).index(-1)
         if i==k or i==l:
             return -v
         else:
@@ -148,7 +149,7 @@ def build_special_linear_group(matrix_size):
     return pinned_group(name_string,
                         matrix_size,
                         form,
-                        root_system,
+                        A_r,
                         is_lie_algebra_element_SL,
                         is_group_element_SL,
                         is_torus_element_SL,
@@ -187,27 +188,19 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
     
     name_string = ("special orthogonal group of size " + str(matrix_size) + 
                     " with Witt index " + str(root_system_rank))
-    root_system = RootSystem("B"+str(root_system_rank))
+    B_r = root_system('B',root_system_rank,matrix_size)
     anisotropic_variables = symbols('c:'+str(matrix_size-2*root_system_rank))
     form = nondegenerate_isotropic_form(matrix_size,root_system_rank,0,anisotropic_variables,0)
     
     def is_lie_algebra_element_SO(my_matrix,form):
         X = my_matrix
-        B = form.matrix
-        
-        print("\n")
-        pprint(X)
-        pprint(B)
-        pprint(X.T)
-        pprint(X.T*B)
-        pprint(-X*B)
-        
-        return (X.T*B == -X*B)
+        B = form.matrix        
+        return (X.T*B == -B*X)
         
     def is_group_element_SO(my_matrix,form):
         X = my_matrix
-        B = form.matrix
-        return (X.transpose * B * X == B)
+        B = form.matrix       
+        return (X.T * B * X == B)
     
     def is_torus_element_SO(matrix_size,root_system,matrix_to_test):
         root_system_rank = len(root_system.simple_roots())
@@ -235,8 +228,7 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
         if my_sum == 0 or my_sum == 2:
             return 1
         elif my_sum == 1:
-            root_system_rank = len(root_system.simple_roots())
-            return matrix_size - 2*root_system_rank
+            return matrix_size - 2*root_system.rank
         else:
             raise Exception('Unexpected root for special orthogonal group.')
         
@@ -245,7 +237,7 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
         # associated to the root alpha, with input v
         
         n = matrix_size
-        q = len(root_system.simple_roots()) # The rank of the root system
+        q = root_system.rank
         output_matrix = zeros(matrix_size)
         vec_C = form.anisotropic_vector
         
@@ -264,8 +256,8 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
             # In this case, v should just be a "scalar" (really a vector of length 1)
             assert(len(v) == 1)
             
-            i = alpha.index(1)
-            j = alpha.index(-1)
+            i = list(alpha).index(1)
+            j = list(alpha).index(-1)
             output_matrix[i,j] = v[0]
             output_matrix[q+j,q+i] = -v[0]
             
@@ -301,7 +293,7 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
             # In this case, v should be a vector of length n-2q
             assert(len(v) == n-2*q)
             
-            i = alpha.index(1)
+            i = list(alpha).index(1)
             for s in range(n-2*q):
                 output_matrix[i,2*q+s] = -vec_C[s]*v[s]
                 output_matrix[2*q+s,i] = v[s]
@@ -312,7 +304,7 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
             # In this case, v should be a vector of length n-2q
             assert(len(v) == n-2*q)
         
-            i = alpha.index(-1)
+            i = list(alpha).index(-1)
             for s in range(n-2*q):
                 output_matrix[q+i,2*q+s] = -vec_C[s]*v[s]
                 output_matrix[2*q+s,i] = v[s]
@@ -331,7 +323,7 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
         return eye(matrix_size) + X_v + 1/2*X_v**2
         
     def torus_element_map_SO(matrix_size, root_system, vec_t):
-        root_system_rank = len(root_system.simple_roots())
+        root_system_rank = root_system.rank
         assert(root_system_rank == len(vec_t))
         my_matrix = zeros(matrix_size)
         for i in range(root_system_rank):
@@ -356,7 +348,7 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
     return pinned_group(name_string,
                         matrix_size,
                         form,
-                        root_system,
+                        B_r,
                         is_lie_algebra_element_SO,
                         is_group_element_SO,
                         is_torus_element_SO,

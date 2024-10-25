@@ -1,7 +1,7 @@
 from sympy import symbols, symarray, Matrix, eye, zeros, simplify
+import numpy as np
 from pprint import pprint
 from matrix_utility import evaluate_character
-from root_system_utility import integer_linear_combos, scale_root, root_sum, reflect_root
 
 class pinned_group:
     
@@ -34,8 +34,8 @@ class pinned_group:
         #                                     # as an argument, not the matrix itself
         
         self.root_system = root_system
-        self.root_system_rank = len(root_system.simple_roots())
-        self.root_list = list(root_system.all_roots().values())
+        self.root_system_rank = root_system.rank
+        self.root_list = root_system.root_list
         
         self.is_lie_algebra_element = is_lie_algebra_element
         self.is_group_element = is_group_element
@@ -97,9 +97,10 @@ class pinned_group:
         
         vec_t = Matrix(symarray('t',self.root_system_rank))
         t = self.torus_element_map(self.matrix_size,self.root_system,vec_t)
-        u = symbols('u')
         
         for alpha in self.root_list:
+            dim = self.root_space_dimension(self.matrix_size,self.root_system,alpha)
+            u = symarray('u',dim)
             alpha_of_t = evaluate_character(alpha,t)
             
             # Torus conjugation on the Lie algebra/root spaces
@@ -119,14 +120,18 @@ class pinned_group:
     def test_commutator_formula(self):
         print("\tChecking commutator formula...",end='')
 
-        u, v = symbols('u v ')
         for alpha in self.root_list:
+            dim_V_alpha = self.root_space_dimension(self.matrix_size,self.root_system,alpha)
+            u = symarray('u',dim_V_alpha)
+            
             x_alpha_u = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,alpha,u)
             for beta in self.root_list:
                 # Commutator formula only applies when the two roots
                 # not scalar multiples of each other
-                if alpha != beta and alpha != scale_root(-1,beta):
-                            
+                                
+                if not(self.root_system.is_proportional(alpha,beta)):
+                    dim_V_beta = self.root_space_dimension(self.matrix_size,self.root_system,beta)
+                    v = symarray('v',dim_V_beta)
                     x_beta_v = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,beta,v)
                     LHS = x_alpha_u*x_beta_v*(x_alpha_u**(-1))*(x_beta_v**(-1))
                     
@@ -134,7 +139,7 @@ class pinned_group:
                     # that are in the root system. 
                     # It is formatted as a dictionary where keys are tuples (i,j) and the value 
                     # associated to a key (i,j) is the root i*alpha+j*beta
-                    linear_combos = integer_linear_combos(self.root_list,alpha,beta)
+                    linear_combos = self.root_system.integer_linear_combos(alpha,beta)
                     
                     # The right hand side is a product over positive integer lienar combinations of alpha and beta
                     # with coefficients depending on some function N(alpha,beta,i,j,u,v)
@@ -145,11 +150,11 @@ class pinned_group:
                         root = linear_combos[key]
                         
                         # Check that i*alpha+j*beta = root
-                        assert(root_sum(scale_root(alpha,i),scale_root(beta,j)) == root)
+                        assert(np.all(i*alpha+j*beta == root))
 
                         # Compute the commutator coefficient that should arise
                         N = self.commutator_coefficient_map(self.matrix_size,self.root_system,self.form,alpha,beta,i,j,u,v);
-                        my_sum = root_sum(alpha,beta)
+                        my_sum = alpha+beta
                         RHS = RHS * self.root_subgroup_map(self.matrix_size,self.root_system,self.form,my_sum,N)
                     assert(LHS==RHS)
             
@@ -175,7 +180,7 @@ class pinned_group:
                 x_beta_v = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,beta,v)
                 LHS = w_alpha_1 * x_beta_v * (w_alpha_1**(-1))
                 
-                reflected_root = reflect_root(alpha,beta)
+                reflected_root = self.root_system.reflect_root(alpha,beta)
                 weyl_group_coeff = self.weyl_group_coefficient_map(self.matrix_size,self.root_system,self.form,alpha,beta,v)
                 RHS = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,reflected_root,weyl_group_coeff)
                 
