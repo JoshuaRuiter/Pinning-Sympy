@@ -96,7 +96,7 @@ class pinned_group:
         print("\tChecking torus conjugation formula...",end='')
         
         vec_t = Matrix(symarray('t',self.root_system_rank))
-        t = self.torus_element_map(self.matrix_size,self.root_system,vec_t)
+        t = self.torus_element_map(self.matrix_size,self.root_system,self.form,vec_t)
         
         for alpha in self.root_list:
             dim = self.root_space_dimension(self.matrix_size,self.root_system,alpha)
@@ -166,11 +166,11 @@ class pinned_group:
         
         print("\t\tChecking Weyl group elements normalize the torus...",end='')
         vec_t = Matrix(symarray('t',self.root_system_rank))
-        t = self.torus_element_map(self.matrix_size,self.root_system,vec_t)
+        t = self.torus_element_map(self.matrix_size,self.root_system,self.form,vec_t)
         for alpha in self.root_list:
             w_alpha_u = self.weyl_group_element_map(self.matrix_size,self.root_system,self.form,alpha,u)
             conjugation = w_alpha_u * t * (w_alpha_u**(-1))
-            assert(self.is_torus_element(conjugation,self.form))
+            assert(self.is_torus_element(conjugation,self.root_system,self.form))
         print("done.")
         
         print("\t\tChecking Weyl group conjugation formula...",end='')

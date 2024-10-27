@@ -47,8 +47,10 @@ class nondegenerate_isotropic_form:
             self.matrix = self.build_hermitian_matrix(self.dimension,self.witt_index,self.epsilon,
                                                       self.anisotropic_vector, self.primitive_element)
         elif self.epsilon == 100:
-            # Nonsense value of epsilon, just flag for 
-            x=0
+            # Nonsense value of epsilon, just flag for the case of special linear groups
+            # which don't need a form
+            self.name_string = 'placeholder form for special linear group'
+            self.matrix = [1]
             
         else:
             raise Exception('Invalid type flag for nondegenerate isotropic form')

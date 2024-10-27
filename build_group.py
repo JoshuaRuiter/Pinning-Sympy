@@ -17,42 +17,36 @@ def group_builder_tests():
         SL_n = build_special_linear_group(n)
         SL_n.run_tests()
         
-    # Some split special orthogonal groups (n=2q or n=2q+1)
-    for q in (2,3):
-        for n in (2*q,2*q+1):
-            SO_n_q = build_special_orthogonal_group(n,q)
-            
-            # Only for investigation purposes
-            # SO_n_q.display_root_spaces() 
-            
-            SO_n_q.run_tests()
-    
-    # Some non-split special orthogonal groups 
-        # SO_n_q is quasi-split if n=2q+2, and
-        # neither split nor quasi-split if n>2+2q, 
-        # but the behavior seems to be basically the same in these two cases
-    for q in (1,2):
-        for n in (2*q+2,2*q+3,2*q+4):
-            SO_n_q = build_special_orthogonal_group(n,q)
-            SO_n_q.run_tests()
-    
-    ###############################################
-    ## SPECIAL UNITARY GROUPS NOT IMPLEMENTED YET
-    ###############################################
-    # Some quasi-split special unitary groups (n=2q)
+    # # Some split special orthogonal groups (n=2q or n=2q+1)
     # for q in (2,3):
-    #     n=2*q
-    #     SU_n_q = build_special_unitary_group(n,q)
-    #     SU_n_q.run_tests()
+    #     for n in (2*q,2*q+1):
+    #         SO_n_q = build_special_orthogonal_group(n,q)
+    #         SO_n_q.run_tests()
     
-    ###############################################
-    ## SPECIAL UNITARY GROUPS NOT IMPLEMENTED YET
-    ###############################################
-    # Some non-quasi-split special unitary groups (n>2q)
-    # for q in (2,3):
-    #     for n in (2*q+1,2*q+2):
-    #         SU_n_q = build_special_unitary_group(n,q)
-    #         SU_n_q.run_tests()
+    # # Some non-split special orthogonal groups 
+    #     # SO_n_q is quasi-split if n=2q+2, and
+    #     # neither split nor quasi-split if n>2+2q, 
+    #     # but the behavior seems to be basically the same in these two cases
+    # for q in (1,2):
+    #     for n in (2*q+2,2*q+3,2*q+4):
+    #         SO_n_q = build_special_orthogonal_group(n,q)
+    #         SO_n_q.run_tests()
+    
+    ## Some quasi-split special unitary groups (n=2q)
+    ## eps=1 is Hermitian, eps=-1 is skew-Hermitian
+    for eps in (1,-1):
+        for q in (2,3):
+            n=2*q
+            SU_n_q = build_special_unitary_group(n,q,eps)
+            SU_n_q.run_tests()
+    
+    ## Some non-quasi-split special unitary groups (n>2q)
+    ## eps=1 is Hermitian, eps=-1 is skew-Hermitian
+    for eps in (1,-1):
+        for q in (2,3):
+            for n in (2*q+1,2*q+2):
+                SU_n_q = build_special_unitary_group(n,q,eps)
+                SU_n_q.run_tests()
     
 def build_special_linear_group(matrix_size):
     # Build a pinned_group object representing the special linear group SL_n
@@ -72,11 +66,11 @@ def build_special_linear_group(matrix_size):
     def is_group_element_SL(my_matrix,form):
         return my_matrix.det()==1
     
-    def is_torus_element_SL(my_matrix,form):
+    def is_torus_element_SL(my_matrix, root_system, form):
         return (my_matrix.det()==1 and 
                 is_diagonal(my_matrix))
     
-    def root_space_dimension_SL(matrix_size,root_system,root):
+    def root_space_dimension_SL(matrix_size, root_system, root):
         # All root spaces in SL_n have dimension 1
         return 1
     
@@ -95,14 +89,14 @@ def build_special_linear_group(matrix_size):
         my_output[i,j] = my_input
         return my_output
 
-    def root_subgroup_map_SL(matrix_size,root_system,form,root,my_input):
+    def root_subgroup_map_SL(matrix_size, root_system, form, root, my_input):
         # Given a root alpha for the A_n root system,
         # output an element of the associated root subgroup.
         # That is, output the matrix with my_input in one off-diagonal
         # entry, 1's the diagonal, and zeros elsewhere.
         return eye(matrix_size) + root_space_map_SL(matrix_size,root_system,form,root,my_input)
     
-    def torus_element_map_SL(matrix_size,root_system,my_vec):
+    def torus_element_map_SL(matrix_size, root_system, form, my_vec):
         # Output a torus element of the usual diagonal subgroup of SL
         # using a vector of rank my_vec
         # the length of my_vec must match the root_system_rank
@@ -200,9 +194,9 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
     def is_group_element_SO(my_matrix,form):
         X = my_matrix
         B = form.matrix       
-        return (X.T * B * X == B)
+        return (X.T*B*X == B and X.det()==1)
     
-    def is_torus_element_SO(matrix_size,root_system,matrix_to_test):
+    def is_torus_element_SO(matrix_to_test, root_system, form):
         root_system_rank = len(root_system.simple_roots())
         
         if shape(matrix_to_test != (matrix_size,matrix_size)):
@@ -216,7 +210,7 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
                 return False
         return True
             
-    def root_space_dimension_SO(matrix_size,root_system,root):
+    def root_space_dimension_SO(matrix_size, root_system, root):
         # The root system associated with a special orthogonal group SO_n_q is
         # type B. In type B, there are two kinds of roots: 
             # Long roots of the form (0,...,0,1,0,...,0,-1,0,...,0), and
@@ -322,7 +316,7 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
         X_v = root_space_map_SO(matrix_size, root_system, form, alpha, v)
         return eye(matrix_size) + X_v + 1/2*X_v**2
         
-    def torus_element_map_SO(matrix_size, root_system, vec_t):
+    def torus_element_map_SO(matrix_size, root_system, form, vec_t):
         root_system_rank = root_system.rank
         assert(root_system_rank == len(vec_t))
         my_matrix = zeros(matrix_size)
@@ -359,15 +353,6 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
                         commutator_coefficient_map_SO,
                         weyl_group_element_map_SO,
                         weyl_group_coefficient_map_SO)
-
-    def is_lie_algebra_element_SO(my_matrix):
-        # check it is skew-symmetric; M.T should return the transpose of M
-        # (Joshua) This is not quite right, needs to check that (X^t)*B*X=B and det(X)=1
-        #           where B is the associated form matrix
-        return my_matrix.T == -1*my_matrix
-
-    def is_group_element_SO(my_matrix):
-        return (my_matrix.T*my_matrix== eye(matrix_size)) and (my_matrix.det()==1)
     
 def build_special_unitary_group(matrix_size,root_system_rank,epsilon):
     # Build a pinned_group object representing the special unitary group SU_{n,q}(k,H)
@@ -395,60 +380,158 @@ def build_special_unitary_group(matrix_size,root_system_rank,epsilon):
     #       So we are a bit more interested in the case where q<n/2 (equivalently n>2q)
     #       We ignore the case q=0, because in this case the group is not isotropic so it behaves quite differently.
     
-    name_string = ("special unitary group of size " + str(matrix_size) + 
-                    " with Witt index " + str(root_system_rank) + 
+    n = matrix_size
+    q = root_system_rank
+    eps = epsilon
+    
+    name_string = ("special unitary group of size " + str(n) + 
+                    " with Witt index " + str(q) + 
                     " and epsilon = " + str(epsilon))
-    root_system = RootSystem("C"+str(root_system_rank))
-    anisotropic_variables = symbols('c:'+str(matrix_size-2*root_system_rank))
+    
+    if n == 2*q:
+        my_root_system = root_system('C',q,n)
+    elif n > 2*q:
+        my_root_system = root_system('BC',q,n)
+    else:
+        # n < 2*q, does not give a valid group
+        raise Exception('Invalid matrix size and rank pairing for special unitary group.')
+    
+    anisotropic_variables = symbols('c:'+str(n-2*q))
     d = symbols('d')
     primitive_element = sqrt(d)
-    form = nondegenerate_isotropic_form(matrix_size,root_system_rank,epsilon,
-                                        anisotropic_variables,primitive_element)
+    form = nondegenerate_isotropic_form(n,q,eps,anisotropic_variables,primitive_element)
     
-    def is_lie_algebra_element_SU():
-        # PLACEHOLDER
-        x=0
-        
-    def is_group_element_SU():
-        # PLACEHOLDER
-        x=0
+    def custom_conjugate(my_matrix, form):
+        # Conjugate a matrix with entries in the quadratic field extension k(sqrt(d))
+        # by replacing sqrt(d) with -sqrt(d)
+        primitive_element = form.primitive_element
+        conjugated_matrix = my_matrix.subs(primitive_element, -primitive_element)
+        return conjugated_matrix
     
-    def is_torus_element_SU():
+    def is_lie_algebra_element_SU(matrix_to_test, form):
+        # Return true of matrix_to_test is an element of the special unitary group
+        # The condition is
+            # conj(X^T)*H + H*X = 0, where
+            # X = matrix_to_test
+            # H = matrix associated to the (skew-)hermitian form
+        X = matrix_to_test
+        H = form.matrix
+        X_conjugate = custom_conjugate(X, form)
+        return (X_conjugate.T * H == -H*X)
+        
+    def is_group_element_SU(matrix_to_test, form):
+        # Return true if matrix_to_test is in the special unitary group
+        # associated to form.
+        # The condition for this is (conj(X^T))*H*X = H, where
+            # X = matrix_to_test
+            # H = form.matrix
+        X = matrix_to_test
+        H = form.matrix
+        X_conjugate = custom_conjugate(X, form)
+        return (X_conjugate.T*H*X == H)
+
+    def is_torus_element_SU(matrix_to_test, root_system, form):
+        # Return true if matrix_to_test is an element of the diagonal torus of
+        # the special unitary group.
+        
+        # All elements of this torus have the form
+        # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1)
+            # where t_1, ..., t_q are 'purely real' if the form is hermitian,
+            # and 'purely imaginary' if the form is skew-hermitian
+        
+        T = matrix_to_test
+        
+        if not(is_diagonal(T)):
+            return False
+        
+        q = root_system.rank
+        for i in range(q):
+            if T[i,i]*T[q+i,q+i] != 1:
+                return False
+        
+        return True
+        
+    def root_space_dimension_SU(matrix_size, root_system, root):
+        # Return the dimension of the root space associated to a given root
+        # This dimension is 1 for long roots, 2 for medium roots, and 2*(n-2q) for short roots, where
+            # n = matrix_size
+            # q = root_system.rank
+        # To tell if a root is short, medium, or long, take the squared length dot(root,root)
+        # The squared length is 1 for short roots, 2 for medium roots, and 4 for long roots
+        
+        assert(root_system.dynkin_type in ('C','BC'))
+        assert(root_system.is_root(root))
+        n = matrix_size
+        q = root_system.rank
+        
+        if np.dot(root,root) == 1:
+            # This should only be possible if the root system is type BC
+            assert(root_system.dynkin_type == 'BC')
+            return 2*(n-2*q)
+            
+        elif np.dot(root,root) == 2:
+            return 2
+            
+        elif np.dot(root,root) == 4:
+            return 1
+            
+        else:
+            # This should be impossible
+            raise Exception('Invalid root length in root system of special unitary group.')
+        
+    def root_space_map_SU(matrix_size, root_system, form, alpha, u):
+        # Output an element of the root space associated to the root alpha
+        # for the special unitary group
+        # u is a vector
+        x=0
+        
+    def root_subgroup_map_SU(matrix_size, root_system, form, root, u):
         # PLACEHOLDER
         x=0
         
-    def root_space_dimension_SU():
+    def torus_element_map_SU(matrix_size, root_system, form, vec_t):
+        # Output a 'generic' element of the diagonal torus subgroup of the special unitary group
+        # Given a vecgtor vec_t = [t_1, t_2, ..., t_q] of length q = root_system.rank,
+        # the assciated torus element to return is
+        # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1)
+        q = root_system.rank        
+        assert(len(vec_t) == q)
+        
+        # Note that t_1, ..., t_q should be 'purely real' if the form is hermitian, and 
+        # 'purely imaginary' if the form is skew-hermitian
+        # What this means is that we should include an extra factor of form.primitive_element
+        # with each t_i in the skew-hermitian case
+        if form.eps == 1:
+            extra_factor = 1
+        elif form.eps == -1:
+            extra_factor = form.primitive_element
+        else:
+            # Should be impossible
+            raise Exception('Invalid value of epsilon for a (skew-)hermitian form.')
+        
+        T = np.eye(matrix_size)
+        for i in range(q):
+            T[i,i] = vec_t[i]*extra_factor
+            T[i+q,i+q] = (1/vec_t[i])*extra_factor
+            
+        return T
+        
+    def commutator_coefficient_map_SU(matrix_size, root_system, form, alpha, beta, p, q, u, v):
         # PLACEHOLDER
         x=0
         
-    def root_space_map_SU():
+    def weyl_group_element_map_SU(matrix_size, root_system, form, alpha, u):
         # PLACEHOLDER
         x=0
         
-    def root_subgroup_map_SU():
-        # PLACEHOLDER
-        x=0
-        
-    def torus_element_map_SU():
-        # PLACEHOLDER
-        x=0
-        
-    def commutator_coefficient_map_SU():
-        # PLACEHOLDER
-        x=0
-        
-    def weyl_group_element_map_SU():
-        # PLACEHOLDER
-        x=0
-        
-    def weyl_group_coefficient_map_SU():
+    def weyl_group_coefficient_map_SU(matrix_size, root_system, form, alpha, beta, v):
         # PLACEHOLDER
         x=0
         
     return pinned_group(name_string,
                         matrix_size,
                         form,
-                        root_system,
+                        my_root_system,
                         is_lie_algebra_element_SU,
                         is_group_element_SU,
                         is_torus_element_SU,
