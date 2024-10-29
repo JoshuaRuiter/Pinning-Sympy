@@ -47,7 +47,7 @@ def group_builder_tests():
             for n in (2*q+1,2*q+2):
                 SU_n_q = build_special_unitary_group(n,q,eps)
                 SU_n_q.run_tests()
-    
+
 def build_special_linear_group(matrix_size):
     # Build a pinned_group object representing the special linear group SL_n
     

@@ -4,12 +4,12 @@ import numpy
 from sympy import (symbols, MatrixSymbol, Matrix, trace, solve, sqrt, 
                    pprint, Identity, ZeroMatrix, BlockMatrix)
 from itertools import product
-from matrix_utility import is_diagonal, evaluate_character
+from matrix_utility import evaluate_character
 
 def main():
     
-    # n_range = (2,3,4)
-    # SL_root_calc_test(n_range)
+    n_range = (2,3,4)
+    SL_root_calc_test(n_range)
     
     ## SO_n_q is split if n=2q or n=2q+1,
     ##   quasi-split if n=2q+2,
@@ -17,21 +17,21 @@ def main():
     q_range = [2]
     SO_split_root_calc_test(q_range)
     
-    # ## SO_n_q is split if n=2q or n=2q+1,
-    # ##   quasi-split if n=2q+2,
-    # ##   and neither if n>2q+2
-    # q_range = [1,2]
-    # n_width = 2
-    # SO_nonsplit_root_calc_test(q_range,n_width)
+    ## SO_n_q is split if n=2q or n=2q+1,
+    ##   quasi-split if n=2q+2,
+    ##   and neither if n>2q+2
+    q_range = [1,2]
+    n_width = 2
+    SO_nonsplit_root_calc_test(q_range,n_width)
     
-    # ## SU_n_q is quasi-split when n=2q, and not quasi-split when n>2q
-    # q_range = [2,3]
-    # SU_quasisplit_root_calc_test(q_range)
+    ## SU_n_q is quasi-split when n=2q, and not quasi-split when n>2q
+    q_range = [2,3]
+    SU_quasisplit_root_calc_test(q_range)
 
-    # # ## SU_n_q is quasi-split when n=2q, and not quasi-split when n>2q
-    # q_range = [2,3]
-    # n_cap = 1
-    # SU_nonquasisplit_root_calc_test(q_range,n_cap)
+    ## SU_n_q is quasi-split when n=2q, and not quasi-split when n>2q
+    q_range = [2,3]
+    n_cap = 1
+    SU_nonquasisplit_root_calc_test(q_range,n_cap)
     
 def SL_root_calc_test(n_range):
     # demonstration of SL_n calculations
@@ -338,7 +338,6 @@ def determine_roots(generic_torus_element,
                 assert(False)
                     
     return roots_and_root_spaces
-
 
 def generate_character_list(character_length, upper_bound, padded_zeros):
     # Return a list of all possible integer vectors of length character_length
