@@ -1,0 +1,297 @@
+\documentclass[12pt]{article}
+\pagestyle{plain}
+%\topmargin=-0.5in
+%\textheight=9in
+%\evensidemargin=-1.5in
+%\oddsidemargin=0in
+%\setlength{\textwidth}{6.5in}
+\usepackage[top=2cm, bottom=2cm, left=1.4cm, right=1.4cm]{geometry}
+
+\usepackage{graphicx}
+\usepackage[shortlabels]{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{bm}
+\usepackage{amssymb}
+\usepackage{tikz-cd}
+\usepackage{framed}
+\usepackage{mdframed}
+\usepackage{ulem}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\G}{\mathbb{G}}
+
+\newcommand{\sig}{\sigma}
+\newcommand{\lam}{\lambda}
+\newcommand{\eps}{\varepsilon}
+
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\lb}{\left\{}
+\newcommand{\rb}{\right\}}
+\newcommand{\lab}{\left|}
+\newcommand{\rab}{\right|}
+\newcommand{\la}{\left\langle}
+\newcommand{\ra}{\right\rangle}
+
+\newcommand{\tbf}{\textbf}
+\newcommand{\noi}{\noindent}
+\newcommand{\incomplete}{\textcolor{red}{INCOMPLETE}}
+
+\newcommand{\inv}{^{-1}}
+\newcommand{\sm}{\setminus}
+\newcommand{\wt}{\widetilde}
+\newcommand{\wh}{\widehat}
+\newcommand{\ov}{\overline}
+
+\newcommand{\frakg}{\mathfrak{g}}
+
+\DeclareMathOperator{\Gal}{Gal}
+\DeclareMathOperator{\Id}{Id}
+\DeclareMathOperator{\SL}{SL}
+\DeclareMathOperator{\GL}{GL}
+\DeclareMathOperator{\SO}{SO}
+\DeclareMathOperator{\SU}{SU}
+
+\title{Abstract homomorphisms of non-quasi-split \\
+special unitary groups}
+\author{Joshua Ruiter}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\newpage
+
+\section{Generalizing the construction of Kassabov and Sapir}
+
+\subsection{Original construction}
+
+\begin{example}
+Let $k$ be a field.  For $1 \le i \neq j \le 3$, let $e_{ij}:k \to \SL_3(k)$ be the map which takes $u \in k$ to the transvection matrix $e_{ij}(u)$. For example,
+\[
+	e_{13}:k \to \SL_3(k) \qquad e_{13}(u) = \begin{pmatrix} 1 && u \\ & 1 \\ && 1 \end{pmatrix}
+\]
+Note that $e_{ij}$ is a group homomorphism from $(k,+)$ into $\SL_3(k)$, i.e. $e_{ij}(u) \cdot e_{ij}(v) = e_{ij}(u+v)$. Let $U_{ij} = e_{ij}(k)$, so $e_{ij}$ gives an isomorphism between $(k,+)$ and $U_{ij}$. Let
+\begin{align*}
+	w_{12} = 
+	\begin{pmatrix}
+		 & -1 \\
+		1 \\
+		&& 1
+	\end{pmatrix}
+	\qquad
+	w_{23} = 
+	\begin{pmatrix}
+		1 \\
+		&& 1 \\
+		& -1 
+	\end{pmatrix}
+\end{align*}
+and note that
+\begin{align}
+\label{w relation 1}
+	w_{12} \cdot e_{13}(u) \cdot w_{12} \inv &= e_{23}(u) \\
+\label{w relation 2}
+	w_{23} \cdot e_{13}(u) \cdot w_{23} \inv &= e_{12}(u)
+\end{align}
+Let $K$ be an algebraically closed field, and let
+\[
+	\rho:\SL_3(k) \to \GL_m(K)
+\]
+be a group homomorphism (not necessarily well-behaved with respect to any kind of geometric structure). Let $U = e_{13}(k)$, so $e_{13}$ is an isomorphism between $(k,+)$ and $U$. 
+
+Let $V = \rho(U)$ and let $A = \ov V$ be the Zariski closure of $V$. Since $V$ is a subgroup of $\GL_m(K)$, so is $A$. That is, $A$ is closed under matrix multiplication. We define another binary operation on $A$ as follows:
+\begin{align*}
+	\mu_\rho:A \times A \to \GL_m(K) \qquad 
+	\mu_\rho(a,b) = \Big[ \rho(w_{23}) \cdot a \cdot \rho(w_{23}) \inv, \rho(w_{12}) \cdot b \cdot \rho(w_{12} \inv) \Big]
+\end{align*}
+A calculation involving the relations (\ref{w relation 1}), (\ref{w relation 2}), and the commutator relation
+\[
+	\Big[ e_{12}(u),  e_{23}(v) \Big] = e_{13}(uv)
+\]
+shows that 
+\[
+	\mu_\rho \Big( \rho \big(e_{13}(u) \big), \rho \big(e_{13}(v) \big) \Big) = e_{13}(uv)
+\]
+From this, it follows that $\mu_\rho$ maps the subset $V \times V$ (a dense subset of $A \times A$) to $V$. Since $\mu_\rho$ is continuous, it follows that $\mu_\rho$ maps $A \times A$ to $A$.
+\end{example}
+
+\newpage
+
+\subsection{Replace $\SL_3$ with arbitrary group}
+
+\begin{definition}
+Let $k$ be a field and $K$ be an algebraically closed field. Let $G$ be an algebraic $k$-group, and let
+\[
+	\rho:G(k) \to \GL_m(K)
+\]
+be a group homomorphism. Suppose we have functions $e_{12}, e_{13}, e_{23}:k \to G(k)$ such that
+\[
+	\Big[ e_{12}(u),  e_{23}(v) \Big] = e_{13}(uv)
+\]
+and suppose have elements $w_{12}, w_{23} \in G(k)$ such that
+\begin{align*}
+	w_{12} \cdot e_{13}(u) \cdot w_{12} \inv &= e_{23}(u) \\
+	w_{23} \cdot e_{13}(u) \cdot w_{23} \inv &= e_{12}(u)
+\end{align*}
+Let $U = e_{13}(k)$ and let $V = \rho(U)$ and let $A = \ov{V}$. Note that $V$ and $A$ are abelian subgroups of $\GL_m(K)$. Define
+\begin{align*}
+	\mu_\rho:A \times A \to \GL_m(K) \qquad
+	\mu_\rho(a,b) = \Big[ \rho(w_{23}) \cdot a \cdot \rho(w_{23}) \inv, \rho(w_{12}) \cdot b \cdot \rho(w_{12} \inv) \Big]
+\end{align*}
+Note that $\mu_{\rho}$ is continuous, since it is defined purely in terms of matrix multiplication and inversion of $a, b$, and some fixed elements $\rho(w_{23})$ and $\rho(w_{12})$ in $\GL_m(K)$. 
+\end{definition}
+
+\begin{lemma}
+\label{multiplicative}
+$\mu_\rho \Big( \rho \circ e_{13}(u) , \rho \circ e_{13}(v) \Big) = \rho \circ  e_{13}(uv)$
+\end{lemma}
+\begin{proof}
+\begin{align*}
+	\mu_\rho \Big( \rho \circ e_{13}(u) , \rho \circ e_{13}(v) \Big)  &= \Big[ \rho(w_{23}) \cdot \rho (e_{13}(u)) \cdot \rho(w_{23}) \inv, \rho(w_{12}) \cdot \rho(e_{13}(v)) \cdot \rho(w_{12} \inv) \Big] \\
+&= \rho \Big[ w_{23} \cdot e_{13}(u) \cdot w_{23} \inv, w_{12} \cdot e_{13}(v) \cdot w_{12} \inv \Big] \\
+&= \rho \Big[ e_{12}(u), e_{23}(v) \Big] \\
+&=  \rho \circ  e_{13}(uv)
+\end{align*}
+\end{proof}
+
+\begin{corollary}
+$\mu_\rho(V \times V) \subseteq V$, and consequently $\mu_\rho(A \times A) \subseteq A$
+\end{corollary}
+\begin{proof}
+The first inclusion is immediate from Lemma \ref{multiplicative}. The second inclusion follows from this as $\mu_\rho$ is continuous and $V$ is dense in $A$.
+\end{proof}
+
+\begin{proposition}
+$A$ is a ring under the two binary operations of matrix multiplication and $\mu_\rho$.
+\end{proposition}
+\begin{proof}
+\incomplete
+\end{proof}
+
+\newpage
+
+\subsection{Replace some notation}
+
+\begin{definition}
+Let $k$ be a field and $K$ be an algebraically closed field. Let $G$ be an algebraic $k$-group, and let
+\[
+	\rho:G(k) \to \GL_m(K)
+\]
+be a group homomorphism. Suppose we have functions $e_\alpha, e_\beta, e_\gamma:k \to G(k)$ such that
+\[
+	\Big[ e_\alpha(u),  e_\beta(v) \Big] = e_\gamma(uv)
+\]
+and suppose have elements $w_{\gamma \to \beta}, w_{\gamma \to \alpha} \in G(k)$ such that
+\begin{align*}
+	w_{\gamma \to \beta} \cdot e_\gamma (u) \cdot w_{\gamma \to \beta} \inv &= e_\beta (u) \\
+	w_{\gamma \to \alpha} \cdot e_\gamma (u) \cdot w_{\gamma \to \alpha} \inv &= e_\alpha (u)
+\end{align*}
+Let $U = e_\gamma (k)$ and let $V = \rho(U)$ and let $A = \ov{V}$. Note that $V$ and $A$ are abelian subgroups of $\GL_m(K)$. Define
+\begin{align*}
+	\mu_\rho:A \times A \to \GL_m(K) \qquad
+	\mu_\rho(a,b) = \Big[ \rho(w_{\gamma \to \alpha}) \cdot a \cdot \rho(w_{\gamma \to \alpha}) \inv, \rho(w_{\gamma \to \beta}) \cdot b \cdot \rho(w_{\gamma \to \beta} \inv) \Big]
+\end{align*}
+Note that $\mu_{\rho}$ is continuous, since it is defined purely in terms of matrix multiplication and inversion of $a, b$, and some fixed elements $\rho(w_{\gamma \to \alpha})$ and $\rho(w_{\gamma \to \beta})$ in $\GL_m(K)$. 
+\end{definition}
+
+\begin{lemma}
+\label{multiplicative}
+$\mu_\rho \Big( \rho  \circ e_\gamma(u), \rho \circ e_\gamma(v) \Big) = \rho \circ e_\gamma(uv)$
+\end{lemma}
+\begin{proof}
+\begin{align*}
+	\mu_\rho \Big( \rho  \circ e_\gamma(u), \rho \circ e_\gamma(v) \Big) &= \Big[ \rho(w_{\gamma \to \alpha}) \cdot \rho (e_\gamma(u)) \cdot \rho(w_{\gamma \to \alpha}) \inv, \rho(w_{\gamma \to \beta}) \cdot \rho(e_\gamma(v)) \cdot \rho(w_{\gamma \to \beta} \inv) \Big] \\
+&= \rho \Big[ w_{\gamma \to \alpha} \cdot e_\gamma(u) \cdot w_{\gamma \to \alpha} \inv, w_{\gamma \to \beta} \cdot e_\gamma(v) \cdot w_{\gamma \to \beta} \inv \Big] \\
+&= \rho \Big[ e_\alpha(u), e_\beta(v) \Big] \\
+&=  \rho \circ e_\gamma(uv)
+\end{align*}
+\end{proof}
+
+\begin{corollary}
+$\mu_\rho(V \times V) \subseteq V$, and consequently $\mu_\rho(A \times A) \subseteq A$
+\end{corollary}
+\begin{proof}
+The first inclusion is immediate from Lemma \ref{multiplicative}. The second inclusion follows from this as $\mu_\rho$ is continuous and $V$ is dense in $A$.
+\end{proof}
+
+\begin{proposition}
+$A$ is a ring under the two binary operations of matrix multiplication and $\mu_\rho$.
+\end{proposition}
+\begin{proof}
+\incomplete
+\end{proof}
+
+\newpage
+
+\subsection{Generalize commutator relation}
+
+\begin{definition}
+Let $k$ be a field and $K$ be an algebraically closed field. Let $G$ be an algebraic $k$-group, and let
+\[
+	\rho:G(k) \to \GL_m(K)
+\]
+be a group homomorphism. Suppose we have functions $e_\alpha, e_\beta, e_\gamma:k \to G(k)$ such that
+\[
+	\Big[ e_\alpha(u),  e_\beta(v) \Big] = e_\gamma \Big( N_{\alpha \beta}(u,v) \Big)
+\]
+and suppose have elements $w_{\gamma \to \beta}, w_{\gamma \to \alpha} \in G(k)$ such that
+\begin{align*}
+	w_{\gamma \to \beta} \cdot e_\gamma (u) \cdot w_{\gamma \to \beta} \inv &= e_\beta (u) \\
+	w_{\gamma \to \alpha} \cdot e_\gamma (u) \cdot w_{\gamma \to \alpha} \inv &= e_\alpha (u)
+\end{align*}
+Let $U = e_\gamma (k)$ and let $V = \rho(U)$ and let $A = \ov{V}$. Note that $V$ and $A$ are abelian subgroups of $\GL_m(K)$. Define
+\begin{align*}
+	\mu_\rho:A \times A \to \GL_m(K) \qquad
+	\mu_\rho(a,b) = \incomplete %\Big[ \rho(w_{\gamma \to \alpha}) \cdot a \cdot \rho(w_{\gamma \to \alpha}) \inv, \rho(w_{\gamma \to \beta}) \cdot b \cdot \rho(w_{\gamma \to \beta} \inv) \Big]
+\end{align*}
+Note that $\mu_{\rho}$ is continuous, since it is defined purely in terms of matrix multiplication and inversion of $a, b$, and some fixed elements $\rho(w_{\gamma \to \alpha})$ and $\rho(w_{\gamma \to \beta})$ in $\GL_m(K)$. 
+\end{definition}
+
+\begin{lemma}
+\label{multiplicative}
+$\mu_\rho \Big( \rho  \circ e_\gamma(u), \rho \circ e_\gamma(v) \Big) = \rho \circ e_\gamma(uv)$
+\end{lemma}
+\begin{proof}
+\incomplete
+%\begin{align*}
+%	\mu_\rho \Big( \rho  \circ e_\gamma(u), \rho \circ e_\gamma(v) \Big) &= \Big[ \rho(w_{\gamma \to \alpha}) \cdot \rho (e_\gamma(u)) \cdot \rho(w_{\gamma \to \alpha}) \inv, \rho(w_{\gamma \to \beta}) \cdot \rho(e_\gamma(v)) \cdot \rho(w_{\gamma \to \beta} \inv) \Big] \\
+%&= \rho \Big[ w_{\gamma \to \alpha} \cdot e_\gamma(u) \cdot w_{\gamma \to \alpha} \inv, w_{\gamma \to \beta} \cdot e_\gamma(v) \cdot w_{\gamma \to \beta} \inv \Big] \\
+%&= \rho \Big[ e_\alpha(u), e_\beta(v) \Big] \\
+%&=  \rho \circ e_\gamma(uv)
+%\end{align*}
+\end{proof}
+
+\begin{corollary}
+$\mu_\rho(V \times V) \subseteq V$, and consequently $\mu_\rho(A \times A) \subseteq A$
+\end{corollary}
+\begin{proof}
+The first inclusion is immediate from Lemma \ref{multiplicative}. The second inclusion follows from this as $\mu_\rho$ is continuous and $V$ is dense in $A$.
+\end{proof}
+
+\begin{proposition}
+$A$ is a ring under the two binary operations of matrix multiplication and $\mu_\rho$.
+\end{proposition}
+\begin{proof}
+\incomplete
+\end{proof}
+
+\end{document}
