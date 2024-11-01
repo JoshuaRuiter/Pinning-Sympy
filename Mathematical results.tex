@@ -59,6 +59,8 @@
 \newcommand{\wt}{\widetilde}
 \newcommand{\wh}{\widehat}
 \newcommand{\ov}{\overline}
+\newcommand{\into}{\hookrightarrow}
+\newcommand{\iso}{\cong}
 
 \newcommand{\frakg}{\mathfrak{g}}
 
@@ -68,6 +70,7 @@
 \DeclareMathOperator{\GL}{GL}
 \DeclareMathOperator{\SO}{SO}
 \DeclareMathOperator{\SU}{SU}
+\DeclareMathOperator{\alg}{alg}
 
 \title{Abstract homomorphisms of non-quasi-split \\
 special unitary groups}
@@ -181,10 +184,10 @@ The first inclusion is immediate from Lemma \ref{multiplicative}. The second inc
 \end{proof}
 
 \begin{proposition}
-$A$ is a ring under the two binary operations of matrix multiplication and $\mu_\rho$.
+$A$ is a commutative unital algebraic ring under the two binary operations of matrix multiplication and $\mu_\rho$.
 \end{proposition}
 \begin{proof}
-\incomplete
+Immediate from Lemma 3.2 from \textit{Linear representations of Chevalley groups over commutative rings}.
 \end{proof}
 
 \newpage
@@ -219,7 +222,7 @@ $\mu_\rho \Big( \rho  \circ e_\gamma(u), \rho \circ e_\gamma(v) \Big) = \rho \ci
 \end{lemma}
 \begin{proof}
 \begin{align*}
-	\mu_\rho \Big( \rho  \circ e_\gamma(u), \rho \circ e_\gamma(v) \Big) &= \Big[ \rho(w_{\gamma \to \alpha}) \cdot \rho (e_\gamma(u)) \cdot \rho(w_{\gamma \to \alpha}) \inv, \rho(w_{\gamma \to \beta}) \cdot \rho(e_\gamma(v)) \cdot \rho(w_{\gamma \to \beta} \inv) \Big] \\
+	\mu_\rho \Big( \rho  \circ e_\gamma(u), \rho \circ e_\gamma(v) \Big) &= \Big[ \rho(w_{\gamma \to \alpha}) \cdot \rho \circ e_\gamma(u) \cdot \rho(w_{\gamma \to \alpha}) \inv, \rho(w_{\gamma \to \beta}) \cdot \rho \circ e_\gamma(v) \cdot \rho(w_{\gamma \to \beta} \inv) \Big] \\
 &= \rho \Big[ w_{\gamma \to \alpha} \cdot e_\gamma(u) \cdot w_{\gamma \to \alpha} \inv, w_{\gamma \to \beta} \cdot e_\gamma(v) \cdot w_{\gamma \to \beta} \inv \Big] \\
 &= \rho \Big[ e_\alpha(u), e_\beta(v) \Big] \\
 &=  \rho \circ e_\gamma(uv)
@@ -234,11 +237,60 @@ The first inclusion is immediate from Lemma \ref{multiplicative}. The second inc
 \end{proof}
 
 \begin{proposition}
-$A$ is a ring under the two binary operations of matrix multiplication and $\mu_\rho$.
+$A$ is a commutative unital algebraic ring under the two binary operations of matrix multiplication and $\mu_\rho$.
 \end{proposition}
 \begin{proof}
-\incomplete
+Immediate from Lemma 3.2 from \textit{Linear representations of Chevalley groups over commutative rings}.
 \end{proof}
+
+\begin{example}
+Let $G = \SL_n$ and let $e_\alpha = e_{12}$ and $e_\beta = e_{23}$ and $e_\gamma = e_{13}$. Then we have
+\[
+	[e_\alpha(u), e_\beta(v)] = e_\gamma(uv)
+\]
+Then with 
+\begin{align*}
+	w_{\gamma \to \beta} &= w_{12} \\
+	w_{\gamma \to \alpha} &= w_{23}
+\end{align*}
+we have
+\begin{align*}
+	w_{\gamma \to \beta} \cdot e_\gamma(u) \cdot w_{\gamma \to \beta} \inv &= e_\beta(u) \\
+	w_{\gamma \to \alpha} \cdot e_\gamma(u) \cdot w_{\gamma \to \alpha} \inv &= e_\alpha(u)
+\end{align*}
+\begin{enumerate}[(a)]
+\item Suppose $k=K = K^{\alg}$ and $\rho$ is the inclusion $\SL_n(k) \into \GL_n(k)$. Then $U = V = e_{13}(k)$, and $V$ is already closed so $A = V = U$ (technically $U$ is a subset of a different group than $V = A$, but whatever). As an abelian group (under the operation of matrix multiplication), $A$ is isomorphic to $(k, +)$. Since $\rho$ is just inclusion, Lemma \ref{multiplicative} says that
+\[
+	\mu_\rho \Big( e_\gamma(u), e_\gamma(v) \Big) = e_\gamma(uv)
+\]
+i.e. $e_\gamma$ is a ring isomorphism $(k, +, \cdot) \to (A, \cdot, \mu_\rho)$.
+
+\item Suppose $k = K = \C$ and $\rho:\SL_n(\C) \to \GL_n(\C)$ is the composition of inclusion with entrywise complex conjugation. As in the previous example, $A = V = U$. Also as above, $A$ is isomorphic to $(k,+)$ as an abelian group under matrix multiplication. Now Lemma \ref{multiplicative} tells us
+\[
+	\mu_\rho \Big(  e_\gamma( \ov u), e_\gamma( \ov v) \Big) = e_\gamma(\ov{uv})
+\]
+i.e. the map
+\[
+	f:\C \to A \qquad f(u) = e_\gamma( \ov u)
+\]
+is a ring isomorphism.
+%\begin{align*}
+%	f(u+v) &= e_\gamma( \ov{u+v} ) = e_\gamma( \ov u + \ov v) = e_\gamma( \ov u) \cdot e_\gamma(\ov v) = f(u) \cdot f(v) \\
+%	f(uv) &= e_\gamma( \ov{uv}) = \mu_\rho \Big( e_\gamma(\ov u), e_\gamma( \ov v) \Big) = \mu_\rho \Big( f(u), f(v) \Big) 
+%\end{align*}
+
+\item Let $L/k$ be a Galois extension, and let $K = L^{\alg} = k^{\alg}$ be the algebraic closure. Fix an embedding $L \into K$. Let $\sig \in \Gal(L/k)$, and let $\rho:\SL_n(L) \to \GL_n(K)$ be the composition of inclusion and entrywise application of $\sig$. Then again $A = V = U$, though technically $U = e_{13}(L) \subseteq \SL_n(L)$, and $A = V = e_{13}(L) \subseteq \GL_n(K)$. As abelian groups, $(L, +) \iso (A, \cdot)$. Lemma \ref{multiplicative} says
+\[
+	\mu_\rho \Big( e_\gamma( \sig u), e_\gamma ( \sig v) \Big) = e_\gamma \Big( \sig(uv) \Big)
+\]
+so the map
+\[
+	f:L \to A \qquad f(u) = e_\gamma( \sig u)
+\]
+gives a ring isomorphism $(L, +, \cdot) \iso (A, \cdot, \mu_\rho)$.
+
+\end{enumerate}
+\end{example}
 
 \newpage
 
@@ -253,7 +305,11 @@ be a group homomorphism. Suppose we have functions $e_\alpha, e_\beta, e_\gamma:
 \[
 	\Big[ e_\alpha(u),  e_\beta(v) \Big] = e_\gamma \Big( N_{\alpha \beta}(u,v) \Big)
 \]
-and suppose have elements $w_{\gamma \to \beta}, w_{\gamma \to \alpha} \in G(k)$ such that
+and suppose we have an element $h_\gamma \in G(k)$ such that
+\[
+	h_\gamma \cdot  e_\gamma \Big( N_{\alpha \beta}(u,v) \Big) \cdot h_\gamma \inv = uv
+\]
+and suppose we have elements $w_{\gamma \to \beta}, w_{\gamma \to \alpha} \in G(k)$ such that
 \begin{align*}
 	w_{\gamma \to \beta} \cdot e_\gamma (u) \cdot w_{\gamma \to \beta} \inv &= e_\beta (u) \\
 	w_{\gamma \to \alpha} \cdot e_\gamma (u) \cdot w_{\gamma \to \alpha} \inv &= e_\alpha (u)
@@ -261,7 +317,7 @@ and suppose have elements $w_{\gamma \to \beta}, w_{\gamma \to \alpha} \in G(k)$
 Let $U = e_\gamma (k)$ and let $V = \rho(U)$ and let $A = \ov{V}$. Note that $V$ and $A$ are abelian subgroups of $\GL_m(K)$. Define
 \begin{align*}
 	\mu_\rho:A \times A \to \GL_m(K) \qquad
-	\mu_\rho(a,b) = \incomplete %\Big[ \rho(w_{\gamma \to \alpha}) \cdot a \cdot \rho(w_{\gamma \to \alpha}) \inv, \rho(w_{\gamma \to \beta}) \cdot b \cdot \rho(w_{\gamma \to \beta} \inv) \Big]
+	\mu_\rho(a,b) = \rho(h_\gamma) \cdot \Big[ \rho(w_{\gamma \to \alpha}) \cdot a \cdot \rho(w_{\gamma \to \alpha}) \inv, \rho(w_{\gamma \to \beta}) \cdot b \cdot \rho(w_{\gamma \to \beta} \inv) \Big] \cdot \rho(h_\gamma) \inv
 \end{align*}
 Note that $\mu_{\rho}$ is continuous, since it is defined purely in terms of matrix multiplication and inversion of $a, b$, and some fixed elements $\rho(w_{\gamma \to \alpha})$ and $\rho(w_{\gamma \to \beta})$ in $\GL_m(K)$. 
 \end{definition}
@@ -271,13 +327,14 @@ Note that $\mu_{\rho}$ is continuous, since it is defined purely in terms of mat
 $\mu_\rho \Big( \rho  \circ e_\gamma(u), \rho \circ e_\gamma(v) \Big) = \rho \circ e_\gamma(uv)$
 \end{lemma}
 \begin{proof}
-\incomplete
-%\begin{align*}
-%	\mu_\rho \Big( \rho  \circ e_\gamma(u), \rho \circ e_\gamma(v) \Big) &= \Big[ \rho(w_{\gamma \to \alpha}) \cdot \rho (e_\gamma(u)) \cdot \rho(w_{\gamma \to \alpha}) \inv, \rho(w_{\gamma \to \beta}) \cdot \rho(e_\gamma(v)) \cdot \rho(w_{\gamma \to \beta} \inv) \Big] \\
-%&= \rho \Big[ w_{\gamma \to \alpha} \cdot e_\gamma(u) \cdot w_{\gamma \to \alpha} \inv, w_{\gamma \to \beta} \cdot e_\gamma(v) \cdot w_{\gamma \to \beta} \inv \Big] \\
-%&= \rho \Big[ e_\alpha(u), e_\beta(v) \Big] \\
-%&=  \rho \circ e_\gamma(uv)
-%\end{align*}
+\begin{align*}
+	\mu_\rho \Big( \rho  \circ e_\gamma(u), \rho \circ e_\gamma(v) \Big) &= \rho(h_\gamma) \cdot \Big[ \rho(w_{\gamma \to \alpha}) \cdot \rho  \circ e_\gamma(u) \cdot \rho(w_{\gamma \to \alpha}) \inv, \rho(w_{\gamma \to \beta}) \cdot \rho \circ e_\gamma(v) \cdot \rho(w_{\gamma \to \beta} \inv) \Big] \cdot \rho(h_\gamma) \inv \\
+&= \rho \Big( h_\gamma \cdot \Big[ w_{\gamma \to \alpha} \cdot e_\gamma(u) \cdot w_{\gamma \to \alpha} \inv, w_{\gamma \to \beta} \cdot e_\gamma(v) \cdot w_{\gamma \to \beta} \inv \Big] \cdot h_\gamma \inv \Big) \\
+&= \rho \Big( h_\gamma \cdot \big[ e_\alpha(u), e_\beta(v) \big] \cdot h_\gamma \inv \Big) \\
+&= \rho \Big( h_\gamma \cdot e_\gamma \big( N_{\alpha \beta}(u,v) \big) \cdot h_\gamma \inv \Big) \\
+&= \rho \Big( e_\gamma (uv) \Big) \\
+&= \rho \circ e_\gamma(uv)
+\end{align*}
 \end{proof}
 
 \begin{corollary}
@@ -288,10 +345,10 @@ The first inclusion is immediate from Lemma \ref{multiplicative}. The second inc
 \end{proof}
 
 \begin{proposition}
-$A$ is a ring under the two binary operations of matrix multiplication and $\mu_\rho$.
+$A$ is a commutative unital algebraic ring under the two binary operations of matrix multiplication and $\mu_\rho$.
 \end{proposition}
 \begin{proof}
-\incomplete
+Immediate from Lemma 3.2 from \textit{Linear representations of Chevalley groups over commutative rings}.
 \end{proof}
 
 \end{document}
