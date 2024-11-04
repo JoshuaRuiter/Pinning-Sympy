@@ -304,11 +304,11 @@ Let $G = \SL_n$ and let $T \subset G$ be the diagonal torus. Let $\Phi = \Phi(G,
 \begin{align*}
 	\Phi &= \lb \alpha_{ij} : 1 \le i \neq j \le n \rb 
 \end{align*}
-where $\alpha_{ij} = \alpha_i - \alpha_j$ and $\alpha_i:T \to k^\times$ is the character that picks off the $i$th diagonal entry. Let $\alpha, \beta \in \Phi$ such that $\alpha+\beta = \gamma \in \Phi$. That is, $\alpha = \alpha_{ij}$ and $\beta = \alpha_{j\ell}$ and $\gamma = \alpha_{i\ell}$ for some three distinct $i,j,\ell$. There are maps $e_\alpha, e_\beta, e_\gamma:k \to \SL_n(k)$ such that, for example,
+where $\alpha_{ij} = \alpha_i - \alpha_j$ and $\alpha_i:T \to k^\times$ is the character that picks off the $i$th diagonal entry. Let $\alpha, \beta \in \Phi$ such that $\alpha+\beta = \gamma \in \Phi$. That is, $\alpha = \alpha_{ij}$ and $\beta = \alpha_{j\ell}$ and $\gamma = \alpha_{i\ell}$ for some three distinct $i,j,\ell$. There are maps $e_\alpha, e_\beta, e_\gamma:k \to \SL_n(k)$ such that $e_\alpha(k)$ is the root subgroup 
 \[
 	e_\alpha(k) = \lb x \in \SL_n(k) : txt \inv = \alpha(t) x, \forall t \in T(k) \rb
 \]
-Because $\alpha + \beta = \gamma$, we have a commutator relation
+Concretely, $e_{\alpha_{ij}}(u)$ is the matrix with 1's on the diagonal and $u$ in the $(i,j)$ entry and the set of all such matrices is the root subgroup associated to the root $\alpha_{ij}$. Because $\alpha + \beta = \gamma$, we have a commutator relation
 \[
 	\Big[ e_\alpha(u), e_\beta(v) \Big] = e_\gamma( \pm uv )
 \]
