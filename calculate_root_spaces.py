@@ -4,37 +4,65 @@ import numpy
 from sympy import (symbols, MatrixSymbol, Matrix, trace, solve, sqrt, 
                    pprint, Identity, ZeroMatrix, BlockMatrix)
 from itertools import product
-from matrix_utility import is_diagonal, evaluate_character
+from matrix_utility import evaluate_character
+
+# This file is useful for calculating and displaying roots and root spaces of 
+# special linear, special orthogonal, and special unitary groups.
+
+# Work on this file is essentially complete. These methods are capable of calculating the roots 
+# and root spaces of any of these groups, though it can take a while for larger matrix sizes 
+# (anything bigger than 5x5 takes a while).
 
 def main():
     
-    # n_range = (2,3,4)
-    # SL_root_calc_test(n_range)
+    #########################################
+    ## SPECIAL LINEAR GROUPS
+    ## STATUS: COMPLETE, WORKS AS EXPECTED
+    ########################################
+    n_range = (2,3,4)
+    SL_root_calc_test(n_range)
     
+    #####################################
+    ## SPLIT SPECIAL ORTHOGONAL GROUPS
     ## SO_n_q is split if n=2q or n=2q+1,
     ##   quasi-split if n=2q+2,
     ##   and neither if n>2q+2
-    q_range = [2]
+    ## STATUS: COMPLETE, WORKS AS EXPECTED
+    #####################################
+    q_range = [2, 3]
     SO_split_root_calc_test(q_range)
     
-    # ## SO_n_q is split if n=2q or n=2q+1,
-    # ##   quasi-split if n=2q+2,
-    # ##   and neither if n>2q+2
-    # q_range = [1,2]
-    # n_width = 2
-    # SO_nonsplit_root_calc_test(q_range,n_width)
+    ############################################
+    ## NON-SPLIT SPECIAL ORTHOGONAL GROUPS
+    ## SO_n_q is split if n=2q or n=2q+1,
+    ##   quasi-split if n=2q+2,
+    ##   and neither if n>2q+2
+    ## STATUS: COMPLETE, WORKS AS EXPECTED
+    ############################################
+    q_range = [1,2]
+    n_width = 2
+    SO_nonsplit_root_calc_test(q_range,n_width)
     
-    # ## SU_n_q is quasi-split when n=2q, and not quasi-split when n>2q
-    # q_range = [2,3]
-    # SU_quasisplit_root_calc_test(q_range)
+    #################################################
+    ## QUASI-SPLIT SPECIAL UNITARY GROUPS
+    ## SU_n_q is quasi-split when n=2q, and not quasi-split when n>2q
+    ## STATUS: COMPLETE, WORKS AS EXPECTED
+    ####################################################
+    q_range = [2,3]
+    SU_quasisplit_root_calc_test(q_range)
 
-    # # ## SU_n_q is quasi-split when n=2q, and not quasi-split when n>2q
-    # q_range = [2,3]
-    # n_cap = 1
-    # SU_nonquasisplit_root_calc_test(q_range,n_cap)
+    ########################################################################
+    ## NON-QUASI-SPLIT SPECIAL UNITARY GROUPS
+    ## SU_n_q is quasi-split when n=2q, and not quasi-split when n>2q
+    ## STATUS: COMPLETE, WORKS AS EXPECTED
+    #######################################################################
+    q_range = [2,3]
+    n_cap = 1
+    SU_nonquasisplit_root_calc_test(q_range,n_cap)
     
 def SL_root_calc_test(n_range):
     # demonstration of SL_n calculations
+    # Status: complete, works as expected
     print("Computing roots and root spaces for special linear groups...\n")
     for n in n_range:
         SL_n_roots = determine_SL_roots(n)
@@ -48,6 +76,7 @@ def SL_root_calc_test(n_range):
 
 def SO_split_root_calc_test(q_range):
     # demonstration of SO_n_q calculations for split groups, i.e. when n=2q or n=2q+1
+    # Status: complete, works as expected
     print("Computing roots and root spaces for split special orthgonal groups...\n")
     for q in q_range:
         for n in (2*q,2*q+1):
@@ -63,6 +92,7 @@ def SO_split_root_calc_test(q_range):
 
 def SO_nonsplit_root_calc_test(q_range,n_width):
     # demonstration of SO_n_q calculations for non-split groups
+    # Status: complete, works as expected
     print("Computing roots and root spaces for non-split special orthgonal groups...\n")
     for q in q_range:
         for n in range(2*q+2,2*q+2+n_width):
@@ -78,6 +108,7 @@ def SO_nonsplit_root_calc_test(q_range,n_width):
 
 def SU_quasisplit_root_calc_test(q_range):
     # demonstration of SU_n_q calculations for quasi-split groups
+    # Status: complete, works as expected
     print("Computing roots and root spaces for quasisplit special unitary groups...\n")
     
     for q in q_range:
@@ -96,6 +127,7 @@ def SU_quasisplit_root_calc_test(q_range):
 
 def SU_nonquasisplit_root_calc_test(q_range,n_cap):
     # demonstration of SU_n_q calculations for non-quasi-split groups
+    # Status: complete, works as expected
     print("Computing roots and root spaces for non-quasisplit special unitary groups...\n")
     
     for q in q_range:
@@ -339,7 +371,6 @@ def determine_roots(generic_torus_element,
                     
     return roots_and_root_spaces
 
-
 def generate_character_list(character_length, upper_bound, padded_zeros):
     # Return a list of all possible integer vectors of length character_length
     #   with entries ranging from -upper_bound to +upper_bound
@@ -375,8 +406,7 @@ def parse_root_pairs(root_list, what_to_get):
         return [pair[1] for pair in root_list]
     
     else:
-        assert(false)
-
+        assert(False)
 
 if __name__ == "__main__":
     main()

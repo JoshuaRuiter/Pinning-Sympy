@@ -1,12 +1,50 @@
-# Custom class to model root systems of Lie algebras
-# There is a built-in class implemented by Sympy, but
-# it does not do some of the things that I would like.
+# This is a custom class to model root systems of Lie algebras.
+# There is a built-in class implemented by Sympy, but it lacks some functionality.
+
+# Note that these root systems are not assumed to be reduced, i.e. they do not necessarily
+# satisfy the assumption that the only multiple of a root in the root system are +1 and -1.
+# Dropping this axiom leads to some "non-reduced root systems," but all such root systems are
+# of type BC, which is essentially the union of the type B and type C root systems 
+# (with a certain realization/embedding of these root systems).
+# In particular, type BC includes some roots where twice the root is another root
+# (so for those longer roots, half that root is a root).
+
+# Running this file will run some tests constructing the various implemented root systems
+# and verifying the root system axioms.
+
+# As of June 2, 2025, only types A, B, C, and BC are implemented. 
+# Types E, F, and G are not important to my current plans/research, so I have not implemented them yet.
+
+
 
 import numpy as np
 
 class root_system:
     
     def __init__(self,dynkin_type,rank,vector_length):
+        # Constructor method
+        # Inputs: 
+            # dynkin_type - a string, should be 'A','B','C','BC','D','E','F', or 'G'.
+            # rank - the rank of the root system, always a positive integer.
+            #           for type A, any positive integer
+            #           for type B, C, or BC should be at least 2
+            #           for type D, rank must be at least 4
+            #           for type E, rank must be 5, 6, 7, or 8
+            #           for type F, rank must be 4
+            #           for type G, rank must be 2
+            # vector_length - the length of the vectors to store the roots as.
+            #               in general, the vector_length can be longer than necessary,
+            #               and the constructor will just pad the end with zeros
+            #
+            #               From a theoretical perspective, the vector_length is the
+            #               dimension of Euclidean space that the root space is
+            #               embedded inside of.
+            #
+            #               There are somewhat complicated dependencies between 
+            #               vector_length and rank. For example, with type A,
+            #               vector_length must be at least rank+1.
+            #               There are different requirements for each type.
+        
         assert(dynkin_type in ('A','B','C','BC','D','E','F','G'))
         assert(rank>0)
         self.dynkin_type = dynkin_type
@@ -28,10 +66,6 @@ class root_system:
             # There are rank*(rank+1) total roots
             # They are all vectors of the form (0,...,0,1,0,....,0,-1,0,...,0)
             # of length equal to rank+1, where the 1 and -1 can come in either order
-            # product_excluding_diagonal = (numpy.array((x, y)) for x, y in product(range(self.rank+1), repeat=2) if x != y)
-            # root_list = ([[1 if index == i else (-1 if index == j else 0) 
-            #                for index in range(self.vector_length)] 
-            #              for (i,j) in product_excluding_diagonal])
             nonzero_positions = range(self.rank+1)
             all_positions = range(self.vector_length)
             root_list = [np.array([1 if i == pos1 else -1 if i == pos2 else 0 for i in all_positions])
@@ -108,6 +142,7 @@ class root_system:
                 
         elif self.dynkin_type == 'D':
             # PLACEHOLDER, INCOMPLETE
+            # There are 2*rank*(rank-1) total roots
             x=0
             
         elif self.dynkin_type == 'E':
@@ -142,7 +177,7 @@ class root_system:
         # but in the type BC root system it is possible to have alpha = 2*beta
         
         alpha_mask = (alpha != 0)
-        beta_mask = (beta != 0)       
+        beta_mask = (beta != 0)
         ratios = (alpha[beta_mask] / beta[beta_mask]) # Not a typo, I promise. Need to use the same mask for both.
         return np.array_equal(alpha_mask,beta_mask) and np.all(ratios == ratios[0])
     
@@ -219,7 +254,7 @@ class root_system:
         print('Tests completed.')
     
     def run_tests():
-        print('\nRunning root system tests...')
+        print('\nRunning root system tests on types A, B, C, and BC...')
         
         for n in (2,3,4):
             A_n = root_system('A',n,n+1)
@@ -306,7 +341,7 @@ class root_system:
                 assert(len(combos) <= 3)
         print('passed.')
 
-        print('\nRoot system tests complete.')
+        print('\nRoot system tests complete (for types A, B, C, and BC).')
     
 
 if __name__ == "__main__":

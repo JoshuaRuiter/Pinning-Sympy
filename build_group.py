@@ -1,4 +1,5 @@
-from sympy import zeros, eye, prod, sqrt, symbols
+import sympy as sp
+from sympy import eye, prod, sqrt, symbols
 from pprint import pprint
 from pinned_group import pinned_group
 from matrix_utility import is_diagonal
@@ -10,55 +11,68 @@ from root_system import root_system
 def group_builder_tests():
     # Run some tests
     
-    ###########################
-    ## SPECIAL LINEAR GROUPS ##
-    ###########################
+    ########################################
+    ## SPECIAL LINEAR GROUPS              
+    ## STATUS: COMPLETE, PASSES ALL TESTS 
+    ########################################
     for n in (2,3,4):
         SL_n = build_special_linear_group(n)
         SL_n.run_tests()
-        
-    # # Some split special orthogonal groups (n=2q or n=2q+1)
+    
+    ##############################################################
+    ## SPLIT SPECIAL ORTHOGONAL GROUPS (n=2q or n=2q+1) 
+    ## STATUS: build_special_orthogonal_group not fully written
+    ##############################################################
     # for q in (2,3):
     #     for n in (2*q,2*q+1):
     #         SO_n_q = build_special_orthogonal_group(n,q)
     #         SO_n_q.run_tests()
     
-    # # Some non-split special orthogonal groups 
-    #     # SO_n_q is quasi-split if n=2q+2, and
-    #     # neither split nor quasi-split if n>2+2q, 
-    #     # but the behavior seems to be basically the same in these two cases
+    #############################################################################
+    ## NON-SPLIT SPECIAL ORTHOGONAL GROUPS 
+        ## SO_n_q is quasi-split if n=2q+2, and
+        ## neither split nor quasi-split if n>2+2q, 
+        ## but the behavior seems to be basically the same in these two cases
+    ## STATUS: build_special_orthogonal_group not fully written
+    #############################################################################
     # for q in (1,2):
     #     for n in (2*q+2,2*q+3,2*q+4):
     #         SO_n_q = build_special_orthogonal_group(n,q)
     #         SO_n_q.run_tests()
     
-    ## Some quasi-split special unitary groups (n=2q)
+    ############################################################
+    ## QUASI-SPLIT SPECIAL UNITARY GROUPS (n=2q)
     ## eps=1 is Hermitian, eps=-1 is skew-Hermitian
+    ## STATUS: passes tests on everything that is written, but commutators are not implemented yet
+    ###########################################################
     for eps in (1,-1):
         for q in (2,3):
             n=2*q
             SU_n_q = build_special_unitary_group(n,q,eps)
             SU_n_q.run_tests()
     
-    ## Some non-quasi-split special unitary groups (n>2q)
+    ############################################################
+    ## NON-QUASI-SPLIT SPECIAL UNITARY GROUPS (n>2q)
     ## eps=1 is Hermitian, eps=-1 is skew-Hermitian
-    for eps in (1,-1):
-        for q in (2,3):
-            for n in (2*q+1,2*q+2):
-                SU_n_q = build_special_unitary_group(n,q,eps)
-                SU_n_q.run_tests()
+    ## STATUS: incomplete
+    ###########################################################
+    # for eps in (1,-1):
+    #     for q in (2,3):
+    #         for n in (2*q+1,2*q+2):
+    #             SU_n_q = build_special_unitary_group(n,q,eps)
+    #             SU_n_q.run_tests()
     
 def build_special_linear_group(matrix_size):
     # Build a pinned_group object representing the special linear group SL_n
     
-    name_string = "special linear group of size " + str(matrix_size)
+    name_string = "special linear group of size n=" + str(matrix_size)
     root_system_rank = matrix_size-1
     A_r = root_system('A',root_system_rank,matrix_size)
     
     # Special linear groups don't have an associated bilinear or hermitian form,
     # so we use a nondegenerate_isotropic_form with nonsense values
     # dimension -1 and epsilon=2 as a placeholder object
-    form = nondegenerate_isotropic_form(-1,0,100,0,0)
+    form = nondegenerate_isotropic_form(-1,0,100,[0],0)
     
     def is_lie_algebra_element_SL(my_matrix,form):
         return my_matrix.trace()==0
@@ -85,7 +99,7 @@ def build_special_linear_group(matrix_size):
         assert(sum(root)==0)
         i = list(root).index(1)
         j = list(root).index(-1)
-        my_output = zeros(matrix_size)
+        my_output = sp.zeros(matrix_size)
         my_output[i,j] = my_input
         return my_output
 
@@ -103,7 +117,7 @@ def build_special_linear_group(matrix_size):
         root_system_rank = root_system.rank
         assert(len(my_vec) == root_system_rank)
         assert(matrix_size == root_system_rank+1)
-        t = zeros(matrix_size)
+        t = sp.zeros(matrix_size)
         for i in range(root_system_rank):
             t[i,i] = my_vec[i]
         t[matrix_size-1,matrix_size-1] = 1/prod(my_vec)
@@ -180,8 +194,20 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
     #       If q=n/2-1, then SO_n(k,B) is quasi-split, this is an important case to understand.
     #       We ignore the case q=0, because in this case the group is not isotropic.
     
-    name_string = ("special orthogonal group of size " + str(matrix_size) + 
-                    " with Witt index " + str(root_system_rank))
+    n = matrix_size
+    q = root_system_rank
+    
+    name_string = ("special orthogonal group of size n=" + str(matrix_size) + 
+                    " with Witt index q=" + str(root_system_rank))
+    
+    if n == 2*q or n == 2*q+1:
+        name_string = "split " + name_string
+    elif n == 2*q + 2:
+        name_string = "quasisplit " + name_string
+    else:
+        name_string = "non-split, non-quasisplit " + name_string
+    
+    
     B_r = root_system('B',root_system_rank,matrix_size)
     anisotropic_variables = symbols('c:'+str(matrix_size-2*root_system_rank))
     form = nondegenerate_isotropic_form(matrix_size,root_system_rank,0,anisotropic_variables,0)
@@ -232,7 +258,7 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
         
         n = matrix_size
         q = root_system.rank
-        output_matrix = zeros(matrix_size)
+        output_matrix = sp.zeros(matrix_size)
         vec_C = form.anisotropic_vector
         
         assert(n >= 2*q)
@@ -319,7 +345,7 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
     def torus_element_map_SO(matrix_size, root_system, form, vec_t):
         root_system_rank = root_system.rank
         assert(root_system_rank == len(vec_t))
-        my_matrix = zeros(matrix_size)
+        my_matrix = sp.zeros(matrix_size)
         for i in range(root_system_rank):
             my_matrix[i,i] = vec_t[i]
             my_matrix[root_system_rank+i,root_system_rank+i] = 1/vec_t[i]
@@ -378,19 +404,22 @@ def build_special_unitary_group(matrix_size,root_system_rank,epsilon):
     #   In general, q<=n/2 because Witt index can never exceed half the dimension.
     #       If q=n/2 (n=2q), the group is quasi-split and studied in my thesis.
     #       So we are a bit more interested in the case where q<n/2 (equivalently n>2q)
-    #       We ignore the case q=0, because in this case the group is not isotropic so it behaves quite differently.
+    #       We ignore the case q=0, because in this case the group is not isotropic 
+    #           so it behaves quite differently.
     
     n = matrix_size
     q = root_system_rank
     eps = epsilon
     
-    name_string = ("special unitary group of size " + str(n) + 
-                    " with Witt index " + str(q) + 
-                    " and epsilon = " + str(epsilon))
+    name_string = ("special unitary group of size n=" + str(n) + 
+                    " with Witt index q=" + str(q) + 
+                    " and epsilon=" + str(epsilon))
     
     if n == 2*q:
+        name_string = "quasisplit " + name_string
         my_root_system = root_system('C',q,n)
     elif n > 2*q:
+        name_string = "non-quasisplit " + name_string
         my_root_system = root_system('BC',q,n)
     else:
         # n < 2*q, does not give a valid group
@@ -401,12 +430,22 @@ def build_special_unitary_group(matrix_size,root_system_rank,epsilon):
     primitive_element = sqrt(d)
     form = nondegenerate_isotropic_form(n,q,eps,anisotropic_variables,primitive_element)
     
-    def custom_conjugate(my_matrix, form):
-        # Conjugate a matrix with entries in the quadratic field extension k(sqrt(d))
+    def custom_conjugate(my_expression, primitive_element):
+        # Conjugate an expression with entries in the quadratic field extension k(sqrt(d))
         # by replacing sqrt(d) with -sqrt(d)
-        primitive_element = form.primitive_element
-        conjugated_matrix = my_matrix.subs(primitive_element, -primitive_element)
-        return conjugated_matrix
+        conjugated_expression = my_expression.subs(primitive_element, -primitive_element)
+        return conjugated_expression
+    
+    def complexify(my_expression, primitive_element):
+        # Convert a pair (x,y) into the "complex" expression x+y*sqrt(d)
+        return my_expression[0] + my_expression[1]*primitive_element
+        
+    def uncomplexify(my_expression, primitive_element):
+        # Convert an expression x+y*sqrt(d) into a pair (x,y)
+        conjugated_expression = custom_conjugate(my_expression, primitive_element)
+        real_part = (my_expression + conjugated_expression)/2
+        imag_part = (my_expression - conjugated_expression)/(2*primitive_element)
+        return [real_part, imag_part]
     
     def is_lie_algebra_element_SU(matrix_to_test, form):
         # Return true of matrix_to_test is an element of the special unitary group
@@ -416,7 +455,7 @@ def build_special_unitary_group(matrix_size,root_system_rank,epsilon):
             # H = matrix associated to the (skew-)hermitian form
         X = matrix_to_test
         H = form.matrix
-        X_conjugate = custom_conjugate(X, form)
+        X_conjugate = custom_conjugate(X, form.primitive_element)
         return (X_conjugate.T * H == -H*X)
         
     def is_group_element_SU(matrix_to_test, form):
@@ -427,7 +466,7 @@ def build_special_unitary_group(matrix_size,root_system_rank,epsilon):
             # H = form.matrix
         X = matrix_to_test
         H = form.matrix
-        X_conjugate = custom_conjugate(X, form)
+        X_conjugate = custom_conjugate(X, form.primitive_element)
         return (X_conjugate.T*H*X == H)
 
     def is_torus_element_SU(matrix_to_test, root_system, form):
@@ -438,17 +477,17 @@ def build_special_unitary_group(matrix_size,root_system_rank,epsilon):
         # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1)
             # where t_1, ..., t_q are 'purely real' if the form is hermitian,
             # and 'purely imaginary' if the form is skew-hermitian
-        
         T = matrix_to_test
         
         if not(is_diagonal(T)):
             return False
         
         q = root_system.rank
+        
         for i in range(q):
             if T[i,i]*T[q+i,q+i] != 1:
                 return False
-        
+            
         return True
         
     def root_space_dimension_SU(matrix_size, root_system, root):
@@ -483,33 +522,144 @@ def build_special_unitary_group(matrix_size,root_system_rank,epsilon):
         # Output an element of the root space associated to the root alpha
         # for the special unitary group
         # u is a vector
-        x=0
+        n = matrix_size
+        q = root_system.rank
+        H = form.matrix
+        C = form.anisotropic_matrix
+        eps = form.epsilon
+        P = form.primitive_element
+        dim = root_space_dimension_SU(n,root_system,alpha)
+        
+        # Validating inputs
+        assert(root_system.is_root(alpha))
+        assert(len(u) == dim)
+        assert(shape(C) == (n-2*q,n-2*q))
+        
+        if eps == 1: # Hermitian case
+            P_eps = P
+        elif eps == -1: # Skew-hermitian case
+            P_eps = -P
+        else: # Should be impossible
+            raise Exception('Invalid value of epsilon for (skew-)hermitian form.')
+        
+        X = sp.zeros(n)
+        
+        if np.dot(alpha,alpha) == 4: 
+            # alpha is a long root, of the form (0,....,0,+/-2,0,...,0)
+            i = np.nonzero(alpha)[0][0] # find the index of the nonzero entry
+            
+            # In this case, the input should be a scalar (from the base field k)
+            assert(dim == 1)
+            assert(len(u) == 1)
+            
+            if sum(alpha) == 2:
+                X[i,i+q] = u*P_eps
+                
+            elif sum(alpha) == -2:
+                X[i+q,i] = u*P_eps
+                
+            else: # Should be impossible
+                raise Exception('Invalid long root for special unitary group.')
+            
+        elif np.dot(alpha,alpha) == 1:
+            # alpha is a short root, of the form (0,...,0,+/-1,0,...,0)
+            i = np.where(alpha != 0)[0] # find the index of the nonzero entry
+            
+            # In this case, the input should have length 2*(n-2*q)
+            # which is interepreted as a list of n-2*q pairs (x,y) 
+            # where x,y are in the base field k 
+            # and the pair (x,y) corresponds to x+y*sqrt(d) in the field L
+            assert(dim == 2*(n-2*q))
+            assert(len(u) == 2*(n-2*q))
+            u_complex = sp.zeros(1,n-2*q)
+            for j in range(n-2*q):
+                u_complex[j] = u[2*j] + u[2*j+1]*P
+            
+            if sum(alpha) == 1:
+                # alpha has the form (0,...,0,+1,0,...,0)
+                for k in range(n-2*q):
+                    X[2*q+k,q+i] = u_complex[k]
+                    X[i,2*q+j] = -eps*C[k,k]*custom_conjugate(u_complex[k],P)
+                
+            elif sum(alpha) == -1:
+                # alpha has the form (0,...,0,-1,0,...,0)
+                for k in range(n-2*q):
+                    X[2*q+k,i] = u_complex[k]
+                    X[q+i,2*q+k] = -C[k,k]*custom_conjugate(u_complex[k],P)
+                
+            else:
+                # Should be impossible
+                raise Exception('Invalid short root for special unitary group.')
+                
+        elif np.dot(alpha,alpha) == 2:
+            # alpha is a medium root, of the form (0,...,0,+/-1,0,...,0,+/-1,0,...,0)
+            # In this case, the intput u should be a tuple (x,y)
+            # where x is interpreted as the real part
+            # and y is interpreted as the imaginary part
+            assert(len(u) == 2)
+            u_complex = complexify(u,primitive_element)
+            u_conjugate = custom_conjugate(u_complex,primitive_element)
+            
+            if sum(alpha) == 0:
+                # alpha = (0,...,0,+1,0,...,0,-1,0,...,0)
+                # or (0,...,0,-1,0,...,0,+1,0,...,0)
+                i = list(alpha).index(1)
+                j = list(alpha).index(-1)
+                X[i,j] = u_complex
+                X[j+q,i+q] = -u_conjugate
+            
+            elif sum(alpha) == 2:
+                # alpha = (0,...,0,+1,0,...,0,+1,0,...,0)
+                positions = np.where(alpha == 1)[0]
+                i = positions[0]
+                j = positions[1]
+                assert(i<j)
+                
+                X[i,j+q] = u_complex
+                X[j,i+q] = -eps*u_conjugate
+                
+            elif sum(alpha) == -2:
+                # alpha = (0,...,0,-1,0,...,0,-1,0,...,0)
+                positions = np.where(alpha == -1)[0]
+                i = positions[0]
+                j = positions[1]
+                assert(i<j)
+                
+                X[j+q,i] = u_complex
+                X[i+q,j] = -eps*u_conjugate
+                
+            else: 
+                # Should be impossible
+                raise Exception('Invalid medium length root for special unitary group.')
+
+        return X
         
     def root_subgroup_map_SU(matrix_size, root_system, form, root, u):
         # PLACEHOLDER
-        x=0
+        X = root_space_map_SU(matrix_size, root_system, form, root, u)
+        return sp.eye(matrix_size) + X + (X**2)/2
         
     def torus_element_map_SU(matrix_size, root_system, form, vec_t):
         # Output a 'generic' element of the diagonal torus subgroup of the special unitary group
         # Given a vecgtor vec_t = [t_1, t_2, ..., t_q] of length q = root_system.rank,
         # the assciated torus element to return is
         # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1)
-        q = root_system.rank        
+        q = root_system.rank
         assert(len(vec_t) == q)
         
         # Note that t_1, ..., t_q should be 'purely real' if the form is hermitian, and 
         # 'purely imaginary' if the form is skew-hermitian
         # What this means is that we should include an extra factor of form.primitive_element
         # with each t_i in the skew-hermitian case
-        if form.eps == 1:
+        if form.epsilon == 1:
             extra_factor = 1
-        elif form.eps == -1:
+        elif form.epsilon == -1:
             extra_factor = form.primitive_element
         else:
             # Should be impossible
             raise Exception('Invalid value of epsilon for a (skew-)hermitian form.')
         
-        T = np.eye(matrix_size)
+        T = sp.eye(matrix_size)
         for i in range(q):
             T[i,i] = vec_t[i]*extra_factor
             T[i+q,i+q] = (1/vec_t[i])*extra_factor
@@ -518,7 +668,7 @@ def build_special_unitary_group(matrix_size,root_system_rank,epsilon):
         
     def commutator_coefficient_map_SU(matrix_size, root_system, form, alpha, beta, p, q, u, v):
         # PLACEHOLDER
-        x=0
+        return [0,0]
         
     def weyl_group_element_map_SU(matrix_size, root_system, form, alpha, u):
         # PLACEHOLDER

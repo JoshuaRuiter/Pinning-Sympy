@@ -1,7 +1,19 @@
-from sympy import symbols, symarray, Matrix, eye, zeros, simplify
+import sympy as sp
+from sympy import symbols, symarray, Matrix, eye, simplify
 import numpy as np
 from pprint import pprint
 from matrix_utility import evaluate_character
+
+# pinned_group is a custom class for storing all the data of a pinned algebraic group.
+# The constructor lists out the various pieces of data stored.
+
+# The bulk of this class is dedicated to running tests to verify the pinning properties.
+# This includes the run_tests, test_basics, test_root_maps, test_torus_conjugation, 
+# test_commutator_formulas, and test_weyl_group methods.
+
+# The class also includes a display_root_spaces method for a visual representation of the pinning.
+
+# Running this file does not do anything, if you want to test this, run build_group.py
 
 class pinned_group:
     
@@ -55,7 +67,7 @@ class pinned_group:
     def run_tests(self):
         print("\nRunning tests to verify a pinning of the " + self.name_string + "...")
         self.test_basics()
-        self.test_root_space_maps_are_almost_homomorphisms()
+        self.test_root_maps()
         self.test_torus_conjugation()
         self.test_commutator_formula()
         self.test_weyl_group()   
@@ -80,16 +92,27 @@ class pinned_group:
             assert(self.is_group_element(X_u,self.form))   
         print("done.")
 
-    def test_root_space_maps_are_almost_homomorphisms(self):
-        print("\tChecking root space spaces are (almost) homomorphisms...",end='')
+    def test_root_maps(self):
+        print("\tChecking root space space maps are additive...",end='')
         for root in self.root_list:
             dim = self.root_space_dimension(self.matrix_size,self.root_system,root)
             u = symarray('u',dim)
             v = symarray('v',dim)
             X_u = self.root_space_map(self.matrix_size,self.root_system,self.form,root,u)
             X_v = self.root_space_map(self.matrix_size,self.root_system,self.form,root,v)
-            X_u_plus_v = self.root_space_map(self.matrix_size,self.root_system,self.form,root,u+v)
-            assert(X_u+X_v==X_u_plus_v)
+            X_u_plus_v = self.root_space_map(self.matrix_size,self.root_system,self.form,root,u+v)      
+            assert(X_u_plus_v.equals(X_u+X_v))
+        print("done.")
+        
+        print("\tChecking root subgroup space maps (almost) homomorphisms...",end='')
+        for root in self.root_list:
+            dim = self.root_space_dimension(self.matrix_size,self.root_system,root)
+            u = symarray('u',dim)
+            v = symarray('v',dim)
+            x_u = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,root,u)
+            x_v = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,root,v)
+            x_u_plus_v = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,root,u+v)
+            assert(x_u_plus_v.equals(x_u*x_v))
         print("done.")
         
     def test_torus_conjugation(self):
@@ -107,14 +130,14 @@ class pinned_group:
             X_u = self.root_space_map(self.matrix_size,self.root_system,self.form,alpha,u)
             LHS1 = t*X_u*t**(-1)
             RHS1 = self.root_space_map(self.matrix_size,self.root_system,self.form,alpha,alpha_of_t*u)
-            assert(LHS1==RHS1)
+            assert(LHS1.equals(RHS1))
             
             # Torus conjugation on the group/root subgroups
             x_u = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,alpha,u)
             LHS2 = t*x_u*t**(-1)
             RHS2 = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,alpha,alpha_of_t*u)
 
-            assert(LHS2==RHS2)
+            assert(LHS2.equals(RHS2))
         print("done.")
         
     def test_commutator_formula(self):
@@ -156,7 +179,7 @@ class pinned_group:
                         N = self.commutator_coefficient_map(self.matrix_size,self.root_system,self.form,alpha,beta,i,j,u,v);
                         my_sum = alpha+beta
                         RHS = RHS * self.root_subgroup_map(self.matrix_size,self.root_system,self.form,my_sum,N)
-                    assert(LHS==RHS)
+                    assert(LHS.equals(RHS))
             
         print("done.")
         
@@ -184,7 +207,7 @@ class pinned_group:
                 weyl_group_coeff = self.weyl_group_coefficient_map(self.matrix_size,self.root_system,self.form,alpha,beta,v)
                 RHS = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,reflected_root,weyl_group_coeff)
                 
-                assert(simplify(LHS-RHS)==zeros(self.matrix_size))
+                assert(simplify(LHS-RHS)==sp.zeros(self.matrix_size))
                 
         print("done.")
         
