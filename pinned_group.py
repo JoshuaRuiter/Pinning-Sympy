@@ -164,7 +164,8 @@ class pinned_group:
                     # associated to a key (i,j) is the root i*alpha+j*beta
                     linear_combos = self.root_system.integer_linear_combos(alpha,beta)
                     
-                    # The right hand side is a product over positive integer lienar combinations of alpha and beta
+                    # The right hand side of the commutator formula is a product over 
+                    # positive integer linear combinations of alpha and beta
                     # with coefficients depending on some function N(alpha,beta,i,j,u,v)
                     RHS = eye(self.matrix_size)
                     for key in linear_combos:
@@ -220,3 +221,45 @@ class pinned_group:
             print(alpha)            
             print("\nGeneric element of root space: " )
             pprint(X_alpha_u)
+            
+    def calculate_and_display_commutator_coefficients(self):
+        # Using only information from the root subgroup maps,
+        # work out commutator coefficients, and print them out in a 
+        # readable format
+        
+        for alpha in self.root_list:
+            dim_V_alpha = self.root_space_dimension(self.matrix_size,self.root_system,alpha)
+            u = symarray('u',dim_V_alpha)
+            x_alpha_u = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,alpha,u)
+            
+            for beta in self.root_list:
+                # Commutator formula only applies when the two roots
+                # not scalar multiples of each other
+                                
+                if not(self.root_system.is_proportional(alpha,beta)):
+                    dim_V_beta = self.root_space_dimension(self.matrix_size,self.root_system,beta)
+                    v = symarray('v',dim_V_beta)
+                    x_beta_v = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,beta,v)
+                    
+                    print("\nAlpha: ")
+                    print(alpha)
+                    
+                    print("\nX_alpha(u):")
+                    print(x_alpha_u)
+                    
+                    print("\nBeta: ")
+                    print(beta)
+                    
+                    print("\nX_beta(v):")
+                    print(x_beta_v)
+                    
+                    my_commutator = x_alpha_u*x_beta_v*(x_alpha_u**(-1))*(x_beta_v**(-1))
+                    
+                    print("\nCommutator: " )
+                    pprint(my_commutator)
+                    
+                    # This gets a list of all positive integer linear combinations of alpha and beta
+                    # that are in the root system. 
+                    # It is formatted as a dictionary where keys are tuples (i,j) and the value 
+                    # associated to a key (i,j) is the root i*alpha+j*beta
+                    linear_combos = self.root_system.integer_linear_combos(alpha,beta)
