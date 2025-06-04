@@ -1,5 +1,5 @@
 import sympy as sp
-from sympy import symbols, symarray, Matrix, eye, simplify
+from sympy import symbols, symarray, Matrix, eye, simplify, solve
 import numpy as np
 from pprint import pprint
 from matrix_utility import evaluate_character
@@ -227,36 +227,40 @@ class pinned_group:
         # work out commutator coefficients, and print them out in a 
         # readable format
         
+        print("\nTable of commutator coefficients for",self.name_string)
+        print("alpha \t\t beta \t\t\t commutator coefficient")
+        
         for alpha in self.root_list:
             dim_V_alpha = self.root_space_dimension(self.matrix_size,self.root_system,alpha)
             u = symarray('u',dim_V_alpha)
             x_alpha_u = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,alpha,u)
             
             for beta in self.root_list:
-                # Commutator formula only applies when the two roots
-                # not scalar multiples of each other
-                                
-                if not(self.root_system.is_proportional(alpha,beta)):
+                
+                my_sum = alpha+beta
+                
+                # Commutator formula only applies when the two roots not scalar multiples of each other
+                # The formula is trivial when the sum is not a root, so we also exclude that
+                if not(self.root_system.is_proportional(alpha,beta)) and self.root_system.is_root(my_sum):
+                    
                     dim_V_beta = self.root_space_dimension(self.matrix_size,self.root_system,beta)
                     v = symarray('v',dim_V_beta)
                     x_beta_v = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,beta,v)
                     
-                    print("\nAlpha: ")
-                    print(alpha)
-                    
-                    print("\nX_alpha(u):")
-                    print(x_alpha_u)
-                    
-                    print("\nBeta: ")
-                    print(beta)
-                    
-                    print("\nX_beta(v):")
-                    print(x_beta_v)
+                    my_sum = alpha+beta
+                    dim_V_sum = self.root_space_dimension(self.matrix_size,self.root_system,my_sum)
+                    w = symarray('w',dim_V_sum)
+                    x_sum_w = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,my_sum,w)
                     
                     my_commutator = x_alpha_u*x_beta_v*(x_alpha_u**(-1))*(x_beta_v**(-1))
                     
-                    print("\nCommutator: " )
-                    pprint(my_commutator)
+                    # Extracting the coefficients
+                    my_equation = (my_commutator - x_sum_w)
+                    variables_to_solve_for = w
+                    solutions_list = solve(my_equation, variables_to_solve_for, dict=True)
+                    
+                    key = list(solutions_list[0].keys())[0]                
+                    print(alpha,"\t\t",beta,"\t\t",solutions_list[0][key])
                     
                     # This gets a list of all positive integer linear combinations of alpha and beta
                     # that are in the root system. 
