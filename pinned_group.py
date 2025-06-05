@@ -3,6 +3,7 @@ from sympy import symbols, symarray, Matrix, eye, simplify, solve
 import numpy as np
 from pprint import pprint
 from matrix_utility import evaluate_character
+from tabulate import tabulate
 
 # pinned_group is a custom class for storing all the data of a pinned algebraic group.
 # The constructor lists out the various pieces of data stored.
@@ -227,8 +228,7 @@ class pinned_group:
         # work out commutator coefficients, and print them out in a 
         # readable format
         
-        print("\nTable of commutator coefficients for",self.name_string)
-        print("alpha \t\t beta \t\t\t commutator coefficient")
+        my_table = [];
         
         for alpha in self.root_list:
             dim_V_alpha = self.root_space_dimension(self.matrix_size,self.root_system,alpha)
@@ -259,11 +259,20 @@ class pinned_group:
                     variables_to_solve_for = w
                     solutions_list = solve(my_equation, variables_to_solve_for, dict=True)
                     
-                    key = list(solutions_list[0].keys())[0]                
-                    print(alpha,"\t\t",beta,"\t\t",solutions_list[0][key])
+                    key = list(solutions_list[0].keys())[0]
+                    commutator_coefficient = solutions_list[0][key]
+                    new_row = [list(alpha),list(beta),commutator_coefficient]
+                    
+                    #print(new_row)
+                    
+                    my_table.append(new_row)
                     
                     # This gets a list of all positive integer linear combinations of alpha and beta
                     # that are in the root system. 
                     # It is formatted as a dictionary where keys are tuples (i,j) and the value 
                     # associated to a key (i,j) is the root i*alpha+j*beta
                     linear_combos = self.root_system.integer_linear_combos(alpha,beta)
+    
+    
+        print("\nTable of commutator coefficients for " + self.name_string)    
+        print(tabulate(my_table,headers = ["alpha","beta","commutator coefficient"]))
