@@ -1,0 +1,149 @@
+\documentclass[12pt]{article}
+\pagestyle{plain}
+%\topmargin=-0.5in
+%\textheight=9in
+%\evensidemargin=-1.5in
+%\oddsidemargin=0in
+%\setlength{\textwidth}{6.5in}
+\usepackage[top=2cm, bottom=2cm, left=1.4cm, right=1.4cm]{geometry}
+
+\usepackage{graphicx}
+\usepackage[shortlabels]{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{bm}
+\usepackage{amssymb}
+\usepackage{tikz-cd}
+\usepackage{framed}
+\usepackage{mdframed}
+\usepackage{ulem}
+\usepackage{moreverb}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\G}{\mathbb{G}}
+
+\newcommand{\sig}{\sigma}
+\newcommand{\lam}{\lambda}
+\newcommand{\eps}{\varepsilon}
+
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\lb}{\left\{}
+\newcommand{\rb}{\right\}}
+\newcommand{\lab}{\left|}
+\newcommand{\rab}{\right|}
+\newcommand{\la}{\left\langle}
+\newcommand{\ra}{\right\rangle}
+
+\newcommand{\tbf}{\textbf}
+\newcommand{\noi}{\noindent}
+\newcommand{\incomplete}{\textcolor{red}{INCOMPLETE}}
+
+\newcommand{\inv}{^{-1}}
+\newcommand{\sm}{\setminus}
+\newcommand{\wt}{\widetilde}
+\newcommand{\wh}{\widehat}
+\newcommand{\ov}{\overline}
+
+\newcommand{\frakg}{\mathfrak{g}}
+
+\DeclareMathOperator{\Gal}{Gal}
+\DeclareMathOperator{\Id}{Id}
+\DeclareMathOperator{\SL}{SL}
+\DeclareMathOperator{\GL}{GL}
+\DeclareMathOperator{\SO}{SO}
+\DeclareMathOperator{\SU}{SU}
+
+\setlength\parindent{0pt}
+
+\title{Python tools for working with matrix groups \\
+	Development roadmap}
+\author{Joshua Ruiter}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\vfill
+\begin{center}
+\tbf{What's next}
+
+\bigskip
+
+Write new pinned\_group class, with the first goal of getting a minimal working example running involving special linear groups.
+
+\bigskip
+
+Last updated: Dec 13, 2025
+\end{center}
+\vfill
+
+\newpage
+
+\section{Overall goals}
+
+The goal of this project is to have a self-contained and comprehensive set of tools for performing calculations and verifying properties of matrix groups, especially special linear, special orthogonal, and special unitary groups. There are two main tasks I want the code to be able to perform:
+\begin{enumerate}
+	\item Given some basic information about a matrix group (such as the equational condition for membership, a torus subset, and the equational condition for membership in the Lie algebra), perform calculations to determine a lot of information such as: 
+	\begin{itemize}
+		\item Root system/root datum, root spaces (and their dimensions) inside the Lie algebra
+		\item Root subgroups, pinning maps, and homomorphism defect coefficients
+		\item Summable pairs of roots, commutator coefficients
+		\item Weyl group elements, Weyl group conjugation coefficients, 
+	\end{itemize}
+	\item Verify that all of the information above satisfies the required relations.
+\end{enumerate}
+In order to facilitate the above tasks, particularly those related to root systems, it will also be necessary to have a class to model root systems (or perhaps root data), and perform certain calculations such as enumerating summable pairs of roots.
+
+\newpage
+\section{Root system class}
+
+\noi \tbf{Current status:} Effectively complete. I have a working class which implements root systems effectively. It stores internal variables of dynkin\_type, rank, vector\_length, name\_string, and root\_list. The main interesting data is the root\_list, which is a list of vectors. 
+
+\bigskip
+
+\noi \tbf{Potential future tasks:} There are a few small things which would be nice to eventually implement, but only after a lot of other things are complete. These are:
+\begin{itemize}
+	\item Implement root list builders for types D, E, F, and G. This should not be very difficult.
+	\item Implement an alternative constructor which allows a user to build a root system out of their own list of vectors, rather than using prepackaged root lists. This would allow for more generality of use of the class.
+	\item Implement some kind of internal model or calculation tool for the Weyl group of a root system. Not exactly sure if this is necessary, but it could be useful at some point, who knows.
+	\item Generalize by replacing root system with root datum. A root datum stores slightly more information that a root system, and sometimes this level of generality is necessary for working with algebraic groups. I am skeptical this will be necessary for anything I want to do, so I will wait until this becomes absolutely necessary.
+\end{itemize}
+
+\newpage
+\section{Pinned group class}
+
+\noi \tbf{Current status:} I have a pinned\_group class, but it isn't set up in the way that I want so I think I will rebuild it, utilizing some of the existing code but I'm not sure how much. I envision using in the following way:
+\begin{itemize}
+	\item Initialize a pinned group object by giving it only basic data. Hopefully this is restricted to just the name, matrix size, bilinear form (if there is one), condition for group membership, condition for torus membership, and a map to output a generic element of the torus. Example code:
+\begin{verbatimtab}[6]
+sl3 = pinned_group(name_string = "special linear", 
+			 matrix_size = 3, 
+			 form = None, 
+			 is_group_element = lambda X : shape(X) == (3,3) and det(X) == 1,
+			 is_torus_element = is_diagonal,
+			 generic_torus_element = lambda [t1,t2,t3] : diag(t1, t2, t3))
+\end{verbatimtab}
+	\item After initializing a pinned group object as above, use a single line of code to invoke a large number of calculations to determine all of the following, if possible: Lie algebra membership condition, root system, root spaces, map to output a generic element of a root space, root subgroups, map to output a generic element of a root subgroup, homomorphism defect coefficients, commutator coefficients, Weyl group elements, Weyl group coefficients. Example code (to run immediately after the above block):
+\begin{verbatimtab}[6]
+sl3.fit(display = True)
+\end{verbatimtab}
+	When run with the display=True setting, this should output a variety of visual representations of the calculated information. Regardless of the display settings, it should change various internal aspects of the sl3 pinned\_group object so that it is now capable of being used for various calculations.
+	\item In particular, after a .fit() method is run, it should be possible to run something like 	
+\begin{verbatimtab}[6]
+sl3.verify_pinning()
+\end{verbatimtab}
+	which runs a variety of tests to check all the formulas related to pinnings, i.e. torus conjugation formula, pseudo-homomorphism property, commutator formula, Weyl group conjugation formula.
+\end{itemize}
+
+\subsection{Minimal working example -- special linear groups}
+
+\end{document}

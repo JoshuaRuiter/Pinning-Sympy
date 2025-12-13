@@ -5,7 +5,7 @@
 # satisfy the assumption that the only multiple of a root in the root system are +1 and -1.
 # Dropping this axiom leads to some "non-reduced root systems," but all such root systems are
 # of type BC, which is essentially the union of the type B and type C root systems 
-# (given a certain realization/embedding of these root systems).
+# (with a certain realization/embedding of these root systems).
 # In particular, type BC includes some roots where twice the root is another root
 # (so for those longer roots, half that root is a root).
 
@@ -13,7 +13,9 @@
 # and verifying the root system axioms.
 
 # As of June 2, 2025, only types A, B, C, and BC are implemented. 
-# Types E, F, and G are not critical to my current plans/research, so I have not implemented them yet.
+# Types E, F, and G are not important to my current plans/research, so I have not implemented them yet.
+
+
 
 import numpy as np
 
@@ -21,7 +23,7 @@ class root_system:
     
     def __init__(self,dynkin_type,rank,vector_length):
         # Constructor method
-        # Inputs:
+        # Inputs: 
             # dynkin_type - a string, should be 'A','B','C','BC','D','E','F', or 'G'.
             # rank - the rank of the root system, always a positive integer.
             #           for type A, any positive integer
@@ -31,7 +33,7 @@ class root_system:
             #           for type F, rank must be 4
             #           for type G, rank must be 2
             # vector_length - the length of the vectors to store the roots as.
-            #               in general, the vector_length can alwaya be longer than necessary,
+            #               in general, the vector_length can be longer than necessary,
             #               and the constructor will just pad the end with zeros
             #
             #               From a theoretical perspective, the vector_length is the

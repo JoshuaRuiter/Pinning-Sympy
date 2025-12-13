@@ -1,4 +1,4 @@
-# Various general utility functions related to matrices
+# Various general-utility functions related to matrices
 
 from sympy import shape
 

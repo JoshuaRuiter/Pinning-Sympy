@@ -18,15 +18,14 @@ from tabulate import tabulate
 
 class pinned_group:
     
-    # Note: on December 13, 2025 I re-ordered these arguments
     def __init__(self, 
-                 name_string,
+                 name_string, 
                  matrix_size,
                  form,
                  root_system,
+                 is_lie_algebra_element,
                  is_group_element,
                  is_torus_element,
-                 is_lie_algebra_element,
                  root_space_dimension,
                  root_space_map,
                  root_subgroup_map,
