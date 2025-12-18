@@ -51,6 +51,7 @@
 \newcommand{\wt}{\widetilde}
 \newcommand{\wh}{\widehat}
 \newcommand{\ov}{\overline}
+\newcommand{\ds}{\displaystyle}
 
 \newcommand{\frakg}{\mathfrak{g}}
 
@@ -58,8 +59,11 @@
 \DeclareMathOperator{\Id}{Id}
 \DeclareMathOperator{\SL}{SL}
 \DeclareMathOperator{\GL}{GL}
+\DeclareMathOperator{\M}{M}
 \DeclareMathOperator{\SO}{SO}
 \DeclareMathOperator{\SU}{SU}
+\DeclareMathOperator{\Lie}{Lie}
+\DeclareMathOperator{\tr}{tr}
 
 \setlength\parindent{0pt}
 
@@ -78,11 +82,11 @@
 
 \bigskip
 
-Write new pinned\_group class, with the first goal of getting a minimal working example running involving special linear groups.
+Automate extraction of roots from the torus conjugation on the Lie algebra. Probably going to need a ``generic Lie algebra element" map first.
 
 \bigskip
 
-Last updated: Dec 13, 2025
+Last updated: Dec 17, 2025
 \end{center}
 \vfill
 
@@ -104,7 +108,9 @@ The goal of this project is to have a self-contained and comprehensive set of to
 In order to facilitate the above tasks, particularly those related to root systems, it will also be necessary to have a class to model root systems (or perhaps root data), and perform certain calculations such as enumerating summable pairs of roots.
 
 \newpage
-\section{Root system class}
+\section{Documentation of code}
+
+\subsection{Root system class}
 
 \noi \tbf{Current status:} Effectively complete. I have a working class which implements root systems effectively. It stores internal variables of dynkin\_type, rank, vector\_length, name\_string, and root\_list. The main interesting data is the root\_list, which is a list of vectors. 
 
@@ -119,7 +125,16 @@ In order to facilitate the above tasks, particularly those related to root syste
 \end{itemize}
 
 \newpage
-\section{Pinned group class}
+\subsection{Nondegenerate isotropic form class}
+
+\noi  \tbf{Current status:} Effectively complete. I suspect that ``nondegenerate isotropic form" is unnecessarily specific, and I should have a ``bilinear form" or something, but this is doing the job it needs to right now.
+
+\bigskip
+
+\noi \tbf{Potential future tasks:} Rewrite the entire thing at a better level of generality? This will become apparent if it needs to be done, and otherwise nothing needs to be done.
+
+\newpage
+\subsection{Pinned group class}
 
 \noi \tbf{Current status:} I have a pinned\_group class, but it isn't set up in the way that I want so I think I will rebuild it, utilizing some of the existing code but I'm not sure how much. I envision using in the following way:
 \begin{itemize}
@@ -134,7 +149,7 @@ sl3 = pinned_group(name_string = "special linear",
 \end{verbatimtab}
 	\item After initializing a pinned group object as above, use a single line of code to invoke a large number of calculations to determine all of the following, if possible: Lie algebra membership condition, root system, root spaces, map to output a generic element of a root space, root subgroups, map to output a generic element of a root subgroup, homomorphism defect coefficients, commutator coefficients, Weyl group elements, Weyl group coefficients. Example code (to run immediately after the above block):
 \begin{verbatimtab}[6]
-sl3.fit(display = True)
+sl3.fit_pinning(display = True)
 \end{verbatimtab}
 	When run with the display=True setting, this should output a variety of visual representations of the calculated information. Regardless of the display settings, it should change various internal aspects of the sl3 pinned\_group object so that it is now capable of being used for various calculations.
 	\item In particular, after a .fit() method is run, it should be possible to run something like 	
@@ -144,6 +159,57 @@ sl3.verify_pinning()
 	which runs a variety of tests to check all the formulas related to pinnings, i.e. torus conjugation formula, pseudo-homomorphism property, commutator formula, Weyl group conjugation formula.
 \end{itemize}
 
-\subsection{Minimal working example -- special linear groups}
+\newpage
+\section{Theoretical background}
+
+\subsection{Fitting pinnings}
+
+%\subsubsection{Matrix exponentials}
+%
+%If $k$ is a field of characteristic zero and $A \in \M_n(k)$, then the formal matrix exponential
+%\[
+%	\exp(A) = \sum_{m=0}^\infty \frac{A^m}{m!}
+%\]
+%makes sense as a formal expression, though not necessarily an element of $\M_n(k)$. To be precise, we can think of $\exp(A)$ as an element of a formal power series ring. If $A$ is nilpotent (some power of $A$ is zero), or if $k$ has some notion of convergence (such as if $k$ is a subfield of $\C$), then the sum has finitely many nonzero terms and hence $\exp(A) \in \M_n(k)$.
+%
+%\bigskip
+%
+%More generally, this works for $A \in \M_n(R)$ where $R$ is any algebra over $\Q$, since then the denominators make sense. In such a situation (i.e. $R$ is a $\Q$-algebra), the identity
+%\[
+%	\det \Big(\exp(A) \Big) = \exp \Big( \tr(A) \Big)
+%\]
+%holds. To be precise, this is a relation in the formal power series ring $R[[t]]$.
+%
+%\subsubsection{Determining the Lie algebra}
+%\label{Lie-algebra}
+%
+%Let $R$ be a $\Q$-algebra. Suppose $G \subseteq \GL_n(R)$ is a subgroup defined by some polynomial equational condition $F(x) = 0$.
+%\[
+%	G = \lb X \in \GL_n(R) : F(X) = 0 \rb
+%\]
+%For example,
+%\[
+%	\SL_n(R) = \lb X \in \GL_n(R) : \det(X) - 1 = 0 \rb
+%\]
+%Then the Lie algebra associated to $G$ is the set of matrices $A \in \M_n(R)$ meeting the (linear) condition $\ds \left. \frac{d}{dt}\right|_{t=0} F \big( \exp(tA) \big) = 0$.
+%\[
+%	\Lie(G) = \lb A \in \M_n(\C) : \left. \frac{d}{dt}\right|_{t=0} F \big( \exp(tA) \big) = 0 \rb
+%\]
+%To illustrate again with the special linear group, in that case we have $F(x) = \det(X) - 1$, so
+%\[
+%	F(\exp(tA)) = \det \Big( \exp(tA) \Big) - 1 = \exp \Big(\tr(tA) \Big) - 1 = \exp \Big( t \tr(A) \Big) - 1
+%\]
+%Then taking the derivative with respect to $t$, 
+%\[
+%	\frac{d}{dt}  F \Big( \exp(tA) \Big) = \frac{d}{dt} \exp \Big( t \tr(A) \Big) = \tr(A) \exp \Big( t \tr(A) \Big)
+%\]
+%Finally, evaluating at $t=0$ gives
+%\[
+%	\left. \frac{d}{dt} \right|_{t=0} F \Big( \exp(tA) \Big) = \tr(A)
+%\]
+%hence
+%\[
+%	\Lie \Big( \SL_n(R) \Big) = \lb A \in \M_n(R) : \tr(A) = 0 \rb
+%\]
 
 \end{document}

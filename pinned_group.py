@@ -1,279 +1,95 @@
-import sympy as sp
-from sympy import symbols, symarray, Matrix, eye, simplify, solve
-import numpy as np
-from pprint import pprint
-from matrix_utility import evaluate_character
-from tabulate import tabulate
-
 # pinned_group is a custom class for storing all the data of a pinned algebraic group.
-# The constructor lists out the various pieces of data stored.
 
-# The bulk of this class is dedicated to running tests to verify the pinning properties.
-# This includes the run_tests, test_basics, test_root_maps, test_torus_conjugation, 
-# test_commutator_formulas, and test_weyl_group methods.
+# There are two broad categories of features:
+#   1. Computational tools
+#   2. Verification tools
 
-# The class also includes a display_root_spaces method for a visual representation of the pinning.
+# The computational tools take the bare bones needed to describe a matrix group, 
+# then work out all the details of the root system, Lie algebra, root spaces,
+# root subgroups, Weyl group elements, homomorphism defect coefficients, 
+# commutator coefficients, and Weyl group conjugation coefficients.
+# These details are then stored internally in the group object.
 
-# Running this file does not do anything, if you want to test this, run build_group.py
+# The verification tools take the fitted data above and run a battery of tests
+# to verify all the properties of a pinning.
+
+import sympy as sp
+from utility_general import is_zero_expr, matrix_sub
 
 class pinned_group:
     
-    # Note: on December 13, 2025 I re-ordered these arguments
-    def __init__(self, 
+    def __init__(self,
                  name_string,
                  matrix_size,
+                 rank,
                  form,
-                 root_system,
                  is_group_element,
                  is_torus_element,
+                 generic_torus_element,
                  is_lie_algebra_element,
-                 root_space_dimension,
-                 root_space_map,
-                 root_subgroup_map,
-                 torus_element_map,
-                 commutator_coefficient_map,
-                 weyl_group_element_map,
-                 weyl_group_coefficient_map):
-        
-        # Build a pinned group from scratch by providing all inputs
+                 generic_lie_algebra_element):
         
         self.name_string = name_string
         self.matrix_size = matrix_size
+        self.rank = rank
         self.form = form
-        # self.form_matrix = self.form.matrix # I want to get rid of this,
-        #                                     # but it requires changing a lot of
-        #                                     # things in the tests below,
-        #                                     # do this eventually
-        #                                     # Basically, I think we should only pass self.form
-        #                                     # as an argument, not the matrix itself
         
-        self.root_system = root_system
-        self.root_system_rank = root_system.rank
-        self.root_list = root_system.root_list
-        
-        self.is_lie_algebra_element = is_lie_algebra_element
         self.is_group_element = is_group_element
         self.is_torus_element = is_torus_element
-    
-        self.root_space_dimension = root_space_dimension
-        self.root_space_map = root_space_map
-        self.root_subgroup_map = root_subgroup_map
-        self.torus_element_map = torus_element_map
+        self.generic_torus_element = generic_torus_element
+        self.is_lie_algebra_element = is_lie_algebra_element
+        self.generic_lie_algebra_element = generic_lie_algebra_element
+                
+        # These get set by running .fit_pinning(), (though not yet implemented)
+        self.root_system = None
+        self.root_space_dimension = None
+        self.root_space_map = None
+        self.root_subgroup_map = None
+        self.homomorphism_defect_map = None
+        self.commutator_coefficient_map = None
+        self.weyl_group_element_map = None
+        self.weyl_group_coefficient_map = None
         
-        self.commutator_coefficient_map = commutator_coefficient_map
-        self.weyl_group_element_map = weyl_group_element_map
-        self.weyl_group_coefficient_map = weyl_group_coefficient_map
+    def fit_pinning(self, display):
+        # work out all the computational details related to Lie algebra, roots, etc.
+        # INCOMPLETE
         
-        # HomDefectCoefficientMap
-    
-    def run_tests(self):
-        print("\nRunning tests to verify a pinning of the " + self.name_string + "...")
-        self.test_basics()
-        self.test_root_maps()
-        self.test_torus_conjugation()
-        self.test_commutator_formula()
-        self.test_weyl_group()   
-        print("All tests complete.")
+        if display:
+            print(f"\nFitting a pinning for {self.name_string}")
+            if self.form is not None:
+                print("Form matrix:")
+                sp.pprint(self.form.matrix)
+            vec_t = sp.Matrix(sp.symarray('t',self.rank))
+            t = self.generic_torus_element(self.matrix_size,self.rank,self.form,vec_t)
+            print("Generic torus element:")
+            sp.pprint(t)
+            
+        self.fit_basics(display = True)
+        # next things to fit: root system, root space dimensions, root spaces, root subgroup maps
+
+    def fit_basics(self, display = True):
+        # INCOMPLETE
+        x=0
         
-    def test_basics(self):
-        print("\tRunning basic tests...")
-    
-        print("\t\tChecking root spaces belong to the Lie algebra...",end='')
-        for root in self.root_list:
-            dim = self.root_space_dimension(self.matrix_size,self.root_system,root)
-            u = symarray('u',dim)
-            X = self.root_space_map(self.matrix_size,self.root_system,self.form,root,u)
-            assert(self.is_lie_algebra_element(X,self.form))
-        print("done.")
+    def verify_pinning(self, display = True):
+        # run tests to verify the pinning
+        # run only after fitting
         
-        print("\t\tChecking root subgroups belong to the group...",end='')
-        for root in self.root_list:
-            dim = self.root_space_dimension(self.matrix_size,self.root_system,root)
-            u = symarray('u',dim)
-            X_u = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,root,u)
-            assert(self.is_group_element(X_u,self.form))   
+        self.verify_basics()
+        # tests to write after that: root system, root space dimensions, root spaces, root subgroup maps
+        
+        print("OTHER TESTS NOT YET IMPLEMENTED")
+        
+    def verify_basics(self, display = True):
+        # test that the generic torus element is in the group
+        print("\nChecking that a generic torus element is in the group... ", end="")
+        vec_t = sp.Matrix(sp.symarray('t',self.rank))
+        t = self.generic_torus_element(self.matrix_size,self.rank,self.form,vec_t)
+        assert(self.is_group_element(matrix_to_test = t, form = self.form))
         print("done.")
 
-    def test_root_maps(self):
-        print("\tChecking root space space maps are additive...",end='')
-        for root in self.root_list:
-            dim = self.root_space_dimension(self.matrix_size,self.root_system,root)
-            u = symarray('u',dim)
-            v = symarray('v',dim)
-            X_u = self.root_space_map(self.matrix_size,self.root_system,self.form,root,u)
-            X_v = self.root_space_map(self.matrix_size,self.root_system,self.form,root,v)
-            X_u_plus_v = self.root_space_map(self.matrix_size,self.root_system,self.form,root,u+v)      
-            assert(X_u_plus_v.equals(X_u+X_v))
-        print("done.")
+        # tests for is_group_element
+        # INCOMPLETE
         
-        print("\tChecking root subgroup space maps (almost) homomorphisms...",end='')
-        for root in self.root_list:
-            dim = self.root_space_dimension(self.matrix_size,self.root_system,root)
-            u = symarray('u',dim)
-            v = symarray('v',dim)
-            x_u = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,root,u)
-            x_v = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,root,v)
-            x_u_plus_v = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,root,u+v)
-            assert(x_u_plus_v.equals(x_u*x_v))
-        print("done.")
-        
-    def test_torus_conjugation(self):
-        print("\tChecking torus conjugation formula...",end='')
-        
-        vec_t = Matrix(symarray('t',self.root_system_rank))
-        t = self.torus_element_map(self.matrix_size,self.root_system,self.form,vec_t)
-        
-        for alpha in self.root_list:
-            dim = self.root_space_dimension(self.matrix_size,self.root_system,alpha)
-            u = symarray('u',dim)
-            alpha_of_t = evaluate_character(alpha,t)
-            
-            # Torus conjugation on the Lie algebra/root spaces
-            X_u = self.root_space_map(self.matrix_size,self.root_system,self.form,alpha,u)
-            LHS1 = t*X_u*t**(-1)
-            RHS1 = self.root_space_map(self.matrix_size,self.root_system,self.form,alpha,alpha_of_t*u)
-            assert(LHS1.equals(RHS1))
-            
-            # Torus conjugation on the group/root subgroups
-            x_u = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,alpha,u)
-            LHS2 = t*x_u*t**(-1)
-            RHS2 = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,alpha,alpha_of_t*u)
-
-            assert(LHS2.equals(RHS2))
-        print("done.")
-        
-    def test_commutator_formula(self):
-        print("\tChecking commutator formula...",end='')
-
-        for alpha in self.root_list:
-            dim_V_alpha = self.root_space_dimension(self.matrix_size,self.root_system,alpha)
-            u = symarray('u',dim_V_alpha)
-            
-            x_alpha_u = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,alpha,u)
-            for beta in self.root_list:
-                # Commutator formula only applies when the two roots
-                # not scalar multiples of each other
-                                
-                if not(self.root_system.is_proportional(alpha,beta)):
-                    dim_V_beta = self.root_space_dimension(self.matrix_size,self.root_system,beta)
-                    v = symarray('v',dim_V_beta)
-                    x_beta_v = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,beta,v)
-                    LHS = x_alpha_u*x_beta_v*(x_alpha_u**(-1))*(x_beta_v**(-1))
-                    
-                    # This gets a list of all positive integer linear combinations of alpha and beta
-                    # that are in the root system. 
-                    # It is formatted as a dictionary where keys are tuples (i,j) and the value 
-                    # associated to a key (i,j) is the root i*alpha+j*beta
-                    linear_combos = self.root_system.integer_linear_combos(alpha,beta)
-                    
-                    # The right hand side of the commutator formula is a product over 
-                    # positive integer linear combinations of alpha and beta
-                    # with coefficients depending on some function N(alpha,beta,i,j,u,v)
-                    RHS = eye(self.matrix_size)
-                    for key in linear_combos:
-                        i = key[0]
-                        j = key[1]
-                        root = linear_combos[key]
-                        
-                        # Check that i*alpha+j*beta = root
-                        assert(np.all(i*alpha+j*beta == root))
-
-                        # Compute the commutator coefficient that should arise
-                        N = self.commutator_coefficient_map(self.matrix_size,self.root_system,self.form,alpha,beta,i,j,u,v);
-                        my_sum = alpha+beta
-                        RHS = RHS * self.root_subgroup_map(self.matrix_size,self.root_system,self.form,my_sum,N)
-                    assert(LHS.equals(RHS))
-            
-        print("done.")
-        
-    def test_weyl_group(self):
-        print("\tRunning tests related to Weyl group elements...")
-        u,v = symbols('u v ')
-        
-        print("\t\tChecking Weyl group elements normalize the torus...",end='')
-        vec_t = Matrix(symarray('t',self.root_system_rank))
-        t = self.torus_element_map(self.matrix_size,self.root_system,self.form,vec_t)
-        for alpha in self.root_list:
-            w_alpha_u = self.weyl_group_element_map(self.matrix_size,self.root_system,self.form,alpha,u)
-            conjugation = w_alpha_u * t * (w_alpha_u**(-1))
-            assert(self.is_torus_element(conjugation,self.root_system,self.form))
-        print("done.")
-        
-        print("\t\tChecking Weyl group conjugation formula...",end='')
-        for alpha in self.root_list:
-            w_alpha_1 = self.weyl_group_element_map(self.matrix_size,self.root_system,self.form,alpha,1)
-            for beta in self.root_list:
-                x_beta_v = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,beta,v)
-                LHS = w_alpha_1 * x_beta_v * (w_alpha_1**(-1))
-                
-                reflected_root = self.root_system.reflect_root(alpha,beta)
-                weyl_group_coeff = self.weyl_group_coefficient_map(self.matrix_size,self.root_system,self.form,alpha,beta,v)
-                RHS = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,reflected_root,weyl_group_coeff)
-                
-                assert(simplify(LHS-RHS)==sp.zeros(self.matrix_size))
-                
-        print("done.")
-        
-    def display_root_spaces(self):
-        for alpha in self.root_list:            
-            dim = self.root_space_dimension(self.matrix_size,self.root_system,alpha)
-            u = symarray('u',dim)
-            X_alpha_u = self.root_space_map(self.matrix_size,self.root_system,self.form,alpha,u)
-            print("\nRoot: ")
-            print(alpha)            
-            print("\nGeneric element of root space: " )
-            pprint(X_alpha_u)
-            
-    def calculate_and_display_commutator_coefficients(self):
-        # Using only information from the root subgroup maps,
-        # work out commutator coefficients, and print them out in a 
-        # readable format
-        
-        my_table = [];
-        
-        for alpha in self.root_list:
-            dim_V_alpha = self.root_space_dimension(self.matrix_size,self.root_system,alpha)
-            u = symarray('u',dim_V_alpha)
-            x_alpha_u = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,alpha,u)
-            
-            for beta in self.root_list:
-                
-                my_sum = alpha+beta
-                
-                # Commutator formula only applies when the two roots not scalar multiples of each other
-                # The formula is trivial when the sum is not a root, so we also exclude that
-                if not(self.root_system.is_proportional(alpha,beta)) and self.root_system.is_root(my_sum):
-                    
-                    dim_V_beta = self.root_space_dimension(self.matrix_size,self.root_system,beta)
-                    v = symarray('v',dim_V_beta)
-                    x_beta_v = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,beta,v)
-                    
-                    my_sum = alpha+beta
-                    dim_V_sum = self.root_space_dimension(self.matrix_size,self.root_system,my_sum)
-                    w = symarray('w',dim_V_sum)
-                    x_sum_w = self.root_subgroup_map(self.matrix_size,self.root_system,self.form,my_sum,w)
-                    
-                    my_commutator = x_alpha_u*x_beta_v*(x_alpha_u**(-1))*(x_beta_v**(-1))
-                    
-                    # Extracting the coefficients
-                    my_equation = (my_commutator - x_sum_w)
-                    variables_to_solve_for = w
-                    solutions_list = solve(my_equation, variables_to_solve_for, dict=True)
-                    
-                    key = list(solutions_list[0].keys())[0]
-                    commutator_coefficient = solutions_list[0][key]
-                    new_row = [list(alpha),list(beta),commutator_coefficient]
-                    
-                    #print(new_row)
-                    
-                    my_table.append(new_row)
-                    
-                    # This gets a list of all positive integer linear combinations of alpha and beta
-                    # that are in the root system. 
-                    # It is formatted as a dictionary where keys are tuples (i,j) and the value 
-                    # associated to a key (i,j) is the root i*alpha+j*beta
-                    linear_combos = self.root_system.integer_linear_combos(alpha,beta)
-    
-    
-        print("\nTable of commutator coefficients for " + self.name_string)    
-        print(tabulate(my_table,headers = ["alpha","beta","commutator coefficient"]))
+        # tests for is_in_lie_algebra
+        # INCOMPLETE
