@@ -14,7 +14,6 @@
 # to verify all the properties of a pinning.
 
 import sympy as sp
-from utility_general import is_zero_expr, matrix_sub
 
 class pinned_group:
     
@@ -27,7 +26,8 @@ class pinned_group:
                  is_torus_element,
                  generic_torus_element,
                  is_lie_algebra_element,
-                 generic_lie_algebra_element):
+                 generic_lie_algebra_element,
+                 lie_algebra_condition):
         
         self.name_string = name_string
         self.matrix_size = matrix_size
@@ -39,6 +39,7 @@ class pinned_group:
         self.generic_torus_element = generic_torus_element
         self.is_lie_algebra_element = is_lie_algebra_element
         self.generic_lie_algebra_element = generic_lie_algebra_element
+        self.lie_algebra_condition = lie_algebra_condition
                 
         # These get set by running .fit_pinning(), (though not yet implemented)
         self.root_system = None
@@ -52,7 +53,6 @@ class pinned_group:
         
     def fit_pinning(self, display):
         # work out all the computational details related to Lie algebra, roots, etc.
-        # INCOMPLETE
         
         if display:
             print(f"\nFitting a pinning for {self.name_string}")
@@ -64,10 +64,10 @@ class pinned_group:
             print("Generic torus element:")
             sp.pprint(t)
             
-        self.fit_basics(display = True)
+        self.fit_root_stuff(display = True)
         # next things to fit: root system, root space dimensions, root spaces, root subgroup maps
 
-    def fit_basics(self, display = True):
+    def fit_root_stuff(self, display = True):
         # INCOMPLETE
         x=0
         
@@ -76,20 +76,29 @@ class pinned_group:
         # run only after fitting
         
         self.verify_basics()
+        self.verify_root_stuff()
         # tests to write after that: root system, root space dimensions, root spaces, root subgroup maps
         
         print("OTHER TESTS NOT YET IMPLEMENTED")
         
     def verify_basics(self, display = True):
         # test that the generic torus element is in the group
-        print("\nChecking that a generic torus element is in the group... ", end="")
+        if display: print("\nChecking that a generic torus element is in the group... ", end="")
         vec_t = sp.Matrix(sp.symarray('t',self.rank))
         t = self.generic_torus_element(self.matrix_size,self.rank,self.form,vec_t)
         assert(self.is_group_element(matrix_to_test = t, form = self.form))
-        print("done.")
-
-        # tests for is_group_element
-        # INCOMPLETE
+        if display: print("done.")
         
         # tests for is_in_lie_algebra
-        # INCOMPLETE
+        if display: print("Checking that a generic Lie algebra element is in the Lie algebra... ", end="")
+        A = self.generic_lie_algebra_element(matrix_size = self.matrix_size, 
+                                             rank = self.rank, 
+                                             form = self.form,
+                                             letters = ('x','y'))
+        
+        assert(self.is_lie_algebra_element(matrix_to_test = A, 
+                                           form = self.form))        
+        if display: print("done.")
+        
+    def verify_root_stuff(self, display = True):
+        x=0 # INCOMPLETE

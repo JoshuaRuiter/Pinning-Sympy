@@ -20,7 +20,8 @@ def generic_torus_element_SL(matrix_size, rank, form, my_vec):
 def is_lie_algebra_element_SL(matrix_to_test, form = None):
     return matrix_to_test.trace() == 0
 
-def generic_lie_algebra_element_SL(matrix_size, letter = 'x'):
+def generic_lie_algebra_element_SL(matrix_size, rank = None, form = None, letters = 'x'):
+    letter = letters[0]
     X = sp.Matrix(sp.symarray(letter, (matrix_size, matrix_size)))
     trace = X.trace()
     bottom_right_entry = X[matrix_size -1, matrix_size - 1]

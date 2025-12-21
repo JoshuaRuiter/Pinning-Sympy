@@ -30,7 +30,7 @@ class nondegenerate_isotropic_form:
         self.anisotropic_vector = anisotropic_vector    # A vector to store the diagonal entries
                                                         # of the anisotropic block of the matrix
                                                         
-        # self.anisotropic_matrix = Matrix(numpy.diag(anisotropic_vector))
+        self.anisotropic_matrix = sp.Matrix(sp.diag(*anisotropic_vector))
         
         self.primitive_element = primitive_element  # Only relevant for hermitian/skew-hermitian
                                                     # The primitive element of the associated field extension
@@ -92,10 +92,12 @@ class nondegenerate_isotropic_form:
                 [Z_qq, I_q],
                 [epsilon*I_q, Z_qq]
             ])
-        elif n > 2*q:            
+        elif n > 2*q:
             Z_qd = sp.zeros(q, n-2*q)
             Z_dq = sp.zeros(n-2*q, q)
             C = sp.diag(*anisotropic_vector)
+            #if epsilon == -1:
+            #    C = C*primitive_element
             M = sp.BlockMatrix([
                 [Z_qq, I_q, Z_qd],
                 [epsilon*I_q, Z_qq, Z_qd],

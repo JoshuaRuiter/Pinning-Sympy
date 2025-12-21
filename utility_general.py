@@ -47,8 +47,17 @@ def matrix_sub(expr, matrix_to_replace, matrix_to_substitute):
 def custom_conjugate(my_expression, p_e):
     # Conjugate an expression with entries in the quadratic field extension k(sqrt(d))
     # by replacing sqrt(d) with -sqrt(d)
-    conjugated_expression = my_expression.subs(p_e, -p_e)
-    return conjugated_expression
+    return my_expression.subs(p_e, -p_e)
+
+def custom_real_part(my_expression, p_e):
+    # Return the "real part" of an element of a quadratic field extension k(p_e)
+    # by replacing p_e with zero
+    return my_expression.subs(p_e, 0)
+
+def custom_imag_part(my_expression, p_e):
+    # Return the "real part" of an element of a quadratic field extension k(p_e)
+    # by extracing the coefficient on p_e
+    return my_expression.coeff(p_e)
 
 def generate_and_store_formulas(n_max = 6,
                                 q_max = 3, 

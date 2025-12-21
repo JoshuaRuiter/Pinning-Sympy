@@ -39,7 +39,8 @@ def main():
                             is_torus_element = is_torus_element_SL,
                             generic_torus_element = generic_torus_element_SL,
                             is_lie_algebra_element = is_lie_algebra_element_SL,
-                            generic_lie_algebra_element = generic_lie_algebra_element_SL)
+                            generic_lie_algebra_element = generic_lie_algebra_element_SL,
+                            lie_algebra_condition = None) #INCOMPLETE
         SL_n.fit_pinning(display = True)
         
         print("\nRunning tests to verify the results of calculated pinning information")        
@@ -66,7 +67,8 @@ def main():
                                 is_torus_element = is_torus_element_SO,
                                 generic_torus_element = generic_torus_element_SO,
                                 is_lie_algebra_element = is_lie_algebra_element_SO,
-                                generic_lie_algebra_element = generic_lie_algebra_element_SO)
+                                generic_lie_algebra_element = generic_lie_algebra_element_SO,
+                                lie_algebra_condition = None) # INCOMPLETE
             SO_n_q.fit_pinning(display = True)
             
             print("\nRunning tests to verify the results of calculated pinning information")        
@@ -96,7 +98,8 @@ def main():
                                   is_torus_element = is_torus_element_SO,
                                   generic_torus_element = generic_torus_element_SO,
                                   is_lie_algebra_element = is_lie_algebra_element_SO,
-                                  generic_lie_algebra_element = generic_lie_algebra_element_SO)
+                                  generic_lie_algebra_element = generic_lie_algebra_element_SO,
+                                  lie_algebra_condition = None) # INCOMPLETE
             SO_n_q.fit_pinning(display = True)
             
             print("\nRunning tests to verify the results of calculated pinning information")        
@@ -113,10 +116,12 @@ def main():
     for eps in (1,-1):
         for q in (2,3):
             n=2*q
-            anisotropic_variables = sp.symbols(f"c:{n-2*q}")
+            anisotropic_vec = sp.Matrix(sp.symarray(anisotropic_var,n-2*q))
+            if eps == -1:
+                anisotropic_vec = anisotropic_vec * p_e
             NIF = nondegenerate_isotropic_form(dimension = n,
                                                 witt_index = q,
-                                                anisotropic_vector = anisotropic_variables,
+                                                anisotropic_vector = anisotropic_vec,
                                                 epsilon = eps,
                                                 primitive_element = p_e)
             
@@ -128,7 +133,8 @@ def main():
                                   is_torus_element = is_torus_element_SU,
                                   generic_torus_element = generic_torus_element_SU,
                                   is_lie_algebra_element = is_lie_algebra_element_SU,
-                                  generic_lie_algebra_element = generic_lie_algebra_element_SU)
+                                  generic_lie_algebra_element = generic_lie_algebra_element_SU,
+                                  lie_algebra_condition = None) # INCOMPLETE
             SU_n_q.fit_pinning(display = True)
             
             print("\nRunning tests to verify the results of calculated pinning information")        
@@ -145,10 +151,12 @@ def main():
     for eps in (1,-1):
         for q in (2,3):
             for n in (2*q+1,2*q+2):
-                anisotropic_variables = sp.symbols(f"c:{n-2*q}")
+                anisotropic_vec = sp.Matrix(sp.symarray(anisotropic_var,n-2*q))
+                if eps == -1:
+                    anisotropic_vec = anisotropic_vec * p_e
                 NIF = nondegenerate_isotropic_form(dimension = n,
                                                     witt_index = q,
-                                                    anisotropic_vector = anisotropic_variables,
+                                                    anisotropic_vector = anisotropic_vec,
                                                     epsilon = eps,
                                                     primitive_element = p_e)
                 SU_n_q = pinned_group(name_string = f"SU(n={n}, q={q}, eps={eps})",
@@ -159,7 +167,8 @@ def main():
                                       is_torus_element = is_torus_element_SU,
                                       generic_torus_element = generic_torus_element_SU,
                                       is_lie_algebra_element = is_lie_algebra_element_SU,
-                                      generic_lie_algebra_element = generic_lie_algebra_element_SU)
+                                      generic_lie_algebra_element = generic_lie_algebra_element_SU,
+                                      lie_algebra_condition = None) # INCOMPLETE
                 SU_n_q.fit_pinning(display = True)
                 
                 print("\nRunning tests to verify the results of calculated pinning information")        
