@@ -18,28 +18,32 @@ def is_torus_element_SO(matrix_to_test, matrix_size, rank, form):
             return False
     return True
 
-def generic_torus_element_SO(matrix_size, rank, form, vec_t):
-    n = matrix_size
-    q = rank
-    assert(q == len(vec_t))
-    my_matrix = sp.zeros(n)
-    for i in range(q):
-        my_matrix[i,i] = vec_t[i]
-        my_matrix[q+i,q+i] = 1/vec_t[i]
-    for j in range(n - 2*q):
-        my_matrix[2*q + j,2*q+j] = 1
-    return my_matrix
+def generic_torus_element_SO(matrix_size, rank, form, letter):
+    # Output a 'generic' element of the diagonal torus subgroup of 
+    # the special orthogonal group, which has the form
+    # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1)
+    # where q = rank
+    vec_t = sp.symarray(letter,rank)
+    t = sp.eye(matrix_size)
+    for i in range(rank):
+        t[i,i] = vec_t[i]
+        t[rank+i,rank+i] = 1/vec_t[i]
+    return t
+
+def trivial_characters_SO(matrix_size, rank):
+    return [[1 if j == i or j == i + rank else 0 for j in range(matrix_size)] 
+            for i in range(rank)]
 
 def is_lie_algebra_element_SO(matrix_to_test,form):
     X = matrix_to_test
     B = form.matrix
     return (X.T*B == -B*X)
 
-def generic_lie_algebra_element_SO(matrix_size, rank, form, letters = 'x'):
+def generic_lie_algebra_element_SO(matrix_size, rank, form, letter = 'x'):
     n = matrix_size
     q = rank
-    c = form.anisotropic_vector
-    letter = letters[0]
+    if form is not None:
+        c = form.anisotropic_vector
     X = sp.Matrix(sp.symarray(letter, (n,n)))
     
     # X must be a block matrix of the form

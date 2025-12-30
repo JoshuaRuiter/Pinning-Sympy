@@ -1,5 +1,20 @@
-from utility_general import is_diagonal, custom_conjugate, custom_real_part, custom_imag_part
+from utility_general import is_diagonal
 import sympy as sp
+
+def custom_conjugate(my_expression, primitive_element):
+    # Conjugate an expression with entries in the quadratic field extension k(sqrt(d))
+    # by replacing sqrt(d) with -sqrt(d)
+    return my_expression.subs(primitive_element, -primitive_element)
+
+def custom_real_part(my_expression, primitive_element):
+    # Return the "real part" of an element of a quadratic field extension k(p_e)
+    # by replacing p_e with zero
+    return my_expression.subs(primitive_element, 0)
+
+def custom_imag_part(my_expression, primitive_element):
+    # Return the "real part" of an element of a quadratic field extension k(p_e)
+    # by extracing the coefficient on p_e
+    return my_expression.coeff(primitive_element)
 
 def is_group_element_SU(matrix_to_test, form):
     # Return true if matrix_to_test is in the special unitary group
@@ -29,23 +44,21 @@ def is_torus_element_SU(matrix_to_test, rank, form):
             return False
     return True
 
-def generic_torus_element_SU(matrix_size, rank, form, vec_t):
-    # Output a 'generic' element of the diagonal torus subgroup of the special unitary group
-    # Given a vecgtor vec_t = [t_1, t_2, ..., t_q] of length q = root_system.rank,
-    # the assciated torus element to return is
+def generic_torus_element_SU(matrix_size, rank, form, letter = 't'):
+    # Output a 'generic' element of the diagonal torus subgroup of 
+    # the special unitary group, which has the form
     # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1)
-    assert(len(vec_t) == rank)
-    
-    # Note that t_1, ..., t_q should be 'purely real' if the form is hermitian, and 
-    # 'purely imaginary' if the form is skew-hermitian
-    # What this means is that we should include an extra factor of form.primitive_element
-    # with each t_i in the skew-hermitian case
-    
-    T = sp.eye(matrix_size)
+    # where q = rank
+    vec_t = sp.symarray(letter,rank)
+    t = sp.eye(matrix_size)
     for i in range(rank):
-        T[i,i] = vec_t[i]
-        T[i+rank,i+rank] = 1/vec_t[i]
-    return T
+        t[i,i] = vec_t[i]
+        t[rank+i,rank+i] = 1/vec_t[i]
+    return t
+
+def trivial_characters_SU(matrix_size, rank):
+    return [[1 if j == i or j == i + rank else 0 for j in range(matrix_size)] 
+            for i in range(rank)]
 
 def is_lie_algebra_element_SU(matrix_to_test, form):
     # Return true of matrix_to_test is an element of the special unitary group
@@ -58,15 +71,15 @@ def is_lie_algebra_element_SU(matrix_to_test, form):
     X_conjugate = custom_conjugate(X, form.primitive_element)    
     return (X_conjugate.T*H == -H*X)
 
-def generic_lie_algebra_element_SU(matrix_size, rank, form, letters = ('x','y')):
+def generic_lie_algebra_element_SU(matrix_size, rank, form, letter = 'x'):
     n = matrix_size
     q = rank
     c = form.anisotropic_vector
     p_e = form.primitive_element
     eps = form.epsilon
-    A = sp.Matrix(sp.symarray(letters[0], (n,n)))
-    B = sp.Matrix(sp.symarray(letters[1], (n,n)))
-    X = A + p_e*B
+    X_real = sp.Matrix(sp.symarray(letter + '_r', (n,n)))
+    X_imag = sp.Matrix(sp.symarray(letter + '_i', (n,n)))
+    X = X_real + p_e*X_imag
     
     # X must be a block matrix of the form
     # [X_11, X_12, X_13

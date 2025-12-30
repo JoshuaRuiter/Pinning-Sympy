@@ -29,8 +29,10 @@ class nondegenerate_isotropic_form:
                                 # epsilon=-1 to indicate skew-hermitian
         self.anisotropic_vector = anisotropic_vector    # A vector to store the diagonal entries
                                                         # of the anisotropic block of the matrix
-                                                        
-        self.anisotropic_matrix = sp.Matrix(sp.diag(*anisotropic_vector))
+    
+        self.anisotropic_matrix = None
+        if anisotropic_vector is not None:
+            self.anisotropic_matrix = sp.Matrix(sp.diag(*anisotropic_vector))
         
         self.primitive_element = primitive_element  # Only relevant for hermitian/skew-hermitian
                                                     # The primitive element of the associated field extension

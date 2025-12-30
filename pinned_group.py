@@ -14,6 +14,11 @@
 # to verify all the properties of a pinning.
 
 import sympy as sp
+from utility_general import (determine_roots, 
+                             generate_character_list, 
+                             parse_root_pairs, 
+                             reduce_character_list)
+from root_system import root_system
 
 class pinned_group:
     
@@ -25,9 +30,10 @@ class pinned_group:
                  is_group_element,
                  is_torus_element,
                  generic_torus_element,
+                 trivial_characters,
                  is_lie_algebra_element,
                  generic_lie_algebra_element,
-                 lie_algebra_condition):
+                 non_variables = None):
         
         self.name_string = name_string
         self.matrix_size = matrix_size
@@ -37,9 +43,11 @@ class pinned_group:
         self.is_group_element = is_group_element
         self.is_torus_element = is_torus_element
         self.generic_torus_element = generic_torus_element
+        self.trivial_characters = trivial_characters
         self.is_lie_algebra_element = is_lie_algebra_element
         self.generic_lie_algebra_element = generic_lie_algebra_element
-        self.lie_algebra_condition = lie_algebra_condition
+        
+        self.non_variables = non_variables
                 
         # These get set by running .fit_pinning(), (though not yet implemented)
         self.root_system = None
@@ -59,46 +67,93 @@ class pinned_group:
             if self.form is not None:
                 print("Form matrix:")
                 sp.pprint(self.form.matrix)
-            vec_t = sp.Matrix(sp.symarray('t',self.rank))
-            t = self.generic_torus_element(self.matrix_size,self.rank,self.form,vec_t)
-            print("Generic torus element:")
+            t = self.generic_torus_element(matrix_size = self.matrix_size,
+                                           rank = self.rank,
+                                           form = self.form,
+                                           letter = 't')
+            print("\nGeneric torus element:")
             sp.pprint(t)
-            
-        self.fit_root_stuff(display = True)
-        # next things to fit: root system, root space dimensions, root spaces, root subgroup maps
 
-    def fit_root_stuff(self, display = True):
-        # INCOMPLETE
-        x=0
+            x = self.generic_lie_algebra_element(matrix_size = self.matrix_size,
+                                                 rank = self.rank,
+                                                 form = self.form,
+                                                 letter = 'x')
+            print("\nGeneric Lie algebra element:")            
+            sp.pprint(x)
+            
+        self.fit_root_system(display = True)
+        # next things to fit: root space dimensions, root spaces, root subgroup maps
+
+    def fit_root_system(self, display = True):
+        t = self.generic_torus_element(matrix_size = self.matrix_size,
+                                       rank = self.rank,
+                                       form = self.form,
+                                       letter = 't')
+        x = self.generic_lie_algebra_element(matrix_size = self.matrix_size,
+                                             rank = self.rank,
+                                             form = self.form,
+                                             letter = 'x')
+        x_vars = x.free_symbols
+        if self.non_variables is not None:
+            x_vars = x_vars - self.non_variables
+        full_char_list = generate_character_list(character_length = self.matrix_size,
+                                            upper_bound = 2, 
+                                            padded_zeros = self.matrix_size - 2*self.rank)
+        reduced_char_list = reduce_character_list(vector_list = full_char_list,
+                                                  quotient_vectors = self.trivial_characters)
+        roots_and_root_spaces = determine_roots(generic_torus_element = t,
+                                                generic_lie_algebra_element = x,
+                                                list_of_characters = reduced_char_list,
+                                                variables_to_solve_for = x_vars)
+        root_list = parse_root_pairs(root_info = roots_and_root_spaces,
+                                     what_to_get = 'roots')
+        
+        # print("\nTrivial characters")
+        # sp.pprint(self.trivial_characters)
+        
+        # print("\nReduced character list:")
+        # for c in reduced_char_list:
+        #     sp.pprint(c)
+            
+        # print("\nRoot + root space pairs:")
+        # for pair in roots_and_root_spaces:
+        #     print()
+        #     sp.pprint(pair)
+            
+        # print("\nSOMETHING IS WRONG WITH THE ROOT SPACE SOLVER")
+            
+        self.root_system = root_system(root_list)
         
     def verify_pinning(self, display = True):
         # run tests to verify the pinning
         # run only after fitting
         
         self.verify_basics()
-        self.verify_root_stuff()
-        # tests to write after that: root system, root space dimensions, root spaces, root subgroup maps
+        self.verify_root_system()
+        # tests to write after that: root space dimensions, root spaces, root subgroup maps
         
-        print("OTHER TESTS NOT YET IMPLEMENTED")
+        print("\nOTHER TESTS NOT YET IMPLEMENTED")
         
     def verify_basics(self, display = True):
         # test that the generic torus element is in the group
         if display: print("\nChecking that a generic torus element is in the group... ", end="")
-        vec_t = sp.Matrix(sp.symarray('t',self.rank))
-        t = self.generic_torus_element(self.matrix_size,self.rank,self.form,vec_t)
+        t = self.generic_torus_element(matrix_size = self.matrix_size,
+                                       rank = self.rank,
+                                       form = self.form,
+                                       letter = 't')
         assert(self.is_group_element(matrix_to_test = t, form = self.form))
         if display: print("done.")
         
         # tests for is_in_lie_algebra
         if display: print("Checking that a generic Lie algebra element is in the Lie algebra... ", end="")
         A = self.generic_lie_algebra_element(matrix_size = self.matrix_size, 
-                                             rank = self.rank, 
-                                             form = self.form,
-                                             letters = ('x','y'))
+                                                     rank = self.rank, 
+                                                     form = self.form,
+                                                     letter = 'x')
         
         assert(self.is_lie_algebra_element(matrix_to_test = A, 
                                            form = self.form))        
         if display: print("done.")
         
-    def verify_root_stuff(self, display = True):
-        x=0 # INCOMPLETE
+    def verify_root_system(self, display = True):
+        self.root_system.verify_root_system_axioms()

@@ -207,7 +207,6 @@ def build_special_orthogonal_group(matrix_size, root_system_rank):
     else:
         name_string = "non-split, non-quasisplit " + name_string
     
-    
     B_r = root_system('B',root_system_rank,matrix_size)
     anisotropic_variables = symbols('c:'+str(matrix_size-2*root_system_rank))
     form = nondegenerate_isotropic_form(matrix_size,root_system_rank,0,anisotropic_variables,0)
