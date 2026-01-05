@@ -25,9 +25,9 @@ import sympy as sp
 def main():
     print("Demonstrating usage of the pinned_group class")
     sp.init_printing(wrap_line=False)    
-    #run_SL_tests()
-    #run_SO_split_tests()
-    #run_SO_nonsplit_tests()
+    run_SL_tests()
+    run_SO_split_tests()
+    run_SO_nonsplit_tests()
     run_SU_quasisplit_tests()
     run_SU_nonquasisplit_tests()    
     print("\nAll tests complete.")

@@ -11,23 +11,55 @@
 
 import numpy as np
 import sympy as sp
-from utility_roots import determine_dynkin_type
+from utility_roots import connected_components
 
 class root_system:
     
-    def __init__(self, root_list):
+    def __init__(self, root_list, full_init =  True):
         self.root_list = root_list
         
         # check that all roots are vectors of the same dimension
-        vector_length = len(root_list[0])
-        for alpha in root_list: 
+        vector_length = len(self.root_list[0])
+        for alpha in self.root_list: 
             assert(len(alpha) == vector_length)
         self.vector_length = vector_length
         
+        # Determine the irreducible components
+        component_root_lists = root_system.determine_irreducible_components(self.root_list)
+        self.irreducible = (len(component_root_lists) == 1)
+        
+        if not self.irreducible:
+            self.components = [root_system(c) for c in component_root_lists]
+        
+        # probably need to re-do this in some way
+        if full_init:
+            self.determine_properties()
+        
+    def determine_properties(self):
+        # Determine and populate various internal variables of the root system, including:
+        #   -sorted list of root lengths
+        #   -simply laced or not
+        #   -reduced vs nonreduced
+        #   -choose a set of positive roots
+        #   -choose a set of simple roots
+        #   -compute the Cartan matrix with a choice of simple roots
+        #   -compute the underlying graph of the Dynkin diagram from the Cartan matrix
+        #   -connectedness
+        #   -determine the Dynkin type from various other info above
+        
+        # first thing to do is determine if it is connected
+        # if not, then all other properties will be in list format, with one entry per component
+        # INCOMPLETE
+        
+        # determine the ordered list of root lengths,
+        # then determine if all roots are the same length
+        self.root_lengths = sorted({np.dot(r, r) for r in self.root_list})
+        self.is_simply_laced = (len(set(self.root_lengths)) == 1)
+        
         # determining if the root system is reduced
         self.is_reduced = True
-        for alpha in root_list:
-            for beta in root_list:
+        for alpha in self.root_list:
+            for beta in self.root_list:
                 if self.is_proportional(alpha,beta):
                     mask = (beta != 0)
                     ratio = (alpha[mask]/beta[mask])[0]
@@ -37,33 +69,135 @@ class root_system:
                 continue # only executed if the inner loop did NOT break
             break # only executed if the inner loop DID break
         
-        # determining if the root system is simply laced (all roots of equal length)
-        self.is_simply_laced = True
-        for alpha in self.root_list:
-            for beta in self.root_list:
-                if np.dot(alpha,alpha) != np.dot(beta,beta):
-                    self.is_simply_laced = False
-                    break
+        # Make choices of positive and simple roots
+        self.positive_roots = root_system.choose_positive_roots(self.root_list,
+                                                                max_tries = 100,
+                                                                seed = 0)
+        self.simple_roots = root_system.choose_simple_roots(self.positive_roots)
+        
+        # check that the number of simple roots is the same as the
+        # rank of the matrix spanned by the list of all roots
+        assert(len(self.simple_roots) == sp.Matrix(self.root_list).rank())
+        self.rank = len(self.simple_roots)
+        
+        # Build the Cartan matrix from the choice of simple roots
+        self.cartan_matrix = root_system.build_cartan_matrix(self.simple_roots)
+        
+        # Build the underlying graph of the Dynkin diagram from the Cartan matrix
+        self.dynkin_graph = root_system.build_dynkin_graph(self.cartan_matrix)
+        
+        # Determine irreducibility by counting components of the Dynkin diagram
+        components = connected_components(self.dynkin_graph)
+        self.irreducible = (len(components) == 1)
+        
+        # Determine the Dynkin type of each component using ???
+        # (NEED TO KNOW THE LIST OF REQUIRED DATA)
+        self.dynkin_type = root_system.determine_dynkin_type(self.dynkin_graph)
+        self.name_string = self.dynkin_type + '_' + str(self.rank)
+    
+    @staticmethod
+    def determine_irreducible_components(roots):
+        n = len(roots)
+        visited = [False]*n
+        components = []
+        for i in range(n):
+            if visited[i]:
+                continue
+            stack = [i]
+            comp_indices = []
+            while stack:
+                k = stack.pop()
+                if visited[k]:
+                    continue
+                visited[k] = True
+                comp_indices.append(k)
+                for j in range(n):
+                    if not visited[j] and np.dot(roots[k], roots[j]) != 0:
+                        stack.append(j)
+            components.append([roots[k] for k in comp_indices])
+        return components
+    
+    @staticmethod
+    def choose_positive_roots(root_list, max_tries = 100, seed = 0):
+        # Procedure: choose a hyperplane not containing any of the roots
+        # then choose one of the sides of that hyperplane.
+        # All roots on that side of the hyperplane are positive.
+        vector_length = len(root_list[0])
+        
+        # Use a numpy random generator object so that
+        # results of choosing positive roots are consistent
+        # between different runs of the code
+        rng = np.random.default_rng(seed)
+        for t in range(max_tries):
+            random_vec = rng.random(vector_length) # Generate a random vector
+            # Compute the dot product of that vector with every root
+            dot_products = [np.dot(random_vec, r) for r in root_list]
+            if 0 in dot_products:
+                # If the random vector is perpendicular to any roots, that causes a problem
+                # This is very rare probabalistically, but it can theoretically happen
+                # If it does happen, just choose a new random vector
+                continue
             else:
-                continue # only executed if the inner loop did NOT break
-            break # only executed if the inner loop DID break
+                # Choose the positive roots to be roots with positive dot product with the random vector
+                positive_roots = [r for (r, val) in zip(root_list, dot_products) if val > 0]
+                return positive_roots
+        raise RuntimeError("Failed to find a vector not proportional to a root.")
         
-        # determine the rank by taking the rank 
-        # of the matrix spanned by the roots
-        M = sp.Matrix(self.root_list)
-        self.rank = M.rank()
+    @staticmethod
+    def choose_simple_roots(positive_roots):
+        simple_roots = []
+        for alpha in positive_roots:
+            is_simple = True
+            for beta in positive_roots:
+                if not np.any(beta) or np.allclose(beta, alpha): continue
+                gamma = alpha - beta
+                if gamma in positive_roots:
+                    is_simple = False
+                    break
+            if is_simple:
+                simple_roots.append(alpha)
+        return simple_roots
         
-        # determining the Dynkin type
-        # This is done by arbitrarily choosing a set of simple roots,
-        # computing the Cartan matrix and various other metrics,
-        # and using a chain of if-then case logic
-        self.dynkin_type, r = determine_dynkin_type(self.root_list)
+    @staticmethod
+    def build_cartan_matrix(simple_roots):
+        rank = len(simple_roots)
+        A = np.zeros((rank, rank), dtype=int)
+        for i, alpha in enumerate(simple_roots):
+            for j, beta in enumerate(simple_roots):
+                A[i, j] = int(round(2 * np.dot(alpha, beta) / np.dot(beta, beta)))
+        return A
+    
+    @staticmethod
+    def build_dynkin_graph(cartan_matrix):
+        rank = cartan_matrix.shape[0]
+        graph = {i: {} for i in range(rank)}
+        for i in range(rank):
+            for j in range(i+1, rank):
+                if cartan_matrix[i, j] != 0:
+                    mult = max(abs(cartan_matrix[i, j]), abs(cartan_matrix[j, i]))
+                    graph[i][j] = mult
+                    graph[j][i] = mult
+        return graph
+
+    @staticmethod
+    def determine_dynkin_type(dynkin_graph):
+        # Compute the set of degrees of nodes in the Dynkin graph
+        degrees = {v: len(dynkin_graph[v]) for v in dynkin_graph}
         
-        #print("r=",r)
-        #print("self.rank=",self.rank)
-        
-        assert(r == self.rank)
-        self.name_string = self.dynkin_type + '_' + str(self.rank)    
+        # OUTLINE
+        # If simply laced -> Type A, D, or E
+            # If no forks -> Type A
+            # If a fork -> Type D or type E
+                # ??? -> Type D
+                # ??? -> Type E
+        # If not simply laced -> Type B, C, or BC
+            # If there is a triple edge -> type G
+            # If not reduced -> type BC
+            # If rank == 2 -> type B
+            # If one short root in the list of simple roots -> type B
+            # If one long root in the list of simple roots -> type C
+            
+
     
     def is_root(self,vector_to_test):
         # Return true if vector_to_test is a root

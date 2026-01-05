@@ -8,72 +8,109 @@ def vector_in_list(v, L, tol=1e-9):
     """Check whether vector v is in list L up to tolerance."""
     return any(is_zero(v - w, tol) for w in L)
 
-def root_lengths(roots):
-    """Return sorted list of distinct squared root lengths."""
-    lengths = {np.dot(r, r) for r in roots}
-    return sorted(lengths)
+# def root_lengths(roots):
+#     """Return sorted list of distinct squared root lengths."""
+#     lengths = {np.dot(r, r) for r in roots}
+#     return sorted(lengths)
 
-def positive_roots(roots, max_tries=100):
-    """
-    Choose a generic linear functional and split roots
-    into positive and negative roots.
-    """
-    roots = [np.array(r, dtype=float) for r in roots]
-    dim = len(roots[0])
-    for _ in range(max_tries):
-        v = np.random.randn(dim)
-        vals = [np.dot(v, r) for r in roots]
-        if all(abs(val) > 1e-9 for val in vals):
-            return [r for r, val in zip(roots, vals) if val > 0]
-    raise RuntimeError("Failed to find a generic linear functional")
+# def positive_roots(roots, max_tries=100):
+#     """
+#     Choose a generic linear functional and split roots
+#     into positive and negative roots.
+#     """
+#     roots = [np.array(r, dtype=float) for r in roots]
+#     dim = len(roots[0])
+#     for _ in range(max_tries):
+#         v = np.random.randn(dim)
+#         vals = [np.dot(v, r) for r in roots]
+#         if all(abs(val) > 1e-9 for val in vals):
+#             return [r for r, val in zip(roots, vals) if val > 0]
+#     raise RuntimeError("Failed to find a generic linear functional")
     
-def simple_roots(roots):
-    """
-    Given a root system (possibly non-reduced),
-    return a list of simple roots.
-    """
-    pos = positive_roots(roots)
-    simples = []
-    for alpha in pos:
-        is_simple = True
-        for beta in pos:
-            if is_zero(beta):
-                continue
-            if np.allclose(beta, alpha):
-                continue
-            gamma = alpha - beta
-            if vector_in_list(gamma, pos):
-                is_simple = False
-                break
-        if is_simple:
-            simples.append(alpha)
-    return simples
+# def simple_roots(roots):
+#     """
+#     Given a root system (possibly non-reduced),
+#     return a list of simple roots.
+#     """
+#     pos = positive_roots(roots)
+#     simples = []
+#     for alpha in pos:
+#         is_simple = True
+#         for beta in pos:
+#             if is_zero(beta):
+#                 continue
+#             if np.allclose(beta, alpha):
+#                 continue
+#             gamma = alpha - beta
+#             if vector_in_list(gamma, pos):
+#                 is_simple = False
+#                 break
+#         if is_simple:
+#             simples.append(alpha)
+#     return simples
 
-def cartan_matrix(simple_roots):
-    """
-    Compute the Cartan matrix from a list of simple roots.
-    """
-    rank = len(simple_roots)
-    A = np.zeros((rank, rank), dtype=int)
-    for i, alpha in enumerate(simple_roots):
-        for j, beta in enumerate(simple_roots):
-            A[i, j] = int(round(2 * np.dot(alpha, beta) / np.dot(beta, beta)))
-    return A
+# def cartan_matrix(simple_roots):
+#     """
+#     Compute the Cartan matrix from a list of simple roots.
+#     """
+#     rank = len(simple_roots)
+#     A = np.zeros((rank, rank), dtype=int)
+#     for i, alpha in enumerate(simple_roots):
+#         for j, beta in enumerate(simple_roots):
+#             A[i, j] = int(round(2 * np.dot(alpha, beta) / np.dot(beta, beta)))
+#     return A
 
-def dynkin_graph(cartan_matrix):
+# def dynkin_graph(cartan_matrix):
+#     """
+#     Build Dynkin graph from Cartan matrix.
+#     Returns adjacency list with edge multiplicities.
+#     """
+#     rank = cartan_matrix.shape[0]
+#     graph = {i: {} for i in range(rank)}
+#     for i in range(rank):
+#         for j in range(i+1, rank):
+#             if cartan_matrix[i, j] != 0:
+#                 mult = max(abs(cartan_matrix[i, j]), abs(cartan_matrix[j, i]))
+#                 graph[i][j] = mult
+#                 graph[j][i] = mult
+#     return graph
+
+def connected_components(graph):
     """
-    Build Dynkin graph from Cartan matrix.
-    Returns adjacency list with edge multiplicities.
+    Given a graph g represented as
+        {v: {u: w, ...}, ...}
+    return a list of connected components, each in the same format.
     """
-    rank = cartan_matrix.shape[0]
-    graph = {i: {} for i in range(rank)}
-    for i in range(rank):
-        for j in range(i+1, rank):
-            if cartan_matrix[i, j] != 0:
-                mult = max(abs(cartan_matrix[i, j]), abs(cartan_matrix[j, i]))
-                graph[i][j] = mult
-                graph[j][i] = mult
-    return graph
+    visited = set()
+    components = []
+    
+    for start in graph:
+        if start in visited:
+            continue
+
+        # DFS to collect one component
+        stack = [start]
+        component_vertices = set()
+
+        while stack:
+            v = stack.pop()
+            if v in visited:
+                continue
+            visited.add(v)
+            component_vertices.add(v)
+            stack.extend(graph[v].keys())
+
+        # Build the induced subgraph
+        component = {
+            v: {u: graph[v][u] for u in graph[v] if u in component_vertices}
+            for v in component_vertices
+        }
+
+        components.append(component)
+
+    return components
+
+
 
 def degrees(graph):
     return {v: len(graph[v]) for v in graph}
