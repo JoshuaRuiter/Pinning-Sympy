@@ -1,79 +1,68 @@
 import numpy as np
 import sympy as sp
 
-def is_zero(v, tol=1e-9):
-    return np.linalg.norm(v) < tol
+# Low rank examples of Dynkin graphs, used for testing purposes
+# Each graph is a dictionary of dictionaries.
+# Top-level keys are integer indices 0, 1, 2, 3, ... representing nodes.
+# Top-level values are dictionaries {node1: edges1, node2 : edges 2}
+# Inner-level keys are also integer indices representing nodes
+# Inner-level values are the number of edges between the outer-level key and the inner-level key.
 
-def vector_in_list(v, L, tol=1e-9):
-    """Check whether vector v is in list L up to tolerance."""
-    return any(is_zero(v - w, tol) for w in L)
+# For example, the Dynkin diagram of type A2 is {0: {1: 1}, 1: {0: 1}},
+# which represents a graph with two nodes (0 and 1) and one edge between them.
 
-# def root_lengths(roots):
-#     """Return sorted list of distinct squared root lengths."""
-#     lengths = {np.dot(r, r) for r in roots}
-#     return sorted(lengths)
+# To store information about directed edges, we use the following convention: 
+# given a graph dictionary g, and nodes i and j,
+# g[i][j] and g[j][i] together store information about the weighted directed edge between i and j
+# If g[i][j] = g[j][i] = 1, then there is a single undirected edge
+# If g[i][j] = n > 1, then there is a weighted edge of multiplicity n pointing from node i to node j
+    # In this case, we make the convention that g[j][i] = 1
+    # In terms of root systems, this indicates that the node i represents a longer root than the root represented by node j.
 
-# def positive_roots(roots, max_tries=100):
-#     """
-#     Choose a generic linear functional and split roots
-#     into positive and negative roots.
-#     """
-#     roots = [np.array(r, dtype=float) for r in roots]
-#     dim = len(roots[0])
-#     for _ in range(max_tries):
-#         v = np.random.randn(dim)
-#         vals = [np.dot(v, r) for r in roots]
-#         if all(abs(val) > 1e-9 for val in vals):
-#             return [r for r, val in zip(roots, vals) if val > 0]
-#     raise RuntimeError("Failed to find a generic linear functional")
+# For example, the Dynkin diagram of type B2 is {0: {1: 2}, 1: {0: 1}}
+# which indicates that there are two nodes, 0 and 1,
+# and g[0][1] = 2 means that there is an edge of weight 2 pointing from node 0 to node 1
+# We also have g[1][0] = 1 as set by convention.
+
+directed_dynkin_graphs = {
     
-# def simple_roots(roots):
-#     """
-#     Given a root system (possibly non-reduced),
-#     return a list of simple roots.
-#     """
-#     pos = positive_roots(roots)
-#     simples = []
-#     for alpha in pos:
-#         is_simple = True
-#         for beta in pos:
-#             if is_zero(beta):
-#                 continue
-#             if np.allclose(beta, alpha):
-#                 continue
-#             gamma = alpha - beta
-#             if vector_in_list(gamma, pos):
-#                 is_simple = False
-#                 break
-#         if is_simple:
-#             simples.append(alpha)
-#     return simples
+    # ----- Type A_n -----
+    "A1": {0: {}},
+    "A2": {0: {1: 1}, 1: {0: 1}},
+    "A3": {0: {1: 1}, 1: {0: 1, 2: 1}, 2: {1: 1}},
+    "A4": {0: {1: 1}, 1: {0: 1, 2: 1}, 2: {1: 1, 3: 1}, 3: {2: 1}},
 
-# def cartan_matrix(simple_roots):
-#     """
-#     Compute the Cartan matrix from a list of simple roots.
-#     """
-#     rank = len(simple_roots)
-#     A = np.zeros((rank, rank), dtype=int)
-#     for i, alpha in enumerate(simple_roots):
-#         for j, beta in enumerate(simple_roots):
-#             A[i, j] = int(round(2 * np.dot(alpha, beta) / np.dot(beta, beta)))
-#     return A
+    # ----- Type B_n -----
+    "B2": {0: {1: 2}, 1: {0: 1}},
+    "B3": {0: {1: 1}, 1: {0: 1, 2: 2}, 2: {1: 1}},
+    "B4": {0: {1: 1}, 1: {0: 1, 2: 1}, 2: {1: 1, 3: 2}, 3: {2: 1}},
 
-# def dynkin_graph(cartan_matrix):
-#     """
-#     Build Dynkin graph from Cartan matrix.
-#     Returns adjacency list with edge multiplicities.
-#     """
-#     rank = cartan_matrix.shape[0]
-#     graph = {i: {} for i in range(rank)}
-#     for i in range(rank):
-#         for j in range(i+1, rank):
-#             if cartan_matrix[i, j] != 0:
-#                 mult = max(abs(cartan_matrix[i, j]), abs(cartan_matrix[j, i]))
-#                 graph[i][j] = mult
-#                 graph[j][i] = mult
-#     return graph
+    # ----- Type C_n -----    
+    "C3": {0: {1: 1}, 1: {0: 1, 2: 1}, 2: {1: 2}},
+    "C4": {0: {1: 1}, 1: {0: 1, 2: 1}, 2: {1: 1, 3: 1}, 3: {2: 2}},
+
+    # ----- Type D_n -----
+    "D4": {0: {1: 1}, 1: {0: 1, 2: 1, 3: 1}, 2: {1: 1}, 3: {1: 1}},
+    "D5": {0: {1: 1}, 1: {0: 1, 2: 1}, 2: {1: 1, 3: 1, 4: 1}, 3: {2: 1}, 4: {2: 1}},
+    "D6": {0: {1: 1}, 1: {0: 1, 2: 1}, 2: {1: 1, 3: 1}, 3: {2: 1, 4: 1, 5:1}, 4: {3: 1}, 5: {3: 1}},
+    "D7": {0: {1: 1}, 1: {0: 1, 2: 1}, 2: {1: 1, 3: 1}, 3: {2: 1, 4: 1}, 
+                      4: {3: 1, 5: 1, 6: 1}, 5: {4: 1}, 6: {4: 1}},
+
+    # ----- Exceptional types -----
+    "E6": {0: {1: 1}, 1: {0: 1, 3: 1}, 2: {3: 1}, 3: {1: 1, 2: 1, 4: 1}, 4: {3: 1, 5: 1}, 5: {4: 1}},
+    "E7": {0: {1: 1}, 1: {0: 1, 2: 1}, 2: {1: 1, 3: 1}, 3: {2: 1, 4: 1, 6: 1}, 
+                      4: {3: 1, 5: 1}, 5: {4: 1}, 6: {3: 1}},
+    "E8": {0: {1: 1}, 1: {0: 1, 2: 1}, 2: {1: 1, 3: 1}, 3: {2: 1, 4: 1, 7: 1}, 
+                      4: {3: 1, 5: 1}, 5: {4: 1, 6: 1}, 6: {5: 1}, 7: {3: 1}},
+
+    "F4": {0: {1: 1}, 1: {0: 1, 2: 2}, 2: {1: 1, 3: 1}, 3: {2: 1}},
+    "G2": {0: {1: 3}, 1: {0: 1}},
+
+    # ----- Non-reduced -----    
+    "BC2": {0: {1: 2}, 1: {0: 1}},
+    "BC3": {0: {1: 1}, 1: {0: 1, 2: 2}, 2: {1: 1}},
+    "BC4": {0: {1: 1}, 1: {0: 1, 2: 1}, 2: {1: 1, 3: 2}, 3: {2: 1}}
+}
 
 def connected_components(graph):
     """
@@ -105,109 +94,69 @@ def connected_components(graph):
             v: {u: graph[v][u] for u in graph[v] if u in component_vertices}
             for v in component_vertices
         }
-
+        
         components.append(component)
-
     return components
 
-
-
-def degrees(graph):
-    return {v: len(graph[v]) for v in graph}
-
-def edge_multiplicities(graph):
-    return sorted(mult for v in graph for mult in graph[v].values())
-
-def is_simply_laced(graph):
-    return all(mult == 1 for v in graph for mult in graph[v].values())
-
-def is_disconnected(graph):
+def visualize_graph(graph):
     """
-    Check if an undirected graph is disconnected.
+    ASCII Dynkin diagram for chain-like graphs with fixed 3-character edges.
+    Arrows follow the adjacency dict convention (outgoing multiplicity).
     
-    graph: dict of the form {node: {neighbor: multiplicity, ...}, ...}
-    Returns True if the graph has more than one connected component.
+    Args:
+        graph (dict): adjacency dict {node: {neighbor: multiplicity, ...}}
+    
+    Returns:
+        str: ASCII diagram as a string
     """
-    if not graph:
-        return True
-    visited = set()
-    nodes = list(graph.keys())
-    def dfs(u):
-        visited.add(u)
-        for v in graph[u]:
-            if v not in visited:
-                dfs(v)
-    # Start DFS from the first node
-    dfs(nodes[0])
-    # If some node wasn't visited, graph is disconnected
-    return len(visited) < len(nodes)
+    # Step 1: start at a leaf node
+    leaf_nodes = [v for v, neighbors in graph.items() if len(neighbors) == 1]
+    start = min(leaf_nodes) if leaf_nodes else min(graph)
 
-def determine_dynkin_type(roots):
-    simples = simple_roots(roots)
-    C = cartan_matrix(simples)
-    rank = C.shape[0]
-    graph = dynkin_graph(C)
-    deg_seq = sorted(len(graph[v]) for v in graph)
-    mults = edge_multiplicities(graph)
-    
-    print("\nRoots:")
-    sp.pprint(roots)
-    print("\nSimple roots:")
-    sp.pprint(simples)
-    print("\nCartan matrix:")
-    sp.pprint(C)
-    print("\nRank:", rank)
-    print("\nGraph:", graph)
-    print("\nDegree sequence:",deg_seq)
-    print("\nEdge multiplicities:",mults)
-    
-    print("TO DO: break up disconnected diagrams into components, then classify the connected components")
-    
-    if max(mults, default=1) == 3: 
-        # Recognize type G by the presence of a triple edge
-        dynkin_type = 'G'
-        assert(rank == 2)
-        
-    elif not is_simply_laced(graph):
-        if deg_seq == [1,2,2,1]:
-            # Recognize type F by the degree sequence
-            dynkin_type = 'F'
-        else:
-            # type B, C, or BC
-            root_lengths = {np.dot(r, r) for r in roots}
-            if len(root_lengths) >= 3:
-                # recognize type BC by the presence of three different root lengths
-                dynkin_type = 'BC'
-            elif rank == 2:
-                # B2 and C2 are isomorphic, we call it B2 by pure convention
-                dynkin_type = 'B'
+    # Step 2: traverse the chain
+    visited = {start}
+    order = [start]
+    current = start
+    while True:
+        unvisited_neighbors = [u for u in graph[current] if u not in visited]
+        if not unvisited_neighbors:
+            break
+        next_node = unvisited_neighbors[0]
+        order.append(next_node)
+        visited.add(next_node)
+        current = next_node
+
+    # Step 3: build ASCII
+    ascii_parts = [str(order[0])]
+    for i in range(1, len(order)):
+        prev = order[i-1]
+        curr = order[i]
+
+        mult_prev_to_curr = graph[prev].get(curr, 1)
+        mult_curr_to_prev = graph[curr].get(prev, 1)
+
+        # Decide edge symbol
+        if mult_prev_to_curr > mult_curr_to_prev:
+            # arrow from prev -> curr
+            if mult_prev_to_curr == 2:
+                edge = "=>="
+            elif mult_prev_to_curr == 3:
+                edge = "≡>≡"
             else:
-                # type B or C
-                # B has 1 short root in the list of simple roots
-                # C has 1 long root in the list of simple roots    
-                simple_root_lengths = {np.dot(r, r) for r in simples}
-                min_len = min(simple_root_lengths)
-                num_short = sum(l == min_len for l in simple_root_lengths)
-                if num_short == 1:
-                    dynkin_type = 'B'
-                elif num_short == len(simples) - 1:
-                    dynkin_type = 'C'
-                else:
-                    raise ValueError("Not a reduced B/C root system")
-    else: 
-        # simpy laced, types ADE
-        assert(is_simply_laced(graph))
-        if rank == 1: dynkin_type = 'A'
-        elif rank == 2:
-            if max(deg_seq) == 0: dynkin_type = 'D'
-            else: dynkin_type = 'A'
-        elif rank == 3:
-            if max(deg_seq) == 2: dynkin_type = 'A'
-            else: dynkin_type = 'D'    
-        elif deg_seq.count(1) == 2 and deg_seq.count(2) == rank - 2: dynkin_type = 'A'
-        elif deg_seq.count(3) == 1 and deg_seq.count(1) == 3: dynkin_type = 'D'
+                edge = f"-{mult_prev_to_curr}>"
+        elif mult_prev_to_curr < mult_curr_to_prev:
+            # arrow from curr -> prev
+            if mult_curr_to_prev == 2:
+                edge = "=<="
+            elif mult_curr_to_prev == 3:
+                edge = "≡<≡"
+            else:
+                edge = f"<-{mult_curr_to_prev}"
         else:
-            dynkin_type = 'E'
-            assert rank in (6, 7, 8)
+            # symmetric or single edge
+            edge = "---"
 
-    return dynkin_type, rank
+        ascii_parts.append(edge + str(curr))
+
+    return "".join(ascii_parts)
+

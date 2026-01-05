@@ -18,7 +18,7 @@ class root_system:
     def __init__(self, root_list, full_init =  True):
         self.root_list = root_list
         
-        # check that all roots are vectors of the same dimension
+        # check that all roots are vectors have same length/dimension
         vector_length = len(self.root_list[0])
         for alpha in self.root_list: 
             assert(len(alpha) == vector_length)
@@ -26,14 +26,20 @@ class root_system:
         
         # Determine the irreducible components
         component_root_lists = root_system.determine_irreducible_components(self.root_list)
-        self.irreducible = (len(component_root_lists) == 1)
+        self.is_irreducible = (len(component_root_lists) == 1)
         
-        if not self.irreducible:
-            self.components = [root_system(c) for c in component_root_lists]
+        if not self.is_irreducible:
+            self.components = [root_system(c, full_init = True) for c in component_root_lists]
         
-        # probably need to re-do this in some way
         if full_init:
-            self.determine_properties()
+            if self.is_irreducible:
+                self.determine_properties()
+            else:
+                self.name_string = ""
+                for c in self.components:
+                    c.determine_properties()
+                    self.name_string = self.name_string + "_x_" + c.name_string
+                self.name_string = self.name_string[3:]
         
     def determine_properties(self):
         # Determine and populate various internal variables of the root system, including:
@@ -47,16 +53,15 @@ class root_system:
         #   -connectedness
         #   -determine the Dynkin type from various other info above
         
-        # first thing to do is determine if it is connected
-        # if not, then all other properties will be in list format, with one entry per component
-        # INCOMPLETE
+        # Key assumption: the root system is irreducible
+        assert(self.is_irreducible)
         
-        # determine the ordered list of root lengths,
-        # then determine if all roots are the same length
+        # make an ordered list of root lengths,
+        # then determine if all roots are the same length, i.e. whether the root system is simply laced
         self.root_lengths = sorted({np.dot(r, r) for r in self.root_list})
         self.is_simply_laced = (len(set(self.root_lengths)) == 1)
         
-        # determining if the root system is reduced
+        # determining reduced vs non-reduced
         self.is_reduced = True
         for alpha in self.root_list:
             for beta in self.root_list:
@@ -83,17 +88,18 @@ class root_system:
         # Build the Cartan matrix from the choice of simple roots
         self.cartan_matrix = root_system.build_cartan_matrix(self.simple_roots)
         
-        # Build the underlying graph of the Dynkin diagram from the Cartan matrix
-        self.dynkin_graph = root_system.build_dynkin_graph(self.cartan_matrix)
+        # Build the (directed, weighted) Dynkin diagram/graph
+        self.dynkin_graph = root_system.build_directed_dynkin_graph(self.simple_roots)
         
-        # Determine irreducibility by counting components of the Dynkin diagram
-        components = connected_components(self.dynkin_graph)
-        self.irreducible = (len(components) == 1)
+        # Check again for irreducibility
+        # Could remove this, it's just a verification
+        assert(len(connected_components(self.dynkin_graph)) == 1)
         
-        # Determine the Dynkin type of each component using ???
-        # (NEED TO KNOW THE LIST OF REQUIRED DATA)
-        self.dynkin_type = root_system.determine_dynkin_type(self.dynkin_graph)
-        self.name_string = self.dynkin_type + '_' + str(self.rank)
+        # Determine the Dynkin type of each component using the Dynkin diagram
+        self.dynkin_type, r = root_system.determine_dynkin_type(self.dynkin_graph)
+        assert(self.rank == r)
+        
+        self.name_string = self.dynkin_type + str(self.rank)
     
     @staticmethod
     def determine_irreducible_components(roots):
@@ -151,7 +157,7 @@ class root_system:
             for beta in positive_roots:
                 if not np.any(beta) or np.allclose(beta, alpha): continue
                 gamma = alpha - beta
-                if gamma in positive_roots:
+                if any(np.array_equal(root,gamma) for root in positive_roots):
                     is_simple = False
                     break
             if is_simple:
@@ -168,36 +174,121 @@ class root_system:
         return A
     
     @staticmethod
-    def build_dynkin_graph(cartan_matrix):
-        rank = cartan_matrix.shape[0]
-        graph = {i: {} for i in range(rank)}
+    def build_directed_dynkin_graph(simple_roots):
+        cartan_matrix = root_system.build_cartan_matrix(simple_roots)
+        rank = cartan_matrix.shape[0] 
+        graph = {i: {} for i in range(rank)} 
         for i in range(rank):
-            for j in range(i+1, rank):
-                if cartan_matrix[i, j] != 0:
-                    mult = max(abs(cartan_matrix[i, j]), abs(cartan_matrix[j, i]))
-                    graph[i][j] = mult
-                    graph[j][i] = mult
+            for j in range(rank):
+                if i == j:
+                    continue
+                a_ij = cartan_matrix[i, j]
+                a_ji = cartan_matrix[j, i]
+                if a_ij != 0:
+                    len_i = np.dot(simple_roots[i], simple_roots[i])
+                    len_j = np.dot(simple_roots[j], simple_roots[j])
+                    mult = max(abs(a_ij), abs(a_ji))
+                    if len_i > len_j:
+                        # i -> j
+                        graph[i][j] = mult
+                        graph[j][i] = 1
+                    elif len_i < len_j:
+                        # j -> i
+                        graph[i][j] = 1
+                        graph[j][i] = mult
+                    else:
+                        # equal length, symmetric single edge
+                        graph[i][j] = 1
+                        graph[j][i] = 1
         return graph
 
     @staticmethod
     def determine_dynkin_type(dynkin_graph):
-        # Compute the set of degrees of nodes in the Dynkin graph
-        degrees = {v: len(dynkin_graph[v]) for v in dynkin_graph}
+        # Determine the dynkin type of an irreducible root system from its
+        # (weighted, directed) Dynkin graph
         
-        # OUTLINE
-        # If simply laced -> Type A, D, or E
-            # If no forks -> Type A
-            # If a fork -> Type D or type E
-                # ??? -> Type D
-                # ??? -> Type E
-        # If not simply laced -> Type B, C, or BC
-            # If there is a triple edge -> type G
-            # If not reduced -> type BC
-            # If rank == 2 -> type B
-            # If one short root in the list of simple roots -> type B
-            # If one long root in the list of simple roots -> type C
+        my_rank = len(dynkin_graph)
+        
+        if my_rank == 1: 
+            # only one node
+            # this needs to be checked before computing other properties,
+            # because it causes some degeneracy and things fail to calculate
+            return ('A', 1)
+    
+        degree_dict = {v: len(dynkin_graph[v]) for v in dynkin_graph}
+        #print("\t(Node : Degree) dictionary:",degree_dict)
+        
+        degrees = list(degree_dict.values())
+        #print("\tDegrees:",degrees)
+        
+        edge_multiplicities = sorted(mult for v in dynkin_graph for mult in dynkin_graph[v].values())
+        #print("\tEdge multiplicities:",edge_multiplicities)
             
-
+        is_simply_laced = (max(edge_multiplicities, default = -1) == 1)
+        #print("\tIs simply laced:", is_simply_laced)
+        
+        nodes_with_multiple_leaf_neighbors = [
+            v for v in dynkin_graph
+            if sum(1 for u in dynkin_graph[v] if len(dynkin_graph[u]) == 1) > 1
+        ]
+        #print("\tNodes with multiple leaf neighbors:",nodes_with_multiple_leaf_neighbors)
+        
+        leaf_nodes = [v for v in dynkin_graph if len(dynkin_graph[v]) == 1]
+        single_edge_leaf_nodes = []
+        for v in leaf_nodes:
+            simple_edges = True
+            outgoing_edges = sum(dynkin_graph[v].values())
+            if outgoing_edges > 1:
+                simple_edges = False
+                break
+            for u in dynkin_graph:
+                if v in dynkin_graph[u] and dynkin_graph[u][v] > 1:
+                    simple_edges = False
+                    break
+            if simple_edges:
+                single_edge_leaf_nodes.append(v)
+        num_single_edge_leaf_nodes = len(single_edge_leaf_nodes)
+        #print("\tLeaf nodes:", leaf_nodes)
+        #print("\tSingle edge leaf nodes:", single_edge_leaf_nodes)
+        #print("\tNumber of single edge leaf nodes:", num_single_edge_leaf_nodes)
+    
+        double_edge_to_leaf = False
+        for v in leaf_nodes:
+            for u in dynkin_graph:
+                if v in dynkin_graph[u] and dynkin_graph[u][v] > 1:
+                    double_edge_to_leaf = True
+        #print("\tIs there a double edge going to a leaf?",double_edge_to_leaf)
+    
+        if is_simply_laced:
+            if 3 not in degrees:
+                # no forks, so type A
+                my_type = 'A'
+            elif len(nodes_with_multiple_leaf_neighbors) >= 1:
+                # D has a node with two leaf neighbors, E does not
+                my_type = 'D'
+                assert(my_rank >= 4)
+            else:
+                my_type = 'E'
+                assert(my_rank in (6,7,8))
+        else:
+            if 3 in edge_multiplicities:
+                my_type = 'G'
+                assert(my_rank == 2)
+            elif num_single_edge_leaf_nodes == 2:
+                my_type = 'F'
+                assert(my_rank == 4)
+            else:
+                ###########################################################
+                # something to detect type BC needs to be here I think
+                ###########################################################
+                if double_edge_to_leaf:
+                    my_type = 'B'
+                    assert(my_rank >= 2)
+                else:
+                    my_type = 'C'
+                    assert(my_rank >= 3)
+    
+        return my_type, my_rank
     
     def is_root(self,vector_to_test):
         # Return true if vector_to_test is a root

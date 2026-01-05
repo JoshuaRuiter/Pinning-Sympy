@@ -19,6 +19,7 @@ from utility_general import (determine_roots,
                              parse_root_pairs, 
                              reduce_character_list)
 from root_system import root_system
+from utility_roots import visualize_graph
 
 class pinned_group:
     
@@ -108,20 +109,6 @@ class pinned_group:
         root_list = parse_root_pairs(root_info = roots_and_root_spaces,
                                      what_to_get = 'roots')
         
-        # print("\nTrivial characters")
-        # sp.pprint(self.trivial_characters)
-        
-        # print("\nReduced character list:")
-        # for c in reduced_char_list:
-        #     sp.pprint(c)
-            
-        # print("\nRoot + root space pairs:")
-        # for pair in roots_and_root_spaces:
-        #     print()
-        #     sp.pprint(pair)
-            
-        # print("\nSOMETHING IS WRONG WITH THE ROOT SPACE SOLVER")
-            
         self.root_system = root_system(root_list)
         
     def verify_pinning(self, display = True):
@@ -156,4 +143,9 @@ class pinned_group:
         if display: print("done.")
         
     def verify_root_system(self, display = True):
+        if display:
+            print("\nThe root system is type",self.root_system.name_string)
+            if self.root_system.is_irreducible:
+                print("Dynkin diagram:",visualize_graph(self.root_system.dynkin_graph))
+        
         self.root_system.verify_root_system_axioms()
