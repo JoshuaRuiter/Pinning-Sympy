@@ -14,6 +14,7 @@
 # to verify all the properties of a pinning.
 
 import sympy as sp
+import numpy as np
 from utility_general import (determine_roots, 
                              generate_character_list, 
                              parse_root_pairs, 
@@ -68,21 +69,26 @@ class pinned_group:
             if self.form is not None:
                 print("Form matrix:")
                 sp.pprint(self.form.matrix)
-            t = self.generic_torus_element(matrix_size = self.matrix_size,
-                                           rank = self.rank,
-                                           form = self.form,
-                                           letter = 't')
-            print("\nGeneric torus element:")
-            sp.pprint(t)
-
+                
             x = self.generic_lie_algebra_element(matrix_size = self.matrix_size,
                                                  rank = self.rank,
                                                  form = self.form,
                                                  letter = 'x')
             print("\nGeneric Lie algebra element:")            
             sp.pprint(x)
+                
+            t = self.generic_torus_element(matrix_size = self.matrix_size,
+                                           rank = self.rank,
+                                           form = self.form,
+                                           letter = 't')
+            print("\nGeneric torus element:")
+            sp.pprint(t)
             
-        self.fit_root_system(display = True)
+            print("\nTrivial characters:")
+            for c in self.trivial_characters:
+                sp.pprint(c)
+            
+        self.fit_root_system(display = display)
         # next things to fit: root space dimensions, root spaces, root subgroup maps
 
     def fit_root_system(self, display = True):
@@ -102,14 +108,56 @@ class pinned_group:
                                             padded_zeros = self.matrix_size - 2*self.rank)
         reduced_char_list = reduce_character_list(vector_list = full_char_list,
                                                   quotient_vectors = self.trivial_characters)
-        roots_and_root_spaces = determine_roots(generic_torus_element = t,
+        
+        if display:
+            print("\nCandidate characters:",len(full_char_list))                
+            print("Candidates after quotienting by trivial characters:",len(reduced_char_list))
+                
+        self.roots_and_root_spaces = determine_roots(generic_torus_element = t,
                                                 generic_lie_algebra_element = x,
                                                 list_of_characters = reduced_char_list,
                                                 variables_to_solve_for = x_vars)
-        root_list = parse_root_pairs(root_info = roots_and_root_spaces,
+        root_list = parse_root_pairs(root_info = self.roots_and_root_spaces,
                                      what_to_get = 'roots')
         
+        def rsd(root):
+            # I am not sure if this is the right way to do things
+            # for unitary groups, because of the quadratic field extension
+            # Perhaps the "complex variable" inputs need to be counted
+            # as only a single dimension, I'm not sure
+            for r, x in self.roots_and_root_spaces:
+                if np.array_equal(r, root):
+                    x_vars = x.free_symbols
+                    if self.non_variables is not None:
+                        x_vars = x_vars - self.non_variables
+                    return len(x_vars)
+        self.root_space_dimension = rsd
+        
+        def rsm(root, u):
+            # This isn't what I want, I want it to take an input variable
+            # but this is a first approximation
+            assert(len(u) == self.root_space_dimension(root))
+            for r, x in self.roots_and_root_spaces:
+                if np.array_equal(r, root):
+                    return x
+        self.root_space_map = rsm
+        
+        if display:
+            print("\nRoots and root spaces:")
+            for r, x in self.roots_and_root_spaces:
+                print("\tRoot:",r)
+                print("\tRoot space:")
+                sp.pprint(x)
+                print("\tRoot space dimension:",self.root_space_dimension(r))
+                print()
+        
         self.root_system = root_system(root_list)
+        
+        if display:
+            print("Root system:",self.root_system.name_string)
+            print("Number of roots:",len(root_list))
+            if self.root_system.is_irreducible:
+                print("Dynkin diagram:",visualize_graph(self.root_system.dynkin_graph))
         
     def verify_pinning(self, display = True):
         # run tests to verify the pinning
@@ -142,10 +190,5 @@ class pinned_group:
                                            form = self.form))        
         if display: print("done.")
         
-    def verify_root_system(self, display = True):
-        if display:
-            print("\nThe root system is type",self.root_system.name_string)
-            if self.root_system.is_irreducible:
-                print("Dynkin diagram:",visualize_graph(self.root_system.dynkin_graph))
-        
+    def verify_root_system(self, display = True):        
         self.root_system.verify_root_system_axioms()

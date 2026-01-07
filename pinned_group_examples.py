@@ -29,7 +29,7 @@ def main():
     run_SO_split_tests()
     run_SO_nonsplit_tests()
     run_SU_quasisplit_tests()
-    run_SU_nonquasisplit_tests()    
+    run_SU_nonquasisplit_tests()
     print("\nAll tests complete.")
 
 def run_SL_tests():
@@ -120,8 +120,8 @@ def run_SU_quasisplit_tests():
     print("\nRunning calculations and verifications for quasi-split special unitary groups")
     d = sp.symbols('d')
     p_e = sp.sqrt(d)
-    for eps in (1,-1):
-        for q in (2,3):
+    for q in (2,3):
+        for eps in (1,-1):
             n=2*q
             anisotropic_vec = sp.Matrix(sp.symarray('c',n-2*q))
             if eps == -1:
@@ -157,32 +157,33 @@ def run_SU_nonquasisplit_tests():
     print("\nRunning calculations and verifications for non-(quasi-split) special unitary groups")
     d = sp.symbols('d')
     p_e = sp.sqrt(d)
-    for eps in (1,-1):
-        for q in (2,3):
-            for n in (2*q+1,2*q+2):
-                anisotropic_vec = sp.Matrix(sp.symarray('c',n-2*q))
-                if eps == -1:
-                    anisotropic_vec = anisotropic_vec * p_e
-                NIF = nondegenerate_isotropic_form(dimension = n,
-                                                    witt_index = q,
-                                                    anisotropic_vector = anisotropic_vec,
-                                                    epsilon = eps,
-                                                    primitive_element = p_e)
-                SU_n_q = pinned_group(name_string = f"SU(n={n}, q={q}, eps={eps})",
-                                      matrix_size = n,
-                                      rank = q,
-                                      form = NIF, 
-                                      is_group_element = is_group_element_SU, 
-                                      is_torus_element = is_torus_element_SU,
-                                      generic_torus_element = generic_torus_element_SU,
-                                      trivial_characters = trivial_characters_SU(n,q),
-                                      is_lie_algebra_element = is_lie_algebra_element_SU,
-                                      generic_lie_algebra_element = generic_lie_algebra_element_SU,
-                                      non_variables = {d}) 
-                SU_n_q.fit_pinning(display = True)
-                
-                print("\nRunning tests to verify the results of calculated pinning information")        
-                SU_n_q.verify_pinning(display = True)
+    for (n,q) in [(5, 2), (6, 2), (7, 3)]:
+    # for q in (2,3):
+    #     for n in (2*q+1,2*q+2):
+        for eps in (1,-1):
+            anisotropic_vec = sp.Matrix(sp.symarray('c',n-2*q))
+            if eps == -1:
+                anisotropic_vec = anisotropic_vec * p_e
+            NIF = nondegenerate_isotropic_form(dimension = n,
+                                                witt_index = q,
+                                                anisotropic_vector = anisotropic_vec,
+                                                epsilon = eps,
+                                                primitive_element = p_e)
+            SU_n_q = pinned_group(name_string = f"SU(n={n}, q={q}, eps={eps})",
+                                  matrix_size = n,
+                                  rank = q,
+                                  form = NIF, 
+                                  is_group_element = is_group_element_SU, 
+                                  is_torus_element = is_torus_element_SU,
+                                  generic_torus_element = generic_torus_element_SU,
+                                  trivial_characters = trivial_characters_SU(n,q),
+                                  is_lie_algebra_element = is_lie_algebra_element_SU,
+                                  generic_lie_algebra_element = generic_lie_algebra_element_SU,
+                                  non_variables = {d}) 
+            SU_n_q.fit_pinning(display = True)
+            
+            print("\nRunning tests to verify the results of calculated pinning information")        
+            SU_n_q.verify_pinning(display = True)
     print("Done with non-(quasi-split) special unitary groups.\n")
         
 if __name__ == "__main__":

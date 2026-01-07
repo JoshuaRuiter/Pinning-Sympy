@@ -3,6 +3,7 @@
 import sympy as sp
 import numpy as np
 import itertools
+import time
 
 def is_diagonal(my_matrix):
     # Return true if matrix is diagonal'    
@@ -39,7 +40,7 @@ def generate_character_list(character_length, upper_bound, padded_zeros):
             for c in itertools.product(range(-upper_bound, upper_bound + 1),
                                        repeat=character_length - padded_zeros)]
 
-def reduce_character_list(vector_list, quotient_vectors):
+def reduce_character_list_OLD(vector_list, quotient_vectors):
     # take a list of numpy vectors, and return a sub-list
     # consisting of only vectors which are not pairwise equivalent
     # under quotienting by list of quotient vectors
@@ -49,13 +50,10 @@ def reduce_character_list(vector_list, quotient_vectors):
     if not W: return V # If W is empty, everything is distinct
     
     W_mat = sp.Matrix(W)    # Matrix whose rows span W
-    Q = W_mat.nullspace()   # Basis for the then null space of W_mat
+    Q = W_mat.nullspace()   # Basis for the null space of W_mat
     
     def length_sq(v): return sum(x*x for x in v)
-    #def positivity_score(v): return sum(1 for x in v if x > 0)
-    def nonzero_pattern(v):
-     # tuple of 1/0 indicating nonzero entries
-     return tuple(1 if x != 0 else 0 for x in v)
+    def nonzero_pattern(v): return tuple(1 if x != 0 else 0 for x in v) # binary tuple indicating nonzero entries
         
     # If nullspace is trivial, everything is equivalent, just return the shortest vector
     if not Q: return [max(V,key=lambda v: (-length_sq(v), nonzero_pattern(v)))]
@@ -79,6 +77,42 @@ def reduce_character_list(vector_list, quotient_vectors):
                best[key] = v
     return list(best.values())
 
+def reduce_character_list(vector_list, quotient_vectors):
+    # take a list of numpy vectors, and return a sub-list
+    # consisting of only vectors which are not pairwise equivalent
+    # under quotienting by list of quotient vectors
+    V = vector_list
+    W = quotient_vectors
+        
+    if not W: return V # If W is empty, everything is distinct
+    
+    W_mat = sp.Matrix(W)    # Matrix whose rows span W
+    Q = W_mat.nullspace()   # Basis for the null space of W_mat
+    
+    def support_size(v): return sum(1 for x in v if x != 0)
+    def support_pattern(v): return tuple(1 if x != 0 else 0 for x in v)
+    def length_sq(v): return sum(x*x for x in v)
+    
+    # Comparison key, higher is preferred
+    def priority_key(v):
+        return (
+            -support_size(v),     # fewer nonzeros is better
+            -length_sq(v),        # shorter vector preferred
+            support_pattern(v)    # earlier nonzeros preferred
+        )
+    
+    # If nullspace is trivial, everything is equivalent, just return the best vector by priority key
+    if not Q: return [max(V, key=priority_key)]
+    
+    # Matrix whose rows are a basis for the null space of W_mat
+    Q_mat = sp.Matrix.vstack(*[q.T for q in Q]) 
+    
+    best = {}
+    for v in V:
+        key = tuple(Q_mat * sp.Matrix(v))
+        if key not in best or priority_key(v) > priority_key(best[key]): best[key] = v
+    return list(best.values())
+
 def determine_roots(generic_torus_element,
                     generic_lie_algebra_element,
                     list_of_characters,
@@ -91,64 +125,39 @@ def determine_roots(generic_torus_element,
     x = generic_lie_algebra_element
     LHS = t*x*t**(-1)
     
-    test_alpha = (1,0,0,0)
+    # print("\nComputing roots...")
+    # n = len(list_of_characters)
+    # print("Testing " + str(n) + " candidate characters.")
+    # i = 0
+    # t0 = time.time()
     
     for alpha in list_of_characters:
+        
+        # i = i + 1
+        # t1 = time.time()
+        # if i % 100 == 0:
+        #     print("\tTesting candidate", i)
+        #     print("\tRoots found so far:", len(roots_and_root_spaces))
+        #     elapsed = t1-t0
+        #     avg = elapsed/i
+        #     remaining = (n-i)*avg
+        #     print("\tTime elapsed:", int(elapsed), "seconds")
+        #     print("\tAverage time per root:", round(avg,2), "seconds")
+        #     print("\tEstimated time remaining:", int(remaining), "seconds")
+            
         alpha_of_t = evaluate_character(alpha,t)
         if alpha_of_t != 1: # ignore cases where the character is trivial
             RHS = alpha_of_t*x
             my_equation = LHS-RHS
             solutions_list = sp.solve(my_equation,variables_to_solve_for,dict=True)
-            
-            # #if np.array_equal(alpha,test_alpha):
-            # if True:
-            #     print("\nt=")
-            #     sp.pprint(t)
-            #     print("\nx=")
-            #     sp.pprint(x)
-            #     print("\nt*x*t^(-1)=")
-            #     sp.pprint(LHS)
-            #     print("\nalpha=")
-            #     sp.pprint(alpha)
-            #     print("\nalpha of t=")
-            #     sp.pprint(alpha_of_t)
-            #     print("\nalpha_of_t * x=")
-            #     sp.pprint(RHS)
-            #     print("\nLHS-RHS=")
-            #     sp.pprint(LHS-RHS)                
-            #     print("\nSolutions to LHS-RHS=0")
-            #     sp.pprint(solutions_list)
-            #     print("\nType of solution object:", type(solutions_list))
-            #     print("\nLength of solutions list:")
-            #     print(len(solutions_list))
-            #     print("\nType of first solutions entry:",type(solutions_list[0]))
-            #     print("\nSolutions entry-by-entry:")
-            #     for s in solutions_list:
-            #         sp.pprint(s)
-            
             if len(solutions_list) == 1:
                 solutions_dict = solutions_list[0]
-                
-                # #if np.array_equal(alpha,test_alpha):
-                # if True:
-                #     print("\nSolutions dictionary:")
-                #     sp.pprint(solutions_dict)
-                #     print("\nLength of solutions dictionary:")
-                #     print(len(solutions_dict))
-                
                 if len(solutions_dict)>0: # check that not all variables are zero
                     all_zero = True
                     for var in variables_to_solve_for:
                         if not(var in solutions_dict.keys()) or solutions_dict[var] != 0:
                             all_zero = False
                             break
-                        
-                    
-                    # #if np.array_equal(alpha,test_alpha):
-                    # if True:
-                    #     print("\nIs everything zero?")
-                    #     print(all_zero)
-                    
                     if not(all_zero): # For nonzero characters with a solution, add as a root
                         generic_root_space_element = sp.Matrix(x)
                         for var,value in solutions_dict.items():

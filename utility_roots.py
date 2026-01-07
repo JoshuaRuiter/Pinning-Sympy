@@ -1,5 +1,3 @@
-import numpy as np
-import sympy as sp
 
 # Low rank examples of Dynkin graphs, used for testing purposes
 # Each graph is a dictionary of dictionaries.
@@ -57,11 +55,6 @@ directed_dynkin_graphs = {
 
     "F4": {0: {1: 1}, 1: {0: 1, 2: 2}, 2: {1: 1, 3: 1}, 3: {2: 1}},
     "G2": {0: {1: 3}, 1: {0: 1}},
-
-    # ----- Non-reduced -----    
-    "BC2": {0: {1: 2}, 1: {0: 1}},
-    "BC3": {0: {1: 1}, 1: {0: 1, 2: 2}, 2: {1: 1}},
-    "BC4": {0: {1: 1}, 1: {0: 1, 2: 1}, 2: {1: 1, 3: 2}, 3: {2: 1}}
 }
 
 def connected_components(graph):

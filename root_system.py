@@ -11,7 +11,7 @@
 
 import numpy as np
 import sympy as sp
-from utility_roots import connected_components
+from utility_roots import connected_components, directed_dynkin_graphs, visualize_graph
 
 class root_system:
     
@@ -61,18 +61,19 @@ class root_system:
         self.root_lengths = sorted({np.dot(r, r) for r in self.root_list})
         self.is_simply_laced = (len(set(self.root_lengths)) == 1)
         
-        # determining reduced vs non-reduced
+        # check for non-reduced-ness
         self.is_reduced = True
-        for alpha in self.root_list:
-            for beta in self.root_list:
-                if self.is_proportional(alpha,beta):
+        for i, alpha in enumerate(self.root_list):
+            for beta in self.root_list[i+1:]:        
+                if self.is_proportional(alpha, beta):
                     mask = (beta != 0)
-                    ratio = (alpha[mask]/beta[mask])[0]
-                    if ratio not in (1.0,-1.0): self.is_reduced = False
-                    break        
-            else:
-                continue # only executed if the inner loop did NOT break
-            break # only executed if the inner loop DID break
+                    ratio = (alpha[mask] / beta[mask])[0]
+                    if ratio not in (1.0, -1.0):
+                        self.is_reduced = False
+                        self.dynkin_type = 'BC'
+                        break
+            if not self.is_reduced:
+                break
         
         # Make choices of positive and simple roots
         self.positive_roots = root_system.choose_positive_roots(self.root_list,
@@ -96,8 +97,9 @@ class root_system:
         assert(len(connected_components(self.dynkin_graph)) == 1)
         
         # Determine the Dynkin type of each component using the Dynkin diagram
-        self.dynkin_type, r = root_system.determine_dynkin_type(self.dynkin_graph)
-        assert(self.rank == r)
+        if self.is_reduced:
+            self.dynkin_type, r = root_system.determine_dynkin_type(self.dynkin_graph)
+            assert(self.rank == r)
         
         self.name_string = self.dynkin_type + str(self.rank)
     
@@ -298,14 +300,6 @@ class root_system:
         # Given two roots alpha and beta, compute the reflection of beta across
         # the hyperplane perpendicular to alpha.
         # In usual notation, this is mathematically written as sigma_alpha(beta)
-        
-        # print("\nalpha=",alpha)
-        # print("beta=",beta)
-        # print("reflection=",beta - 2*np.dot(alpha,beta)/np.dot(alpha,alpha) * alpha)
-        # print("\nAll roots:")
-        # for r in self.root_list:
-        #     sp.pprint(r)
-        
         return beta - 2*np.dot(alpha,beta)/np.dot(alpha,alpha) * alpha
     
     def is_proportional(self,alpha,beta):
@@ -389,3 +383,26 @@ class root_system:
                     assert(ratio in (1.0,-1.0,2.0,-2.0,0.5,-0.5))
         print('passed.')
         print('Root system axiom checks completed.')
+    
+    @staticmethod
+    def test_dynkin_classifier():
+        # Run a battery of tests to verify that the dynkin type classifier works
+        print("Testing Dynkin type classifier on a pre-populated list of irreducible reduced root systems...")
+        for name in directed_dynkin_graphs:
+            print("\nName:",name)
+            true_type = name[0]
+            true_rank = int(name[-1])
+            print("\tTrue type:",true_type)
+            print("\tTrue rank:",true_rank)
+            
+            graph = directed_dynkin_graphs[name]
+            print("\tGraph visualization:", visualize_graph(graph))
+            print("\tGraph as dictionary:",graph)
+            
+            calculated_type, calculated_rank = root_system.determine_dynkin_type(graph)
+            print("\tDetermined type:",calculated_type)
+            print("\tDetermined rank:",calculated_rank)
+            assert(true_type == calculated_type)
+            assert(true_rank == calculated_rank)
+            
+        print("\nAll tests passed.")
