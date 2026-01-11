@@ -25,7 +25,7 @@ def is_group_element_SU(matrix_to_test, form):
     X = matrix_to_test
     H = form.matrix
     X_conjugate = custom_conjugate(X, form.primitive_element)   
-    return (X_conjugate.T*H*X == H and X.det() == 1)
+    return ((X_conjugate.T*H*X).equals(H) and X.det() == 1)
 
 def is_torus_element_SU(matrix_to_test, rank, form):
     # Return true if matrix_to_test is an element of the diagonal torus of
@@ -68,8 +68,22 @@ def is_lie_algebra_element_SU(matrix_to_test, form):
         # H = matrix associated to the (skew-)hermitian form
     X = matrix_to_test
     H = form.matrix
-    X_conjugate = custom_conjugate(X, form.primitive_element)    
-    return (X_conjugate.T*H == -H*X)
+    X_conjugate = custom_conjugate(X, form.primitive_element)
+    
+    ###############################
+    # print("\nH=")
+    # sp.pprint(H)
+    # print("X=")
+    # sp.pprint(X)
+    # print("X_conjugate=")
+    # sp.pprint(X_conjugate)
+    # print("X_conjugate.T*H=")
+    # sp.pprint(X_conjugate.T*H)
+    # print("-H*X=")
+    # sp.pprint(-H*X)
+    ###############################
+    
+    return (X_conjugate.T*H).equals(-H*X)
 
 def generic_lie_algebra_element_SU(matrix_size, rank, form, letter = 'x'):
     n = matrix_size

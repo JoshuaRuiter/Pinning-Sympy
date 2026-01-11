@@ -22,17 +22,28 @@ from pinned_group import pinned_group
 from nondegenerate_isotropic_form import nondegenerate_isotropic_form
 import sympy as sp
 
-def main():
-    print("Demonstrating usage of the pinned_group class")
-    sp.init_printing(wrap_line=False)    
-    run_SL_tests()
-    run_SO_split_tests()
-    run_SO_nonsplit_tests()
-    run_SU_quasisplit_tests()
-    run_SU_nonquasisplit_tests()
-    print("\nAll tests complete.")
 
+def main():
+    to_do_list = ("To do list:" + "\n\t" +
+                  "Successfully run all tests for commutator coefficients" + "\n\t"
+                  "Change some list stuff to dictionaries, since tuples can be used as keys"
+                  "Add validation for some properties of commutator coefficients, " 
+                      + "e.g. swapping the order of two roots negates the coefficient")
+    print(to_do_list)
+    
+    print("\nDemonstrating usage of the pinned_group class")
+    sp.init_printing(wrap_line=False)
+    #run_SL_tests()
+    #run_SO_split_tests()
+    run_SO_nonsplit_tests()
+    #run_SU_quasisplit_tests()
+    #run_SU_nonquasisplit_tests()
+    print("\nAll tests complete.")
+    
+    print(to_do_list)
+    
 def run_SL_tests():
+    print("\n" + '≡' * 100)
     print("\nRunning calculations and verifications for special linear groups")
     for n in (2,3,4):
         SL_n = pinned_group(name_string = f"SL(n={n})",
@@ -44,17 +55,18 @@ def run_SL_tests():
                             generic_torus_element = generic_torus_element_SL,
                             trivial_characters = trivial_characters_SL(n),
                             is_lie_algebra_element = is_lie_algebra_element_SL,
-                            generic_lie_algebra_element = generic_lie_algebra_element_SL)
+                            generic_lie_algebra_element = generic_lie_algebra_element_SL,
+                            non_variables = None)
         SL_n.fit_pinning(display = True)
-        
-        print("\nRunning tests to verify the results of calculated pinning information")        
-        SL_n.verify_pinning(display = True)
+        SL_n.validate_pinning(display = True)
     print("Done with special linear groups.\n")
+    print('≡' * 100 + "\n")
 
 def run_SO_split_tests():
     ###################################################
     ## SPLIT SPECIAL ORTHOGONAL GROUPS (n=2q or n=2q+1) 
     ###################################################
+    print("\n" + '≡' * 100)
     print("\nRunning calculations and verifications for split special orthogonal groups")
     for q in (2,3):
         for n in (2*q,2*q+1):
@@ -73,12 +85,12 @@ def run_SO_split_tests():
                                 generic_torus_element = generic_torus_element_SO,
                                 trivial_characters = trivial_characters_SO(n,q), 
                                 is_lie_algebra_element = is_lie_algebra_element_SO,
-                                generic_lie_algebra_element = generic_lie_algebra_element_SO)
-            SO_n_q.fit_pinning(display = True)
-            
-            print("\nRunning tests to verify the results of calculated pinning information")        
-            SO_n_q.verify_pinning(display = True)
+                                generic_lie_algebra_element = generic_lie_algebra_element_SO,
+                                non_variables = None)
+            SO_n_q.fit_pinning(display = True)     
+            SO_n_q.validate_pinning(display = True)
     print("Done with split special orthogonal groups.\n")
+    print('≡' * 100 + "\n")
 
 def run_SO_nonsplit_tests():
     #############################################################################
@@ -87,6 +99,7 @@ def run_SO_nonsplit_tests():
         ## neither split nor quasi-split if n>2+2q, 
         ## but the behavior seems to be basically the same in these two cases
     #############################################################################
+    print("\n" + '≡' * 100)
     print("\nRunning calculations and verifications for non-split special orthogonal groups")
     for q in (1,2):
         for n in (2*q+2,2*q+3,2*q+4):
@@ -105,18 +118,19 @@ def run_SO_nonsplit_tests():
                                   generic_torus_element = generic_torus_element_SO,
                                   trivial_characters = trivial_characters_SO(n,q),
                                   is_lie_algebra_element = is_lie_algebra_element_SO,
-                                  generic_lie_algebra_element = generic_lie_algebra_element_SO)
+                                  generic_lie_algebra_element = generic_lie_algebra_element_SO,
+                                  non_variables = None)
             SO_n_q.fit_pinning(display = True)
-            
-            print("\nRunning tests to verify the results of calculated pinning information")        
-            SO_n_q.verify_pinning(display = True)
+            SO_n_q.validate_pinning(display = True)
     print("Done with non-split special orthogonal groups.\n")
+    print('≡' * 100 + "\n")
     
 def run_SU_quasisplit_tests():
     ############################################################
     ## QUASI-SPLIT SPECIAL UNITARY GROUPS (n=2q)
     ## eps=1 is Hermitian, eps=-1 is skew-Hermitian
     ###########################################################
+    print("\n" + '≡' * 100)
     print("\nRunning calculations and verifications for quasi-split special unitary groups")
     d = sp.symbols('d')
     p_e = sp.sqrt(d)
@@ -143,48 +157,46 @@ def run_SU_quasisplit_tests():
                                   is_lie_algebra_element = is_lie_algebra_element_SU,
                                   generic_lie_algebra_element = generic_lie_algebra_element_SU,
                                   non_variables = {d})
-            SU_n_q.fit_pinning(display = True)
-            
-            print("\nRunning tests to verify the results of calculated pinning information")        
-            SU_n_q.verify_pinning(display = True)
+            SU_n_q.fit_pinning(display = True)   
+            SU_n_q.validate_pinning(display = True)
     print("Done with quasi-split special unitary groups.\n")
+    print('≡' * 100 + "\n")
 
 def run_SU_nonquasisplit_tests():
     ############################################################
     ## NON-QUASI-SPLIT SPECIAL UNITARY GROUPS (n>2q)
     ## eps=1 is Hermitian, eps=-1 is skew-Hermitian
     ###########################################################
+    print("\n" + '≡' * 100)
     print("\nRunning calculations and verifications for non-(quasi-split) special unitary groups")
     d = sp.symbols('d')
     p_e = sp.sqrt(d)
-    for (n,q) in [(5, 2), (6, 2), (7, 3)]:
-    # for q in (2,3):
-    #     for n in (2*q+1,2*q+2):
-        for eps in (1,-1):
-            anisotropic_vec = sp.Matrix(sp.symarray('c',n-2*q))
-            if eps == -1:
-                anisotropic_vec = anisotropic_vec * p_e
-            NIF = nondegenerate_isotropic_form(dimension = n,
-                                                witt_index = q,
-                                                anisotropic_vector = anisotropic_vec,
-                                                epsilon = eps,
-                                                primitive_element = p_e)
-            SU_n_q = pinned_group(name_string = f"SU(n={n}, q={q}, eps={eps})",
-                                  matrix_size = n,
-                                  rank = q,
-                                  form = NIF, 
-                                  is_group_element = is_group_element_SU, 
-                                  is_torus_element = is_torus_element_SU,
-                                  generic_torus_element = generic_torus_element_SU,
-                                  trivial_characters = trivial_characters_SU(n,q),
-                                  is_lie_algebra_element = is_lie_algebra_element_SU,
-                                  generic_lie_algebra_element = generic_lie_algebra_element_SU,
-                                  non_variables = {d}) 
-            SU_n_q.fit_pinning(display = True)
-            
-            print("\nRunning tests to verify the results of calculated pinning information")        
-            SU_n_q.verify_pinning(display = True)
+    for q in (2,3):
+        for n in (2*q+1,2*q+2):
+            for eps in (1,-1):
+                anisotropic_vec = sp.Matrix(sp.symarray('c',n-2*q))
+                if eps == -1:
+                    anisotropic_vec = anisotropic_vec * p_e
+                NIF = nondegenerate_isotropic_form(dimension = n,
+                                                    witt_index = q,
+                                                    anisotropic_vector = anisotropic_vec,
+                                                    epsilon = eps,
+                                                    primitive_element = p_e)
+                SU_n_q = pinned_group(name_string = f"SU(n={n}, q={q}, eps={eps})",
+                                      matrix_size = n,
+                                      rank = q,
+                                      form = NIF, 
+                                      is_group_element = is_group_element_SU, 
+                                      is_torus_element = is_torus_element_SU,
+                                      generic_torus_element = generic_torus_element_SU,
+                                      trivial_characters = trivial_characters_SU(n,q),
+                                      is_lie_algebra_element = is_lie_algebra_element_SU,
+                                      generic_lie_algebra_element = generic_lie_algebra_element_SU,
+                                      non_variables = {d}) 
+                SU_n_q.fit_pinning(display = True)
+                SU_n_q.validate_pinning(display = True)
     print("Done with non-(quasi-split) special unitary groups.\n")
+    print('≡' * 100 + "\n")
         
 if __name__ == "__main__":
     main()

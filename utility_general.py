@@ -10,6 +10,9 @@ def is_diagonal(my_matrix):
     rows, cols = my_matrix.shape
     return all(my_matrix[i,j] == 0 for i in range(rows) for j in range(cols) if i != j)
 
+def vector_variable(letter, length):
+    return sp.Matrix(sp.symarray(letter, length))
+
 def evaluate_character(character,torus_element):
     # Evaluate a character at a particular torus element
     # Character needs to be in the form of a vector like [1,0,0]
@@ -27,8 +30,7 @@ def is_zero_expr(expr):
     return expr.equals(0) if not hasattr(expr, 'shape') else expr.equals(sp.zeros(*expr.shape))
 
 def matrix_sub(expr, matrix_to_replace, matrix_to_substitute):
-    subs_dict = dict(zip(matrix_to_replace, matrix_to_substitute))
-    return expr.subs(subs_dict)
+    return expr.subs(dict(zip(matrix_to_replace, matrix_to_substitute)))
 
 def generate_character_list(character_length, upper_bound, padded_zeros):
     # Return a list of all possible integer vectors of length character_length
@@ -39,43 +41,6 @@ def generate_character_list(character_length, upper_bound, padded_zeros):
     return [np.array(c + (0,) * padded_zeros, dtype=int) 
             for c in itertools.product(range(-upper_bound, upper_bound + 1),
                                        repeat=character_length - padded_zeros)]
-
-def reduce_character_list_OLD(vector_list, quotient_vectors):
-    # take a list of numpy vectors, and return a sub-list
-    # consisting of only vectors which are not pairwise equivalent
-    # under quotienting by list of quotient vectors
-    V = vector_list
-    W = quotient_vectors
-        
-    if not W: return V # If W is empty, everything is distinct
-    
-    W_mat = sp.Matrix(W)    # Matrix whose rows span W
-    Q = W_mat.nullspace()   # Basis for the null space of W_mat
-    
-    def length_sq(v): return sum(x*x for x in v)
-    def nonzero_pattern(v): return tuple(1 if x != 0 else 0 for x in v) # binary tuple indicating nonzero entries
-        
-    # If nullspace is trivial, everything is equivalent, just return the shortest vector
-    if not Q: return [max(V,key=lambda v: (-length_sq(v), nonzero_pattern(v)))]
-    
-    # Matrix whose rows are a basis for the null space of W_mat
-    Q_mat = sp.Matrix.vstack(*[q.T for q in Q]) 
-    
-    best = {}
-    for v in V:
-           key = tuple(Q_mat * sp.Matrix(v))
-           if key not in best:
-               best[key] = v
-               continue
-           v_best = best[key]
-           if (length_sq(v) < length_sq(v_best) or
-                       (
-                           length_sq(v) == length_sq(v_best) and
-                           nonzero_pattern(v) > nonzero_pattern(v_best)
-                       )
-                   ):
-               best[key] = v
-    return list(best.values())
 
 def reduce_character_list(vector_list, quotient_vectors):
     # take a list of numpy vectors, and return a sub-list
@@ -163,6 +128,7 @@ def determine_roots(generic_torus_element,
                         for var,value in solutions_dict.items():
                             generic_root_space_element = generic_root_space_element.subs(var,value)
                         if not generic_root_space_element.is_zero_matrix:
+                            generic_root_space_element = sp.simplify(generic_root_space_element)
                             roots_and_root_spaces.append([alpha, generic_root_space_element])
             else: # I don't think this is possible, but if it happens I want to know
                 raise Exception("An unexpected error occured with the length of the solution set.")

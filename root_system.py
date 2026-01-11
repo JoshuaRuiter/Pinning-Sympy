@@ -296,6 +296,11 @@ class root_system:
         # Return true if vector_to_test is a root
         return any(np.array_equal(root,vector_to_test) for root in self.root_list)
     
+    def is_multipliable_root(self, vector_to_test):
+        # Return true if vector_to_test is a root and
+        # twice that is another root
+        return (self.is_root(vector_to_test) and self.is_root(2*vector_to_test))
+    
     def reflect_root(self,alpha,beta):
         # Given two roots alpha and beta, compute the reflection of beta across
         # the hyperplane perpendicular to alpha.
@@ -348,41 +353,41 @@ class root_system:
                 new_combos[(i,j+1)] = old_root+beta
         return new_combos
     
-    def verify_root_system_axioms(self):
-        print('\nRunning tests to verify root system axioms for the ' + self.name_string + ' root system.')
+    def verify_root_system_axioms(self, display = True):
+        if display: print('\nRunning tests to verify root system axioms for the ' + self.name_string + ' root system.')
         
-        print('\tChecking that zero is not a root...',end='')
+        if display: print('\tChecking that zero is not a root...',end='')
         zero_vector = np.zeros((1,self.vector_length),dtype=int)
         assert(not(self.is_root(zero_vector)))
-        print('passed.')
+        if display: print('passed.')
         
-        print('\tChecking that the negative of a root is a root...',end='')
+        if display: print('\tChecking that the negative of a root is a root...',end='')
         for alpha in self.root_list:
             assert(self.is_root(-alpha))
-        print('passed.')
+        if display: print('passed.')
         
-        print('\tChecking that a reflection of a root is another root...',end='')
+        if display: print('\tChecking that a reflection of a root is another root...',end='')
         for alpha in self.root_list:
             for beta in self.root_list:
                 assert(self.is_root(self.reflect_root(alpha,beta)))
-        print('passed.')
+        if display: print('passed.')
         
-        print('\tChecking that the angle bracket of two roots is an integer...',end='')
+        if display: print('\tChecking that the angle bracket of two roots is an integer...',end='')
         for alpha in self.root_list:
             for beta in self.root_list:
                 angle_bracket = 2*np.dot(alpha,beta)/np.dot(alpha,alpha)
                 assert(angle_bracket == int(angle_bracket))
-        print('passed.')
+        if display: print('passed.')
         
-        print('\tChecking that only multiples of root that are roots are +/-1 or +/-2 or +/-0.5...',end='')
+        if display: print('\tChecking that only multiples of root that are roots are +/-1 or +/-2 or +/-0.5...',end='')
         for alpha in self.root_list:
             for beta in self.root_list:
                 if self.is_proportional(alpha,beta):
                     mask = (beta != 0)
                     ratio = (alpha[mask]/beta[mask])[0]
                     assert(ratio in (1.0,-1.0,2.0,-2.0,0.5,-0.5))
-        print('passed.')
-        print('Root system axiom checks completed.')
+        if display: print('passed.')
+        if display: print('Root system axiom checks completed.')
     
     @staticmethod
     def test_dynkin_classifier():

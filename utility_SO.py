@@ -3,7 +3,7 @@ import sympy as sp
 def is_group_element_SO(matrix_to_test, form):
     X = matrix_to_test
     B = form.matrix
-    return (X.T*B*X == B and X.det()==1)
+    return ((X.T*B*X).equals(B) and X.det()==1)
 
 def is_torus_element_SO(matrix_to_test, matrix_size, rank, form):
     n = matrix_size
@@ -37,7 +37,7 @@ def trivial_characters_SO(matrix_size, rank):
 def is_lie_algebra_element_SO(matrix_to_test,form):
     X = matrix_to_test
     B = form.matrix
-    return (X.T*B == -B*X)
+    return (X.T*B).equals(-B*X)
 
 def generic_lie_algebra_element_SO(matrix_size, rank, form, letter = 'x'):
     n = matrix_size
