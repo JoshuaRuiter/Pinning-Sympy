@@ -183,10 +183,10 @@ class pinned_group:
             dim = self.root_space_dimension(root)
             
             #######################################
-            print("\nRoot = ",root)
-            print("Root space dimension =",dim)
-            print("u = ", u)
-            print("length of u =",len(u))
+            # print("\nRoot = ",root)
+            # print("Root space dimension =",dim)
+            # print("u = ", u)
+            # print("length of u =",len(u))
             #######################################
             
             assert(len(u) == dim)
@@ -242,7 +242,7 @@ class pinned_group:
                     
         if display:
             if len(self.homomorphism_defect_coefficient_list) == 0:
-                print("No multipliable roots, so no homomorphism defect coefficients.")
+                print("\nNo multipliable roots, so no homomorphism defect coefficients.")
             else:
                 print("\nHomomorphism defect coefficients:")
                 for c in self.homomorphism_defect_coefficient_list:
@@ -297,35 +297,17 @@ class pinned_group:
                     RHS = np.eye(self.matrix_size, dtype = int)
                     vars_to_solve_for = set()
                     
-                    # ###################################
-                    # print()
-                    # print("CCCC")
-                    # print("alpha=",alpha)
-                    # print("beta=",beta)
-                    # print("linear combos:",linear_combos)
-                    # ##################################
-                    
                     # Assemble the right hand side of the commutator formula,
                     # which is the product over all (i,j) pairs of positive integers
                     # such that i*alpha+j*beta is a root, of factors 
                     # X_(i*alpha+j*beta) ( N_ij(u,v) )
                     # where N_ij is some function of u and v, called the commutator coefficient
                     # Note that N_ij depends crucially on alpha and beta as well
-                    coeff_dict = {}
+                    new_coeff_lines = []
                     for key in linear_combos:
                         i = key[0]
                         j = key[1]
                         root = linear_combos[key]
-                        
-                        # ###################################
-                        # print()
-                        # print("DDDD")
-                        # print("alpha=",alpha)
-                        # print("beta=",beta)
-                        # print("(i,j)=",(i,j))
-                        # print("i*alpha + j*beta =",i*alpha+j*beta)
-                        # print("root =",root)
-                        # ##################################
                         
                         # Check that i*alpha+j*beta = root
                         assert(np.array_equal(i*alpha + j*beta, root))
@@ -333,71 +315,38 @@ class pinned_group:
                         d_ij = self.root_space_dimension(root)
                         N_ij = vector_variable(letter = 'N' + str(i) + str(j), length = d_ij)
                         vars_to_solve_for = vars_to_solve_for.union(set(N_ij))
-                        coeff_dict[(i,j)] = list(N_ij)
                         factor_ij = self.root_subgroup_map(root, N_ij)
                         RHS = RHS * factor_ij
+                        
+                        new_line = [alpha, beta, i, j, u, v, N_ij]
+                        new_coeff_lines.append(new_line)
 
                     # Now solve for all of the N_ij
                     vanishing_expression = (LHS - RHS)
                     solutions_list = sp.solve(vanishing_expression, vars_to_solve_for, dict=True)
                     solutions_dict = solutions_list[0]
                     
-                    # ################################################
-                    # print()
-                    # print("alpha =",alpha)
-                    # print("beta =",beta)
-                    # print("Linear combos:", linear_combos)
-                    # print("Solutions:", solutions_list)
-                    # print("Solution dictionary:", solutions_dict)
-                    # print("Coefficient dictionary:",coeff_dict)
-                    # print()
-                    # ################################################
-                    
-                    for key1 in solutions_dict:
-                        for key2 in coeff_dict:
-                            if key1 in coeff_dict[key2]:
-                                coeff_dict[key2].append(solutions_dict[key1])
-                    
+                    for index, line in enumerate(new_coeff_lines):
+                        coeff_vec = line[-1]
+                        for var in vars_to_solve_for:
+                            coeff_vec = coeff_vec.subs(var, solutions_dict[var])
+                            
+                        line[-1] = coeff_vec
+                        new_coeff_lines[index] = line 
                     assert(len(solutions_list) == 1)
                     assert(len(solutions_dict) == len(vars_to_solve_for))
+                        
+                    for line in new_coeff_lines:
+                        self.commutator_coefficient_list.append(line)
                     
-                    for key in linear_combos:
-                        i = key[0]
-                        j = key[1]
-                        root = linear_combos[key]
-                        coeff = coeff_dict[(i,j)][1]
-                        self.commutator_coefficient_list.append([alpha, beta, i, j, u, v, coeff])
                     
         def ccm(alpha, beta, i, j, u, v):
-            
-            # ##############
-            # print("\nComputing a commutator coefficient")
-            # print("alpha = ",alpha)
-            # print("beta  = ",beta)
-            # print("(i,j)=", (i,j))
-            # #############
-            
             if not self.root_system.is_root(alpha + beta):
-                
-                # ##############
-                # print("alpha + beta is not a root, commutator coefficient is zero")
-                # #############
-                
                 return [0]
             elif self.root_system.is_proportional(alpha, beta):
-                
-                # ##############
-                # print("alpha and beta are proportional, not a valid commutator coefficient")
-                # #############
-                
                 raise ValueError("Commutator formula does not apply to proportional root pairs.")
             else:
                 # look up the coefficient in the big stored list
-                
-                # ##############
-                # print("Looking up commutator coefficient in stored list")
-                # #############
-                
                 for (alpha_prime, 
                      beta_prime, 
                      i_prime, 
@@ -415,24 +364,8 @@ class pinned_group:
                                 coeff = coeff.subs(u_prime[i], u[i])
                             for j in range(len(v)):
                                 coeff = coeff.subs(v_prime[j], v[j])
-                                
-                            # ################
-                            # print()
-                            # print("AAAA")
-                            # print("Coeff:",coeff)        
-                            # ################
-                            
-                            return [coeff]
-                
-                # ##############
-                # print("\nUnable to find commutator coefficient")
-                # print("Full list of known commutator coefficients:")
-                # for c in self.commutator_coefficient_list:
-                #     sp.pprint(c)
-                # #############
-                
+                            return coeff
                 raise ValueError("Commutator coefficient should exist, but could not be located.")
-                    
                         
         self.commutator_coefficient_map = ccm
         
@@ -456,26 +389,12 @@ class pinned_group:
                                 j = key[1]
                                 root = linear_combos[key]
                                 coeff = self.commutator_coefficient_map(root1, root2, i, j, u, v)
-                                
-                                # ################
-                                # print()
-                                # print("BBBB")
-                                # print("Root 1 =",root1)
-                                # print("Root 2 =",root2)
-                                # print("Root =",root)
-                                # print("i*(Root 1) + j*(Root 2) =",root)
-                                # print("(i,j)=",(i,j))
-                                # print("Coeff:",coeff)
-                                # print()
-                                # ################
-                                
                                 print("\n\t\t(i,j):",(i,j))
                                 print("\t\ti*(Root 1) + j*(Root 2):",root)
                                 print("\t\tCommutator coefficient:",coeff[0])
                                 
                                 # Check that i*alpha+j*beta = root
                                 assert(np.array_equal(i*root1 + j*root2, root))
-                                assert(np.all(i*root1+j*root2 == root))
                                 
     def fit_weyl_group(self, display = True):
         # TO DO:
@@ -488,7 +407,7 @@ class pinned_group:
         if display:
             print()
             print('=' * 100)
-            print("Running tests to validate the results of calculated pinning information.")  
+            print(f"Running tests to validate pinning of {self.name_string}.")
         self.validate_basics(display)
         self.root_system.verify_root_system_axioms(display)
         self.validate_root_space_maps(display)
@@ -644,23 +563,12 @@ class pinned_group:
                         assert(np.array_equal(i*alpha + j*beta, root))
                         assert(np.all(i*alpha+j*beta == root))
 
-                        # Compute the commutator coefficient that should arise
+                        # Compute the commutator coefficient that should arise,
+                        # then multiply by the new factor
                         coeff = self.commutator_coefficient_map(alpha,beta,i,j,a,b)
+                        new_factor = self.root_subgroup_map(root, coeff)
+                        RHS = RHS * new_factor
                         
-                        # Multiply by the new factor
-                        RHS = RHS * self.root_subgroup_map(root,coeff)
-                        
-                    # ######################
-                    # print()
-                    # print("alpha =",alpha)
-                    # print("beta =",beta)
-                    # print("LHS = ")
-                    # sp.pprint(LHS)
-                    # print("RHS =")
-                    # sp.pprint(RHS)                    
-                    # #####################
-                    
-                    
                     assert(LHS.equals(RHS))
         if display: print("done.")
         

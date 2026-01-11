@@ -35,9 +35,9 @@ def main():
     sp.init_printing(wrap_line=False)
     #run_SL_tests()
     #run_SO_split_tests()
-    run_SO_nonsplit_tests()
+    #run_SO_nonsplit_tests()
     #run_SU_quasisplit_tests()
-    #run_SU_nonquasisplit_tests()
+    run_SU_nonquasisplit_tests()
     print("\nAll tests complete.")
     
     print(to_do_list)
@@ -141,11 +141,10 @@ def run_SU_quasisplit_tests():
             if eps == -1:
                 anisotropic_vec = anisotropic_vec * p_e
             NIF = nondegenerate_isotropic_form(dimension = n,
-                                                witt_index = q,
-                                                anisotropic_vector = anisotropic_vec,
-                                                epsilon = eps,
-                                                primitive_element = p_e)
-            
+                                               witt_index = q,
+                                               anisotropic_vector = anisotropic_vec,
+                                               epsilon = eps,
+                                               primitive_element = p_e)
             SU_n_q = pinned_group(name_string = f"SU(n={n}, q={q}, eps={eps})",
                                   matrix_size = n,
                                   rank = q,
