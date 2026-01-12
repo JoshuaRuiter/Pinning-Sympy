@@ -5,7 +5,7 @@ def is_group_element_SO(matrix_to_test, form):
     B = form.matrix
     return ((X.T*B*X).equals(B) and X.det()==1)
 
-def is_torus_element_SO(matrix_to_test, matrix_size, rank, form):
+def is_torus_element_SO(matrix_to_test, matrix_size, rank, form = None):
     n = matrix_size
     q = rank
     if sp.shape(matrix_to_test) != (n,n):
@@ -18,7 +18,7 @@ def is_torus_element_SO(matrix_to_test, matrix_size, rank, form):
             return False
     return True
 
-def generic_torus_element_SO(matrix_size, rank, form, letter):
+def generic_torus_element_SO(matrix_size, rank, form = None, letter = 't'):
     # Output a 'generic' element of the diagonal torus subgroup of 
     # the special orthogonal group, which has the form
     # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1)
@@ -34,7 +34,7 @@ def trivial_characters_SO(matrix_size, rank):
     return [[1 if j == i or j == i + rank else 0 for j in range(matrix_size)] 
             for i in range(rank)]
 
-def is_lie_algebra_element_SO(matrix_to_test,form):
+def is_lie_algebra_element_SO(matrix_to_test, form):
     X = matrix_to_test
     B = form.matrix
     return (X.T*B).equals(-B*X)

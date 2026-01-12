@@ -4,11 +4,11 @@ from utility_general import is_diagonal
 def is_group_element_SL(matrix_to_test, form = None):
     return matrix_to_test.det() == 1
 
-def is_torus_element_SL(matrix_to_test):
+def is_torus_element_SL(matrix_to_test, matrix_size = None, rank = None, form = None):
     return (is_diagonal(matrix_to_test) and 
             matrix_to_test.det() == 1)
 
-def generic_torus_element_SL(matrix_size, rank, form, letter = 't'):
+def generic_torus_element_SL(matrix_size, rank = None, form = None, letter = 't'):
     # Output a torus element of the usual diagonal subgroup of SL
     assert(matrix_size == rank + 1)
     vec_t = sp.symarray(letter,matrix_size)

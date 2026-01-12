@@ -27,9 +27,11 @@ def is_group_element_SU(matrix_to_test, form):
     X_conjugate = custom_conjugate(X, form.primitive_element)   
     return ((X_conjugate.T*H*X).equals(H) and X.det() == 1)
 
-def is_torus_element_SU(matrix_to_test, rank, form):
+def is_torus_element_SU(matrix_to_test, matrix_size, rank, form = None):
     # Return true if matrix_to_test is an element of the diagonal torus of
     # the special unitary group.
+    if sp.shape(matrix_to_test) != (matrix_size,matrix_size):
+        return False
     
     # All elements of this torus have the form
     # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1)
@@ -44,7 +46,7 @@ def is_torus_element_SU(matrix_to_test, rank, form):
             return False
     return True
 
-def generic_torus_element_SU(matrix_size, rank, form, letter = 't'):
+def generic_torus_element_SU(matrix_size, rank, form = None, letter = 't'):
     # Output a 'generic' element of the diagonal torus subgroup of 
     # the special unitary group, which has the form
     # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1)

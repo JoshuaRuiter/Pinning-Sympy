@@ -308,8 +308,21 @@ class root_system:
         # Given two roots alpha and beta, compute the reflection of beta across
         # the hyperplane perpendicular to alpha.
         # In usual notation, this is mathematically written as sigma_alpha(beta)
-        return beta - 2*np.dot(alpha,beta)/np.dot(alpha,alpha) * alpha
-    
+        
+        # Compute reflection using integer division
+        dot_ab = np.dot(alpha, beta)
+        dot_aa = np.dot(alpha, alpha)
+        
+        if (2 * dot_ab) % dot_aa == 0:  # check if exact integer division
+            factor = 2 * dot_ab // dot_aa
+            reflection = beta - factor * alpha
+        else:
+            # fallback to float division
+            factor = 2 * dot_ab / dot_aa
+            reflection = beta - factor * alpha
+        
+        return reflection
+            
     def is_proportional(self,alpha,beta):
         # Return true if alpha and beta are proportional roots
         # In most root systems, this only happens if alpha = beta or alpha = -beta,
@@ -382,7 +395,7 @@ class root_system:
                 assert(angle_bracket == int(angle_bracket))
         if display: print('passed.')
         
-        if display: print('\tChecking that only multiples of root that are roots are +/-1 or +/-2 or +/-0.5...',end='')
+        if display: print('\tChecking that ratios between proportional roots are +/-1, +/-2, or +/-0.5...',end='')
         for alpha in self.root_list:
             for beta in self.root_list:
                 if self.is_proportional(alpha,beta):

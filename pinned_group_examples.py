@@ -26,8 +26,13 @@ import sympy as sp
 def main():
     to_do_list = ("To do list:" + "\n\t" + "\n\t" +
                   "Add more variables that a group will store in the init method, or maybe not" + "\n\t" +
-                  "Clean up code for root_system.determine_dynkin_type, probably some unnecessary/redundant stuff there" + "\n\t" +
+                  "Clean up code for root_system.determine_dynkin_type, " +
+                      "probably some unnecessary/redundant stuff there" + "\n\t" +
                   "Compute Weyl group elements" + "\n\t" +
+                  "I think some of the generic_torus_element and is_torus_element maps" + 
+                      " have some unnecessary variables, try to remove these" + "\n\t" +
+                  "Maybe I need an implementation of the Jacobson-Morozov theorem," +
+                      "i.e. an algorithm that generates sl2-triples" + "\n\t" +
                   "Run tests to validate properties of Weyl group elements" + "\n\t" +
                   "Convert root_space_dimension_list into a dictionary with tuple keys" + "\n\t" +
                   "Implement capability for printing to file instead of to console" + "\n\t" +
