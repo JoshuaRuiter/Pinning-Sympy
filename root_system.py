@@ -54,14 +54,20 @@ class root_system:
         #   -determine the Dynkin type from various other info above
         
         # Key assumption: the root system is irreducible
+        # Some of these properties and computations still apply to reducible root systems,
+        # but particularly the Dynkin type classification only makes sense for
+        # irreducible root systems.
         assert(self.is_irreducible)
         
-        # make an ordered list of root lengths,
-        # then determine if all roots are the same length, i.e. whether the root system is simply laced
+        # Make an ordered list of root lengths,
+        # then determine if all roots are the same length, 
+        # i.e. whether the root system is simply laced
         self.root_lengths = sorted({np.dot(r, r) for r in self.root_list})
         self.is_simply_laced = (len(set(self.root_lengths)) == 1)
         
-        # check for non-reduced-ness
+        # Check for non-reduced-ness,
+        # i.e. if there are any pairs of roots that
+        # are proportional in a ratio other than +/-1
         self.is_reduced = True
         for i, alpha in enumerate(self.root_list):
             for beta in self.root_list[i+1:]:        
@@ -76,12 +82,20 @@ class root_system:
                 break
         
         # Make choices of positive and simple roots
+        # Note that there are many equally valid choices of positive roots,
+        # and this is only one such valid choice.
+        # The implementation here is non-deterministic. 
+        # Specifically, it chooses a random vector and then assigns all 
+        # roots on one side of the associated perpendicular hyperplane
+        # to be positive. Because of this randomness, a seed argument
+        # is included so that you can get a consistent (though still arbitrary)
+        # choice of positive roots.
         self.positive_roots = root_system.choose_positive_roots(self.root_list,
                                                                 max_tries = 100,
                                                                 seed = 0)
         self.simple_roots = root_system.choose_simple_roots(self.positive_roots)
         
-        # check that the number of simple roots is the same as the
+        # Check that the number of simple roots is the same as the
         # rank of the matrix spanned by the list of all roots
         assert(len(self.simple_roots) == sp.Matrix(self.root_list).rank())
         self.rank = len(self.simple_roots)
@@ -92,14 +106,18 @@ class root_system:
         # Build the (directed, weighted) Dynkin diagram/graph
         self.dynkin_graph = root_system.build_directed_dynkin_graph(self.simple_roots)
         
-        # Check again for irreducibility
-        # Could remove this, it's just a verification
+        # Double check irreducibility
+        # Irreducibility is equivalent to the Dynkin graph being connected.
         assert(len(connected_components(self.dynkin_graph)) == 1)
         
         # Determine the Dynkin type of each component using the Dynkin diagram
+        # If the root system is non-reduced, the Dynkin type must be 'BC',
+        # and this should already have been set above.
         if self.is_reduced:
             self.dynkin_type, r = root_system.determine_dynkin_type(self.dynkin_graph)
             assert(self.rank == r)
+        else:
+            assert(self.dynkin_type == 'BC')
         
         self.name_string = self.dynkin_type + str(self.rank)
     
@@ -206,35 +224,28 @@ class root_system:
 
     @staticmethod
     def determine_dynkin_type(dynkin_graph):
-        # Determine the dynkin type of an irreducible root system from its
+        # Determine the dynkin type of an irreducible, reduced root system from its
         # (weighted, directed) Dynkin graph
+        
+        # If the root system is not reduced, then this method will not help.
+        # In that case, you can't actually tell apart types B and BC from the Dynkin graph anyway,
+        # so it would be impossible to classify.
         
         my_rank = len(dynkin_graph)
         
         if my_rank == 1: 
-            # only one node
-            # this needs to be checked before computing other properties,
-            # because it causes some degeneracy and things fail to calculate
+            # This needs to be checked before computing other properties,
+            # because other calculations fail to work in this case
             return ('A', 1)
     
         degree_dict = {v: len(dynkin_graph[v]) for v in dynkin_graph}
-        #print("\t(Node : Degree) dictionary:",degree_dict)
-        
         degrees = list(degree_dict.values())
-        #print("\tDegrees:",degrees)
-        
         edge_multiplicities = sorted(mult for v in dynkin_graph for mult in dynkin_graph[v].values())
-        #print("\tEdge multiplicities:",edge_multiplicities)
-            
         is_simply_laced = (max(edge_multiplicities, default = -1) == 1)
-        #print("\tIs simply laced:", is_simply_laced)
-        
         nodes_with_multiple_leaf_neighbors = [
             v for v in dynkin_graph
             if sum(1 for u in dynkin_graph[v] if len(dynkin_graph[u]) == 1) > 1
         ]
-        #print("\tNodes with multiple leaf neighbors:",nodes_with_multiple_leaf_neighbors)
-        
         leaf_nodes = [v for v in dynkin_graph if len(dynkin_graph[v]) == 1]
         single_edge_leaf_nodes = []
         for v in leaf_nodes:
@@ -250,16 +261,11 @@ class root_system:
             if simple_edges:
                 single_edge_leaf_nodes.append(v)
         num_single_edge_leaf_nodes = len(single_edge_leaf_nodes)
-        #print("\tLeaf nodes:", leaf_nodes)
-        #print("\tSingle edge leaf nodes:", single_edge_leaf_nodes)
-        #print("\tNumber of single edge leaf nodes:", num_single_edge_leaf_nodes)
-    
         double_edge_to_leaf = False
         for v in leaf_nodes:
             for u in dynkin_graph:
                 if v in dynkin_graph[u] and dynkin_graph[u][v] > 1:
                     double_edge_to_leaf = True
-        #print("\tIs there a double edge going to a leaf?",double_edge_to_leaf)
     
         if is_simply_laced:
             if 3 not in degrees:
@@ -280,9 +286,6 @@ class root_system:
                 my_type = 'F'
                 assert(my_rank == 4)
             else:
-                ###########################################################
-                # something to detect type BC needs to be here I think
-                ###########################################################
                 if double_edge_to_leaf:
                     my_type = 'B'
                     assert(my_rank >= 2)

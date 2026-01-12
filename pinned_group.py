@@ -65,8 +65,7 @@ class pinned_group:
         # work out all the computational details related to Lie algebra, roots, etc.
         
         if display:
-            print()
-            print('-' * 100)
+            print('\n' + '-' * 100)
             print(f"Fitting a pinning for {self.name_string}")
             if self.form is not None:
                 print("\nForm matrix:")
@@ -97,7 +96,7 @@ class pinned_group:
         self.fit_commutator_coefficients(display)
         self.fit_weyl_group(display)
         
-        if display: print("\nPinning fitting is complete.")
+        if display: print(f"Pinning fitting for {self.name_string} is complete.")
         print('-' * 100)
 
     def fit_root_system(self, display = True):
@@ -110,8 +109,7 @@ class pinned_group:
                                              form = self.form,
                                              letter = 'x')
         x_vars = x.free_symbols
-        if self.non_variables is not None:
-            x_vars = x_vars - self.non_variables
+        if self.non_variables is not None: x_vars = x_vars - self.non_variables
         full_char_list = generate_character_list(character_length = self.matrix_size,
                                             upper_bound = 2,  
                                             padded_zeros = self.matrix_size - 2*self.rank)
@@ -138,6 +136,12 @@ class pinned_group:
     
     def fit_root_spaces(self, display = True):
         
+        #######################################################
+        # TO DO
+        #######################################################
+        # I want to convert this into a dictionary, so that 
+        # root_space_dim can be a dictionary lookup,
+        # rather than a O(n) linear search
         self.root_space_dimension_list = []
         for r, x in self.roots_and_root_spaces:
             x_vars = x.free_symbols
@@ -150,6 +154,13 @@ class pinned_group:
                     x_vars = x_vars - self.form.anisotropic_vector.free_symbols
             self.root_space_dimension_list.append([r, len(x_vars)])
 
+        #######################################################
+        # TO DO
+        #######################################################
+        # I want to convert root_space_dimension_list 
+        # into a dictionary, so that this can be a 
+        # dictionary key lookup, rather than a linear
+        # list search
         def root_space_dim(root):
             for r, d in self.root_space_dimension_list:
                 if np.array_equal(r, root):
@@ -163,12 +174,12 @@ class pinned_group:
             for r, x in self.roots_and_root_spaces:
                 if np.array_equal(r, root):
                     x_vars = x.free_symbols
-                    if self.non_variables is not None:
+                    if self.non_variables is not None: 
                         x_vars = x_vars - self.non_variables
                     if self.form is not None:
                         if self.form.primitive_element is not None: 
                             x_vars = x_vars - {self.form.primitive_element}
-                        if self.form.anisotropic_vector is not None:
+                        if self.form.anisotropic_vector is not None: 
                             x_vars = x_vars - self.form.anisotropic_vector.free_symbols
                     assert(len(x_vars) == len(u))
                     x_vars = list(x_vars)
@@ -181,23 +192,14 @@ class pinned_group:
         def root_subgp_map(root, u):
             assert(self.root_system.is_root(root))
             dim = self.root_space_dimension(root)
-            
-            #######################################
-            # print("\nRoot = ",root)
-            # print("Root space dimension =",dim)
-            # print("u = ", u)
-            # print("length of u =",len(u))
-            #######################################
-            
             assert(len(u) == dim)
             x = self.root_space_map(root, u)
-            if any(x**3):
-                raise ValueError("Unexpected: A root space element cubes to a nonzero matrix.")
+            if any(x**3): raise ValueError("Unexpected: The 3rd power of a root space element is a nonzero matrix.")
             return sp.simplify(np.eye(self.matrix_size, dtype = int) + x + x*x/2)
         self.root_subgroup_map = root_subgp_map
         
         if display:
-            print("\nRoots, root spaces, and root subgroups:")
+            print(f"\nRoots, root spaces, and root subgroups for {self.name_string}:")
             for r, x in self.roots_and_root_spaces:
                 dim = self.root_space_dimension(r)
                 print("\tRoot:",r)
@@ -211,7 +213,6 @@ class pinned_group:
                 print()
         
     def fit_homomorphism_defect_coefficients(self, display = True):
-        # NOT IMPLEMENTED YET
         # For multipliable roots, the root subgroup maps are not quite homomorphisms
         # Instead, there is a general formula
         # X_alpha(u)*X_alpha(v) = X_alpha(u+v) * product over i>1 of X_i*alpha(some function of u and v)
@@ -244,7 +245,7 @@ class pinned_group:
             if len(self.homomorphism_defect_coefficient_list) == 0:
                 print("\nNo multipliable roots, so no homomorphism defect coefficients.")
             else:
-                print("\nHomomorphism defect coefficients:")
+                print(f"\nHomomorphism defect coefficients for {self.name_string}:")
                 for c in self.homomorphism_defect_coefficient_list:
                     print("\nRoot:",c[0])
                     print("Homomorphism defect coefficient:",c[-1])
@@ -279,7 +280,7 @@ class pinned_group:
                 if  self.root_system.is_root(alpha + beta) and not(self.root_system.is_proportional(alpha,beta)):
                     # compute the commutator coefficient and store it in a big list
                     
-                    # compute the commutator / left hand side of the equation
+                    # compute the true commutator / left hand side of the equation
                     d_beta = self.root_space_dimension(beta)
                     v = vector_variable(letter = 'v', length = d_beta)
                     x_beta_v = self.root_subgroup_map(beta, v)
@@ -296,6 +297,7 @@ class pinned_group:
                     # with coefficients depending on some function N(alpha,beta,i,j,u,v)
                     RHS = np.eye(self.matrix_size, dtype = int)
                     vars_to_solve_for = set()
+                    new_coeff_lines = []
                     
                     # Assemble the right hand side of the commutator formula,
                     # which is the product over all (i,j) pairs of positive integers
@@ -303,40 +305,32 @@ class pinned_group:
                     # X_(i*alpha+j*beta) ( N_ij(u,v) )
                     # where N_ij is some function of u and v, called the commutator coefficient
                     # Note that N_ij depends crucially on alpha and beta as well
-                    new_coeff_lines = []
                     for key in linear_combos:
                         i = key[0]
                         j = key[1]
                         root = linear_combos[key]
-                        
-                        # Check that i*alpha+j*beta = root
                         assert(np.array_equal(i*alpha + j*beta, root))
-                        
                         d_ij = self.root_space_dimension(root)
                         N_ij = vector_variable(letter = 'N' + str(i) + str(j), length = d_ij)
                         vars_to_solve_for = vars_to_solve_for.union(set(N_ij))
                         factor_ij = self.root_subgroup_map(root, N_ij)
                         RHS = RHS * factor_ij
-                        
-                        new_line = [alpha, beta, i, j, u, v, N_ij]
-                        new_coeff_lines.append(new_line)
+                        new_coeff_lines.append([alpha, beta, i, j, u, v, N_ij])
 
                     # Now solve for all of the N_ij
-                    vanishing_expression = (LHS - RHS)
+                    vanishing_expression = sp.simplify(LHS - RHS)
                     solutions_list = sp.solve(vanishing_expression, vars_to_solve_for, dict=True)
                     solutions_dict = solutions_list[0]
-                    
-                    for index, line in enumerate(new_coeff_lines):
-                        coeff_vec = line[-1]
-                        for var in vars_to_solve_for:
-                            coeff_vec = coeff_vec.subs(var, solutions_dict[var])
-                            
-                        line[-1] = coeff_vec
-                        new_coeff_lines[index] = line 
                     assert(len(solutions_list) == 1)
                     assert(len(solutions_dict) == len(vars_to_solve_for))
-                        
-                    for line in new_coeff_lines:
+                    
+                    # Extract the solutions and store them in new_coeff_lines
+                    # which is then transferred to self.commutator_coefficient_list
+                    for index, line in enumerate(new_coeff_lines):
+                        coeff_vec = line[-1] # extract the coefficients from the last entry of the new line
+                        for var in vars_to_solve_for:
+                            coeff_vec = coeff_vec.subs(var, solutions_dict[var])
+                        line[-1] = coeff_vec # replace with the commutator coefficients that we solved for
                         self.commutator_coefficient_list.append(line)
                     
                     
@@ -347,13 +341,8 @@ class pinned_group:
                 raise ValueError("Commutator formula does not apply to proportional root pairs.")
             else:
                 # look up the coefficient in the big stored list
-                for (alpha_prime, 
-                     beta_prime, 
-                     i_prime, 
-                     j_prime, 
-                     u_prime, 
-                     v_prime, 
-                     coeff) in self.commutator_coefficient_list:
+                for (alpha_prime, beta_prime, i_prime, j_prime, 
+                     u_prime, v_prime, coeff) in self.commutator_coefficient_list:
                     if (np.array_equal(alpha, alpha_prime) and
                         np.array_equal(beta, beta_prime) and
                         i == i_prime and
@@ -373,7 +362,7 @@ class pinned_group:
             if len(self.commutator_coefficient_list) == 0:
                 print("\nNo pairs of summable roots, so no commutator coefficients.")
             else:
-                print("\nCommutator coefficients:")
+                print(f"\nCommutator coefficients for {self.name_string}:\n")
                 for root1 in self.root_system.root_list:
                     d_1 = self.root_space_dimension(root1)
                     u = vector_variable(letter = 'u', length = d_1)
@@ -382,19 +371,17 @@ class pinned_group:
                             d_2 = self.root_space_dimension(root2)
                             v = vector_variable(letter = 'v', length = d_2)
                             linear_combos = self.root_system.integer_linear_combos(root1,root2)
-                            print("\n\tRoot 1:",root1)
+                            print("\tRoot 1:",root1)
                             print("\tRoot 2:",root2)
                             for key in linear_combos:
                                 i = key[0]
                                 j = key[1]
                                 root = linear_combos[key]
-                                coeff = self.commutator_coefficient_map(root1, root2, i, j, u, v)
-                                print("\n\t\t(i,j):",(i,j))
-                                print("\t\ti*(Root 1) + j*(Root 2):",root)
-                                print("\t\tCommutator coefficient:",coeff[0])
-                                
-                                # Check that i*alpha+j*beta = root
                                 assert(np.array_equal(i*root1 + j*root2, root))
+                                coeff = self.commutator_coefficient_map(root1, root2, i, j, u, v)
+                                print("\t\t(i,j):",(i,j))
+                                print("\t\ti*(Root 1) + j*(Root 2):",root)
+                                print("\t\tCommutator coefficient:",coeff,"\n")
                                 
     def fit_weyl_group(self, display = True):
         # TO DO:
@@ -408,6 +395,7 @@ class pinned_group:
             print()
             print('=' * 100)
             print(f"Running tests to validate pinning of {self.name_string}.")
+            
         self.validate_basics(display)
         self.root_system.verify_root_system_axioms(display)
         self.validate_root_space_maps(display)
@@ -418,7 +406,7 @@ class pinned_group:
         
         if display:
             print()
-            print("Pinning validation tests complete.")  
+            print(f"Pinning validation tests for {self.name_string} complete.")
             print('=' * 100) 
         
     def validate_basics(self, display = True):
@@ -571,52 +559,23 @@ class pinned_group:
                         
                     assert(LHS.equals(RHS))
         if display: print("done.")
-        
-        if display: print("\tVerifying relations satisfied by commutator coefficients...")
-                          
-        if display: print("\t\tChecking that swapping order of roots negates the coefficient...", end = "")
-        # for alpha in self.root_system.root_list:
-        #     d_alpha = self.root_space_dimension(alpha)
-        #     a = vector_variable(letter = 'a', length = d_alpha)
-        #     for beta in self.root_system.root_list:
-        #         d_beta = self.root_space_dimension(beta)
-        #         b = vector_variable(letter = 'b', length = d_beta)
-        #         if self.root_system.is_root(alpha + beta):
-        #             linear_combos = self.root_system.integer_linear_combos(alpha,beta)
-        #             for key in linear_combos:
-        #                 i = key[0]
-        #                 j = key[1]
-        #                 root = linear_combos[key]
-        #                 coeff_1 = self.commutator_coefficient_map(alpha,beta,i,j,a,b)
-        #                 coeff_2 = self.commutator_coefficient_map(beta,alpha,i,j,b,a)
-        #                 assert(coeff_1 == -coeff_2)
-        # if display: print("done.")
-        if display: print("TESTS NOT YET IMPLEMENTED.")
-        
-        if display: print("\t\tChecking that commutator coefficient is a symmetric function...", end = "")
-        # for alpha in self.root_system.root_list:
-        #     d_alpha = self.root_space_dimension(alpha)
-        #     a = vector_variable(letter = 'a', length = d_alpha)
-        #     for beta in self.root_system.root_list:
-        #         d_beta = self.root_space_dimension(beta)
-        #         b = vector_variable(letter = 'b', length = d_beta)
-        #         if self.root_system.is_root(alpha + beta) and d_alpha == d_beta:
-        #             linear_combos = self.root_system.integer_linear_combos(alpha,beta)
-        #             for key in linear_combos:
-        #                 i = key[0]
-        #                 j = key[1]
-        #                 root = linear_combos[key]
-        #                 coeff_1 = self.commutator_coefficient_map(alpha,beta,i,j,a,b)
-        #                 coeff_2 = self.commutator_coefficient_map(alpha,beta,i,j,b,a)
-        #                 assert(coeff_1 == coeff_2)
-        # if display: print("done.")
-        if display: print("TESTS NOT YET IMPLEMENTED.")
-        
-        if display: print("\t\tChecking that negating both roots does ???...", end = "")
-        # I think negating both roots should multiply N_11 by (-1)
-        # and have no effect on N_21 / N_12
-        # INCOMPLETE
-        if display: print("TEST NOT YET IMPLEMENTED.")
+
+        if display: print("\tVerifying that swapping order of roots negates the coefficient...", end = "")
+        for alpha in self.root_system.root_list:
+            d_alpha = self.root_space_dimension(alpha)
+            a = vector_variable(letter = 'a', length = d_alpha)
+            for beta in self.root_system.root_list:
+                d_beta = self.root_space_dimension(beta)
+                b = vector_variable(letter = 'b', length = d_beta)
+                if self.root_system.is_root(alpha + beta) and not self.root_system.is_proportional(alpha,beta):
+                    linear_combos = self.root_system.integer_linear_combos(alpha,beta)#############
+                    for key in linear_combos:
+                        i = key[0]
+                        j = key[1]
+                        coeff_1 = self.commutator_coefficient_map(alpha,beta,i,j,a,b)
+                        coeff_2 = self.commutator_coefficient_map(beta,alpha,j,i,b,a)
+                        assert(coeff_1 == -coeff_2)
+        if display: print("done.")
         
         if display: print("Done verifying properties of commutators.")
         

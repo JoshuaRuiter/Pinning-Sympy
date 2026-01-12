@@ -1,5 +1,5 @@
 import sympy as sp
-from utility_general import is_diagonal, generate_character_list, determine_roots
+from utility_general import is_diagonal
 
 def is_group_element_SL(matrix_to_test, form = None):
     return matrix_to_test.det() == 1

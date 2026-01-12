@@ -81,7 +81,8 @@ def reduce_character_list(vector_list, quotient_vectors):
 def determine_roots(generic_torus_element,
                     generic_lie_algebra_element,
                     list_of_characters,
-                    variables_to_solve_for):
+                    variables_to_solve_for,
+                    time_updates = False):
     # Caculate roots and root spaces
     # return in a list of pairs format, where the first entry is the root,
     # and the second entry is the generic element of the root space
@@ -90,25 +91,27 @@ def determine_roots(generic_torus_element,
     x = generic_lie_algebra_element
     LHS = t*x*t**(-1)
     
-    # print("\nComputing roots...")
-    # n = len(list_of_characters)
-    # print("Testing " + str(n) + " candidate characters.")
-    # i = 0
-    # t0 = time.time()
+    if time_updates:
+        print("\nComputing roots...")
+        n = len(list_of_characters)
+        print("Testing " + str(n) + " candidate characters.")
+        i = 0
+        t0 = time.time()
     
     for alpha in list_of_characters:
         
-        # i = i + 1
-        # t1 = time.time()
-        # if i % 100 == 0:
-        #     print("\tTesting candidate", i)
-        #     print("\tRoots found so far:", len(roots_and_root_spaces))
-        #     elapsed = t1-t0
-        #     avg = elapsed/i
-        #     remaining = (n-i)*avg
-        #     print("\tTime elapsed:", int(elapsed), "seconds")
-        #     print("\tAverage time per root:", round(avg,2), "seconds")
-        #     print("\tEstimated time remaining:", int(remaining), "seconds")
+        if time_updates:
+            i = i + 1
+            t1 = time.time()
+            if i % 100 == 0:
+                print("\tTesting candidate", i)
+                print("\tRoots found so far:", len(roots_and_root_spaces))
+                elapsed = t1-t0
+                avg = elapsed/i
+                remaining = (n-i)*avg
+                print("\tTime elapsed:", int(elapsed), "seconds")
+                print("\tAverage time per root:", round(avg,2), "seconds")
+                print("\tEstimated time remaining:", int(remaining), "seconds")
             
         alpha_of_t = evaluate_character(alpha,t)
         if alpha_of_t != 1: # ignore cases where the character is trivial
@@ -139,9 +142,6 @@ def parse_root_pairs(root_info, what_to_get):
     #   [(root_1,root_space_1), (root_2, root_space_2), ...]
     # into just the roots,
     # or just the root spaces
-    if what_to_get == 'roots':
-        return [pair[0] for pair in root_info]
-    elif what_to_get == 'root_spaces':
-        return [pair[1] for pair in root_info]
-    else:
-        raise ValueError("Can only parse root pairs into roots or root_spaces. Attempted input was",what_to_get)
+    if what_to_get == 'roots': return [pair[0] for pair in root_info]
+    elif what_to_get == 'root_spaces': return [pair[1] for pair in root_info]
+    else: raise ValueError("Can only parse root pairs into roots or root_spaces. Attempted input was",what_to_get)

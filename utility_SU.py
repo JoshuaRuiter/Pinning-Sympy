@@ -69,20 +69,6 @@ def is_lie_algebra_element_SU(matrix_to_test, form):
     X = matrix_to_test
     H = form.matrix
     X_conjugate = custom_conjugate(X, form.primitive_element)
-    
-    ###############################
-    # print("\nH=")
-    # sp.pprint(H)
-    # print("X=")
-    # sp.pprint(X)
-    # print("X_conjugate=")
-    # sp.pprint(X_conjugate)
-    # print("X_conjugate.T*H=")
-    # sp.pprint(X_conjugate.T*H)
-    # print("-H*X=")
-    # sp.pprint(-H*X)
-    ###############################
-    
     return (X_conjugate.T*H).equals(-H*X)
 
 def generic_lie_algebra_element_SU(matrix_size, rank, form, letter = 'x'):

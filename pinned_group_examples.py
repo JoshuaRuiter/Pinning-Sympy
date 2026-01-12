@@ -24,19 +24,25 @@ import sympy as sp
 
 
 def main():
-    to_do_list = ("To do list:" + "\n\t" +
-                  "Successfully run all tests for commutator coefficients" + "\n\t"
-                  "Change some list stuff to dictionaries, since tuples can be used as keys"
-                  "Add validation for some properties of commutator coefficients, " 
-                      + "e.g. swapping the order of two roots negates the coefficient")
+    to_do_list = ("To do list:" + "\n\t" + "\n\t" +
+                  "Add more variables that a group will store in the init method, or maybe not" + "\n\t" +
+                  "Clean up code for root_system.determine_dynkin_type, probably some unnecessary/redundant stuff there" + "\n\t" +
+                  "Compute Weyl group elements" + "\n\t" +
+                  "Run tests to validate properties of Weyl group elements" + "\n\t" +
+                  "Convert root_space_dimension_list into a dictionary with tuple keys" + "\n\t" +
+                  "Implement capability for printing to file instead of to console" + "\n\t" +
+                  "Improve speed for root space computations" + "\n\t" +
+                  "Add functionality to root_system class to construct standard " + 
+                      "models of root systems based on given Dynkin type" + "\n\t" +
+                  "Add documentation, including Readme on Github")
     print(to_do_list)
     
     print("\nDemonstrating usage of the pinned_group class")
     sp.init_printing(wrap_line=False)
-    #run_SL_tests()
-    #run_SO_split_tests()
-    #run_SO_nonsplit_tests()
-    #run_SU_quasisplit_tests()
+    run_SL_tests()
+    run_SO_split_tests()
+    run_SO_nonsplit_tests()
+    run_SU_quasisplit_tests()
     run_SU_nonquasisplit_tests()
     print("\nAll tests complete.")
     
