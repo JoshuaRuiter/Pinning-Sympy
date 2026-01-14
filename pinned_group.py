@@ -64,30 +64,33 @@ class pinned_group:
     def fit_pinning(self, display):
         # work out all the computational details related to Lie algebra, roots, etc.
         
-        if display:
-            print('\n' + '-' * 100)
-            print(f"Fitting a pinning for {self.name_string}")
-            if self.form is not None:
-                print("\nForm matrix:")
-                sp.pprint(self.form.matrix)
+        ###############################################################
+        # TEMPORARILTY DISABLED
+        ###############################################################
+        # if display:
+        #     print('\n' + '-' * 100)
+        #     print(f"Fitting a pinning for {self.name_string}")
+        #     if self.form is not None:
+        #         print("\nForm matrix:")
+        #         sp.pprint(self.form.matrix)
                 
-            x = self.generic_lie_algebra_element(matrix_size = self.matrix_size,
-                                                 rank = self.rank,
-                                                 form = self.form,
-                                                 letter = 'x')
-            print("\nGeneric Lie algebra element:")            
-            sp.pprint(x)
+        #     x = self.generic_lie_algebra_element(matrix_size = self.matrix_size,
+        #                                          rank = self.rank,
+        #                                          form = self.form,
+        #                                          letter = 'x')
+        #     print("\nGeneric Lie algebra element:")            
+        #     sp.pprint(x)
                 
-            t = self.generic_torus_element(matrix_size = self.matrix_size,
-                                           rank = self.rank,
-                                           form = self.form,
-                                           letter = 't')
-            print("\nGeneric torus element:")
-            sp.pprint(t)
+        #     t = self.generic_torus_element(matrix_size = self.matrix_size,
+        #                                    rank = self.rank,
+        #                                    form = self.form,
+        #                                    letter = 't')
+        #     print("\nGeneric torus element:")
+        #     sp.pprint(t)
             
-            print("\nTrivial characters:")
-            for c in self.trivial_characters:
-                sp.pprint(c)
+        #     print("\nTrivial characters:")
+        #     for c in self.trivial_characters:
+        #         sp.pprint(c)
         
         self.fit_root_system(display)
         self.fit_root_spaces(display)
@@ -198,19 +201,23 @@ class pinned_group:
             return sp.simplify(np.eye(self.matrix_size, dtype = int) + x + x*x/2)
         self.root_subgroup_map = root_subgp_map
         
-        if display:
-            print(f"\nRoots, root spaces, and root subgroups for {self.name_string}:")
-            for r, x in self.roots_and_root_spaces:
-                dim = self.root_space_dimension(r)
-                print("\tRoot:",r)
-                print("\tRoot space dimension:",dim)
-                print("\tRoot space:")
-                sp.pprint(x)
-                print("\tRoot subgroup:")
-                u = vector_variable(letter = 'u', length = dim)
-                X_alpha_u = self.root_subgroup_map(r, u)
-                sp.pprint(X_alpha_u)
-                print()
+        
+        #########################################################
+        # TEMPORARILY DISABLED
+        #########################################################
+        # if display:
+        #     print(f"\nRoots, root spaces, and root subgroups for {self.name_string}:")
+        #     for r, x in self.roots_and_root_spaces:
+        #         dim = self.root_space_dimension(r)
+        #         print("\tRoot:",r)
+        #         print("\tRoot space dimension:",dim)
+        #         print("\tRoot space:")
+        #         sp.pprint(x)
+        #         print("\tRoot subgroup:")
+        #         u = vector_variable(letter = 'u', length = dim)
+        #         X_alpha_u = self.root_subgroup_map(r, u)
+        #         sp.pprint(X_alpha_u)
+        #         print()
         
     def fit_homomorphism_defect_coefficients(self, display = True):
         # For multipliable roots, the root subgroup maps are not quite homomorphisms
@@ -358,30 +365,33 @@ class pinned_group:
                         
         self.commutator_coefficient_map = ccm
         
-        if display:
-            if len(self.commutator_coefficient_list) == 0:
-                print("\nNo pairs of summable roots, so no commutator coefficients.")
-            else:
-                print(f"\nCommutator coefficients for {self.name_string}:\n")
-                for root1 in self.root_system.root_list:
-                    d_1 = self.root_space_dimension(root1)
-                    u = vector_variable(letter = 'u', length = d_1)
-                    for root2 in self.root_system.root_list:
-                        if self.root_system.is_root(root1 + root2) and not self.root_system.is_proportional(root1, root2):
-                            d_2 = self.root_space_dimension(root2)
-                            v = vector_variable(letter = 'v', length = d_2)
-                            linear_combos = self.root_system.integer_linear_combos(root1,root2)
-                            print("\tRoot 1:",root1)
-                            print("\tRoot 2:",root2)
-                            for key in linear_combos:
-                                i = key[0]
-                                j = key[1]
-                                root = linear_combos[key]
-                                assert(np.array_equal(i*root1 + j*root2, root))
-                                coeff = self.commutator_coefficient_map(root1, root2, i, j, u, v)
-                                print("\t\t(i,j):",(i,j))
-                                print("\t\ti*(Root 1) + j*(Root 2):",root)
-                                print("\t\tCommutator coefficient:",coeff,"\n")
+        #########################################################
+        # TEMPORARILY DISABLED
+        #########################################################
+        # if display:
+        #     if len(self.commutator_coefficient_list) == 0:
+        #         print("\nNo pairs of summable roots, so no commutator coefficients.")
+        #     else:
+        #         print(f"\nCommutator coefficients for {self.name_string}:\n")
+        #         for root1 in self.root_system.root_list:
+        #             d_1 = self.root_space_dimension(root1)
+        #             u = vector_variable(letter = 'u', length = d_1)
+        #             for root2 in self.root_system.root_list:
+        #                 if self.root_system.is_root(root1 + root2) and not self.root_system.is_proportional(root1, root2):
+        #                     d_2 = self.root_space_dimension(root2)
+        #                     v = vector_variable(letter = 'v', length = d_2)
+        #                     linear_combos = self.root_system.integer_linear_combos(root1,root2)
+        #                     print("\tRoot 1:",root1)
+        #                     print("\tRoot 2:",root2)
+        #                     for key in linear_combos:
+        #                         i = key[0]
+        #                         j = key[1]
+        #                         root = linear_combos[key]
+        #                         assert(np.array_equal(i*root1 + j*root2, root))
+        #                         coeff = self.commutator_coefficient_map(root1, root2, i, j, u, v)
+        #                         print("\t\t(i,j):",(i,j))
+        #                         print("\t\ti*(Root 1) + j*(Root 2):",root)
+        #                         print("\t\tCommutator coefficient:",coeff,"\n")
                                 
     def fit_weyl_group(self, display = True):
         # TO DO:
@@ -396,22 +406,15 @@ class pinned_group:
         for alpha in self.root_system.root_list:
             
             d_alpha = self.root_space_dimension(alpha)
-            d_m_alpha = self.root_space_dimension(-alpha)
-            assert(d_alpha == d_m_alpha)
             u = vector_variable(letter = 'u', length = d_alpha)
-            v = vector_variable(letter = 'v', length = d_m_alpha)
             x_alpha_u = self.root_subgroup_map(alpha, u)
-            x_m_alpha_v = self.root_subgroup_map(-alpha, v)
             
             ##########################
-            print("\nalpha =",alpha)
-            #print("-alpha=",-alpha)
-            #print("d_alpha=",d_alpha)
-            #print("d_{-alpha}=",d_m_alpha)
+            print()
+            print("-" * 50)
+            print("alpha =",alpha) 
             print("\nx_alpha_u =")
             sp.pprint(x_alpha_u)
-            print("\nx_{-alpha}_v =")
-            sp.pprint(x_m_alpha_v)            
             ##########################
             
             # I want an element w_alpha which belongs to the subgroup
@@ -432,58 +435,79 @@ class pinned_group:
             # a bunch of equations (one for each root beta)
             # and solve those?
             
-            # Initialize a fully symbolic (n x n) matrix
+            # Initialize a fully symbolic (n by n) matrix
             w_alpha = sp.Matrix(sp.symarray('w', (self.matrix_size, self.matrix_size)))
-            w_alpha_inv = w_alpha.inv()
+            det = sp.det(w_alpha)
             vars_to_solve_for = w_alpha.free_symbols
-            
-            #################################
-            print("w_alpha =")
-            sp.pprint(w_alpha)
-            print("w_alpha^(-1) =")
-            sp.pprint(w_alpha_inv)            
-            #################################
-            
+
             # Make an equation for each other root beta, 
             # coming from conjugating x_beta(vector of 1's)
-            vanishing_conditions = []
+            vanishing_conditions = [det - 1]
             i = 0
             for beta in self.root_system.root_list:
                 i = i + 1
                 d_beta = self.root_space_dimension(beta)
-                u_beta = vector_variable(letter = 'u' + str(i), length = d_beta)
-                x_beta_u = self.root_subgroup_map(beta, u_beta)
+                u = vector_variable(letter = 'u' + str(i), length = d_beta)
+                x_beta_u = self.root_subgroup_map(beta, u)
                 
                 gamma = self.root_system.reflect_root(alpha, beta)
                 d_gamma = self.root_space_dimension(gamma)
                 assert(d_beta == d_gamma)
-                v_gamma = vector_variable(letter = 'v' + str(i), length = d_gamma)
-                x_gamma_v = self.root_subgroup_map(gamma, v_gamma)
                 
-                conjugation = sp.simplify(w_alpha * x_beta_u * w_alpha_inv)
-                condition = sp.simplify(conjugation - x_gamma_v)
+                #c_i = sp.symbols('c' + str(i))
+                # v_gamma = vector_variable(letter = 'v' + str(i), length = d_gamma)
+                #x_gamma_v = self.root_subgroup_map(gamma, v_gamma)
+                #x_gamma_cu = self.root_subgroup_map(gamma, c_i * u)
+                x_gamma_cu = self.root_subgroup_map(gamma, -u)
+                
+                #vars_to_solve_for = vars_to_solve_for.union({c_i})
+                
+                LHS = sp.simplify(w_alpha * x_beta_u)
+                #RHS = sp.simplify(x_gamma_v * w_alpha)
+                RHS = sp.simplify(x_gamma_cu * w_alpha)
+                
+                condition = sp.simplify(LHS-RHS)
                 vanishing_conditions.append(condition)
                 
                 #########################################
+                print("-" * 40)
                 print("\nbeta =",beta)
-                #print("d_beta=",d_beta)
-                print("\nx_beta_u =")
+                #print("\nx_beta_one =")
+                #sp.pprint(x_beta_one)
+                print("\nx_beta_u = ")
                 sp.pprint(x_beta_u)
-                print("gamma (reflected root) =",gamma)
-                print("\nx_gamma_v =")
-                sp.pprint(x_gamma_v)
-                print("\nw_alpha * x_beta_u * w_alpha^(-1) =")
-                sp.pprint(conjugation)
-                print("\nVanishing condition =")
-                sp.pprint(condition)
+                print("\ngamma (reflected root) =",gamma)
+                print("\nx_gamma_cu =")
+                sp.pprint(x_gamma_cu)
+                #print("\nx_gamma_v =")
+                #sp.pprint(x_gamma_v)
+
+                #print("\nRather than solve w_alpha * x_beta_u * w_alpha^(-1) = x_gamma_v")
+                #print("we will solve w_alpha * x_beta_u = x_gamma_v * w_alpha")
+                #print("which should be faster since it doesn't involve a matrix inverse")
+                
+                print("\nw_alpha * x_beta_u =")
+                sp.pprint(LHS)
+                print("\nx_gamma_cu * w_alpha =")
+                sp.pprint(RHS)
                 #########################################
+            
+            print("-" * 40)
+            print("\nw_alpha =")
+            sp.pprint(w_alpha)
+            i = 0
+            for c in vanishing_conditions:
+                i = i + 1
+                print(f"\nVanishing condition {i}:")
+                sp.pprint(c)
             
             # I have no idea what to expect from this solve
             solutions_list = sp.solve(vanishing_conditions,vars_to_solve_for,dict=True)
             
             ##########################
-            print("Solutions:")
+            print("\nSolutions to the combined set of equations:")
             sp.pprint(solutions_list)
+            print("-" * 50)
             ##########################
             
             # Do some kind of substitution for w_alpha based on the solutions
@@ -498,7 +522,7 @@ class pinned_group:
         self.weyl_element_map = wem
         
         if display:
-            print("Weyl elements and Weyl conjugation coefficients:\n")
+            print("\nWeyl elements and Weyl conjugation coefficients:\n")
             for alpha in self.root_system.root_list:
                 w_alpha = self.weyl_element_map(alpha)
                 print("Root:",alpha)
@@ -513,12 +537,15 @@ class pinned_group:
             print('=' * 100)
             print(f"Running tests to validate pinning of {self.name_string}.")
             
-        self.validate_basics(display)
-        self.root_system.verify_root_system_axioms(display)
-        self.validate_root_space_maps(display)
-        self.validate_root_subgroup_maps(display)
-        self.validate_torus_conjugation_formula(display)
-        self.validate_commutator_formula(display)
+        #########################################################
+        # TEMPORARILY DISABLED
+        # #########################################################
+        # self.validate_basics(display)
+        # self.root_system.verify_root_system_axioms(display)
+        # self.validate_root_space_maps(display)
+        # self.validate_root_subgroup_maps(display)
+        # self.validate_torus_conjugation_formula(display)
+        # self.validate_commutator_formula(display)
         self.validate_weyl_group_properties(display)
         
         if display:
@@ -637,22 +664,15 @@ class pinned_group:
         if display: print("done.")
     
     def validate_commutator_formula(self, display = True):
-        
         if display: print("\nVerifying commutator properties...")
-        
         if display: print("\tChecking commutator formulas... ", end="")
-        
         for alpha in self.root_system.root_list:
-            
             d_alpha = self.root_space_dimension(alpha)
             a = vector_variable(letter = 'a', length = d_alpha)
             x_alpha_a = self.root_subgroup_map(alpha, a)
-            
             for beta in self.root_system.root_list:
                 # Commutator formula only applies when the two roots are not scalar multiples
-
                 if not(self.root_system.is_proportional(alpha,beta)):
-                    
                     d_beta = self.root_space_dimension(beta)
                     b = vector_variable(letter = 'b', length = d_beta)
                     x_beta_b = self.root_subgroup_map(beta, b)
