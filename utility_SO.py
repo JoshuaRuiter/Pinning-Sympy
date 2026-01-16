@@ -1,15 +1,14 @@
 import sympy as sp
+import numpy as np
 
 def is_group_element_SO(matrix_to_test, form):
     X = matrix_to_test
     B = form.matrix
     return ((X.T*B*X).equals(B) and X.det()==1)
 
-def is_torus_element_SO(matrix_to_test, matrix_size, rank, form = None):
-    n = matrix_size
+def is_torus_element_SO(matrix_to_test, rank):
+    n = matrix_to_test.shape[0]
     q = rank
-    if sp.shape(matrix_to_test) != (n,n):
-        return False
     for i in range(q):
         if (matrix_to_test[i,i]*matrix_to_test[q+i,q+i]!=1):
             return False
@@ -18,7 +17,7 @@ def is_torus_element_SO(matrix_to_test, matrix_size, rank, form = None):
             return False
     return True
 
-def generic_torus_element_SO(matrix_size, rank, form = None, letter = 't'):
+def generic_torus_element_SO(matrix_size, rank, letter = 't'):
     # Output a 'generic' element of the diagonal torus subgroup of 
     # the special orthogonal group, which has the form
     # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1)
@@ -31,8 +30,9 @@ def generic_torus_element_SO(matrix_size, rank, form = None, letter = 't'):
     return t
 
 def trivial_characters_SO(matrix_size, rank):
-    return [[1 if j == i or j == i + rank else 0 for j in range(matrix_size)] 
-            for i in range(rank)]
+    trivial_characters = [np.array([1 if j == i or j == i + rank else 0 for j in range(matrix_size)])for i in range(rank)]
+    matrix_with_trivial_character_columns = np.array(np.stack(trivial_characters, axis=1))
+    return matrix_with_trivial_character_columns
 
 def is_lie_algebra_element_SO(matrix_to_test, form):
     X = matrix_to_test

@@ -1,5 +1,6 @@
 from utility_general import is_diagonal
 import sympy as sp
+import numpy as np
 
 def custom_conjugate(my_expression, primitive_element):
     # Conjugate an expression with entries in the quadratic field extension k(sqrt(d))
@@ -27,11 +28,9 @@ def is_group_element_SU(matrix_to_test, form):
     X_conjugate = custom_conjugate(X, form.primitive_element)   
     return ((X_conjugate.T*H*X).equals(H) and X.det() == 1)
 
-def is_torus_element_SU(matrix_to_test, matrix_size, rank, form = None):
+def is_torus_element_SU(matrix_to_test, rank):
     # Return true if matrix_to_test is an element of the diagonal torus of
     # the special unitary group.
-    if sp.shape(matrix_to_test) != (matrix_size,matrix_size):
-        return False
     
     # All elements of this torus have the form
     # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1)
@@ -46,7 +45,7 @@ def is_torus_element_SU(matrix_to_test, matrix_size, rank, form = None):
             return False
     return True
 
-def generic_torus_element_SU(matrix_size, rank, form = None, letter = 't'):
+def generic_torus_element_SU(matrix_size, rank, letter = 't'):
     # Output a 'generic' element of the diagonal torus subgroup of 
     # the special unitary group, which has the form
     # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1)
@@ -59,8 +58,9 @@ def generic_torus_element_SU(matrix_size, rank, form = None, letter = 't'):
     return t
 
 def trivial_characters_SU(matrix_size, rank):
-    return [[1 if j == i or j == i + rank else 0 for j in range(matrix_size)] 
-            for i in range(rank)]
+    trivial_characters = [np.array([1 if j == i or j == i + rank else 0 for j in range(matrix_size)])for i in range(rank)]
+    matrix_with_trivial_character_columns = np.array(np.stack(trivial_characters, axis=1))
+    return matrix_with_trivial_character_columns
 
 def is_lie_algebra_element_SU(matrix_to_test, form):
     # Return true of matrix_to_test is an element of the special unitary group

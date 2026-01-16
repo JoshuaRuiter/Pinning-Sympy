@@ -24,22 +24,12 @@ import sympy as sp
 
 
 def main():
-    to_do_list = ("To do list:" + "\n\t" + "\n\t" +
-                  "Add group vanishing conditions as a stored variable" + "\n\t" +
-                  "Add more variables that a group will store in the init method, or maybe not" + "\n\t" +
-                  "Clean up code for root_system.determine_dynkin_type, " +
-                      "probably some unnecessary/redundant stuff there" + "\n\t" +
+    to_do_list = ("To do list:" + "\n\t" + 
                   "Compute Weyl group elements" + "\n\t" +
-                  "I think some of the generic_torus_element and is_torus_element maps" + 
-                      " have some unnecessary variables, try to remove these" + "\n\t" +
+                  "Run tests to validate properties of Weyl group elements" + "\n\t" +
                   "Maybe I need an implementation of the Jacobson-Morozov theorem," +
                       "i.e. an algorithm that generates sl2-triples" + "\n\t" +
-                  "Add tests to check that negating a root corresponds to " +
-                      "matrix tranpose of the root space/root subgroup" + "\n\t"
-                  "Run tests to validate properties of Weyl group elements" + "\n\t" +
-                  "Convert root_space_dimension_list into a dictionary with tuple keys" + "\n\t" +
                   "Implement capability for printing to file instead of to console" + "\n\t" +
-                  "Improve speed for root space computations" + "\n\t" +
                   "Add functionality to root_system class to construct standard " + 
                       "models of root systems based on given Dynkin type" + "\n\t" +
                   "Add documentation, including Readme on Github")
@@ -47,8 +37,8 @@ def main():
     
     print("\nDemonstrating usage of the pinned_group class")
     sp.init_printing(wrap_line=False)
-    run_SL_tests()
-    run_SO_split_tests()
+    #run_SL_tests()
+    #run_SO_split_tests()
     run_SO_nonsplit_tests()
     run_SU_quasisplit_tests()
     run_SU_nonquasisplit_tests()
@@ -67,7 +57,7 @@ def run_SL_tests():
                             is_group_element = is_group_element_SL,
                             is_torus_element = is_torus_element_SL,
                             generic_torus_element = generic_torus_element_SL,
-                            trivial_characters = trivial_characters_SL(n),
+                            trivial_character_matrix = trivial_characters_SL(n),
                             is_lie_algebra_element = is_lie_algebra_element_SL,
                             generic_lie_algebra_element = generic_lie_algebra_element_SL,
                             non_variables = None)
@@ -97,7 +87,7 @@ def run_SO_split_tests():
                                 is_group_element = is_group_element_SO,
                                 is_torus_element = is_torus_element_SO,
                                 generic_torus_element = generic_torus_element_SO,
-                                trivial_characters = trivial_characters_SO(n,q), 
+                                trivial_character_matrix = trivial_characters_SO(n,q), 
                                 is_lie_algebra_element = is_lie_algebra_element_SO,
                                 generic_lie_algebra_element = generic_lie_algebra_element_SO,
                                 non_variables = None)
@@ -130,7 +120,7 @@ def run_SO_nonsplit_tests():
                                   is_group_element = is_group_element_SO, 
                                   is_torus_element = is_torus_element_SO,
                                   generic_torus_element = generic_torus_element_SO,
-                                  trivial_characters = trivial_characters_SO(n,q),
+                                  trivial_character_matrix = trivial_characters_SO(n,q),
                                   is_lie_algebra_element = is_lie_algebra_element_SO,
                                   generic_lie_algebra_element = generic_lie_algebra_element_SO,
                                   non_variables = None)
@@ -166,7 +156,7 @@ def run_SU_quasisplit_tests():
                                   is_group_element = is_group_element_SU, 
                                   is_torus_element = is_torus_element_SU,
                                   generic_torus_element = generic_torus_element_SU,
-                                  trivial_characters = trivial_characters_SU(n,q),
+                                  trivial_character_matrix = trivial_characters_SU(n,q),
                                   is_lie_algebra_element = is_lie_algebra_element_SU,
                                   generic_lie_algebra_element = generic_lie_algebra_element_SU,
                                   non_variables = {d})
@@ -202,7 +192,7 @@ def run_SU_nonquasisplit_tests():
                                       is_group_element = is_group_element_SU, 
                                       is_torus_element = is_torus_element_SU,
                                       generic_torus_element = generic_torus_element_SU,
-                                      trivial_characters = trivial_characters_SU(n,q),
+                                      trivial_character_matrix = trivial_characters_SU(n,q),
                                       is_lie_algebra_element = is_lie_algebra_element_SU,
                                       generic_lie_algebra_element = generic_lie_algebra_element_SU,
                                       non_variables = {d}) 
