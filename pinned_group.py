@@ -17,7 +17,7 @@ import sympy as sp
 import numpy as np
 from utility_general import (determine_roots,
                              generate_character_list, 
-                             parse_root_pairs, 
+                             #parse_root_pairs, 
                              reduce_character_list,
                              vector_variable,
                              evaluate_character)
@@ -122,12 +122,20 @@ class pinned_group:
             print("\nCandidate characters:",len(full_char_list))                
             print("Candidates after quotienting by trivial characters:",len(reduced_char_list))
                 
-        self.roots_and_root_spaces = determine_roots(generic_torus_element = t,
-                                                generic_lie_algebra_element = x,
-                                                list_of_characters = reduced_char_list,
-                                                variables_to_solve_for = x_vars)
-        root_list = parse_root_pairs(root_info = self.roots_and_root_spaces,
-                                     what_to_get = 'roots')
+        ###############################################################################
+        # OLD VERSION
+        ###############################################################################
+        # self.roots_and_root_spaces = determine_roots(generic_torus_element = t,
+        #                                         generic_lie_algebra_element = x,
+        #                                         list_of_characters = reduced_char_list,
+        #                                         variables_to_solve_for = x_vars)
+        # root_list = parse_root_pairs(root_info = self.roots_and_root_spaces,
+        #                              what_to_get = 'roots')
+        self.root_space_dict = determine_roots(generic_torus_element = t,
+                                               generic_lie_algebra_element = x,
+                                               list_of_characters = reduced_char_list,
+                                               variables_to_solve_for = x_vars)
+        root_list = [np.array(alpha) for alpha in list(self.root_space_dict.keys())]
         self.root_system = root_system(root_list, self.trivial_character_matrix)
         
         if display:
@@ -139,7 +147,8 @@ class pinned_group:
     def fit_root_spaces(self, display = True):
         
         self.root_space_dimension_dict = {}
-        for r, x in self.roots_and_root_spaces:
+        for r in self.root_space_dict:
+            x = self.root_space_dict[r]
             x_vars = x.free_symbols
             if self.non_variables is not None:
                 x_vars = x_vars - self.non_variables
@@ -158,7 +167,8 @@ class pinned_group:
             assert(self.root_system.is_root(root))
             dim = self.root_space_dimension(root)
             assert(len(u) == dim)
-            for r, x in self.roots_and_root_spaces:
+            for r in self.root_space_dict:
+                x = self.root_space_dict[r]
                 if np.array_equal(r, root):
                     x_vars = x.free_symbols
                     if self.non_variables is not None: 
@@ -186,9 +196,12 @@ class pinned_group:
         self.root_subgroup_map = root_subgp_map
         
         #########################################################################
+        # REMOVE THIS AND PUT IN FIT_WEYL_GROUPS ONCE THAT WORKS PROPERLY
+        #########################################################################
         if display:
             print(f"\nRoot spaces and root subgroups for {self.name_string}:")
-            for r, x in self.roots_and_root_spaces:
+            for r in self.root_space_dict:
+                x = self.root_space_dict[r]
                 dim = self.root_space_dimension(r)
                 print("\tRoot:",r)
                 print("\tRoot space dimension:",dim)
@@ -673,7 +686,7 @@ class pinned_group:
             x_alpha_a = self.root_subgroup_map(alpha, a)
             for beta in self.root_system.root_list:
                 # Commutator formula only applies when the two roots are not scalar multiples
-                if not(self.root_system.is_proportional(alpha,beta)):
+                if not(self.root_system.is_proportional(alpha,beta,test_bound=10)):
                     d_beta = self.root_space_dimension(beta)
                     b = vector_variable(letter = 'b', length = d_beta)
                     x_beta_b = self.root_subgroup_map(beta, b)
@@ -719,9 +732,17 @@ class pinned_group:
                     for key in linear_combos:
                         i = key[0]
                         j = key[1]
-                        coeff_1 = self.commutator_coefficient_map(alpha,beta,i,j,a,b)
-                        coeff_2 = self.commutator_coefficient_map(beta,alpha,j,i,b,a)
-                        assert(coeff_1 == -coeff_2)
+                        coeff_1 = sp.simplify(self.commutator_coefficient_map(alpha,beta,i,j,a,b))
+                        coeff_2 = sp.simplify(self.commutator_coefficient_map(beta,alpha,j,i,b,a))
+                        
+                        # print()
+                        # print("alpha=",alpha)
+                        # print("beta=",beta)
+                        # print("(i,j)=",(i,j))
+                        # print("N_(i,j)_(alpha,beta)=",coeff_1)
+                        # print("N_(j,i)_(beta,alpha)=",coeff_2)
+                        
+                        assert(coeff_1.equals(-coeff_2))
         if display: print("done.")
         
         if display: print("Done verifying properties of commutators.")

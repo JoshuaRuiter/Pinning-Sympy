@@ -368,7 +368,7 @@ class root_system:
         # return np.array_equal(alpha_mask,beta_mask) and np.all(ratios == ratios[0])
         
         for k in ints_near_zero(test_bound):
-            if in_integer_column_span(k*alpha - beta, self.lattice_matrix):
+            if in_integer_column_span(k*np.array(alpha) - np.array(beta), self.lattice_matrix):
                 return True
         return False
     

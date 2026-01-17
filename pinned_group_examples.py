@@ -25,6 +25,9 @@ import sympy as sp
 
 def main():
     to_do_list = ("To do list:" + "\n\t" + 
+                  "Make a faster version of in_integer_column_span" + "\n\t" +
+                  "Finish changes related to changing root spaces stored in a dictionary format" + 
+                      " such as better formatting for root space and root subgroup map fittings" + "\n\t" +
                   "Compute Weyl group elements" + "\n\t" +
                   "Run tests to validate properties of Weyl group elements" + "\n\t" +
                   "Maybe I need an implementation of the Jacobson-Morozov theorem," +
@@ -37,8 +40,8 @@ def main():
     
     print("\nDemonstrating usage of the pinned_group class")
     sp.init_printing(wrap_line=False)
-    #run_SL_tests()
-    #run_SO_split_tests()
+    run_SL_tests()
+    run_SO_split_tests()
     run_SO_nonsplit_tests()
     run_SU_quasisplit_tests()
     run_SU_nonquasisplit_tests()
