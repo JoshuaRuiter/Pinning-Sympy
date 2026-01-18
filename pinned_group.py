@@ -53,14 +53,14 @@ class pinned_group:
                 
         # These get set by running .fit_pinning()
         self.root_system = None
-        self.roots_and_root_spaces = None
         self.root_space_dimension_dict = None
         self.root_space_dimension = None
+        self.root_space_dict = None
         self.root_space_map = None
         self.root_subgroup_map = None
         self.homomorphism_defect_coefficient_list = None
         self.homomorphism_defect_map = None
-        self.commutator_coefficient_list = None
+        self.commutator_coefficient_dict = None
         self.commutator_coefficient_map = None
         self.weyl_element_map = None
         self.weyl_conjugation_coefficient_map = None
@@ -75,16 +75,11 @@ class pinned_group:
                 print("\nForm matrix:")
                 sp.pprint(self.form.matrix)
                 
-            x = self.generic_lie_algebra_element(matrix_size = self.matrix_size,
-                                                  rank = self.rank,
-                                                  form = self.form,
-                                                  letter = 'x')
+            x = self.generic_lie_algebra_element(self.matrix_size, self.rank, self.form, letter = 'x')
             print("\nGeneric Lie algebra element:")            
             sp.pprint(x)
                 
-            t = self.generic_torus_element(matrix_size = self.matrix_size,
-                                            rank = self.rank,
-                                            letter = 't')
+            t = self.generic_torus_element(self.matrix_size, self.rank,'t')
             print("\nGeneric torus element:")
             sp.pprint(t)
             
@@ -103,18 +98,13 @@ class pinned_group:
             print('-' * 100)
 
     def fit_root_system(self, display = True):
-        t = self.generic_torus_element(matrix_size = self.matrix_size,
-                                       rank = self.rank,
-                                       letter = 't')
-        x = self.generic_lie_algebra_element(matrix_size = self.matrix_size,
-                                             rank = self.rank,
-                                             form = self.form,
-                                             letter = 'x')
+        t = self.generic_torus_element(self.matrix_size, self.rank, 't')
+        x = self.generic_lie_algebra_element(self.matrix_size, self.rank, self.form, 'x')
         x_vars = x.free_symbols
         if self.non_variables is not None: x_vars = x_vars - self.non_variables
         full_char_list = generate_character_list(character_length = self.matrix_size,
-                                            upper_bound = 2,  
-                                            padded_zeros = self.matrix_size - 2*self.rank)
+                                                 upper_bound = 2,  
+                                                 padded_zeros = self.matrix_size - 2*self.rank)
         reduced_char_list = reduce_character_list(vector_list = full_char_list,
                                                   lattice_matrix = self.trivial_character_matrix)
         
@@ -122,21 +112,12 @@ class pinned_group:
             print("\nCandidate characters:",len(full_char_list))                
             print("Candidates after quotienting by trivial characters:",len(reduced_char_list))
                 
-        ###############################################################################
-        # OLD VERSION
-        ###############################################################################
-        # self.roots_and_root_spaces = determine_roots(generic_torus_element = t,
-        #                                         generic_lie_algebra_element = x,
-        #                                         list_of_characters = reduced_char_list,
-        #                                         variables_to_solve_for = x_vars)
-        # root_list = parse_root_pairs(root_info = self.roots_and_root_spaces,
-        #                              what_to_get = 'roots')
         self.root_space_dict = determine_roots(generic_torus_element = t,
                                                generic_lie_algebra_element = x,
                                                list_of_characters = reduced_char_list,
                                                variables_to_solve_for = x_vars)
-        root_list = [np.array(alpha) for alpha in list(self.root_space_dict.keys())]
-        self.root_system = root_system(root_list, self.trivial_character_matrix)
+        root_list = list(self.root_space_dict.keys())
+        self.root_system = root_system(root_list, lattice_matrix = self.trivial_character_matrix)
         
         if display:
             print("Root system:",self.root_system.name_string)
@@ -147,57 +128,65 @@ class pinned_group:
     def fit_root_spaces(self, display = True):
         
         self.root_space_dimension_dict = {}
-        for r in self.root_space_dict:
-            x = self.root_space_dict[r]
+        for r, x in self.root_space_dict.items():
             x_vars = x.free_symbols
-            if self.non_variables is not None:
-                x_vars = x_vars - self.non_variables
+            if self.non_variables is not None: x_vars = x_vars - self.non_variables
             if self.form is not None:
-                if self.form.primitive_element is not None: 
-                    x_vars = x_vars - {self.form.primitive_element}
-                if self.form.anisotropic_vector is not None:
-                    x_vars = x_vars - self.form.anisotropic_vector.free_symbols
+                if self.form.primitive_element is not None: x_vars = x_vars - {self.form.primitive_element}
+                if self.form.anisotropic_vector is not None: x_vars = x_vars - self.form.anisotropic_vector.free_symbols
             self.root_space_dimension_dict[tuple(r)] = len(x_vars)
 
-        def root_space_dim(root):
-            return self.root_space_dimension_dict[tuple(root)]
+        def root_space_dim(alpha):
+            #is_root, alpha_equiv = self.root_system.is_root(alpha, return_equivalent = True)
+            # assert is_root, "Cannot get root space dimension for non-root"
+            # return self.root_space_dimension_dict[tuple(alpha_equiv)]
+            assert self.root_system.is_root(alpha), "Cannot get root space dimension for non-root"
+            return self.root_space_dimension_dict[tuple(alpha)]
         self.root_space_dimension = root_space_dim
         
-        def root_sp_map(root, u):
-            assert(self.root_system.is_root(root))
-            dim = self.root_space_dimension(root)
-            assert(len(u) == dim)
-            for r in self.root_space_dict:
-                x = self.root_space_dict[r]
-                if np.array_equal(r, root):
-                    x_vars = x.free_symbols
-                    if self.non_variables is not None: 
-                        x_vars = x_vars - self.non_variables
-                    if self.form is not None:
-                        if self.form.primitive_element is not None: 
-                            x_vars = x_vars - {self.form.primitive_element}
-                        if self.form.anisotropic_vector is not None: 
-                            x_vars = x_vars - self.form.anisotropic_vector.free_symbols
-                    assert(len(x_vars) == len(u))
-                    x_vars = list(x_vars)
-                    for i in range(dim):
-                        x = x.subs(x_vars[i],u[i])
-                    return sp.simplify(x)
+        def root_sp_map(alpha, u):
+            # is_root, alpha_equiv = self.root_system.is_root(alpha, return_equivalent = True)
+            # assert is_root, "Cannot get root space for non-root"
+            # dim = self.root_space_dimension(alpha_equiv)
+            # assert len(u) == dim, "Wrong length of input vector to root space map"
+            # x = self.root_space_dict[tuple(alpha_equiv)]
+            assert self.root_system.is_root(alpha), "Cannot get root space for non-root"
+            dim = self.root_space_dimension(alpha)
+            assert len(u) == dim, "Wrong length of input vector to root space map"
+            x = self.root_space_dict[tuple(alpha)]
+            
+            x_vars = x.free_symbols
+            if self.non_variables is not None: x_vars = x_vars - self.non_variables
+            if self.form is not None:
+                if self.form.primitive_element is not None: x_vars = x_vars - {self.form.primitive_element}
+                if self.form.anisotropic_vector is not None: x_vars = x_vars - self.form.anisotropic_vector.free_symbols
+            assert len(x_vars) == len(u), "Mismatched number of variables to substitute in root space map"
+            x_vars = list(x_vars)
+            for i in range(dim):
+                x = x.subs(x_vars[i],u[i])
+            return sp.simplify(x)
         self.root_space_map = root_sp_map
     
     def fit_root_subgroup_maps(self, display = True):
-        def root_subgp_map(root, u):
-            assert(self.root_system.is_root(root))
-            dim = self.root_space_dimension(root)
-            assert(len(u) == dim)
-            x = self.root_space_map(root, u)
-            if any(x**3): raise ValueError("Unexpected: The 3rd power of a root space element is a nonzero matrix.")
+        def root_subgp_map(alpha, u):
+            # is_root, alpha_equiv = self.root_system.is_root(alpha, return_equivalent = True)
+            # assert is_root, "Cannot get root space dimension for non-root"
+            # dim = self.root_space_dimension(alpha_equiv)
+            # assert len(u) == dim, "Wrong length of input vector to root subgroup map"
+            # x = self.root_space_map(alpha_equiv, u)
+            
+            assert self.root_system.is_root(alpha), "Cannot get root space dimension for non-root"
+            dim = self.root_space_dimension(alpha)
+            assert len(u) == dim, "Wrong length of input vector to root subgroup map"
+            x = self.root_space_map(alpha, u)
+            
+            assert not any(x**3), "Unexpected: The 3rd power of a root space element is a nonzero matrix."
             return sp.simplify(np.eye(self.matrix_size, dtype = int) + x + x*x/2)
         self.root_subgroup_map = root_subgp_map
         
-        #########################################################################
-        # REMOVE THIS AND PUT IN FIT_WEYL_GROUPS ONCE THAT WORKS PROPERLY
-        #########################################################################
+        ###############################################
+        # MOVE TO FIT_WEYL_GROUPS ONCE THAT IS WORKING
+        ###############################################
         if display:
             print(f"\nRoot spaces and root subgroups for {self.name_string}:")
             for r in self.root_space_dict:
@@ -211,7 +200,6 @@ class pinned_group:
                 u = vector_variable(letter = 'u', length = dim)
                 X_alpha_u = self.root_subgroup_map(r, u)
                 sp.pprint(X_alpha_u)
-        #########################################################################
         
     def fit_homomorphism_defect_coefficients(self, display = True):
         # For multipliable roots, the root subgroup maps are not quite homomorphisms
@@ -220,7 +208,7 @@ class pinned_group:
         # The general product is kinda dumb because I am pretty sure i can only be 2
         # That function of u and v is what I call the "homomorphism defect coefficient"
         
-        self.homomorphism_defect_coefficient_list = []
+        self.homomorphism_defect_coefficient_dict = {}
         for alpha in self.root_system.root_list:
             if self.root_system.is_multipliable_root(alpha):
                     d_alpha = self.root_space_dimension(alpha)
@@ -235,49 +223,51 @@ class pinned_group:
                     vanishing_expression = sp.simplify(X_alpha_u * X_alpha_v - X_alpha_sum * X_2alpha_w)
                     variables_to_solve_for = w.free_symbols
                     solutions_list = sp.solve(vanishing_expression,variables_to_solve_for,dict=True)
-                    assert(len(solutions_list) == 1)
+                    assert len(solutions_list) == 1, "Unexpected: more than one solution for a homomorphism defect coefficient"
                     solutions_dict = solutions_list[0]
                     solutions_dict_keys = list(solutions_dict.values())
-                    assert(len(solutions_dict_keys) == 1)
+                    assert len(solutions_dict_keys) == 1, "Unexpected: more than one homomorphism defect coefficient"
                     w_solution = solutions_dict_keys[0]
-                    self.homomorphism_defect_coefficient_list.append([alpha, u, v, w_solution])
+                    self.homomorphism_defect_coefficient_dict[tuple(alpha)] = [u, v, w_solution]
                     
         if display:
-            if len(self.homomorphism_defect_coefficient_list) == 0:
+            if len(self.homomorphism_defect_coefficient_dict) == 0: 
                 print("\nNo multipliable roots, so no homomorphism defect coefficients.")
             else:
                 print(f"Homomorphism defect coefficients for {self.name_string}:")
-                for c in self.homomorphism_defect_coefficient_list:
-                    print("\nRoot:",c[0])
-                    print("Homomorphism defect coefficient:",c[-1])
+                for alpha in self.homomorphism_defect_coefficient_dict:
+                    print("\nRoot:",alpha)
+                    print("Homomorphism defect coefficient:",self.homomorphism_defect_coefficint_dict[alpha][2])
 
         def hom_defect_coeff(root, u, v):
-            assert(self.root_system.is_root(root))
-            if not self.root_system.is_multipliable_root(root):
-                return [1]
+            is_root, alpha_equiv = self.root_system.is_root(alpha, return_equivalent = True)
+            assert is_root, "Cannot get homomorphism defect coefficient for non-root"
+            if not self.root_system.is_multipliable_root(root): return [1]
             else:
-                for alpha, u_prime, v_prime, w_solution in self.homomorphism_defect_coefficient_list:
-                    if np.array_equal(alpha, root):
-                        # Found the right root
-                        hdc = w_solution
-                        assert(len(u) == len(u_prime))
-                        assert(len(v) == len(v_prime))
-                        for i in range(len(u)):
-                            hdc = hdc.subs(u_prime[i], u[i])
-                        for j in range(len(v)):
-                            hdc = hdc.subs(v_prime[j], v[j])
-                        return [hdc]
+                dict_entry = self.homomorphism_defect_coefficient_list[tuple(alpha_equiv)]
+                u_prime = dict_entry[0]
+                v_prime = dict_entry[1]
+                hdc = dict_entry[2]
+                assert len(u) == len(u_prime), "Wrong length vector input for homomorphism defect coefficient 1st input"
+                assert len(v) == len(v_prime), "Wrong length vector input for homomorphism defect coefficient 2nd input"
+                for i in range(len(u)):
+                    hdc = hdc.subs(u_prime[i], u[i])
+                for j in range(len(v)):
+                    hdc = hdc.subs(v_prime[j], v[j])
+                return [hdc]
+                    
         self.homomorphism_defect_map = hom_defect_coeff
         
     def fit_commutator_coefficients(self, display = True):
-        
-        self.commutator_coefficient_list = []
+        self.commutator_coefficient_dict = {}
         for alpha in self.root_system.root_list:
             d_alpha = self.root_space_dimension(alpha)
             u = vector_variable(letter = 'u', length = d_alpha)
             x_alpha_u = self.root_subgroup_map(alpha, u)
             for beta in self.root_system.root_list:
-                if  self.root_system.is_root(alpha + beta) and not(self.root_system.is_proportional(alpha,beta)):
+                my_sum = tuple(a+b for a, b in zip(alpha,beta))
+                if  (self.root_system.is_root(my_sum) 
+                     and not(self.root_system.is_proportional(alpha,beta,with_ratio=False))):
                     # compute the commutator coefficient and store it in a big list
                     
                     # compute the true commutator / left hand side of the equation
@@ -291,75 +281,69 @@ class pinned_group:
                     # It is formatted as a dictionary where keys are tuples (i,j) and the value 
                     # associated to a key (i,j) is the root i*alpha+j*beta
                     linear_combos = self.root_system.integer_linear_combos(alpha,beta)
-                    
-                    # The right hand side of the commutator formula is a product over 
-                    # positive integer linear combinations of alpha and beta
-                    # with coefficients depending on some function N(alpha,beta,i,j,u,v)
-                    RHS = np.eye(self.matrix_size, dtype = int)
                     vars_to_solve_for = set()
-                    new_coeff_lines = []
+                    new_coeff_dict = {}
                     
                     # Assemble the right hand side of the commutator formula,
                     # which is the product over all (i,j) pairs of positive integers
-                    # such that i*alpha+j*beta is a root, of factors 
+                    # such that i*alpha+j*beta is a root.
+                    # For each such pair (i,j), the RHS product has factor 
                     # X_(i*alpha+j*beta) ( N_ij(u,v) )
                     # where N_ij is some function of u and v, called the commutator coefficient
                     # Note that N_ij depends crucially on alpha and beta as well
+                    RHS = np.eye(self.matrix_size, dtype = int)
                     for key in linear_combos:
                         i = key[0]
                         j = key[1]
                         root = linear_combos[key]
-                        assert(np.array_equal(i*alpha + j*beta, root))
+                        assert np.array_equal(i*np.array(alpha) + j*np.array(beta), root), "Error in linear combos"
                         d_ij = self.root_space_dimension(root)
                         N_ij = vector_variable(letter = 'N' + str(i) + str(j), length = d_ij)
                         vars_to_solve_for = vars_to_solve_for.union(set(N_ij))
-                        factor_ij = self.root_subgroup_map(root, N_ij)
-                        RHS = RHS * factor_ij
-                        new_coeff_lines.append([alpha, beta, i, j, u, v, N_ij])
-
+                        RHS = RHS * self.root_subgroup_map(root, N_ij)
+                        new_coeff_dict[(tuple(alpha), tuple(beta), i,j)] = (u, v, N_ij)
+                        
                     # Now solve for all of the N_ij
                     vanishing_expression = sp.simplify(LHS - RHS)
                     solutions_list = sp.solve(vanishing_expression, vars_to_solve_for, dict=True)
                     solutions_dict = solutions_list[0]
-                    assert(len(solutions_list) == 1)
-                    assert(len(solutions_dict) == len(vars_to_solve_for))
-                    
-                    # Extract the solutions and store them in new_coeff_lines
-                    # which is then transferred to self.commutator_coefficient_list
-                    for index, line in enumerate(new_coeff_lines):
-                        coeff_vec = line[-1] # extract the coefficients from the last entry of the new line
+                    assert len(solutions_list) == 1, "Unexpected: more than one solution for commutator coefficient"
+                    assert len(solutions_dict) == len(vars_to_solve_for), "Unexpected: unable to solve for all commutator coefficients"
+
+                    # plug in solutions for N_ij variables,
+                    # and transfer to the permanent storage dictionary
+                    for key, value in new_coeff_dict.items():
+                        # key is a quadruple (alpha, beta, i, j)
+                        # value is a triple (u, v, N_ij)
+                        assert len(key) == 4, "Wrong length of key in commutator coefficient dictioanry"
+                        assert len(value) == 3, "Wrong length of value in commutator coefficient dictionary"
+                        alpha = key[0]
+                        beta = key[1]
+                        i = key[2]
+                        j = key[3]
+                        coeff_vec = value[2]
                         for var in vars_to_solve_for:
                             coeff_vec = coeff_vec.subs(var, solutions_dict[var])
-                        line[-1] = coeff_vec # replace with the commutator coefficients that we solved for
-                        self.commutator_coefficient_list.append(line)
-                    
-                    
+                        self.commutator_coefficient_dict[(tuple(alpha), tuple(beta), i, j)] = (u, v, coeff_vec)
+
         def ccm(alpha, beta, i, j, u, v):
-            if not self.root_system.is_root(alpha + beta):
-                return [0]
-            elif self.root_system.is_proportional(alpha, beta):
-                raise ValueError("Commutator formula does not apply to proportional root pairs.")
-            else:
-                # look up the coefficient in the big stored list
-                for (alpha_prime, beta_prime, i_prime, j_prime, 
-                     u_prime, v_prime, coeff) in self.commutator_coefficient_list:
-                    if (np.array_equal(alpha, alpha_prime) and
-                        np.array_equal(beta, beta_prime) and
-                        i == i_prime and
-                        j == j_prime):
-                            assert(len(u) == len(u_prime))
-                            assert(len(v) == len(v_prime))
-                            for i in range(len(u)):
-                                coeff = coeff.subs(u_prime[i], u[i])
-                            for j in range(len(v)):
-                                coeff = coeff.subs(v_prime[j], v[j])
-                            return sp.simplify(coeff)
-                raise ValueError("Commutator coefficient should exist, but could not be located.")
-                        
+            my_sum = tuple(a+b for a, b in zip(alpha,beta))
+            if not self.root_system.is_root(my_sum): return [0]
+            assert not self.root_system.is_proportional(alpha, beta, with_ratio = False), \
+                "Commutator formula does not apply to proportional root pairs"
+
+            u_prime, v_prime, coeff = self.commutator_coefficient_dict[(alpha, beta, i, j)]
+            assert len(u) == len(u_prime), "Wrong length vector input for commutator coefficient 1st input"
+            assert len(v) == len(v_prime), "Wrong length vector input for commutator coefficient 1st input"
+            for i in range(len(u)):
+                coeff = coeff.subs(u_prime[i], u[i])
+            for j in range(len(v)):
+                coeff = coeff.subs(v_prime[j], v[j])
+            return sp.simplify(coeff)
         self.commutator_coefficient_map = ccm
-        
+
         if display:
-            if len(self.commutator_coefficient_list) == 0:
+            if len(self.commutator_coefficient_dict) == 0:
                 print("\nNo pairs of summable roots, so no commutator coefficients.")
             else:
                 print(f"\nCommutator coefficients for {self.name_string}:\n")
@@ -367,7 +351,9 @@ class pinned_group:
                     d_1 = self.root_space_dimension(root1)
                     u = vector_variable(letter = 'u', length = d_1)
                     for root2 in self.root_system.root_list:
-                        if self.root_system.is_root(root1 + root2) and not self.root_system.is_proportional(root1, root2):
+                        my_sum = tuple(a+b for a,b in zip(root1, root2))
+                        if (self.root_system.is_root(my_sum)
+                            and not self.root_system.is_proportional(root1, root2, with_ratio = False)):
                             d_2 = self.root_space_dimension(root2)
                             v = vector_variable(letter = 'v', length = d_2)
                             linear_combos = self.root_system.integer_linear_combos(root1,root2)
@@ -377,11 +363,19 @@ class pinned_group:
                                 i = key[0]
                                 j = key[1]
                                 root = linear_combos[key]
-                                assert(np.array_equal(i*root1 + j*root2, root))
-                                coeff = self.commutator_coefficient_map(root1, root2, i, j, u, v)[0]
+                                my_combo = tuple(i*a + j*b for a, b in zip(root1,root2))
+                                assert my_combo == root, "Error with linear combos"
+                                coeff = self.commutator_coefficient_map(root1, root2, i, j, u, v)
                                 print("\t\t(i,j):",(i,j))
                                 print("\t\ti*(Root 1) + j*(Root 2):",root)
-                                print("\t\tCommutator coefficient:", coeff)
+                                if len(coeff) == 1:
+                                    print("\t\tCommutator coefficient:",coeff[0])
+                                else:
+                                    message = ""
+                                    for c in coeff:
+                                        message = message + str(c) + ","
+                                    message = message[0:-1]
+                                    print("\t\tCommutator coefficients:",message)
                                 print()
                                 
     def fit_weyl_group(self, display = True):
@@ -409,10 +403,7 @@ class pinned_group:
             vars_to_solve_for = w_alpha.free_symbols
             
             # set up a generic torus element         
-            t = self.generic_torus_element(matrix_size = self.matrix_size, 
-                                           rank = self.rank,
-                                           form = self.form, 
-                                           letter = 't')
+            t = self.generic_torus_element(self.matrix_size, self.rank, self.form, 't')
             
             ############################################################
             print()
@@ -560,16 +551,13 @@ class pinned_group:
         s = self.generic_torus_element(matrix_size = self.matrix_size,
                                        rank = self.rank,
                                        letter = 's')
-        assert(self.is_group_element(matrix_to_test = s, form = self.form))
+        assert self.is_group_element(matrix_to_test = s, form = self.form), "Generic torus element is not a group element"
         if display: print("done.")
         
         # tests for is_in_lie_algebra
         if display: print("Checking that a generic Lie algebra element is in the Lie algebra... ", end="")
-        A = self.generic_lie_algebra_element(matrix_size = self.matrix_size, 
-                                                     rank = self.rank, 
-                                                     form = self.form,
-                                                     letter = 'a')
-        assert(self.is_lie_algebra_element(matrix_to_test = A,form = self.form))        
+        A = self.generic_lie_algebra_element(self.matrix_size, self.rank, self.form, 'a')
+        assert self.is_lie_algebra_element(matrix_to_test = A,form = self.form), "Generic lie algebra element is not a Lie algebra element"
         if display: print("done.")        
         
     def validate_root_space_maps(self, display = True):
@@ -580,7 +568,7 @@ class pinned_group:
             d_alpha = self.root_space_dimension(alpha)
             a = vector_variable(letter = 'a', length = d_alpha)
             X_alpha_a = self.root_space_map(alpha, a)
-            assert(self.is_lie_algebra_element(X_alpha_a, self.form))
+            assert self.is_lie_algebra_element(X_alpha_a, self.form), "Root space is not in the Lie algebra"
         if display: print("done.")
         
         if display: print("\tChecking that roots of equal norm have same dimensional root spaces...",end="")
@@ -588,8 +576,8 @@ class pinned_group:
             d_alpha = self.root_space_dimension(alpha)
             for beta in self.root_system.root_list:
                 d_beta = self.root_space_dimension(beta)
-                if np.dot(alpha, alpha) == np.dot(beta,beta):
-                    assert(d_alpha == d_beta)
+                if self.root_system.quotient_norm(alpha) == self.root_system.quotient_norm(beta):
+                    assert d_alpha == d_beta, "Two roots of equal norm have different dimensions of root space"
         if display: print("done.")
         
         if display: print("\tChecking that root space maps are additive... ", end="")
@@ -601,22 +589,23 @@ class pinned_group:
             X_alpha_b = self.root_space_map(alpha,b)
             LHS = X_alpha_a + X_alpha_b
             RHS = self.root_space_map(alpha,a+b)
-            assert(LHS.equals(RHS))
+            assert LHS.equals(RHS), "Root space map fails additivity"
         if display: print("done.")
         
         if display: print("\tChecking that negative roots have transpose root spaces...", end="")
         for alpha in self.root_system.root_list:
+            negative_alpha = tuple(-np.array(alpha))
             d_alpha = self.root_space_dimension(alpha)
-            d_m_alpha = self.root_space_dimension(alpha)
-            assert(d_alpha == d_m_alpha)
+            d_n_alpha = self.root_space_dimension(negative_alpha)
+            assert d_alpha == d_n_alpha, "Negative roots have different dimensions of root space"
             a = vector_variable(letter = 'a', length = d_alpha)
-            b = vector_variable(letter = 'b', length = d_m_alpha)
+            b = vector_variable(letter = 'b', length = d_n_alpha)
             X_alpha_a = self.root_space_map(alpha, a)
-            X_m_alpha_b = self.root_space_map(-alpha, b)
-            vanishing_condition = X_alpha_a - X_m_alpha_b
+            X_n_alpha_b = self.root_space_map(negative_alpha, b)
+            vanishing_condition = X_alpha_a - X_n_alpha_b
             vars_to_solve_for = a.free_symbols.union(b.free_symbols)
             solutions_list = sp.solve(vanishing_condition, vars_to_solve_for, dict=True)
-            assert(len(solutions_list) >= 1)
+            assert len(solutions_list) >= 1, "Negative roots have root spaces which are not transposes"
         if display: print("done.")
         
         if display: print("Finished verifying properties of root spaces.")
@@ -629,7 +618,7 @@ class pinned_group:
             d_alpha = self.root_space_dimension(alpha)
             a = vector_variable(letter = 'a', length = d_alpha)
             X_alpha_a = self.root_subgroup_map(alpha, a)
-            assert(self.is_group_element(X_alpha_a, self.form))
+            assert self.is_group_element(X_alpha_a, self.form), "Root subgroup map output is not a group element"
         if display: print("done")
     
         if display: print("\tChecking that root subgroup maps are pseudo-homomorphisms... ", end="")
@@ -642,14 +631,16 @@ class pinned_group:
             X_alpha_sum = self.root_subgroup_map(alpha,a+b)
             LHS = X_alpha_a * X_alpha_b
             extra_factor = np.eye(self.matrix_size, dtype = int)
-            if self.root_system.is_root(2*alpha):
+            two_alpha = tuple(2*np.array(alpha))
+            if self.root_system.is_root(two_alpha):
                 coeff = self.homomorphism_defect_map(alpha, a, b)
-                assert(len(coeff) == self.root_space_dimension(2*alpha))
-                extra_factor = self.root_subgroup_map(2*alpha, coeff)
+                assert len(coeff) == self.root_space_dimension(two_alpha), "Homomorphism defect coefficient has wrong length"
+                extra_factor = self.root_subgroup_map(two_alpha, coeff)
             if not self.root_system.is_multipliable_root(alpha):
-                assert(np.array_equal(extra_factor, np.eye(self.matrix_size, dtype = int)))
+                assert np.array_equal(extra_factor, np.eye(self.matrix_size, dtype = int)), \
+                    "Non-multipliable root has non-trivial homomrophism defect coefficient"
             RHS = X_alpha_sum * extra_factor
-            assert(LHS.equals(RHS))
+            assert LHS.equals(RHS), "Homomorphism defect coefficient does not satisfy its defining formula"
         if display: print("done.")
     
         if display: print("Root subgroup map verifications complete.")
@@ -668,13 +659,13 @@ class pinned_group:
             X_alpha_a = self.root_space_map(alpha,a)
             LHS1 = s*X_alpha_a*s**(-1)
             RHS1 = self.root_space_map(alpha,alpha_of_s*a)
-            assert(LHS1.equals(RHS1))
+            assert LHS1.equals(RHS1), "Torus conjugation does not act as character evaluation on a root space"
             
             # Torus conjugation on the group/root subgroups
             x_alpha_a = self.root_subgroup_map(alpha, a)
             LHS2 = s*x_alpha_a*s**(-1)
             RHS2 = self.root_subgroup_map(alpha,alpha_of_s*a)
-            assert(LHS2.equals(RHS2))
+            assert LHS2.equals(RHS2), "Torus conjugation does not act as character evaluation on a root subgroup"
         if display: print("done.")
     
     def validate_commutator_formula(self, display = True):
@@ -685,8 +676,9 @@ class pinned_group:
             a = vector_variable(letter = 'a', length = d_alpha)
             x_alpha_a = self.root_subgroup_map(alpha, a)
             for beta in self.root_system.root_list:
-                # Commutator formula only applies when the two roots are not scalar multiples
-                if not(self.root_system.is_proportional(alpha,beta,test_bound=10)):
+                
+                # Commutator formula only applies when the two roots are not proportional
+                if not(self.root_system.is_proportional(alpha,beta,with_ratio=False)):
                     d_beta = self.root_space_dimension(beta)
                     b = vector_variable(letter = 'b', length = d_beta)
                     x_beta_b = self.root_subgroup_map(beta, b)
@@ -708,8 +700,8 @@ class pinned_group:
                         root = linear_combos[key]
                         
                         # Check that i*alpha+j*beta = root
-                        assert(np.array_equal(i*alpha + j*beta, root))
-                        assert(np.all(i*alpha+j*beta == root))
+                        my_combo = tuple(i*np.array(alpha) + j*np.array(beta))
+                        assert np.array_equal(my_combo, root), "Error with linear combos"
 
                         # Compute the commutator coefficient that should arise,
                         # then multiply by the new factor
@@ -717,7 +709,7 @@ class pinned_group:
                         new_factor = self.root_subgroup_map(root, coeff)
                         RHS = RHS * new_factor
                         
-                    assert(LHS.equals(RHS))
+                    assert LHS.equals(RHS), "Commutator formula is not true"
         if display: print("done.")
 
         if display: print("\tVerifying that swapping order of roots negates the coefficient...", end = "")
@@ -727,60 +719,44 @@ class pinned_group:
             for beta in self.root_system.root_list:
                 d_beta = self.root_space_dimension(beta)
                 b = vector_variable(letter = 'b', length = d_beta)
-                if self.root_system.is_root(alpha + beta) and not self.root_system.is_proportional(alpha,beta):
-                    linear_combos = self.root_system.integer_linear_combos(alpha,beta)#############
+                my_sum = tuple(np.array(alpha) + np.array(beta))
+                if (self.root_system.is_root(my_sum)
+                    and not self.root_system.is_proportional(alpha,beta,with_constant=False)):
+                    linear_combos = self.root_system.integer_linear_combos(alpha,beta)
                     for key in linear_combos:
                         i = key[0]
                         j = key[1]
                         coeff_1 = sp.simplify(self.commutator_coefficient_map(alpha,beta,i,j,a,b))
                         coeff_2 = sp.simplify(self.commutator_coefficient_map(beta,alpha,j,i,b,a))
-                        
-                        # print()
-                        # print("alpha=",alpha)
-                        # print("beta=",beta)
-                        # print("(i,j)=",(i,j))
-                        # print("N_(i,j)_(alpha,beta)=",coeff_1)
-                        # print("N_(j,i)_(beta,alpha)=",coeff_2)
-                        
-                        assert(coeff_1.equals(-coeff_2))
+                        assert coeff_1.equals(-coeff_2), "Swapped roots do not have negative commutator coefficient"
         if display: print("done.")
         
         if display: print("Done verifying properties of commutators.")
         
     def validate_weyl_group_properties(self, display = True):
         if display: print("\nVerifying properties of the Weyl group...")
+        t = self.generic_torus_element(self.matrix_size, self.rank, self.form, 't')
         
         if display: print("\tChecking Weyl elements are in the group... ", end="")
         for alpha in self.root_system.root_list:
             w_alpha = self.weyl_element_map(alpha)
-            assert(self.is_group_element(w_alpha, self.form))
+            assert self.is_group_element(w_alpha, self.form), "Weyl element is not a group element"
         if display: print("done.")
         
         if display: print("\tChecking Weyl elements normalize the torus... ", end="")
-        t = self.generic_torus_element(matrix_size = self.matrix_size,
-                                       rank = self.rank,
-                                       form = self.form,
-                                       letter = 't')
         for alpha in self.root_system.root_list:
             w_alpha = self.weyl_element_map(alpha)
             conjugation = sp.simplify(w_alpha * t * (w_alpha.inv()))
-            assert(self.is_torus_element(matrix_to_test = conjugation, 
-                                         matrix_size = self.matrix_size, 
-                                         rank = self.rank, 
-                                         form = self.form))
+            assert self.is_torus_element(conjugation, self.matrix_size, self.rank, self.form), "Weyl element does not noramlize the torus"
         if display: print("done.")
         
         if display: print("\tChecking squared Weyl elements centralize the torus... ", end="")
-        t = self.generic_torus_element(matrix_size = self.matrix_size,
-                                       rank = self.rank,
-                                       form = self.form,
-                                       letter = 't')
         for alpha in self.root_system.root_list:
             w_alpha = self.weyl_element_map(alpha)
             w_alpha_squared = sp.simplify(w_alpha * w_alpha)
             LHS = sp.simplify(w_alpha_squared*t)
             RHS = sp.simplify(t*w_alpha_squared)
-            assert(LHS.equals(RHS))
+            assert LHS.equals(RHS), "Squared weyl element does not centralize the torus"
         if display: print("done.")
         
         if display: print("\tChecking Weyl element conjugation formula... ", end="")

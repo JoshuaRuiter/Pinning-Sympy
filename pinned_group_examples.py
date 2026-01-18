@@ -25,9 +25,19 @@ import sympy as sp
 
 def main():
     to_do_list = ("To do list:" + "\n\t" + 
-                  "Make a faster version of in_integer_column_span" + "\n\t" +
-                  "Finish changes related to changing root spaces stored in a dictionary format" + 
-                      " such as better formatting for root space and root subgroup map fittings" + "\n\t" +
+                  "Fix root system stuff - SL(3) is coming out to B2 root system!!!" + "\n\t" +
+                  "Convert everything to new bidict format for root lists, with orthogonal complement coordinates" + "\n\t" +
+                  "Fix issue in root space maps which convert set to list and assume order is preserved" + "\n\t" +
+                  "Check that angle bracket testing is doing the proper thing with new root system conventions" + "\n\t" +
+                  "Fix root system reflection method" + "\n\t" +
+                  "Fix dynkin type classifier to use quotient images of roots" + "\n\t" +
+                  "Fix linear combos to work with new root system conventions" + "\n\t" +
+                  "Switch to manual tuple operations rather than numpy conversions" + "\n\t" +
+                  "Fix root_system.irreducible_components" + "\n\t" +
+                  "Fix root system tests to be based on quotient projections, not original roots" + "\n\t" +
+                  "Do I need to fix linear combos to work with new convention?" + "\n\t" +
+                  "Set up so that generic_torus_element and such don't require redundant inputs " + 
+                      "when used within pinned_group" + "\n\t" +
                   "Compute Weyl group elements" + "\n\t" +
                   "Run tests to validate properties of Weyl group elements" + "\n\t" +
                   "Maybe I need an implementation of the Jacobson-Morozov theorem," +

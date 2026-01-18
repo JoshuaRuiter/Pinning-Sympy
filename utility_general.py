@@ -5,13 +5,6 @@ import numpy as np
 import itertools
 import time
 
-# def in_integer_column_span_OLD(v, M):
-#     # return true if v is in the column span of the matrix M
-#     # Solve M * x = v over integers
-#     x = sp.symbols(f'x:{M.shape[1]}', integer=True)
-#     sol = sp.linsolve((sp.Matrix(M), sp.Matrix(v)), x)
-#     return bool(sol) # linsolve returns empty set if no solution exists
-
 def in_integer_column_span(v, M):
     # return true if v is in the column span of the matrix M
     # Just add v as a column to the end of M and see if the rank increased
@@ -79,10 +72,10 @@ def reduce_character_list(vector_list, lattice_matrix):
     W_mat = sp.Matrix(lattice_matrix).transpose()   # Matrix whose rows span W
     Q = W_mat.nullspace()                           # Basis for the null space of W_mat
     
-    def support_size(v): return sum(1 for x in v if x != 0)
-    def support_pattern(v): return tuple(1 if x != 0 else 0 for x in v)
-    def length_sq(v): return sum(x*x for x in v)
     def max_entry(v): return max(abs(x) for x in v)
+    def support_size(v): return sum(1 for x in v if x != 0)
+    def length_sq(v): return sum(x*x for x in v)
+    def support_pattern(v): return tuple(1 if x != 0 else 0 for x in v)
     
     # Comparison key, higher is preferred
     def priority_key(v):
@@ -104,62 +97,6 @@ def reduce_character_list(vector_list, lattice_matrix):
         key = tuple(Q_mat * sp.Matrix(v))
         if key not in best or priority_key(v) > priority_key(best[key]): best[key] = v
     return list(best.values())
-
-def determine_roots_OLD(generic_torus_element,
-                    generic_lie_algebra_element,
-                    list_of_characters,
-                    variables_to_solve_for,
-                    time_updates = False):
-    # Caculate roots and root spaces
-    # return in a list of pairs format, where the first entry is the root,
-    # and the second entry is the generic element of the root space
-    roots_and_root_spaces = []
-    t = generic_torus_element
-    x = sp.Matrix(generic_lie_algebra_element)
-    LHS = sp.simplify(t*x*t**(-1))
-    
-    if time_updates:
-        print("\nComputing roots...")
-        n = len(list_of_characters)
-        print("Testing " + str(n) + " candidate characters.")
-        i = 0
-        t0 = time.time()
-    
-    for alpha in list_of_characters:
-        
-        if time_updates:
-            i = i + 1
-            t1 = time.time()
-            if i % 100 == 0:
-                print("\tTesting candidate", i)
-                print("\tRoots found so far:", len(roots_and_root_spaces))
-                elapsed = t1-t0
-                avg = elapsed/i
-                remaining = (n-i)*avg
-                print("\tTime elapsed:", int(elapsed), "seconds")
-                print("\tAverage time per root:", round(avg,2), "seconds")
-                print("\tEstimated time remaining:", int(remaining), "seconds")
-            
-        alpha_of_t = evaluate_character(alpha,t)
-        if alpha_of_t != 1: # ignore cases where the character is trivial
-            RHS = alpha_of_t*x
-            my_equation = sp.simplify(LHS-RHS)
-            solutions_list = sp.solve(my_equation,variables_to_solve_for,dict=True)
-            assert(len(solutions_list) == 1)
-            solutions_dict = solutions_list[0]
-            if len(solutions_dict) > 0 : 
-                all_zero = True 
-                for var in variables_to_solve_for:  # check that not all variables are zero
-                    if not(var in solutions_dict.keys()) or solutions_dict[var] != 0:
-                        all_zero = False
-                        break
-                if not(all_zero): # For nonzero characters with a solution, add as a root
-                    generic_root_space_element = x
-                    for var, value in solutions_dict.items():
-                        generic_root_space_element = generic_root_space_element.subs(var,value)
-                    if not generic_root_space_element.is_zero_matrix:
-                        roots_and_root_spaces.append([alpha, sp.simplify(generic_root_space_element)])
-    return roots_and_root_spaces
 
 def determine_roots(generic_torus_element,
                     generic_lie_algebra_element,
@@ -217,16 +154,3 @@ def determine_roots(generic_torus_element,
                     if not generic_root_space_element.is_zero_matrix:
                         root_space_dict[tuple(alpha)] = sp.simplify(generic_root_space_element)
     return root_space_dict
-
-#################################################################
-# DEPRECATED
-# NO LONGER NEEDED SINCE DETERMINE_ROOTS SPITS OUT A DICTIONARY
-#################################################################
-# def parse_root_pairs(root_info, what_to_get):
-#     # Parse a list of pairs of the form
-#     #   [(root_1,root_space_1), (root_2, root_space_2), ...]
-#     # into just the roots,
-#     # or just the root spaces
-#     if what_to_get == 'roots': return [pair[0] for pair in root_info]
-#     elif what_to_get == 'root_spaces': return [pair[1] for pair in root_info]
-#     else: raise ValueError("Can only parse root pairs into roots or root_spaces. Attempted input was",what_to_get)
