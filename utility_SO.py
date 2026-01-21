@@ -1,10 +1,29 @@
 import sympy as sp
 import numpy as np
 
-def is_group_element_SO(matrix_to_test, form):
+def group_constraints_SO(matrix_to_test, form):
+    """
+    Returns a list of SymPy equations enforcing:
+        1. X^T*B*X = B
+        2. det(X)) = 1
+    X : n x n SymPy Matrix
+    B : n x n SymPy Matrix representing the form
+    """
     X = matrix_to_test
+    n = X.shape[0]
     B = form.matrix
-    return ((X.T*B*X).equals(B) and X.det()==1)
+    
+    # X^T*B*X  = B is stored as a list of equations, one for each matrix entry
+    eqs = [(X.T * B * X - B)[i,j] for i in range(n) for j in range(n)]
+    
+    eqs.append(X.det() - 1) # Determinant = 1
+    
+    return eqs
+
+# def is_group_element_SO(matrix_to_test, form):
+#     X = matrix_to_test
+#     B = form.matrix
+#     return ((X.T*B*X).equals(B) and X.det()==1)
 
 def is_torus_element_SO(matrix_to_test, rank):
     n = matrix_to_test.shape[0]
@@ -34,7 +53,7 @@ def character_entries_SO(matrix_size, rank):
 
 def trivial_characters_SO(matrix_size, rank):
     trivial_characters = [np.array([1 if j == i or j == i + rank else 0 for j in range(matrix_size)])for i in range(rank)]
-    trivial_characters.append([1] * matrix_size)
+    if not (rank == 1 and matrix_size == 2): trivial_characters.append([1] * matrix_size)
     matrix_with_trivial_character_columns = np.array(np.stack(trivial_characters, axis=1))
     return matrix_with_trivial_character_columns
 

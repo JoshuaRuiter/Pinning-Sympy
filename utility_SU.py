@@ -17,16 +17,31 @@ def custom_imag_part(my_expression, primitive_element):
     # by extracing the coefficient on p_e
     return my_expression.coeff(primitive_element)
 
-def is_group_element_SU(matrix_to_test, form):
-    # Return true if matrix_to_test is in the special unitary group
-    # associated to form.
-    # The condition for this is (conj(X^T))*H*X = H, where
-        # X = matrix_to_test
-        # H = form.matrix
+def group_constraints_SU(matrix_to_test, form):
+    """
+    Returns a list of SymPy equations enforcing:
+        1. (X conjugate transpose)*H*X = H
+        2. det(X)) = 1
+    X : n x n SymPy Matrix
+    H : n x n SymPy Matrix representing the form
+    """
     X = matrix_to_test
+    X_conjugate = custom_conjugate(X, form.primitive_element)
+    n = X.shape[0]
     H = form.matrix
-    X_conjugate = custom_conjugate(X, form.primitive_element)   
-    return ((X_conjugate.T*H*X).equals(H) and X.det() == 1)
+    
+    print("\n\nX =")
+    sp.pprint(X)
+    print("\nH =")
+    sp.pprint(H)
+    print("\nX_conjugate_transpose * H * X - H =")
+    sp.pprint(sp.simplify(X_conjugate.T * H * X - H))
+    
+    # X^T*H*X  = H is stored as a list of equations, one for each matrix entry
+    eqs = [(X_conjugate.T * H * X - H)[i,j] for i in range(n) for j in range(n)]
+    eqs.append(X.det() - 1) # Determinant = 1
+    return eqs
+
 
 def is_torus_element_SU(matrix_to_test, rank):
     # Return true if matrix_to_test is an element of the diagonal torus of
@@ -58,7 +73,7 @@ def character_entries_SU(matrix_size, rank):
 
 def trivial_characters_SU(matrix_size, rank):
     trivial_characters = [np.array([1 if j == i or j == i + rank else 0 for j in range(matrix_size)])for i in range(rank)]
-    trivial_characters.append([1] * matrix_size)
+    if not (rank == 1 and matrix_size == 2): trivial_characters.append([1] * matrix_size)
     matrix_with_trivial_character_columns = np.array(np.stack(trivial_characters, axis=1))
     return matrix_with_trivial_character_columns
 

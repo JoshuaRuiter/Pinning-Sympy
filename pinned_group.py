@@ -19,12 +19,14 @@ import copy
 from utility_general import vector_variable
 from utility_roots import (generate_character_list, 
                            reduce_character_list, 
+                           vector,
                            determine_roots, 
                            visualize_graph, 
                            evaluate_character,
                            evaluate_cocharacter,
                            generic_kernel_element)
 from root_system import root_system
+import time
 
 class pinned_group:
 
@@ -32,7 +34,7 @@ class pinned_group:
                  name_string,
                  matrix_size,
                  form,
-                 is_group_element,
+                 group_constraints,
                  maximal_split_torus,
                  is_lie_algebra_element,
                  generic_lie_algebra_element,
@@ -41,20 +43,24 @@ class pinned_group:
         self.name_string = name_string
         self.matrix_size = matrix_size
         self.form = form
+        self.group_constraints = group_constraints
         self.non_variables = non_variables
         self.torus = maximal_split_torus
         self.rank = self.torus.rank
         
-        self.is_group_element = lambda matrix_to_test : is_group_element(matrix_to_test, self.form)
-        self.is_torus_element = lambda matrix_to_test : self.torus.is_element(matrix_to_test, self.rank)
-        self.generic_torus_element = lambda letter : self.torus.generic_element(self.matrix_size, 
-                                                                                self.rank, 
-                                                                                letter)
-        self.is_lie_algebra_element = lambda matrix_to_test : is_lie_algebra_element(matrix_to_test, self.form)
-        self.generic_lie_algebra_element = lambda letter : generic_lie_algebra_element(self.matrix_size, 
-                                                                                       self.rank, 
-                                                                                       self.form, 
-                                                                                       letter)
+        def in_group(matrix_to_test):
+            eqs = self.group_constraints(matrix_to_test, self.form)
+            return all(sp.simplify(e) == 0 for e in eqs)
+        self.is_group_element = in_group
+        
+        self.is_torus_element = lambda matrix_to_test : \
+            self.torus.is_element(matrix_to_test, self.rank)
+        self.generic_torus_element = lambda letter : \
+            self.torus.generic_element(self.matrix_size, self.rank, letter)
+        self.is_lie_algebra_element = lambda matrix_to_test : \
+            is_lie_algebra_element(matrix_to_test, self.form)
+        self.generic_lie_algebra_element = lambda letter : \
+            generic_lie_algebra_element(self.matrix_size, self.rank, self.form, letter)
 
         # These get set by running .fit_pinning()
         self.root_system = None
@@ -141,7 +147,8 @@ class pinned_group:
             #is_root, alpha_equiv = self.root_system.is_root(alpha, return_equivalent = True)
             # assert is_root, "Cannot get root space dimension for non-root"
             # return self.root_space_dimension_dict[tuple(alpha_equiv)]
-            assert self.root_system.is_root(alpha), "Cannot get root space dimension for non-root"
+            assert self.root_system.is_root(alpha), \
+                "Cannot get root space dimension for non-root"
             return self.root_space_dimension_dict[alpha]
         self.root_space_dimension = root_space_dim
         
@@ -151,29 +158,19 @@ class pinned_group:
             # dim = self.root_space_dimension(alpha_equiv)
             # assert len(u) == dim, "Wrong length of input vector to root space map"
             # x = self.root_space_dict[tuple(alpha_equiv)]
-            assert self.root_system.is_root(alpha), "Cannot get root space for non-root"
+            assert self.root_system.is_root(alpha), \
+                "Cannot get root space for non-root"
             dim = self.root_space_dimension(alpha)
-            assert len(u) == dim, "Wrong size input vector to root space map"
+            assert len(u) == dim, \
+                "Wrong size input vector to root space map"
             x = self.root_space_dict[alpha]
             x_vars = self.without_non_variables(list(x.free_symbols))
-            assert len(x_vars) == len(u), "Mismatched number of variables to substitute in root space map"
+            assert len(x_vars) == len(u), \
+                "Mismatched number of variables to substitute in root space map"
             for i in range(dim):
                 x = x.subs(x_vars[i],u[i])
             return sp.simplify(x)
         self.root_space_map = root_sp_map
-    
-    def without_non_variables(self, list_of_variables):
-        new_list = copy.deepcopy(list_of_variables)
-        if self.non_variables is not None:
-            for v in self.non_variables:
-                if v in new_list: new_list.remove(v)
-        if self.form is not None:
-            if self.form.primitive_element is not None:
-                if self.form.primitive_element in new_list: new_list.remove(self.form.primitive_element)
-            if self.form.anisotropic_vector is not None:
-                for v in self.form.anisotropic_vector.free_symbols:
-                    if v in new_list: new_list.remove(v)
-        return new_list
     
     def fit_root_subgroup_maps(self, display = True):
         def root_subgp_map(alpha, u):
@@ -189,24 +186,6 @@ class pinned_group:
             assert not any(x**3), "Unexpected: The 3rd power of a root space element is a nonzero matrix."
             return sp.simplify(np.eye(self.matrix_size, dtype = int) + x + x*x/2)
         self.root_subgroup_map = root_subgp_map
-        
-        ###############################################
-        # MOVE TO FIT_WEYL_GROUPS ONCE THAT IS WORKING
-        ###############################################
-        if display:
-            print(f"\nRoot spaces and root subgroups for {self.name_string}:")
-            for r in self.root_space_dict:
-                x = self.root_space_dict[r]
-                dim = self.root_space_dimension(r)
-                print("\n\tRoot:",r)
-                print("\tCoroot:",self.root_system.coroot_dict[r])
-                print("\tRoot space dimension:",dim)
-                print("\tRoot space:")
-                sp.pprint(x)
-                print("\tRoot subgroup:")
-                u = vector_variable(letter = 'u', length = dim)
-                X_alpha_u = self.root_subgroup_map(r, u)
-                sp.pprint(X_alpha_u)
 
     def fit_homomorphism_defect_coefficients(self, display = True):
         # For multipliable roots, the root subgroup maps are not quite homomorphisms
@@ -230,10 +209,12 @@ class pinned_group:
                     vanishing_expression = sp.simplify(X_alpha_u * X_alpha_v - X_alpha_sum * X_2alpha_w)
                     variables_to_solve_for = w.free_symbols
                     solutions_list = sp.solve(vanishing_expression,variables_to_solve_for,dict=True)
-                    assert len(solutions_list) == 1, "Unexpected: more than one solution for a homomorphism defect coefficient"
+                    assert len(solutions_list) == 1, \
+                        "Unexpected: more than one solution for a homomorphism defect coefficient"
                     solutions_dict = solutions_list[0]
                     solutions_dict_keys = list(solutions_dict.values())
-                    assert len(solutions_dict_keys) == 1, "Unexpected: more than one homomorphism defect coefficient"
+                    assert len(solutions_dict_keys) == 1, \
+                        "Unexpected: more than one homomorphism defect coefficient"
                     w_solution = solutions_dict_keys[0]
                     self.homomorphism_defect_coefficient_dict[alpha] = [u, v, w_solution]
                     
@@ -255,8 +236,10 @@ class pinned_group:
                 u_prime = dict_entry[0]
                 v_prime = dict_entry[1]
                 hdc = dict_entry[2]
-                assert len(u) == len(u_prime), "Wrong length vector input for homomorphism defect coefficient 1st input"
-                assert len(v) == len(v_prime), "Wrong length vector input for homomorphism defect coefficient 2nd input"
+                assert len(u) == len(u_prime), \
+                    "Wrong length vector input for homomorphism defect coefficient 1st input"
+                assert len(v) == len(v_prime), \
+                    "Wrong length vector input for homomorphism defect coefficient 2nd input"
                 for i in range(len(u)):
                     hdc = hdc.subs(u_prime[i], u[i])
                 for j in range(len(v)):
@@ -391,8 +374,10 @@ class pinned_group:
         # Fit reflections s_alpha of the torus,
         # and elements w_alpha in the normalizer of the torus
         def torus_refl_map(alpha, t):
-            assert self.root_system.is_root(alpha), "Can only perform torus reflection with a root from the root system"
-            assert self.is_torus_element(t), "Can only perform torus reflection on a torus element"
+            assert self.root_system.is_root(alpha), \
+                "Can only perform torus reflection with a root from the root system"
+            assert self.is_torus_element(t), \
+                "Can only perform torus reflection on a torus element"
             alpha_of_t = evaluate_character(alpha, t)
             alpha_of_t_inverse = alpha_of_t**(-1)
             alpha_check = self.root_system.coroot_dict[alpha]
@@ -405,7 +390,322 @@ class pinned_group:
         # Populate a dictionary of Weyl elements
         # Keys are roots (as tuples)
         # Values are group elements (matrices)
-        # INCOMPLETE
+        self.weyl_element_list = {}
+        
+        # In general, a weyl element w_alpha
+        # is an element of the group with the following properties:
+        #   1. w_alpha is in the subgroup generated by the root subgroups U_alpha and U_{-alpha}
+        #       (I don't know how to operationalize this in a program)
+        #   2. w_alpha normalizes the torus T. More concretely, for any torus element t, 
+        #       conjugation by w_alpha should result in the torus element s_alpha(t)
+        #   3. w_alpha represents a class in N_G(T)/Z_G(T) = N_G(T)/T of order 2, i.e. 
+        #       (w_alpha)^2 centralize the torus
+        #   4. For any root beta, conjugating x_beta(u) by w_alpha ends up in the root
+        #       subgroup x_{sig_alpha(beta)} where sig_alpha(beta) is the reflection
+        #       of beta across the hyperplane perpendicular to alpha
+        
+        n = self.matrix_size
+        t = self.generic_torus_element('t')
+        weight_vectors = [vector([1 if i == j else 0 for i in range(n)]) for j in range(n)]
+        weight_vals_t = [evaluate_character(chi, t) for chi in weight_vectors]
+        
+        
+        for alpha in self.root_system.root_list:
+            s_alpha_of_t = self.torus_reflection_map(alpha, t)
+            weight_vals_s = [evaluate_character(chi, s_alpha_of_t) for chi in weight_vectors]
+
+            # Find permutation of weight spaces
+            sigma = {}
+            used = set()
+            for i, vs in enumerate(weight_vals_s):
+                for j, vt in enumerate(weight_vals_t):
+                    if j not in used and sp.simplify(vs - vt) == 0:
+                        sigma[i] = j
+                        used.add(j)
+                        break
+                else:
+                    raise ValueError("Could not match weights")
+            
+            w_alpha = sp.MatrixSymbol("w", n, n)
+            w_alpha_mat = sp.Matrix(n, n, lambda i,j: sp.symbols(f'w_{i}_{j}'))
+            
+            # enforce block-permutation: zero out entries not in correct block
+            mask = sp.zeros(n)
+            for i,j in sigma.items():
+                mask[i,j] = 1
+            w_alpha_mat = w_alpha_mat.multiply_elementwise(mask)
+            
+            
+            ############################
+            print("\n\nalpha =",alpha)
+            print("\nt =")
+            sp.pprint(t)
+            print("\ns_alpha(t)=")
+            sp.pprint(s_alpha_of_t)
+            print("\nw_alpha_mat =")
+            sp.pprint(w_alpha_mat)
+            ############################
+            
+            # Impose group constraints (equations defining G)
+            equations = self.group_constraints(w_alpha_mat, self.form)
+        
+            #########################################################
+            print("\nVanishing conditions from the group equations:")
+            for e in equations:
+                sp.pprint(e)
+            #########################################################
+            
+            # Impose normalizer condition on a generic t
+            # broken into separate equations
+            # because apparently that is faster
+            normalizer_eq = w_alpha_mat * t - s_alpha_of_t * w_alpha_mat
+            
+            for i in range(n):
+                for j in range(n):
+                    equations.append(normalizer_eq[i,j])
+        
+            #########################################################
+            print("\nVanishing conditions from torus normalization:")
+            sp.pprint(normalizer_eq)
+            #########################################################
+        
+            # Solve equations for the free variables
+            free_vars = list(w_alpha_mat.free_symbols)
+            solution_list = sp.solve(equations, free_vars, dict=True)
+            if not solution_list:
+                raise ValueError("No solution found for w_alpha in G")
+            sol = solution_list[0]
+        
+            # Substitute solution into matrix
+            w_alpha_final = w_alpha_mat.subs(sol)
+        
+            # If free symbols remain, set them to 1
+            if len(w_alpha_final.free_symbols) >= 1:
+                for v in w_alpha_final.free_symbols:
+                    w_alpha_final = w_alpha_final.subs(v,1)
+            
+            self.weyl_element_list[alpha] = w_alpha_final
+            
+        def wem(alpha):
+            return self.weyl_element_list[alpha]
+        self.weyl_element_map = wem
+        
+        if display:
+            print(f"\nRoot spaces, root subgroups, and Weyl elements for {self.name_string}:")
+            for r in self.root_space_dict:
+                x = self.root_space_dict[r]
+                dim = self.root_space_dimension(r)
+                print("\n\tRoot:",r)
+                print("\tCoroot:",self.root_system.coroot_dict[r])
+                print("\tRoot space dimension:",dim)
+                print("\tRoot space:")
+                sp.pprint(x)
+                print("\tRoot subgroup:")
+                u = vector_variable(letter = 'u', length = dim)
+                X_alpha_u = self.root_subgroup_map(r, u)
+                sp.pprint(X_alpha_u)
+                print("\tWeyl element:")
+                w_alpha = self.weyl_element_map(alpha)
+                sp.pprint(w_alpha)
+                print()
+            
+    def fit_weyl_group_OLD(self, display = True):
+        
+        # Fit reflections s_alpha of the torus,
+        # and elements w_alpha in the normalizer of the torus
+        def torus_refl_map(alpha, t):
+            assert self.root_system.is_root(alpha), \
+                "Can only perform torus reflection with a root from the root system"
+            assert self.is_torus_element(t), \
+                "Can only perform torus reflection on a torus element"
+            alpha_of_t = evaluate_character(alpha, t)
+            alpha_of_t_inverse = alpha_of_t**(-1)
+            alpha_check = self.root_system.coroot_dict[alpha]
+            alpha_check_of_alpha_of_t_inverse = evaluate_cocharacter(alpha_check, alpha_of_t_inverse)
+            assert self.is_torus_element(alpha_check_of_alpha_of_t_inverse), \
+                "Cocharacter must return torus element"
+            return t*alpha_check_of_alpha_of_t_inverse
+        self.torus_reflection_map = torus_refl_map
+        
+        # Populate a dictionary of Weyl elements
+        # Keys are roots (as tuples)
+        # Values are group elements (matrices)
+    
+        # In general, a weyl element w_alpha
+        # is an element of the group with the following properties:
+        #   1. w_alpha is in the subgroup generated by the root subgroups U_alpha and U_{-alpha}
+        #       (I don't know how to operationalize this in a program)
+        #   2. w_alpha normalizes the torus T. More concretely, for any torus element t, 
+        #       conjugation by w_alpha should result in the torus element s_alpha(t)
+        #   3. w_alpha represents a class in N_G(T)/Z_G(T) = N_G(T)/T of order 2, i.e. 
+        #       (w_alpha)^2 centralize the torus
+        #   4. For any root beta, conjugating x_beta(u) by w_alpha ends up in the root
+        #       subgroup x_{sig_alpha(beta)} where sig_alpha(beta) is the reflection
+        #       of beta across the hyperplane perpendicular to alpha
+        #   
+        
+        t = self.generic_torus_element('t')
+        self.weyl_element_list = {}
+        w_matrix = sp.Matrix(sp.symarray('w', (self.matrix_size, self.matrix_size)))
+        w_vars = w_matrix.free_symbols
+        det_w = w_matrix.det()
+        
+        ######################################
+        print("\n\n" + "-"*80)
+        print("Computing Weyl group elements")
+        t0 = time.time()
+        i = 0
+        n = len(self.root_system.root_list)
+        ######################################
+        
+        for alpha in self.root_system.root_list:
+            s_alpha_of_t = self.torus_reflection_map(alpha, t)
+            
+            # set up an arbitrary matrix w_alpha to solve for
+            w_alpha = w_matrix.copy() # deep copy
+            w_alpha = sp.Matrix(sp.symarray('w', (self.matrix_size, self.matrix_size)))
+            
+            ############################################################
+            # print("\n")
+            print("Computing Weyl element for the root alpha =",alpha)
+            # print("\nt =")
+            # sp.pprint(t)
+            # print("\ns_alpha(t) =")
+            # sp.pprint(s_alpha_of_t)
+            # print("\nw_alpha =")
+            # sp.pprint(w_alpha)
+            ############################################################
+    
+            # vanishing conditions can come from:
+            #   -determinant = 1
+            #   -normalizing the torus, w_alpha * t * w_alpha^(-1) = s_alpha(t)
+            #   -squares centralize the torus, (w_alpha)^2 * t * (w_alpha)^(-2) = t
+            #   -conjugation formula, 
+            #       w_alpha * x_beta(u) * w_alpha^(-1) = x_{sig_alpha(beta)} (some function of u)
+            vanishing_conditions = []
+            
+            # Condition from normalizing the torus
+            # The condition is w_alpha * t * w_alpha^(-1) = s_alpha(t)
+            # rewritten to avoid matrix inversion
+            torus_normalizing_condition = sp.simplify(w_alpha * t - s_alpha_of_t * w_alpha)
+            vanishing_conditions.append(torus_normalizing_condition)
+            
+            # Condition from squares centralizing the torus
+            # The condition is w_alpha^2 * t * (w_alpha^2)^(-1) = t
+            # rewritten to avoid matrix inversion
+            # w_alpha_squared = w_alpha * w_alpha
+            # torus_centralizing_condition = sp.simplify(w_alpha_squared * t - t * w_alpha_squared)
+            # vanishing_conditions.append(torus_centralizing_condition)
+            
+            # Condition from determinant=1
+            vanishing_conditions.append(det_w - 1)
+            
+            ############################################################
+            # print("\nVariables to solve for:", w_vars)
+            # i = 0
+            # for c in vanishing_conditions:
+            #     i = i + 1
+            #     print(f"\nVanishing condition {i}:")
+            #     sp.pprint(c)
+            ############################################################
+            
+            solutions_list = sp.solve(vanishing_conditions,w_vars,dict=True)
+            
+            ###########################################################
+            # print("\nSolutions to the combined set of equations:")
+            # sp.pprint(solutions_list)
+            ###########################################################
+            
+            # There may be multiple solutions
+            # Not sure yet how to prioritize
+            num_solutions = len(solutions_list)
+            if num_solutions == 0:
+                raise ValueError("No solutions")
+            elif num_solutions == 1:
+                solutions_dict = solutions_list[0]
+            else:
+                solutions_dict = solutions_list[0]
+                print("\nMultiple solutions, not sure what to do yet, just pick the first one")
+            
+            ###########################################################
+            # print("\nChosen solution dictionary:")
+            # sp.pprint(solutions_dict)
+            ###########################################################
+            
+            # Substitution in the solutions
+            w_alpha_general_solution = w_alpha.subs(solutions_dict)
+            
+            #############################################################
+            # print("\nw_alpha general solution =")
+            # sp.pprint(w_alpha_general_solution)
+            #############################################################
+            
+            # If there are any remaining free variables, substitute 1 for them
+            w_alpha_specific_solution = w_alpha_general_solution
+            if w_alpha_general_solution.free_symbols:
+                for v in w_alpha_general_solution.free_symbols:
+                    w_alpha_specific_solution = w_alpha_specific_solution.subs(v, 1)
+            
+            #############################################################
+            # print("\nw_alpha specific solution =")
+            # sp.pprint(w_alpha_specific_solution)
+            #############################################################
+            
+            ############################################################
+            i = i + 1
+            t1 = time.time()
+            elapsed = t1-t0
+            avg = elapsed/i
+            remaining = (n-i)*avg
+            print("\tRoot number:", i) 
+            print("\tTime elapsed:", int(elapsed), "seconds")
+            print("\tAverage time per root:", round(avg,2), "seconds")
+            print("\tEstimated time remaining:", int(remaining), "seconds")
+            ############################################################
+            
+            # Store the new weyl element
+            self.weyl_element_list[alpha] = w_alpha_specific_solution
+        
+        #############################################################
+        print("Done computing Weyl group elements")
+        print("-"*80)
+        #############################################################
+        
+        def wem(alpha):
+            return self.weyl_element_list[alpha]
+        self.weyl_element_map = wem
+
+        if display:
+            print(f"\nRoot spaces, root subgroups, and Weyl elements for {self.name_string}:")
+            for r in self.root_space_dict:
+                x = self.root_space_dict[r]
+                dim = self.root_space_dimension(r)
+                print("\n\tRoot:",r)
+                print("\tCoroot:",self.root_system.coroot_dict[r])
+                print("\tRoot space dimension:",dim)
+                print("\tRoot space:")
+                sp.pprint(x)
+                print("\tRoot subgroup:")
+                u = vector_variable(letter = 'u', length = dim)
+                X_alpha_u = self.root_subgroup_map(r, u)
+                sp.pprint(X_alpha_u)
+                print("\tWeyl element:")
+                w_alpha = self.weyl_element_map(alpha)
+                sp.pprint(w_alpha)
+                print()
+
+    def without_non_variables(self, list_of_variables):
+        new_list = copy.deepcopy(list_of_variables)
+        if self.non_variables is not None:
+            for v in self.non_variables:
+                if v in new_list: new_list.remove(v)
+        if self.form is not None:
+            if self.form.primitive_element is not None:
+                if self.form.primitive_element in new_list: new_list.remove(self.form.primitive_element)
+            if self.form.anisotropic_vector is not None:
+                for v in self.form.anisotropic_vector.free_symbols:
+                    if v in new_list: new_list.remove(v)
+        return new_list
 
     def validate_pinning(self, display = True):
         # run tests to verify the pinning, run only after fitting
@@ -641,11 +941,6 @@ class pinned_group:
         if display: print("\tChecking that s_alpha outputs torus elements...",end="")
         for alpha in self.root_system.root_list:
             s_alpha_of_t = self.torus_reflection_map(alpha, t)
-            
-            # print("\n\nalpha = ",alpha)
-            # print("\ns_alpha(t) =")
-            # sp.pprint(s_alpha_of_t)
-            
             assert self.is_torus_element(s_alpha_of_t), \
                 f"Torus reflection by s_alpha (with alpha = {alpha}) does not land in the torus"
         if display: print("done.")
@@ -682,30 +977,35 @@ class pinned_group:
         if display: print("done.")
     
         if display: print("\tChecking Weyl elements are in the group... ", end="")
-        # for alpha in self.root_system.root_list:
-        #     w_alpha = self.weyl_element_map(alpha)
-        #     assert self.is_group_element(w_alpha, self.form), "Weyl element is not a group element"
-        # if display: print("done.")
-        if display: print("TEST SKIPPED.")
+        for alpha in self.root_system.root_list:
+            w_alpha = self.weyl_element_map(alpha)
+            
+            print("\n\nalpha =",alpha)
+            print("\nw_alpha =")
+            sp.pprint(w_alpha)
+            
+            assert self.is_group_element(w_alpha), "Weyl element is not a group element"
+        if display: print("done.")
+        # if display: print("TEST SKIPPED.")
         
         if display: print("\tChecking Weyl elements normalize the torus... ", end="")
-        # for alpha in self.root_system.root_list:
-        #     w_alpha = self.weyl_element_map(alpha)
-        #     conjugation = sp.simplify(w_alpha * t * (w_alpha.inv()))
-        #     assert self.is_torus_element(conjugation, self.matrix_size, self.rank, self.form), \
-        #         "Weyl element does not noramlize the torus"
-        # if display: print("done.")
-        if display: print("TEST SKIPPED.")
+        for alpha in self.root_system.root_list:
+            w_alpha = self.weyl_element_map(alpha)
+            conjugation = sp.simplify(w_alpha * t * (w_alpha.inv()))
+            assert self.is_torus_element(conjugation), \
+                "Weyl element does not noramlize the torus"
+        if display: print("done.")
+        # if display: print("TEST SKIPPED.")
         
         if display: print("\tChecking squared Weyl elements centralize the torus... ", end="")
-        # for alpha in self.root_system.root_list:
-        #     w_alpha = self.weyl_element_map(alpha)
-        #     w_alpha_squared = sp.simplify(w_alpha * w_alpha)
-        #     LHS = sp.simplify(w_alpha_squared*t)
-        #     RHS = sp.simplify(t*w_alpha_squared)
-        #     assert LHS.equals(RHS), "Squared weyl element does not centralize the torus"
-        # if display: print("done.")
-        if display: print("TEST SKIPPED.")
+        for alpha in self.root_system.root_list:
+            w_alpha = self.weyl_element_map(alpha)
+            w_alpha_squared = sp.simplify(w_alpha * w_alpha)
+            LHS = sp.simplify(w_alpha_squared*t)
+            RHS = sp.simplify(t*w_alpha_squared)
+            assert LHS.equals(RHS), "Squared weyl element does not centralize the torus"
+        if display: print("done.")
+        # if display: print("TEST SKIPPED.")
         
         if display: print("\tChecking Weyl element conjugation formula... ", end="")
         # INCOMPLETE

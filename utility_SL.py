@@ -2,8 +2,11 @@ import sympy as sp
 import numpy as np
 from utility_general import is_diagonal
 
-def is_group_element_SL(matrix_to_test, form = None):
-    return matrix_to_test.det() == 1
+def group_constraints_SL(matrix_to_test, form = None):
+    return [matrix_to_test.det() - 1]
+
+# def is_group_element_SL(matrix_to_test, form = None):
+#     return matrix_to_test.det() == 1
 
 def is_torus_element_SL(matrix_to_test, rank = None):
     return (is_diagonal(matrix_to_test) and 

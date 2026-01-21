@@ -3,21 +3,24 @@ from pinned_group import pinned_group
 from nondegenerate_isotropic_form import nondegenerate_isotropic_form
 from split_torus import split_torus
 from utility_general import vector_variable
-from utility_SL import (is_group_element_SL,
+from utility_SL import (#is_group_element_SL,
+                        group_constraints_SL,
                         is_torus_element_SL,
                         generic_torus_element_SL,
                         trivial_characters_SL,
                         character_entries_SL,
                         is_lie_algebra_element_SL, 
                         generic_lie_algebra_element_SL)
-from utility_SO import (is_group_element_SO,
+from utility_SO import (#is_group_element_SO,
+                        group_constraints_SO,
                         is_torus_element_SO,
                         generic_torus_element_SO,
                         trivial_characters_SO,
                         character_entries_SO,
                         is_lie_algebra_element_SO, 
                         generic_lie_algebra_element_SO)
-from utility_SU import (is_group_element_SU,
+from utility_SU import (#is_group_element_SU,
+                        group_constraints_SU,
                         is_torus_element_SU,
                         generic_torus_element_SU, 
                         trivial_characters_SU,
@@ -27,8 +30,9 @@ from utility_SU import (is_group_element_SU,
 
 def main():
     to_do_list = ("To do list:" + "\n\t" + 
-                  "Compute Weyl group elements, i.e. complete fit_weyl_elements" + "\n\t" +
-                  "Run tests to validate properties of Weyl group elements" + "\n\t" +
+                  "Fix issue with Weyl group elements not understanding conjugation" + "\n\t" +
+                      " and/or not being set up as generic elements from the quadratic extension" + "\n\t" +
+                  "Pass tests validating Weyl group elements" + "\n\t" +
                   "Add documentation, including a Readme on Github" + "\n\t" +
                   "Add functionality to root_system class to construct standard " + 
                       "models of root systems based on given Dynkin type" + "\n\t" +
@@ -38,13 +42,15 @@ def main():
     print("\nDemonstrating usage of pinned_group class")
     sp.init_printing(wrap_line=False)
     n_min = 1
-    n_max = 6
+    n_max = 5
     q_min = 1
-    q_max = 4
+    q_max = 2
     eps_values = [-1,1] # should only include +/-1 or just ome of them
-    run_SL_tests(n_min, 4) # SL_5 takes a very long time
-    run_SO_split_tests(n_min, n_max, q_min, q_max)
-    run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
+    
+    # SL_5 takes a very long time to compute roots, not recommended
+    #run_SL_tests(n_min, 4) 
+    #run_SO_split_tests(n_min, n_max, q_min, q_max)
+    #run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
     run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
     run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
     print("\nAll tests complete.")
@@ -64,7 +70,7 @@ def run_SL_tests(n_min, n_max):
         SL_n = pinned_group(name_string = f"SL(n={n})",
                             matrix_size = n,
                             form = None,
-                            is_group_element = is_group_element_SL,
+                            group_constraints = group_constraints_SL,
                             maximal_split_torus = T,
                             is_lie_algebra_element = is_lie_algebra_element_SL,
                             generic_lie_algebra_element = generic_lie_algebra_element_SL,
@@ -76,6 +82,7 @@ def run_SL_tests(n_min, n_max):
         SL_n.validate_pinning(display = True)
     print("\nDone with special linear groups")
     print("\n" + '=' * 100 + "\n")
+
 
 def run_SO_split_tests(n_min, n_max, q_min, q_max):
     ###################################################
@@ -101,7 +108,7 @@ def run_SO_split_tests(n_min, n_max, q_min, q_max):
             SO_n_q = pinned_group(name_string = f"SO(n={n}, q={q})",
                                 matrix_size = n,
                                 form = NIF, 
-                                is_group_element = is_group_element_SO,
+                                group_constraints = group_constraints_SO,
                                 maximal_split_torus = T,
                                 is_lie_algebra_element = is_lie_algebra_element_SO,
                                 generic_lie_algebra_element = generic_lie_algebra_element_SO,
@@ -150,7 +157,7 @@ def run_SO_nonsplit_tests(n_min, n_max, q_min, q_max):
             SO_n_q = pinned_group(name_string = f"SO(n={n}, q={q})",
                                 matrix_size = n,
                                 form = NIF, 
-                                is_group_element = is_group_element_SO,
+                                group_constraints = group_constraints_SO,
                                 maximal_split_torus = T,
                                 is_lie_algebra_element = is_lie_algebra_element_SO,
                                 generic_lie_algebra_element = generic_lie_algebra_element_SO,
@@ -196,7 +203,7 @@ def run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values):
                 SU_n_q = pinned_group(name_string = f"SU(n={n}, q={q}, eps={eps})",
                                       matrix_size = n,
                                       form = NIF, 
-                                      is_group_element = is_group_element_SU,
+                                      group_constraints = group_constraints_SU,
                                       maximal_split_torus = T,
                                       is_lie_algebra_element = is_lie_algebra_element_SU,
                                       generic_lie_algebra_element = generic_lie_algebra_element_SU,
@@ -245,7 +252,7 @@ def run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values):
                 SU_n_q = pinned_group(name_string = f"SU(n={n}, q={q}, eps={eps})",
                                       matrix_size = n,
                                       form = NIF, 
-                                      is_group_element = is_group_element_SU,
+                                      group_constraints = group_constraints_SU,
                                       maximal_split_torus = T,
                                       is_lie_algebra_element = is_lie_algebra_element_SU,
                                       generic_lie_algebra_element = generic_lie_algebra_element_SU,

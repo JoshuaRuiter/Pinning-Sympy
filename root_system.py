@@ -11,6 +11,7 @@
 
 import sympy as sp
 import numpy as np
+import itertools
 from utility_general import vector_variable
 from utility_roots import (vector, 
                            in_integer_column_span, 
@@ -191,6 +192,15 @@ class root_system:
         # The columns of L are the trivial characters,
         # and this system has one entry for each column of L
         eq2 = (x.T * L)
+        
+        #############################################################
+        # print("\n\nComputing a coroot")
+        # print("alpha =",alpha)
+        # print("alpha_check =",x)
+        # print("Vanishing conditions:")
+        # sp.pprint(eq1)
+        # sp.pprint(eq2)
+        #############################################################
 
         # Solve the equations
         solutions_list = sp.solve([eq1, eq2], x_vars, dict=True)
@@ -199,17 +209,63 @@ class root_system:
             "Not sure what to do with multiple solutions to cocharacter equations"
         solutions_dict = solutions_list[0]
         
-        # Take the general solution, and replace any remaining free variables with zero
         x_general_solution = x.subs(solutions_dict)
-        remaining_vars = x_general_solution.free_symbols
-        x_specific_solution = x_general_solution
-        if remaining_vars:
-            for v in remaining_vars:
-                x_specific_solution = x_specific_solution.subs(v, 0)
-                
+        
+        #############################################################
+        # print("General solution for coroot:")
+        # sp.pprint(x_general_solution)
+        # print()
+        #############################################################
+        
+        # If there are no free variables remaining, we're done
+        if len(x_general_solution.free_symbols) == 0:
+            # Confirm that all entries are integers, 
+            # then convert to vector and return
+            assert all(a == int(a) for a in x_general_solution)
+            return vector([int(a) for a in x_general_solution])
+            return x_general_solution
+        
+        # If there are free variables remaining, there is more to do
+        # In this case, the general solution has the form
+        # x = z + Y*Z^k
+        # where z is a fixed vector, 
+        # and Y is an integer matrix
+        free_vars = x_general_solution.free_symbols
+        assert len(free_vars) >= 1
+        z = x_general_solution.subs({u : 0 for u in free_vars})
+        Y_cols = []
+        for u in free_vars:
+            Y_cols.append((x_general_solution - z).subs(u,1).subs(
+                {t : 0 for t in free_vars if t != u}
+            ))
+        Y = sp.Matrix.hstack(*Y_cols)
+        n, k = Y.shape
+        assert n == len(alpha) == len(x)
+        
+        # Now to find our cocharacter, we choose
+        # the vector of the form x = z + Y*u of minimal Euclidean norm
+        # This is accomplished by minimizing a quadratic form
+        G = Y.T * Y
+        b = -Y.T * z
+        u0 = G.LUsolve(b) # value of u that minimizes norm(z+Y*u)
+        u0_round = [int(round(ui)) for ui in u0]
+        assert len(u0) == len(u0_round) == k
+        
+        # Compile a list of candidate minimizers
+        # by looping over vectors with entries 0, 1, -1
+        candidates = []
+        for delta in itertools.product([-1,0,1], repeat = len(u0_round)):
+            u = sp.Matrix([u0_round[i] + delta[i] for i in range(len(u0_round))])
+            candidates.append(z+Y*u)
+    
+        # Choose the candidate with minimal norm
+        def norm_sq(v): return v.dot(v)
+        x_min = min(candidates, key = norm_sq)
+        
         # Confirm that all entries are integers, then convert to vector and return
-        assert all(a == int(a) for a in x_specific_solution)
-        return vector([int(a) for a in x_specific_solution])
+        assert all(a == int(a) for a in x_min)
+        return vector([int(a) for a in x_min])
+
 
     def is_same_root(self, alpha, beta):
         assert type(alpha) == vector, "same_root expects vector input 1st argument"
