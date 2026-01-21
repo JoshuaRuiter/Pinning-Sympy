@@ -1,0 +1,213 @@
+Logging enabled
+
+Demonstrating usage of the pinned_group class
+
+====================================================================================================
+
+Running calculations and verifications for special linear groups
+
+----------------------------------------------------------------------------------------------------
+Fitting a pinning for SL(n=2)
+
+Generic Lie algebra element:
+[4;33mReloaded modules[24m: pinned_group, nondegenerate_isotropic_form, utility_general, utility_SL, utility_SO, utility_SU[0m
+OLD To do list:
+	Fix issue in root space maps which convert set to list and assume order is preserved
+	Fix dynkin type classifier to use quotient images of roots
+	Fix linear combos to work with new root system conventions
+	Switch to manual tuple operations rather than numpy conversions
+	Fix root_system.irreducible_components
+	Fix root system tests to be based on quotient projections, not original roots
+	Do I need to fix linear combos to work with new convention?
+	Set up so that generic_torus_element and such don't require redundant inputs when used within pinned_group
+	Compute Weyl group elements
+	Run tests to validate properties of Weyl group elements
+	Implement capability for printing to file instead of to console
+	Add functionality to root_system class to construct standard models of root systems based on given Dynkin type
+	Add documentation, including Readme on Github
+
+To do list:
+	ITEM 1
+	ITEM 2
+
+Demonstrating usage of the pinned_group class
+
+====================================================================================================
+
+Running calculations and verifications for special linear groups
+
+----------------------------------------------------------------------------------------------------
+Fitting a pinning for SL(n=2)
+
+Generic Lie algebra element:
+[4;33mReloaded modules[24m: pinned_group, nondegenerate_isotropic_form, utility_general, utility_SL, utility_SO, utility_SU[0m
+OLD To do list:
+	Fix issue in root space maps which convert set to list and assume order is preserved
+	Fix dynkin type classifier to use quotient images of roots
+	Fix linear combos to work with new root system conventions
+	Switch to manual tuple operations rather than numpy conversions
+	Fix root_system.irreducible_components
+	Fix root system tests to be based on quotient projections, not original roots
+	Do I need to fix linear combos to work with new convention?
+	Set up so that generic_torus_element and such don't require redundant inputs when used within pinned_group
+	Compute Weyl group elements
+	Run tests to validate properties of Weyl group elements
+	Implement capability for printing to file instead of to console
+	Add functionality to root_system class to construct standard models of root systems based on given Dynkin type
+	Add documentation, including Readme on Github
+
+To do list:
+	ITEM 1
+	ITEM 2
+
+Demonstrating usage of the pinned_group class
+
+====================================================================================================
+
+Running calculations and verifications for special linear groups
+
+----------------------------------------------------------------------------------------------------
+Fitting a pinning for SL(n=2)
+
+Generic Lie algebra element:
+lgebra element:
+[4;33mReloaded modules[24m: pinned_group, nondegenerate_isotropic_form, utility_general, utility_SL, utility_SO, utility_SU[0m
+OLD To do list:
+	Fix issue in root space maps which convert set to list and assume order is preserved
+	Fix dynkin type classifier to use quotient images of roots
+	Fix linear combos to work with new root system conventions
+	Switch to manual tuple operations rather than numpy conversions
+	Fix root_system.irreducible_components
+	Fix root system tests to be based on quotient projections, not original roots
+	Do I need to fix linear combos to work with new convention?
+	Set up so that generic_torus_element and such don't require redundant inputs when used within pinned_group
+	Compute Weyl group elements
+	Run tests to validate properties of Weyl group elements
+	Implement capability for printing to file instead of to console
+	Add functionality to root_system class to construct standard models of root systems based on given Dynkin type
+	Add documentation, including Readme on Github
+
+To do list:
+	ITEM 1
+	ITEM 2
+
+Demonstrating usage of the pinned_group class
+
+====================================================================================================
+
+Running calculations and verifications for special linear groups
+
+----------------------------------------------------------------------------------------------------
+Fitting a pinning for SL(n=2)
+
+Generic Lie algebra element:
+lgebra element:
+[4;33mReloaded modules[24m: pinned_group, nondegenerate_isotropic_form, utility_general, utility_SL, utility_SO, utility_SU[0m
+OLD To do list:
+	Fix issue in root space maps which convert set to list and assume order is preserved
+	Fix dynkin type classifier to use quotient images of roots
+	Fix linear combos to work with new root system conventions
+	Switch to manual tuple operations rather than numpy conversions
+	Fix root_system.irreducible_components
+	Fix root system tests to be based on quotient projections, not original roots
+	Do I need to fix linear combos to work with new convention?
+	Set up so that generic_torus_element and such don't require redundant inputs when used within pinned_group
+	Compute Weyl group elements
+	Run tests to validate properties of Weyl group elements
+	Implement capability for printing to file instead of to console
+	Add functionality to root_system class to construct standard models of root systems based on given Dynkin type
+	Add documentation, including Readme on Github
+
+To do list:
+	ITEM 1
+	ITEM 2
+
+Demonstrating usage of the pinned_group class
+
+====================================================================================================
+
+Running calculations and verifications for special linear groups
+
+----------------------------------------------------------------------------------------------------
+Fitting a pinning for SL(n=2)
+
+Generic Lie algebra element:
+lgebra element:
+[4;33mReloaded modules[24m: pinned_group, nondegenerate_isotropic_form, utility_general, utility_SL, utility_SO, utility_SU[0m
+OLD To do list:
+	Fix issue in root space maps which convert set to list and assume order is preserved
+	Fix dynkin type classifier to use quotient images of roots
+	Fix linear combos to work with new root system conventions
+	Switch to manual tuple operations rather than numpy conversions
+	Fix root_system.irreducible_components
+	Fix root system tests to be based on quotient projections, not original roots
+	Do I need to fix linear combos to work with new convention?
+	Set up so that generic_torus_element and such don't require redundant inputs when used within pinned_group
+	Compute Weyl group elements
+	Run tests to validate properties of Weyl group elements
+	Implement capability for printing to file instead of to console
+	Add functionality to root_system class to construct standard models of root systems based on given Dynkin type
+	Add documentation, including Readme on Github
+
+To do list:
+	ITEM 1
+	ITEM 2
+
+Demonstrating usage of the pinned_group class
+
+====================================================================================================
+
+Running calculations and verifications for special linear groups
+
+----------------------------------------------------------------------------------------------------
+Fitting a pinning for SL(n=2)
+
+Generic Lie algebra element:
+file instead of to console
+	Add functionality to root_system class to construct standard models of root systems based on given Dynkin type
+	Add documentation, including Readme on Github
+
+To do list:
+	ITEM 1
+	ITEM 2
+
+Demonstrating usage of the pinned_group class
+
+====================================================================================================
+
+Running calculations and verifications for special linear groups
+
+----------------------------------------------------------------------------------------------------
+Fitting a pinning for SL(n=2)
+
+Generic Lie algebra element:
+[4;33mReloaded modules[24m: pinned_group, nondegenerate_isotropic_form, utility_general, utility_SL, utility_SO, utility_SU[0m
+OLD To do list:
+	Fix issue in root space maps which convert set to list and assume order is preserved
+	Fix dynkin type classifier to use quotient images of roots
+	Fix linear combos to work with new root system conventions
+	Switch to manual tuple operations rather than numpy conversions
+	Fix root_system.irreducible_components
+	Fix root system tests to be based on quotient projections, not original roots
+	Do I need to fix linear combos to work with new convention?
+	Set up so that generic_torus_element and such don't require redundant inputs when used within pinned_group
+	Compute Weyl group elements
+	Run tests to validate properties of Weyl group elements
+	Implement capability for printing to file instead of to console
+	Add functionality to root_system class to construct standard models of root systems based on given Dynkin type
+	Add documentation, including Readme on Github
+
+To do list:
+	ITEM 1
+	ITEM 2
+
+Demonstrating usage of the pinned_group class
+
+====================================================================================================
+
+Running calculations and verifications for special linear groups
+
+----------------------------------------------------------------------------------------------------
+Fitting a pinning for SL(n=2)
+
+Generic Lie algebra element:

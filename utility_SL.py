@@ -14,11 +14,14 @@ def generic_torus_element_SL(matrix_size, rank = None, letter = 't'):
     if rank is None:
         rank = matrix_size - 1
     else: 
-        assert(matrix_size == rank + 1)
+        assert matrix_size == rank + 1, "Rank of diagonal torus in SL_n is n-1"
     vec_t = sp.symarray(letter,matrix_size)
     t = sp.diag(*vec_t)
     t[matrix_size-1,matrix_size-1] = t[matrix_size-1,matrix_size-1]/sp.prod(vec_t)
     return t
+
+def character_entries_SL(matrix_size, rank = None):
+    return [1]*matrix_size
 
 def trivial_characters_SL(matrix_size, rank = None):
     trivial_characters = [[1] * matrix_size]

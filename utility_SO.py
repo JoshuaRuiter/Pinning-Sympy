@@ -29,8 +29,12 @@ def generic_torus_element_SO(matrix_size, rank, letter = 't'):
         t[rank+i,rank+i] = 1/vec_t[i]
     return t
 
+def character_entries_SO(matrix_size, rank):
+    return [1]*rank + [0]*(matrix_size - rank)
+
 def trivial_characters_SO(matrix_size, rank):
     trivial_characters = [np.array([1 if j == i or j == i + rank else 0 for j in range(matrix_size)])for i in range(rank)]
+    trivial_characters.append([1] * matrix_size)
     matrix_with_trivial_character_columns = np.array(np.stack(trivial_characters, axis=1))
     return matrix_with_trivial_character_columns
 

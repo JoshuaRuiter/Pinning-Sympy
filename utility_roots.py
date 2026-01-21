@@ -1,3 +1,10 @@
+# Various helper methods related to roots, characters, and root systems
+
+import itertools
+import numpy as np
+import sympy as sp
+import time
+from utility_general import is_diagonal
 
 # Low rank examples of Dynkin graphs, used for testing purposes
 # Each graph is a dictionary of dictionaries.
@@ -57,6 +64,145 @@ directed_dynkin_graphs = {
     "G2": {0: {1: 3}, 1: {0: 1}},
 }
 
+class vector(tuple):
+    def __new__(cls, iterable):
+        values = tuple(iterable)
+        for x in values:
+            if not isinstance(x, (int, float, complex)):
+                raise TypeError(f"vector entries must be int, float, or complex, got {type(x)}")
+        return super().__new__(cls, iterable)
+
+    # Addition
+    def __add__(self, other):
+        assert isinstance(other, vector), "Invalid vector addition"
+        assert len(self) == len(other), "Can't add vectors of different lengths"
+        result = vector(tuple(a+b for a, b in zip(self, other)))
+        assert len(result) == len(self), "Addition changed vector length"
+        return result
+
+    # Subtraction
+    def __sub__(self, other):
+        assert isinstance(other, vector), "Invalid vector subtraction"
+        assert len(self) == len(other), "Can't subtract vectors of different lengths"
+        result = vector(tuple(a-b for a, b in zip(self, other)))
+        assert len(result) == len(self), "Subtraction changed vector length"
+        return result
+
+    # Scalar multiplication
+    def __mul__(self, scalar):
+        assert isinstance(scalar, (int, float, complex)), "Invalid scalar type"
+        result = vector(tuple(a * scalar for a in self))
+        assert len(result) == len(self), "Scalar multplication is changed vector length"
+        return result
+    
+    __rmul__ = __mul__  # allow scalar * vector
+
+    # Equality
+    def equals(self, other):
+        assert isinstance(other, vector), "Invalid vector comparison"
+        return (len(self) == len(other)
+                and all(a == b for a, b in zip(self, other)))
+    
+    # Dot product
+    def dot(self, other):
+        if not isinstance(other, vector):
+            raise TypeError("Dot product requires another Vector")
+        return sum(a * b for a, b in zip(self, other))
+
+    # Norm (length)
+    def norm(self):
+        return np.sqrt(self.dot(self))
+
+    # Representation
+    def __repr__(self):
+        return f"{tuple(self)}"
+    
+    @property
+    def as_column(self):
+        return np.array(self).reshape(-1,1)
+    
+    @property
+    def as_row(self):
+        return np.array(self).reshape(1,-1)
+
+def in_integer_column_span(v, M):
+    # Return true if vector is in the integer column span of M
+    M = np.asarray(M, dtype = int)
+    rank_M = np.linalg.matrix_rank(M)
+    augmented = np.hstack([M,v.as_column]) # add vector as additional column to M
+    rank_augmented = np.linalg.matrix_rank(augmented)
+    return rank_augmented == rank_M
+
+def evaluate_character(alpha,torus_element):
+    # Evaluate a character at a particular torus element
+    
+    # Validate the inputs
+    assert isinstance(alpha, vector), "Characters must be represented as vectors"
+    assert is_diagonal(torus_element), "Cannot evaluate character on non-diagonal matrix" 
+    rows, cols = sp.shape(torus_element)
+    assert rows == cols == len(alpha), "Character length mismatch" 
+    
+    # Compute the character evaluation
+    return sp.prod(torus_element[i,i]**alpha[i] for i in range(len(alpha)))
+
+def evaluate_cocharacter(cocharacter,scalar):
+    # Evaluate a cocharacter at a scalar
+    assert isinstance(cocharacter, vector), "Cocharacters must be represented as vectors"
+    length = len(cocharacter)
+    output = sp.eye(length, dtype=int)
+    for i in range(length):
+        output[i,i] = scalar**cocharacter[i]
+    return output
+
+def generic_kernel_element(alpha, t):
+    assert isinstance(alpha, vector), "Characters and roots must be represented by vectors"
+    assert all(isinstance(a, int) for a in alpha), "Character components must be integers"
+    assert is_diagonal(t), "Torus element must be diagonal"
+    
+    alpha_of_t = evaluate_character(alpha, t)
+    
+    # If already in the kernel, just return the generic torus element
+    if sp.simplify(alpha_of_t - 1) == 0: return t
+
+    t_vars = t.free_symbols
+    solutions_list = sp.solve(alpha_of_t - 1, t_vars, dict = True)
+    assert len(solutions_list) >= 1, "No solution found for kernel equation"
+    solutions_dict = solutions_list[0]
+    
+    # print("\n\nGenerating a generic kernel element")
+    # print("\nalpha =",alpha)
+    # print("\nt = ")
+    # sp.pprint(t)
+    # print("\nvariables in t: ",t_vars)
+    # print("\nalpha(t) =",alpha_of_t)
+    # print("\nSolutions to alpha(t) = 1 : ")
+    # sp.pprint(solutions_list)
+    # print("\nSubstituted torus element =")
+    # sp.pprint(t.subs(solutions_dict))
+    
+    return t.subs(solutions_dict)
+
+def determine_irreducible_components(roots):
+    n = len(roots)
+    visited = [False]*n
+    components = []
+    for i in range(n):
+        if visited[i]:
+            continue
+        stack = [i]
+        comp_indices = []
+        while stack:
+            k = stack.pop()
+            if visited[k]:
+                continue
+            visited[k] = True
+            comp_indices.append(k)
+            for j in range(n):
+                if not visited[j] and np.dot(roots[k], roots[j]) != 0:
+                    stack.append(j)
+        components.append([roots[k] for k in comp_indices])
+    return components
+
 def connected_components(graph):
     """
     Given a graph g represented as
@@ -65,7 +211,7 @@ def connected_components(graph):
     """
     visited = set()
     components = []
-    
+
     for start in graph:
         if start in visited:
             continue
@@ -90,6 +236,115 @@ def connected_components(graph):
         
         components.append(component)
     return components
+
+def generate_character_list(nonzero_entries, upper_bound):
+    # Possible values for each coordinate
+    values = []
+    for allow in nonzero_entries:
+        if allow:
+            values.append(range(-upper_bound, upper_bound + 1))
+        else:
+            values.append((0,))
+    return [vector(v) for v in itertools.product(*values)]
+
+def reduce_character_list(vector_list, lattice_matrix):
+    # take a list of numpy vectors, and return a sub-list
+    # consisting of only vectors which are not pairwise equivalent
+    # under quotienting by a lattice generated by the columns of lattice_matrix
+    
+    if len(lattice_matrix) == 0: return vector_list # If no lattice matrix, everything is distinct
+    
+    V = vector_list
+    M = sp.Matrix(lattice_matrix).transpose()   # Matrix whose rows span the lattice
+    null_basis = M.nullspace()
+    
+    def max_entry(v): return max(abs(x) for x in v)
+    def support_size(v): return sum(1 for x in v if x != 0)
+    def length_sq(v): return sum(x*x for x in v)
+    def support_pattern(v): return tuple(1 if x != 0 else 0 for x in v)
+    def nullspace_dot_sum(v):
+        if not null_basis: return 0
+        v_vec = sp.Matrix(v)
+        return sum(abs(v_vec.dot(q)) for q in null_basis)
+    
+    # Comparison key, higher is preferred
+    def priority_key(v):
+        return (
+            -nullspace_dot_sum(v), # smaller sum preferred, zero if orthogonal to all lattice generators
+            -max_entry(v),         # smaller maximum entry preferred
+            -support_size(v),      # fewer nonzeros is better
+            -length_sq(v),         # shorter vector preferred
+            support_pattern(v)     # earlier nonzeros preferred
+        )
+    
+    # If nullspace is trivial, everything is equivalent, just return the best vector by priority key
+    if not null_basis: return [max(V, key=priority_key)]
+    
+    # Matrix whose rows are a basis for the null space of W_mat
+    Q_mat = sp.Matrix.vstack(*[q.T for q in null_basis])
+    
+    best = {}
+    for v in V:
+        key = tuple(Q_mat * sp.Matrix(v))
+        if key not in best or priority_key(v) > priority_key(best[key]): best[key] = v
+    return list(best.values())
+
+def determine_roots(generic_torus_element,
+                    generic_lie_algebra_element,
+                    list_of_characters,
+                    variables_to_solve_for,
+                    time_updates = False):
+    
+    # Caculate roots and root spaces
+    # return in a dictionary format, where keys are roots (as tuples)
+    # and the value is the generic element of the root space
+    root_space_dict = {}
+    t = generic_torus_element
+    x = sp.Matrix(generic_lie_algebra_element)
+    LHS = sp.simplify(t*x*t**(-1))
+    
+    if time_updates:
+        print("\nComputing roots...")
+        n = len(list_of_characters)
+        print("Testing " + str(n) + " candidate characters.")
+        i = 0
+        t0 = time.time()
+    
+    for alpha in list_of_characters:
+        
+        if time_updates:
+            i = i + 1
+            t1 = time.time()
+            if i % 100 == 0:
+                print("\tTesting candidate", i)
+                print("\tRoots found so far:", len(root_space_dict))
+                elapsed = t1-t0
+                avg = elapsed/i
+                remaining = (n-i)*avg
+                print("\tTime elapsed:", int(elapsed), "seconds")
+                print("\tAverage time per candidate:", round(avg,2), "seconds")
+                print("\tEstimated time remaining:", int(remaining), "seconds")
+            
+        alpha_of_t = evaluate_character(alpha,t)
+        if alpha_of_t != 1: # ignore cases where the character is trivial
+            RHS = alpha_of_t*x
+            my_equation = sp.simplify(LHS-RHS)
+            solutions_list = sp.solve(my_equation,variables_to_solve_for,dict=True)
+            assert(len(solutions_list) == 1)
+            solutions_dict = solutions_list[0]
+            if len(solutions_dict) > 0 :
+                all_zero = True 
+                for var in variables_to_solve_for:  # check that not all variables are zero
+                    if not(var in solutions_dict.keys()) or solutions_dict[var] != 0:
+                        all_zero = False
+                        break
+                if not(all_zero): # For nonzero characters with a solution, add as a root
+                    generic_root_space_element = x
+                    for var, value in solutions_dict.items():
+                        generic_root_space_element = generic_root_space_element.subs(var,value)
+                    if not generic_root_space_element.is_zero_matrix:
+                        root_space_dict[alpha] = sp.simplify(generic_root_space_element)
+    return root_space_dict
 
 def visualize_graph(graph):
     """
@@ -152,4 +407,3 @@ def visualize_graph(graph):
         ascii_parts.append(edge + str(curr))
 
     return "".join(ascii_parts)
-

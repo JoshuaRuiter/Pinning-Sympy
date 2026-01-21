@@ -17,14 +17,14 @@ class nondegenerate_isotropic_form:
                  epsilon = None,
                  primitive_element = None):
         
-        if dimension == -1:
-            # Flag used to have a "non-object"
-            self.matrix = [1]
+        assert dimension >= 1, "Cannot instantiate nondegenerate isotropic form with dimension < 1"
+        assert witt_index >= 1, "Cannot instantiate nondegenerate isotropic form with Witt index < 1"
+        assert epsilon in (None, 1, -1), "Cannot instantiate nondegenerate isotropic form: invalid value of epsilon"
         
         self.dimension = dimension  # The dimension of the associated vector space V,
                                     # also the size of the associated matrix
         self.witt_index = witt_index
-        self.epsilon = epsilon  # epsilon=0 to indicate symmetric bilinear
+        self.epsilon = epsilon  # epsilon=None to indicate symmetric bilinear
                                 # epsilon=1 to indicate hermitian
                                 # epsilon=-1 to indicate skew-hermitian
         self.anisotropic_vector = anisotropic_vector    # A vector to store the diagonal entries
@@ -43,6 +43,7 @@ class nondegenerate_isotropic_form:
             self.matrix = self.build_symmetric_matrix(dimension, 
                                                       witt_index, 
                                                       anisotropic_vector)
+            
         elif epsilon == 1 or epsilon == -1: # hermitian case
             self.name_string = 'hermitian' if epsilon == 1 else "skew-hermitian"
             self.matrix = self.build_hermitian_matrix(dimension, 
@@ -50,8 +51,6 @@ class nondegenerate_isotropic_form:
                                                       anisotropic_vector,
                                                       epsilon, 
                                                       primitive_element)
-        else:
-            raise ValueError("Unsupported epsilon")
     
     @staticmethod
     def build_symmetric_matrix(dimension,

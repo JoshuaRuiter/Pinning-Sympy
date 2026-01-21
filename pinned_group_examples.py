@@ -1,196 +1,186 @@
-# Use pinned_group class to work out some examples.
-
+import sympy as sp
+from pinned_group import pinned_group
+from nondegenerate_isotropic_form import nondegenerate_isotropic_form
+from split_torus import split_torus
+from utility_general import vector_variable
 from utility_SL import (is_group_element_SL,
                         is_torus_element_SL,
                         generic_torus_element_SL,
                         trivial_characters_SL,
+                        character_entries_SL,
                         is_lie_algebra_element_SL, 
                         generic_lie_algebra_element_SL)
 from utility_SO import (is_group_element_SO,
                         is_torus_element_SO,
                         generic_torus_element_SO,
                         trivial_characters_SO,
+                        character_entries_SO,
                         is_lie_algebra_element_SO, 
                         generic_lie_algebra_element_SO)
 from utility_SU import (is_group_element_SU,
                         is_torus_element_SU,
                         generic_torus_element_SU, 
                         trivial_characters_SU,
+                        character_entries_SU,
                         is_lie_algebra_element_SU, 
                         generic_lie_algebra_element_SU)
-from pinned_group import pinned_group
-from nondegenerate_isotropic_form import nondegenerate_isotropic_form
-import sympy as sp
-
 
 def main():
     to_do_list = ("To do list:" + "\n\t" + 
-                  "Fix root system stuff - SL(3) is coming out to B2 root system!!!" + "\n\t" +
-                  "Convert everything to new bidict format for root lists, with orthogonal complement coordinates" + "\n\t" +
-                  "Fix issue in root space maps which convert set to list and assume order is preserved" + "\n\t" +
-                  "Check that angle bracket testing is doing the proper thing with new root system conventions" + "\n\t" +
-                  "Fix root system reflection method" + "\n\t" +
-                  "Fix dynkin type classifier to use quotient images of roots" + "\n\t" +
-                  "Fix linear combos to work with new root system conventions" + "\n\t" +
-                  "Switch to manual tuple operations rather than numpy conversions" + "\n\t" +
-                  "Fix root_system.irreducible_components" + "\n\t" +
-                  "Fix root system tests to be based on quotient projections, not original roots" + "\n\t" +
-                  "Do I need to fix linear combos to work with new convention?" + "\n\t" +
-                  "Set up so that generic_torus_element and such don't require redundant inputs " + 
-                      "when used within pinned_group" + "\n\t" +
-                  "Compute Weyl group elements" + "\n\t" +
+                  "Compute Weyl group elements, i.e. complete fit_weyl_elements" + "\n\t" +
                   "Run tests to validate properties of Weyl group elements" + "\n\t" +
-                  "Maybe I need an implementation of the Jacobson-Morozov theorem," +
-                      "i.e. an algorithm that generates sl2-triples" + "\n\t" +
-                  "Implement capability for printing to file instead of to console" + "\n\t" +
+                  "Add documentation, including a Readme on Github" + "\n\t" +
                   "Add functionality to root_system class to construct standard " + 
                       "models of root systems based on given Dynkin type" + "\n\t" +
-                  "Add documentation, including Readme on Github")
+                  "")
     print(to_do_list)
     
-    print("\nDemonstrating usage of the pinned_group class")
+    print("\nDemonstrating usage of pinned_group class")
     sp.init_printing(wrap_line=False)
-    run_SL_tests()
-    run_SO_split_tests()
-    run_SO_nonsplit_tests()
-    run_SU_quasisplit_tests()
-    run_SU_nonquasisplit_tests()
+    n_min = 1
+    n_max = 6
+    q_min = 1
+    q_max = 4
+    eps_values = [-1,1] # should only include +/-1 or just ome of them
+    run_SL_tests(n_min, 4) # SL_5 takes a very long time
+    run_SO_split_tests(n_min, n_max, q_min, q_max)
+    run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
+    run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
+    run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
     print("\nAll tests complete.")
     
-    print(to_do_list)
-    
-def run_SL_tests():
-    print("\n" + '≡' * 100)
-    print("\nRunning calculations and verifications for special linear groups")
-    for n in (2,3,4):
+    print("\n" + to_do_list)
+
+def run_SL_tests(n_min, n_max):
+    print("\n" + '=' * 100 + "\n")
+    print("Running calculations and verifications for special linear groups")
+    n_min = max(n_min, 2) # n=1 doesn't make sense, SL_1 is just the trivial group
+    for n in range(n_min, n_max + 1):
+        T = split_torus(rank = n-1,
+                        is_element = is_torus_element_SL,
+                        generic_element = generic_torus_element_SL,
+                        trivial_character_matrix = trivial_characters_SL(n),
+                        nontrivial_character_entries = character_entries_SL(n))
         SL_n = pinned_group(name_string = f"SL(n={n})",
                             matrix_size = n,
-                            rank = n-1,
                             form = None,
                             is_group_element = is_group_element_SL,
-                            is_torus_element = is_torus_element_SL,
-                            generic_torus_element = generic_torus_element_SL,
-                            trivial_character_matrix = trivial_characters_SL(n),
+                            maximal_split_torus = T,
                             is_lie_algebra_element = is_lie_algebra_element_SL,
                             generic_lie_algebra_element = generic_lie_algebra_element_SL,
                             non_variables = None)
         SL_n.fit_pinning(display = True)
+        assert SL_n.root_system.dynkin_type == 'A', \
+            f"SL(n={n}) should have type A but " + \
+            f"computations gave type {SL_n.root_system.dynkin_type}"
         SL_n.validate_pinning(display = True)
-    print("Done with special linear groups.\n")
-    print('≡' * 100 + "\n")
+    print("\nDone with special linear groups")
+    print("\n" + '=' * 100 + "\n")
 
-def run_SO_split_tests():
+def run_SO_split_tests(n_min, n_max, q_min, q_max):
     ###################################################
     ## SPLIT SPECIAL ORTHOGONAL GROUPS (n=2q or n=2q+1) 
     ###################################################
-    print("\n" + '≡' * 100)
-    print("\nRunning calculations and verifications for split special orthogonal groups")
-    for q in (2,3):
-        for n in (2*q,2*q+1):
-            anisotropic_vec = sp.Matrix(sp.symarray('c',n-2*q))
+    print("\n" + '=' * 100 + "\n")
+    print("Running calculations and verifications for split special orthogonal groups")
+    q_min = max(q_min, 2) # doesn't make sense if q=1, there are no roots
+    for q in range(q_min, q_max + 1):
+        n_range = [n for n in (2*q, 2*q+1) if n_min <= n and n <= n_max]
+        for n in n_range:
+            anisotropic_vec = vector_variable('c',n-2*q)
             NIF = nondegenerate_isotropic_form(dimension = n,
                                                 witt_index = q,
                                                 anisotropic_vector = anisotropic_vec,
                                                 epsilon = None,
                                                 primitive_element = None)
+            T = split_torus(rank = q,
+                            is_element = is_torus_element_SO,
+                            generic_element = generic_torus_element_SO,
+                            trivial_character_matrix = trivial_characters_SO(n,q),
+                            nontrivial_character_entries = character_entries_SO(n,q))
             SO_n_q = pinned_group(name_string = f"SO(n={n}, q={q})",
                                 matrix_size = n,
-                                rank = q,
                                 form = NIF, 
                                 is_group_element = is_group_element_SO,
-                                is_torus_element = is_torus_element_SO,
-                                generic_torus_element = generic_torus_element_SO,
-                                trivial_character_matrix = trivial_characters_SO(n,q), 
+                                maximal_split_torus = T,
                                 is_lie_algebra_element = is_lie_algebra_element_SO,
                                 generic_lie_algebra_element = generic_lie_algebra_element_SO,
                                 non_variables = None)
-            SO_n_q.fit_pinning(display = True)     
+            SO_n_q.fit_pinning(display = True)
+            if n==2*q:
+                if q==2:
+                    expected_type = ['A','A']
+                elif q==3:
+                    expected_type = 'A'
+                else:
+                    expected_type = 'D'
+            else:
+                expected_type = 'B'
+            assert SO_n_q.root_system.dynkin_type == expected_type, \
+                    f"SO(n={n}, q={q}) is type {expected_type} but computations " + \
+                    f"gave type {SO_n_q.root_system.dynkin_type}"
+                    
             SO_n_q.validate_pinning(display = True)
-    print("Done with split special orthogonal groups.\n")
-    print('≡' * 100 + "\n")
+    print("\nDone with split special orthogonal groups")
+    print("\n" + '=' * 100 + "\n")
 
-def run_SO_nonsplit_tests():
+def run_SO_nonsplit_tests(n_min, n_max, q_min, q_max):
     #############################################################################
     ## NON-SPLIT SPECIAL ORTHOGONAL GROUPS 
         ## SO_n_q is quasi-split if n=2q+2, and
         ## neither split nor quasi-split if n>2+2q, 
         ## but the behavior seems to be basically the same in these two cases
     #############################################################################
-    print("\n" + '≡' * 100)
-    print("\nRunning calculations and verifications for non-split special orthogonal groups")
-    for q in (1,2):
-        for n in (2*q+2,2*q+3,2*q+4):
-            anisotropic_vec = sp.Matrix(sp.symarray('c',n-2*q))
+    print("\n" + '=' * 100 + "\n")
+    print("Running calculations and verifications for non-split special orthogonal groups")
+    for q in range(q_min, q_max + 1):
+        n_min = max(2*q+2, n_min) # only non-split if n >= 2q+2
+        for n in range(n_min, n_max + 1):
+            anisotropic_vec = vector_variable('c',n-2*q)
             NIF = nondegenerate_isotropic_form(dimension = n,
                                                 witt_index = q,
                                                 anisotropic_vector = anisotropic_vec,
                                                 epsilon = None,
                                                 primitive_element = None)
+            T = split_torus(rank = q,
+                            is_element = is_torus_element_SO,
+                            generic_element = generic_torus_element_SO,
+                            trivial_character_matrix = trivial_characters_SO(n,q),
+                            nontrivial_character_entries = character_entries_SO(n,q))            
             SO_n_q = pinned_group(name_string = f"SO(n={n}, q={q})",
-                                  matrix_size = n,
-                                  rank = q,
-                                  form = NIF, 
-                                  is_group_element = is_group_element_SO, 
-                                  is_torus_element = is_torus_element_SO,
-                                  generic_torus_element = generic_torus_element_SO,
-                                  trivial_character_matrix = trivial_characters_SO(n,q),
-                                  is_lie_algebra_element = is_lie_algebra_element_SO,
-                                  generic_lie_algebra_element = generic_lie_algebra_element_SO,
-                                  non_variables = None)
+                                matrix_size = n,
+                                form = NIF, 
+                                is_group_element = is_group_element_SO,
+                                maximal_split_torus = T,
+                                is_lie_algebra_element = is_lie_algebra_element_SO,
+                                generic_lie_algebra_element = generic_lie_algebra_element_SO,
+                                non_variables = None)
             SO_n_q.fit_pinning(display = True)
+            if q == 1:
+                expected_type = 'A'
+            else:
+                expected_type = 'B'
+            assert SO_n_q.root_system.dynkin_type == expected_type, \
+                    f"SO(n={n}, q={q}) is type {expected_type} but computations " + \
+                    f"gave type {SO_n_q.root_system.dynkin_type}"
             SO_n_q.validate_pinning(display = True)
-    print("Done with non-split special orthogonal groups.\n")
-    print('≡' * 100 + "\n")
+    print("Done with non-split special orthogonal groups")
+    print("\n" + '=' * 100 + "\n")
     
-def run_SU_quasisplit_tests():
+def run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values):
     ############################################################
     ## QUASI-SPLIT SPECIAL UNITARY GROUPS (n=2q)
     ## eps=1 is Hermitian, eps=-1 is skew-Hermitian
     ###########################################################
-    print("\n" + '≡' * 100)
-    print("\nRunning calculations and verifications for quasi-split special unitary groups")
+    print("\n" + '=' * 100 + "\n")
+    print("Running calculations and verifications for quasi-split special unitary groups")
     d = sp.symbols('d')
     p_e = sp.sqrt(d)
-    for q in (2,3):
-        for eps in (1,-1):
-            n=2*q
-            anisotropic_vec = sp.Matrix(sp.symarray('c',n-2*q))
-            if eps == -1:
-                anisotropic_vec = anisotropic_vec * p_e
-            NIF = nondegenerate_isotropic_form(dimension = n,
-                                               witt_index = q,
-                                               anisotropic_vector = anisotropic_vec,
-                                               epsilon = eps,
-                                               primitive_element = p_e)
-            SU_n_q = pinned_group(name_string = f"SU(n={n}, q={q}, eps={eps})",
-                                  matrix_size = n,
-                                  rank = q,
-                                  form = NIF, 
-                                  is_group_element = is_group_element_SU, 
-                                  is_torus_element = is_torus_element_SU,
-                                  generic_torus_element = generic_torus_element_SU,
-                                  trivial_character_matrix = trivial_characters_SU(n,q),
-                                  is_lie_algebra_element = is_lie_algebra_element_SU,
-                                  generic_lie_algebra_element = generic_lie_algebra_element_SU,
-                                  non_variables = {d})
-            SU_n_q.fit_pinning(display = True)   
-            SU_n_q.validate_pinning(display = True)
-    print("Done with quasi-split special unitary groups.\n")
-    print('≡' * 100 + "\n")
-
-def run_SU_nonquasisplit_tests():
-    ############################################################
-    ## NON-QUASI-SPLIT SPECIAL UNITARY GROUPS (n>2q)
-    ## eps=1 is Hermitian, eps=-1 is skew-Hermitian
-    ###########################################################
-    print("\n" + '≡' * 100)
-    print("\nRunning calculations and verifications for non-(quasi-split) special unitary groups")
-    d = sp.symbols('d')
-    p_e = sp.sqrt(d)
-    for q in (2,3):
-        for n in (2*q+1,2*q+2):
-            for eps in (1,-1):
-                anisotropic_vec = sp.Matrix(sp.symarray('c',n-2*q))
+    for q in range(q_min, q_max + 1):
+        n=2*q
+        if n_min <= n and n <= n_max:
+            for eps in eps_values:
+                anisotropic_vec = vector_variable('c',n-2*q)
                 if eps == -1:
                     anisotropic_vec = anisotropic_vec * p_e
                 NIF = nondegenerate_isotropic_form(dimension = n,
@@ -198,21 +188,75 @@ def run_SU_nonquasisplit_tests():
                                                     anisotropic_vector = anisotropic_vec,
                                                     epsilon = eps,
                                                     primitive_element = p_e)
+                T = split_torus(rank = q,
+                                is_element = is_torus_element_SU,
+                                generic_element = generic_torus_element_SU,
+                                trivial_character_matrix = trivial_characters_SU(n,q),
+                                nontrivial_character_entries = character_entries_SU(n,q))     
                 SU_n_q = pinned_group(name_string = f"SU(n={n}, q={q}, eps={eps})",
                                       matrix_size = n,
-                                      rank = q,
                                       form = NIF, 
-                                      is_group_element = is_group_element_SU, 
-                                      is_torus_element = is_torus_element_SU,
-                                      generic_torus_element = generic_torus_element_SU,
-                                      trivial_character_matrix = trivial_characters_SU(n,q),
+                                      is_group_element = is_group_element_SU,
+                                      maximal_split_torus = T,
                                       is_lie_algebra_element = is_lie_algebra_element_SU,
                                       generic_lie_algebra_element = generic_lie_algebra_element_SU,
-                                      non_variables = {d}) 
+                                      non_variables = {d})
                 SU_n_q.fit_pinning(display = True)
+                if q == 1:
+                    expected_type = 'A'
+                elif q == 2:
+                    expected_type = 'B'
+                else:
+                    expected_type = 'C'
+                assert SU_n_q.root_system.dynkin_type == expected_type, \
+                        f"SU(n={n}, q={q}, eps={eps}) is type {expected_type} but computations " + \
+                        f"gave type {SU_n_q.root_system.dynkin_type}"
                 SU_n_q.validate_pinning(display = True)
-    print("Done with non-(quasi-split) special unitary groups.\n")
-    print('≡' * 100 + "\n")
-        
+    print("Done with quasi-split special unitary groups")
+    print("\n" + '=' * 100 + "\n")
+
+def run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values):
+    ############################################################
+    ## NON-QUASI-SPLIT SPECIAL UNITARY GROUPS (n>2q)
+    ## eps=1 is Hermitian, eps=-1 is skew-Hermitian
+    ###########################################################
+    print("\n" + '=' * 100 + "\n")
+    print("Running calculations and verifications for non-(quasi-split) special unitary groups")
+    d = sp.symbols('d')
+    p_e = sp.sqrt(d)
+    q_min = max(q_min, 2) # doesn't make sense if q=1, there are no roots
+    for q in range(q_min,q_max):
+        n_min = max(2*q+1, n_min) # only non-quasi-split if n>=2*q+1
+        for n in range(n_min, n_max + 1):
+            for eps in eps_values:
+                anisotropic_vec = vector_variable('c',n-2*q)
+                if eps == -1:
+                    anisotropic_vec = anisotropic_vec * p_e
+                NIF = nondegenerate_isotropic_form(dimension = n,
+                                                    witt_index = q,
+                                                    anisotropic_vector = anisotropic_vec,
+                                                    epsilon = eps,
+                                                    primitive_element = p_e)
+                T = split_torus(rank = q,
+                                is_element = is_torus_element_SU,
+                                generic_element = generic_torus_element_SU,
+                                trivial_character_matrix = trivial_characters_SU(n,q),
+                                nontrivial_character_entries = character_entries_SU(n,q))     
+                SU_n_q = pinned_group(name_string = f"SU(n={n}, q={q}, eps={eps})",
+                                      matrix_size = n,
+                                      form = NIF, 
+                                      is_group_element = is_group_element_SU,
+                                      maximal_split_torus = T,
+                                      is_lie_algebra_element = is_lie_algebra_element_SU,
+                                      generic_lie_algebra_element = generic_lie_algebra_element_SU,
+                                      non_variables = {d})
+                SU_n_q.fit_pinning(display = True)
+                assert SU_n_q.root_system.dynkin_type == 'BC', \
+                    f"SU(n={n}, q={q}, eps={eps}) is type BC but computations " + \
+                    f"gave type {SU_n_q.root_system.dynkin_type}"
+                SU_n_q.validate_pinning(display = True)
+    print("\nDone with non-(quasi-split) special unitary groups")
+    print("\n" + '=' * 100 + "\n")
+
 if __name__ == "__main__":
     main()

@@ -36,13 +36,9 @@ def is_torus_element_SU(matrix_to_test, rank):
     # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1)
         # where t_1, ..., t_q are 'purely real' if the form is hermitian,
         # and 'purely imaginary' if the form is skew-hermitian
-    T = matrix_to_test
-    if not(is_diagonal(T)):
-        return False
-    q = rank
-    for i in range(q):
-        if T[i,i]*T[q+i,q+i] != 1:
-            return False
+    if not(is_diagonal(matrix_to_test)): return False
+    for i in range(rank):
+        if matrix_to_test[i,i]*matrix_to_test[rank+i,rank+i] != 1: return False
     return True
 
 def generic_torus_element_SU(matrix_size, rank, letter = 't'):
@@ -57,8 +53,12 @@ def generic_torus_element_SU(matrix_size, rank, letter = 't'):
         t[rank+i,rank+i] = 1/vec_t[i]
     return t
 
+def character_entries_SU(matrix_size, rank):
+    return [1]*rank + [0]*(matrix_size - rank)
+
 def trivial_characters_SU(matrix_size, rank):
     trivial_characters = [np.array([1 if j == i or j == i + rank else 0 for j in range(matrix_size)])for i in range(rank)]
+    trivial_characters.append([1] * matrix_size)
     matrix_with_trivial_character_columns = np.array(np.stack(trivial_characters, axis=1))
     return matrix_with_trivial_character_columns
 
