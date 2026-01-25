@@ -266,7 +266,6 @@ class root_system:
         assert all(a == int(a) for a in x_min)
         return vector([int(a) for a in x_min])
 
-
     def is_same_root(self, alpha, beta):
         assert type(alpha) == vector, "same_root expects vector input 1st argument"
         assert type(beta) == vector, "same_root expects vector input for 2nd argument"
@@ -307,8 +306,16 @@ class root_system:
                 return (True, ratio) if with_ratio else True
         return (False, None) if with_ratio else False
 
-    def reflect_root(self, alpha, beta):
-        return alpha - 2 * alpha.dot(beta) / beta.dot(beta) * beta
+    def reflect_root(self, hyperplane_root, root_to_reflect):
+        # Return the reflection of beta across the hyperplane perpendicular to alpha
+        
+        alpha = hyperplane_root
+        beta = root_to_reflect
+        
+        numerator = 2*alpha.dot(beta)
+        denominator = alpha.dot(alpha)
+        assert numerator % denominator == 0
+        return beta - (numerator // denominator) * alpha
 
     def is_multipliable_root(self, vector_to_test):
         return self.is_root(vector_to_test) and self.is_root(2*vector_to_test)
@@ -359,13 +366,13 @@ class root_system:
         assert not(self.is_root(zero_vector)), "Zero vector should not be a root"
         if display: print('done.')
         
-        if display: print('\tChecking that the negative of a root is a root...',end='')
+        if display: print('\tChecking that the negation of a root is a root...',end='')
         for alpha in self.root_list:
             assert self.is_root(-1*alpha, with_equivalent = False), \
                 "Negative of root is not a root"
         if display: print('done.')
         
-        if display: print('\tChecking that a reflection of a root is another root...',end='')
+        if display: print('\tChecking that a reflection of a root is a root...',end='')
         for alpha in self.root_list:
             for beta in self.root_list:
                 assert self.is_root(self.reflect_root(alpha,beta)), \
@@ -377,7 +384,7 @@ class root_system:
             for beta in self.root_list:
                 angle_bracket = 2* alpha.dot(beta) / beta.dot(beta)
                 assert angle_bracket == int(angle_bracket), \
-                "Angle bracket of roots should be an integer"
+                    "Angle bracket of roots should be an integer"
         if display: print('done.')
         
         if display: print('\tChecking that the dot product of a root with its coroot is 2...',end='')

@@ -12,19 +12,17 @@ def group_constraints_SO(matrix_to_test, form):
     X = matrix_to_test
     n = X.shape[0]
     B = form.matrix
-    
-    # X^T*B*X  = B is stored as a list of equations, one for each matrix entry
-    eqs = [(X.T * B * X - B)[i,j] for i in range(n) for j in range(n)]
-    
-    eqs.append(X.det() - 1) # Determinant = 1
-    
+    M = X.T * B * X - B
+    eqs = []
+    for i in range(n):
+        for j in range(n):
+            expr = M[i,j]
+            if not expr.is_zero:
+                eqs.append(expr)
+    det_expr = X.det() - 1
+    if not det_expr.is_zero: eqs.append(det_expr)
     return eqs
-
-# def is_group_element_SO(matrix_to_test, form):
-#     X = matrix_to_test
-#     B = form.matrix
-#     return ((X.T*B*X).equals(B) and X.det()==1)
-
+    
 def is_torus_element_SO(matrix_to_test, rank):
     n = matrix_to_test.shape[0]
     q = rank
@@ -41,7 +39,7 @@ def generic_torus_element_SO(matrix_size, rank, letter = 't'):
     # the special orthogonal group, which has the form
     # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1)
     # where q = rank
-    vec_t = sp.symarray(letter,rank)
+    vec_t = sp.symarray(letter,rank,nonzero=True)
     t = sp.eye(matrix_size)
     for i in range(rank):
         t[i,i] = vec_t[i]
@@ -60,13 +58,15 @@ def trivial_characters_SO(matrix_size, rank):
 def is_lie_algebra_element_SO(matrix_to_test, form):
     X = matrix_to_test
     B = form.matrix
-    return (X.T*B).equals(-B*X)
+    return (X.T*B).equals(-B*X) and sp.simplify(X.trace()) == 0
 
 def generic_lie_algebra_element_SO(matrix_size, rank, form, letter = 'x'):
     n = matrix_size
     q = rank
-    if form is not None:
-        c = form.anisotropic_vector
+    m = n - 2*q
+    assert form is not None
+    c = form.anisotropic_vector
+    assert len(c) == m
     X = sp.Matrix(sp.symarray(letter, (n,n)))
     
     # X must be a block matrix of the form
@@ -80,13 +80,16 @@ def generic_lie_algebra_element_SO(matrix_size, rank, form, letter = 'x'):
     # X_13 = -(X_32).T * C
     # X_23 = -(X_31).T * C
     # X_33 = -C**(-1) * (X_33).T * C
+    # and trace(X) = 0, which is equivalent to trace(X_33) = 0
+    # because tr(X_22) = - tr(X_11)
     
     # set the (2,2) block to be the negative transpose of the (1,1) block
     for i in range(q):
         for j in range(q):
             X[i+q,j+q] = -X[j,i]
             
-    # make the (1,2) and (2,1) blocks be their own negative transpose
+    # (1,2) and (2,1) blocks are equal to their own negative transpose,
+    # i.e. skew-symmetric
     for i in range(q):
         # the diagonal must be zero
         X[i,i+q] = 0 
@@ -106,5 +109,6 @@ def generic_lie_algebra_element_SO(matrix_size, rank, form, letter = 'x'):
         X[i+2*q,i+2*q] = 0
         for j in range(i):
             X[i+2*q, j+2*q] = -c[j]/c[i] *X[j+2*q,i+2*q]
-    
+
+    assert is_lie_algebra_element_SO(X, form)
     return X

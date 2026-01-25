@@ -58,7 +58,7 @@ class nondegenerate_isotropic_form:
                                anisotropic_vector):
         n = dimension
         q = witt_index
-        I_q = sp.eye(q) # Previous version of this line: I_q = sp.Identity(q)
+        I_q = sp.eye(q) 
         Z_qq = sp.zeros(q)
         if n == 2*q:
             M = sp.BlockMatrix([
@@ -86,7 +86,7 @@ class nondegenerate_isotropic_form:
                                primitive_element):
         n = dimension
         q = witt_index
-        I_q = sp.eye(q) # Previous version of this line: I_q = sp.Identity(q)
+        I_q = sp.eye(q) 
         Z_qq = sp.zeros(q)
         if n == 2*q:
             M = sp.BlockMatrix([

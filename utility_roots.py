@@ -262,7 +262,7 @@ def reduce_character_list(vector_list, lattice_matrix):
     def support_size(v): return sum(1 for x in v if x != 0)
     def length_sq(v): return sum(x*x for x in v)
     def support_pattern(v): return tuple(1 if x != 0 else 0 for x in v)
-    def nullspace_dot_sum(v):
+    def abs_nullspace_dot_sum(v):
         if not null_basis: return 0
         v_vec = sp.Matrix(v)
         return sum(abs(v_vec.dot(q)) for q in null_basis)
@@ -270,11 +270,11 @@ def reduce_character_list(vector_list, lattice_matrix):
     # Comparison key, higher is preferred
     def priority_key(v):
         return (
-            -nullspace_dot_sum(v), # smaller sum preferred, zero if orthogonal to all lattice generators
-            -max_entry(v),         # smaller maximum entry preferred
-            -support_size(v),      # fewer nonzeros is better
-            -length_sq(v),         # shorter vector preferred
-            support_pattern(v)     # earlier nonzeros preferred
+            -abs_nullspace_dot_sum(v),  # smaller sum preferred, zero if orthogonal to all lattice generators
+            -max_entry(v),              # smaller maximum entry preferred
+            -support_size(v),           # fewer nonzeros is better
+            -length_sq(v),              # shorter vector preferred
+            support_pattern(v)          # earlier nonzeros preferred
         )
     
     # If nullspace is trivial, everything is equivalent, just return the best vector by priority key

@@ -3,24 +3,21 @@ from pinned_group import pinned_group
 from nondegenerate_isotropic_form import nondegenerate_isotropic_form
 from split_torus import split_torus
 from utility_general import vector_variable
-from utility_SL import (#is_group_element_SL,
-                        group_constraints_SL,
+from utility_SL import (group_constraints_SL,
                         is_torus_element_SL,
                         generic_torus_element_SL,
                         trivial_characters_SL,
                         character_entries_SL,
                         is_lie_algebra_element_SL, 
                         generic_lie_algebra_element_SL)
-from utility_SO import (#is_group_element_SO,
-                        group_constraints_SO,
+from utility_SO import (group_constraints_SO,
                         is_torus_element_SO,
                         generic_torus_element_SO,
                         trivial_characters_SO,
                         character_entries_SO,
                         is_lie_algebra_element_SO, 
                         generic_lie_algebra_element_SO)
-from utility_SU import (#is_group_element_SU,
-                        group_constraints_SU,
+from utility_SU import (group_constraints_SU,
                         is_torus_element_SU,
                         generic_torus_element_SU, 
                         trivial_characters_SU,
@@ -30,8 +27,9 @@ from utility_SU import (#is_group_element_SU,
 
 def main():
     to_do_list = ("To do list:" + "\n\t" + 
-                  "Fix issue with Weyl group elements not understanding conjugation" + "\n\t" +
-                      " and/or not being set up as generic elements from the quadratic extension" + "\n\t" +
+                  "Clean up Weyl group computations" + "\n\t" + 
+                  "Replace is_lie_algebra_element with lie_algebra_constraints" + "\n\t" +
+                  "Compute Weyl group conjugation coefficients" + "\n\t" + 
                   "Pass tests validating Weyl group elements" + "\n\t" +
                   "Add documentation, including a Readme on Github" + "\n\t" +
                   "Add functionality to root_system class to construct standard " + 
@@ -39,18 +37,17 @@ def main():
                   "")
     print(to_do_list)
     
-    print("\nDemonstrating usage of pinned_group class")
+    print("\nDemonstrating usage of pinned group class")
     sp.init_printing(wrap_line=False)
     n_min = 1
-    n_max = 5
+    n_max = 6
     q_min = 1
-    q_max = 2
+    q_max = 4
     eps_values = [-1,1] # should only include +/-1 or just ome of them
     
-    # SL_5 takes a very long time to compute roots, not recommended
-    #run_SL_tests(n_min, 4) 
-    #run_SO_split_tests(n_min, n_max, q_min, q_max)
-    #run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
+    run_SL_tests(n_min, min(n_max, 4))  # SL_5 takes a long time to compute roots
+    run_SO_split_tests(n_min, n_max, q_min, q_max)
+    run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
     run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
     run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
     print("\nAll tests complete.")
@@ -82,7 +79,6 @@ def run_SL_tests(n_min, n_max):
         SL_n.validate_pinning(display = True)
     print("\nDone with special linear groups")
     print("\n" + '=' * 100 + "\n")
-
 
 def run_SO_split_tests(n_min, n_max, q_min, q_max):
     ###################################################
@@ -181,7 +177,7 @@ def run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values):
     ###########################################################
     print("\n" + '=' * 100 + "\n")
     print("Running calculations and verifications for quasi-split special unitary groups")
-    d = sp.symbols('d')
+    d = sp.symbols('d', nonzero = True)
     p_e = sp.sqrt(d)
     for q in range(q_min, q_max + 1):
         n=2*q
@@ -229,7 +225,7 @@ def run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values):
     ###########################################################
     print("\n" + '=' * 100 + "\n")
     print("Running calculations and verifications for non-(quasi-split) special unitary groups")
-    d = sp.symbols('d')
+    d = sp.symbols('d', nonzero = True)
     p_e = sp.sqrt(d)
     q_min = max(q_min, 2) # doesn't make sense if q=1, there are no roots
     for q in range(q_min,q_max):

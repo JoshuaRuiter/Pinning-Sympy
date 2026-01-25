@@ -5,9 +5,6 @@ from utility_general import is_diagonal
 def group_constraints_SL(matrix_to_test, form = None):
     return [matrix_to_test.det() - 1]
 
-# def is_group_element_SL(matrix_to_test, form = None):
-#     return matrix_to_test.det() == 1
-
 def is_torus_element_SL(matrix_to_test, rank = None):
     return (is_diagonal(matrix_to_test) and 
             matrix_to_test.det() == 1)
@@ -18,7 +15,7 @@ def generic_torus_element_SL(matrix_size, rank = None, letter = 't'):
         rank = matrix_size - 1
     else: 
         assert matrix_size == rank + 1, "Rank of diagonal torus in SL_n is n-1"
-    vec_t = sp.symarray(letter,matrix_size)
+    vec_t = sp.symarray(letter, matrix_size, nonzero = True)
     t = sp.diag(*vec_t)
     t[matrix_size-1,matrix_size-1] = t[matrix_size-1,matrix_size-1]/sp.prod(vec_t)
     return t
@@ -32,11 +29,12 @@ def trivial_characters_SL(matrix_size, rank = None):
     return matrix_with_trivial_character_columns
 
 def is_lie_algebra_element_SL(matrix_to_test, form = None):
-    return matrix_to_test.trace() == 0
+    return sp.simplify(matrix_to_test.trace()) == 0
 
 def generic_lie_algebra_element_SL(matrix_size, rank = None, form = None, letter = 'x'):
     X = sp.Matrix(sp.symarray(letter, (matrix_size, matrix_size)))
     trace = X.trace()
     bottom_right_entry = X[matrix_size -1, matrix_size - 1]
     X[matrix_size - 1, matrix_size - 1] = bottom_right_entry - trace
+    assert X.trace().is_zero
     return X
