@@ -456,7 +456,7 @@ class pinned_group:
             
             ################################################################################
             # print("\nEliminating variables with root subgroup conjugation conditions...")
-            ################################################################################
+            ###############################################################################
 
             # Use weyl group conjugation of root subgroups
             # to eliminate matrix entries of w_alpha
@@ -562,8 +562,8 @@ class pinned_group:
             # print("\nEliminating zero as candidate for variables alone in their row/column...")
             # total_before = math.prod([len(x) for x in list(variable_candidate_dict.values())])
             # print("Total combos before elimination:",total_before)
-            # variable_candidate_dict = prune_singletons(matrix = w_alpha, 
-            #                                            variable_candidate_dict = variable_candidate_dict)
+            variable_candidate_dict = prune_singletons(matrix = w_alpha, 
+                                                        variable_candidate_dict = variable_candidate_dict)
             # total_after = math.prod([len(x) for x in list(variable_candidate_dict.values())])
             # print("Total combos after elimination:",total_after)
             # print("Variable candidates dictionary after eliminations:\n",variable_candidate_dict)
@@ -593,43 +593,38 @@ class pinned_group:
             # if len(solutions_list) > 1:
             #     print("Number of solutions found:",len(solutions_list))
             
-            ###########################################################################
-            # print("\nSolutions")
-            for d in solutions_list:
-                w = w_alpha.subs(d)
-                # sp.pprint(w)
-                # print("Is it in G?",self.is_group_element(w))
-                conj_1 = sp.simplify(w*t*(w**(-1)))
-                # print("Does it normalize the torus?",self.is_torus_element(conj_1))
-                conj_2 = sp.simplify(w**2 * t * w**(-2))
-                # print("Does its square centralize the torus?", conj_2.equals(t))
-                if not conj_2.equals(t):
-                    # print("(w**2) * t * (w**2)^(-1) =")
-                    # sp.pprint(w**2 * t * w**(-2))
-                    # print("(w**2) * t - t * (w**2) =")
-                    sp.pprint(sp.simplify((w**2)*t - t*(w**2)))
-                for beta in self.root_system.root_list:
-                    d_beta = self.root_space_dimension(beta)
-                    a = vector_variable('a',d_beta)
-                    x_beta_a = self.root_subgroup_map(beta,a)
-                    gamma = self.root_system.reflect_root(hyperplane_root = alpha, root_to_reflect = beta)
-                    d_gamma = self.root_space_dimension(gamma)
-                    assert d_beta == d_gamma
-                    b = vector_variable('b',d_gamma)
-                    x_gamma_b = self.root_subgroup_map(gamma, b)
-                    U_gamma_solutions = sp.solve(w*x_beta_a - x_gamma_b*w, b.free_symbols)
-                    # print(f"Does it correctly conjugate the root subgroup for beta = {beta}?", len(U_gamma_solutions) >= 1)
-                # print()
-            ###########################################################################
+            # ###########################################################################
+            # # print("\nSolutions")
+            # for d in solutions_list:
+            #     w = w_alpha.subs(d)
+            #     # sp.pprint(w)
+            #     # print("Is it in G?",self.is_group_element(w))
+            #     conj_1 = sp.simplify(w*t*(w**(-1)))
+            #     # print("Does it normalize the torus?",self.is_torus_element(conj_1))
+            #     conj_2 = sp.simplify(w**2 * t * w**(-2))
+            #     # print("Does its square centralize the torus?", conj_2.equals(t))
+            #     if not conj_2.equals(t):
+            #         # print("(w**2) * t * (w**2)^(-1) =")
+            #         # sp.pprint(w**2 * t * w**(-2))
+            #         # print("(w**2) * t - t * (w**2) =")
+            #         sp.pprint(sp.simplify((w**2)*t - t*(w**2)))
+            #     for beta in self.root_system.root_list:
+            #         d_beta = self.root_space_dimension(beta)
+            #         a = vector_variable('a',d_beta)
+            #         x_beta_a = self.root_subgroup_map(beta,a)
+            #         gamma = self.root_system.reflect_root(hyperplane_root = alpha, root_to_reflect = beta)
+            #         d_gamma = self.root_space_dimension(gamma)
+            #         assert d_beta == d_gamma
+            #         b = vector_variable('b',d_gamma)
+            #         x_gamma_b = self.root_subgroup_map(gamma, b)
+            #         U_gamma_solutions = sp.solve(w*x_beta_a - x_gamma_b*w, b.free_symbols)
+            #         # print(f"Does it correctly conjugate the root subgroup for beta = {beta}?", len(U_gamma_solutions) >= 1)
+            #     # print()
+            # ###########################################################################
             
             # Just pick the first solution
             solutions_dict = solutions_list[0]
             w_alpha = w_alpha.subs(solutions_dict)
-        
-            #########################################################
-            # print("\nGeneral solution for w_alpha:")
-            # sp.pprint(w_alpha)
-            #########################################################
         
             ##########################################
             # print("\nPick the fist solution for w_alpha:")
