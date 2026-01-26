@@ -502,9 +502,13 @@ class pinned_group:
                         expr = conjugation_matrix_eq[i,j]
                         if not expr.is_zero:
                             conjugation_eqs.append(expr)
+        
                             new_zero_vars = find_zero_vars(expr, w_vars, generic_vars.union(u.free_symbols))
                             if len(new_zero_vars) >= 1:
                                 zero_vars = zero_vars.union(new_zero_vars)
+                                w_vars = w_vars - new_zero_vars
+                                for var in new_zero_vars:
+                                    w_alpha = w_alpha.subs(var, 0)
                                 
             # Replace all of the zero variables
             for var in zero_vars:

@@ -49,8 +49,8 @@ def main():
     q_max = 4
     eps_values = [-1,1] # should only include +/-1 or just ome of them
     
-    #run_SL_tests(n_min, min(n_max, 4))  # SL_5 takes a long time to compute roots
-    #run_SO_split_tests(n_min, n_max, q_min, q_max)
+    run_SL_tests(n_min, min(n_max, 4))  # SL_5 takes a long time to compute roots
+    run_SO_split_tests(n_min, n_max, q_min, q_max)
     run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
     run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
     run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
