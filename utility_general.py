@@ -259,16 +259,16 @@ def brute_force_vanishing_solutions_exact_pairs(
                 f"Neither variable in pair ({x}, {y}) has nonzero candidates"
             )
 
-    # print("\n" + "=" * 40)
-    # print("Attempting paired brute force solution")
-    # print("Variable pairs:", list(variable_pairs))
-    # print("Exactly one nonzero per pair")
-    # print("Total nonzero variables:", total_nonzero)
-    # print("\nVanishing conditions:")
-    # for e in vanishing_conditions:
-    #     sp.pprint(e)
+    print("\n" + "=" * 40)
+    print("Attempting paired brute force solution")
+    print("Variable pairs:", list(variable_pairs))
+    print("Exactly one nonzero per pair")
+    print("Total nonzero variables:", total_nonzero)
+    print("\nVanishing conditions:")
+    for e in vanishing_conditions:
+        sp.pprint(e)
 
-    # tried = 0
+    tried = 0
 
     # For each pair: 0 = choose x, 1 = choose y
     side_choices = []
@@ -301,21 +301,21 @@ def brute_force_vanishing_solutions_exact_pairs(
         for values in itertools.product(*value_lists):
             assignment.update(dict(zip(value_vars, values)))
 
-            # tried += 1
-            # if tried % 10000 == 0:
-                # print("Tried:", tried)
+            tried += 1
+            if tried % 10000 == 0:
+                print("Tried:", tried)
 
             if all(eq.subs(assignment) == 0 for eq in vanishing_conditions):
-                # print("SOLUTION FOUND")
+                print("SOLUTION FOUND")
                 solutions.append(assignment.copy())
 
                 if stop_after_solution:
-                    # print("Total candidates tried:", tried)
-                    # print("=" * 40 + "\n")
+                    print("Total candidates tried:", tried)
+                    print("=" * 40 + "\n")
                     return solutions
 
-    # print("\nTotal candidates tried:", tried)
-    # print("=" * 40 + "\n")
+    print("\nTotal candidates tried:", tried)
+    print("=" * 40 + "\n")
     return solutions
 
 def find_zero_vars(expr, candidate_vars, generic_vars):

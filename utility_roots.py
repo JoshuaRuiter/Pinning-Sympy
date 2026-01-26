@@ -168,18 +168,6 @@ def generic_kernel_element(alpha, t):
     solutions_list = sp.solve(alpha_of_t - 1, t_vars, dict = True)
     assert len(solutions_list) >= 1, "No solution found for kernel equation"
     solutions_dict = solutions_list[0]
-    
-    # print("\n\nGenerating a generic kernel element")
-    # print("\nalpha =",alpha)
-    # print("\nt = ")
-    # sp.pprint(t)
-    # print("\nvariables in t: ",t_vars)
-    # print("\nalpha(t) =",alpha_of_t)
-    # print("\nSolutions to alpha(t) = 1 : ")
-    # sp.pprint(solutions_list)
-    # print("\nSubstituted torus element =")
-    # sp.pprint(t.subs(solutions_dict))
-    
     return t.subs(solutions_dict)
 
 def determine_irreducible_components(roots):
@@ -292,7 +280,7 @@ def reduce_character_list(vector_list, lattice_matrix):
 def determine_roots(generic_torus_element,
                     generic_lie_algebra_element,
                     list_of_characters,
-                    variables_to_solve_for,
+                    vars_to_solve_for,
                     time_updates = False):
     
     # Caculate roots and root spaces
@@ -329,12 +317,12 @@ def determine_roots(generic_torus_element,
         if alpha_of_t != 1: # ignore cases where the character is trivial
             RHS = alpha_of_t*x
             my_equation = sp.simplify(LHS-RHS)
-            solutions_list = sp.solve(my_equation,variables_to_solve_for,dict=True)
+            solutions_list = sp.solve(my_equation,vars_to_solve_for,dict=True)
             assert(len(solutions_list) == 1)
             solutions_dict = solutions_list[0]
             if len(solutions_dict) > 0 :
                 all_zero = True 
-                for var in variables_to_solve_for:  # check that not all variables are zero
+                for var in vars_to_solve_for:  # check that not all variables are zero
                     if not(var in solutions_dict.keys()) or solutions_dict[var] != 0:
                         all_zero = False
                         break

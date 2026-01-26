@@ -105,9 +105,10 @@ class pinned_group:
         self.fit_root_system(display)
         self.fit_root_spaces(display)
         self.fit_root_subgroup_maps(display)
-        self.fit_weyl_group(display)
         self.fit_homomorphism_defect_coefficients(display)
         self.fit_commutator_coefficients(display)
+        self.fit_weyl_group_elements(display)
+        self.fit_weyl_conjugation_coefficients(display)
     
         if display:
             print("Fitting complete")
@@ -184,7 +185,26 @@ class pinned_group:
                             else:
                                 print("\t\tCommutator coefficients:",",".join([str(c) for c in coeff]))
                             print()
-            
+    
+
+        print(f"\nWeyl conjugation coefficients for {self.name_string}:\n")
+        for alpha in self.root_system.root_list:
+            for beta in self.root_system.root_list:
+                d_beta = self.root_space_dimension(beta)
+                u = vector_variable(letter = 'u', length = d_beta)
+                gamma = self.root_system.reflect_root(hyperplane_root = alpha,
+                                                      root_to_reflect = beta)
+                d_gamma = self.root_space_dimension(gamma)
+                assert d_beta == d_gamma
+                phi_u = self.weyl_conjugation_coefficient_map(alpha, beta, u)
+                print("\tRoot 1 / alpha:",alpha)
+                print("\tRoot 2 / beta:",beta)
+                print("\tReflection / sigma_alpha(beta):",gamma)
+                print("\tWeyl conjugation coefficient: ",end = "")
+                if len(phi_u) == 1: phi_u = phi_u[0]
+                sp.pprint(phi_u)
+                print()
+        
         print(f"\nEnd of pinning information for {self.name_string}")
         
     def fit_root_system(self, display = True):
@@ -206,7 +226,7 @@ class pinned_group:
         self.root_space_dict = determine_roots(generic_torus_element = t,
                                                 generic_lie_algebra_element = x,
                                                 list_of_characters = reduced_char_list,
-                                                variables_to_solve_for = x_vars,
+                                                vars_to_solve_for = x_vars,
                                                 time_updates = False)
         root_list = list(self.root_space_dict.keys())
         self.root_system = root_system(root_list,self.torus.trivial_character_matrix)
@@ -405,7 +425,7 @@ class pinned_group:
             return sp.simplify(coeff)
         self.commutator_coefficient_map = ccm
 
-    def fit_weyl_group(self, display = True):
+    def fit_weyl_group_elements(self, display = True):
         
         if display: print("Fitting torus reflections s_alpha")
         
@@ -437,7 +457,7 @@ class pinned_group:
         for alpha in self.root_system.root_list:
             
             ##########################################################
-            # print("\nComputing w_alpha for the root alpha =",alpha)
+            print("\nComputing w_alpha for the root alpha =",alpha)
             ##########################################################
 
             w_alpha = sp.Matrix(n, n, lambda i, j: sp.symbols(f'w_{i}_{j}'))
@@ -450,12 +470,12 @@ class pinned_group:
                 generic_vars = generic_vars.union(self.form.anisotropic_vector.free_symbols)
       
             ################################################################################
-            # print("\nFull solution space =")
-            # sp.pprint(w_alpha)
+            print("\nFull solution space =")
+            sp.pprint(w_alpha)
             ################################################################################
             
             ################################################################################
-            # print("\nEliminating variables with root subgroup conjugation conditions...")
+            print("\nEliminating variables with root subgroup conjugation conditions...")
             ###############################################################################
 
             # Use weyl group conjugation of root subgroups
@@ -487,17 +507,16 @@ class pinned_group:
                                 zero_vars = zero_vars.union(new_zero_vars)
                                 
             # Replace all of the zero variables
-            # print("Variables eliminated:",zero_vars)
             for var in zero_vars:
                 w_alpha = w_alpha.subs(var,0)
 
             ####################################################################
-            # print("Restricted solution space after root subgroup conjugation conditions =")
-            # sp.pprint(w_alpha)
+            print("Restricted solution space after root subgroup conjugation conditions =")
+            sp.pprint(w_alpha)
             ####################################################################
 
             #########################################################################
-            # print("\nEliminating variables with torus normalization conditions...")
+            print("\nEliminating variables with torus normalization conditions...")
             #########################################################################
             
             zero_vars = set()
@@ -518,13 +537,12 @@ class pinned_group:
 
         
             # Replace all of the zero variables
-            # print("Variables eliminated:",zero_vars)
             for var in zero_vars:
                 w_alpha = w_alpha.subs(var,0)
 
             ####################################################################
-            # print("Restricted solution space after torus normalization conditions:")
-            # sp.pprint(w_alpha)
+            print("Restricted solution space after torus normalization conditions:")
+            sp.pprint(w_alpha)
             ####################################################################
 
             w_mask = w_alpha.applyfunc(lambda x: int(x != 0))
@@ -550,8 +568,8 @@ class pinned_group:
                     variable_candidate_dict[var] = [0,1,-1,1/p_e**2,-1/p_e**2]
                     
                 ####################################################################
-                # print("\nComplexified solution space::")
-                # sp.pprint(w_alpha)
+                print("\nComplexified solution space::")
+                sp.pprint(w_alpha)
                 ####################################################################
                 
             else:
@@ -559,30 +577,36 @@ class pinned_group:
                     variable_candidate_dict[var] = [0,1,-1]
 
             ###########################################################################################
-            # print("\nEliminating zero as candidate for variables alone in their row/column...")
-            # total_before = math.prod([len(x) for x in list(variable_candidate_dict.values())])
-            # print("Total combos before elimination:",total_before)
+            print("\nEliminating zero as candidate for variables alone in their row/column...")
+            total_before = math.prod([len(x) for x in list(variable_candidate_dict.values())])
+            print("Total combos before elimination:",total_before)
             variable_candidate_dict = prune_singletons(matrix = w_alpha, 
                                                         variable_candidate_dict = variable_candidate_dict)
-            # total_after = math.prod([len(x) for x in list(variable_candidate_dict.values())])
-            # print("Total combos after elimination:",total_after)
-            # print("Variable candidates dictionary after eliminations:\n",variable_candidate_dict)
+            total_after = math.prod([len(x) for x in list(variable_candidate_dict.values())])
+            print("Total combos after elimination:",total_after)
+            print("Variable candidates dictionary after eliminations:\n",variable_candidate_dict)
             ###########################################################################################
             
             #########################################################
-            # print("\nAdding group constraint conditions")
+            print("\nAdding group constraint conditions")
             #########################################################
             # Impose group constraints (equations defining G)
             group_eqs = self.group_constraints(w_alpha, self.form)
 
             # Solve the equations
             if self.form is not None and self.form.primitive_element is not None:
-                # print("\nPairs:",xy_pairs)
-                solutions_list = brute_force_vanishing_solutions_exact_pairs(group_eqs, 
-                                                                             variable_candidate_dict,
-                                                                             variable_pairs = xy_pairs,
-                                                                             min_nonzero = self.matrix_size,
-                                                                             stop_after_solution = True)
+                print("\nPairs:",xy_pairs)
+                # solutions_list = brute_force_vanishing_solutions_exact_pairs(group_eqs, 
+                #                                                              variable_candidate_dict,
+                #                                                              variable_pairs = xy_pairs,
+                #                                                              min_nonzero = self.matrix_size,
+                #                                                              stop_after_solution = True)
+                
+                solutions_list = brute_force_vanishing_solutions_sparse(group_eqs, 
+                                                                  variable_candidate_dict,
+                                                                  min_nonzero = self.matrix_size,
+                                                                  stop_after_solution = True)
+
             else:    
                 solutions_list = brute_force_vanishing_solutions_sparse(group_eqs, 
                                                                   variable_candidate_dict,
@@ -590,36 +614,36 @@ class pinned_group:
                                                                   stop_after_solution = True)
                 
             assert len(solutions_list) >= 1
-            # if len(solutions_list) > 1:
-            #     print("Number of solutions found:",len(solutions_list))
+            if len(solutions_list) > 1:
+                print("Number of solutions found:",len(solutions_list))
             
             # ###########################################################################
-            # # print("\nSolutions")
-            # for d in solutions_list:
-            #     w = w_alpha.subs(d)
-            #     # sp.pprint(w)
-            #     # print("Is it in G?",self.is_group_element(w))
-            #     conj_1 = sp.simplify(w*t*(w**(-1)))
-            #     # print("Does it normalize the torus?",self.is_torus_element(conj_1))
-            #     conj_2 = sp.simplify(w**2 * t * w**(-2))
-            #     # print("Does its square centralize the torus?", conj_2.equals(t))
-            #     if not conj_2.equals(t):
-            #         # print("(w**2) * t * (w**2)^(-1) =")
-            #         # sp.pprint(w**2 * t * w**(-2))
-            #         # print("(w**2) * t - t * (w**2) =")
-            #         sp.pprint(sp.simplify((w**2)*t - t*(w**2)))
-            #     for beta in self.root_system.root_list:
-            #         d_beta = self.root_space_dimension(beta)
-            #         a = vector_variable('a',d_beta)
-            #         x_beta_a = self.root_subgroup_map(beta,a)
-            #         gamma = self.root_system.reflect_root(hyperplane_root = alpha, root_to_reflect = beta)
-            #         d_gamma = self.root_space_dimension(gamma)
-            #         assert d_beta == d_gamma
-            #         b = vector_variable('b',d_gamma)
-            #         x_gamma_b = self.root_subgroup_map(gamma, b)
-            #         U_gamma_solutions = sp.solve(w*x_beta_a - x_gamma_b*w, b.free_symbols)
-            #         # print(f"Does it correctly conjugate the root subgroup for beta = {beta}?", len(U_gamma_solutions) >= 1)
-            #     # print()
+            # print("\nSolutions")
+            for d in solutions_list:
+                w = w_alpha.subs(d)
+                sp.pprint(w)
+                print("Is it in G?",self.is_group_element(w))
+                conj_1 = sp.simplify(w*t*(w**(-1)))
+                print("Does it normalize the torus?",self.is_torus_element(conj_1))
+                conj_2 = sp.simplify(w**2 * t * w**(-2))
+                print("Does its square centralize the torus?", conj_2.equals(t))
+                if not conj_2.equals(t):
+                    print("(w**2) * t * (w**2)^(-1) =")
+                    sp.pprint(w**2 * t * w**(-2))
+                    print("(w**2) * t - t * (w**2) =")
+                    sp.pprint(sp.simplify((w**2)*t - t*(w**2)))
+                for beta in self.root_system.root_list:
+                    d_beta = self.root_space_dimension(beta)
+                    a = vector_variable('a',d_beta)
+                    x_beta_a = self.root_subgroup_map(beta,a)
+                    gamma = self.root_system.reflect_root(hyperplane_root = alpha, root_to_reflect = beta)
+                    d_gamma = self.root_space_dimension(gamma)
+                    assert d_beta == d_gamma
+                    b = vector_variable('b',d_gamma)
+                    x_gamma_b = self.root_subgroup_map(gamma, b)
+                    U_gamma_solutions = sp.solve(w*x_beta_a - x_gamma_b*w, b.free_symbols)
+                    print(f"Does it correctly conjugate the root subgroup for beta = {beta}?", len(U_gamma_solutions) >= 1)
+                print()
             # ###########################################################################
             
             # Just pick the first solution
@@ -627,8 +651,8 @@ class pinned_group:
             w_alpha = w_alpha.subs(solutions_dict)
         
             ##########################################
-            # print("\nPick the fist solution for w_alpha:")
-            # sp.pprint(w_alpha)
+            print("\nPick the fist solution for w_alpha:")
+            sp.pprint(w_alpha)
             ##########################################
             
             self.weyl_element_list[alpha] = w_alpha
@@ -636,6 +660,51 @@ class pinned_group:
         def wem(alpha):
             return self.weyl_element_list[alpha]
         self.weyl_element_map = wem
+
+    def fit_weyl_conjugation_coefficients(self, display = True):
+        # given a weyl element w_alpha,
+        # and a root beta, 
+        # find the coefficient/function phi so that
+        # w_alpha * x_beta(u) * w_alpha^(-1) = x_{sigma_alpha(beta)} ( phi(u) )
+        
+        # keys are (alpha, beta)
+        # values are (u, phi(u))
+        self.weyl_conjugation_coefficient_dict = {}
+        for alpha in self.root_system.root_list:
+            w_alpha = self.weyl_element_map(alpha)
+            w_alpha_inverse = w_alpha**(-1)
+            for beta in self.root_system.root_list:
+                d_beta = self.root_space_dimension(beta)
+                u = vector_variable('u', d_beta)
+                x_beta_u = self.root_subgroup_map(beta, u)
+                LHS = w_alpha*x_beta_u*w_alpha_inverse
+                
+                gamma = self.root_system.reflect_root(hyperplane_root = alpha,
+                                                      root_to_reflect = beta)
+                d_gamma = self.root_space_dimension(gamma)
+                assert d_gamma == d_beta, "Reflected roots should have same root space dimension"
+                v = vector_variable('v',d_gamma)
+                x_gamma_v = self.root_subgroup_map(gamma, v)
+                RHS = x_gamma_v
+                
+                vars_to_solve_for = v.free_symbols
+                solutions_list = sp.solve(LHS-RHS, vars_to_solve_for, dict = True)
+                assert len(solutions_list) == 1, "Unexpected number of solutions for Weyl conjugation coefficient"
+                solutions_dict = solutions_list[0]
+                
+                phi_u = v.subs(solutions_dict)
+                self.weyl_conjugation_coefficient_dict[(alpha, beta)] = (u, phi_u)
+        
+        def wccm(alpha, beta, u):
+            key = (alpha, beta)
+            val = self.weyl_conjugation_coefficient_dict[key]
+            input_vars = val[0]
+            output = val[1]
+            assert len(u) == len(input_vars)
+            for i, var in enumerate(input_vars):
+                output = output.subs(var, u[i])
+            return output
+        self.weyl_conjugation_coefficient_map = wccm
 
     def without_non_variables(self, list_of_variables):
         new_list = copy.deepcopy(list_of_variables)
@@ -962,13 +1031,36 @@ class pinned_group:
                 x_beta_a = self.root_subgroup_map(beta,a)
                 x_gamma_b = self.root_subgroup_map(gamma,b)
                 LHS = w_alpha * x_beta_a * (w_alpha_inverse)
+                
+                # Flexible test, just check if there is a solution
                 sols = sp.solve(LHS-x_gamma_b, b.free_symbols, dict=True)
                 assert len(sols) >= 1, f"Weyl element for alpha = {alpha} doesn't properly" + \
                                         f"conjugate the root subgroup U_beta where beta = {beta}"
+                                        
+                # Rigid test, verify that the solution is as expected
+                phi_a = self.weyl_conjugation_coefficient_map(alpha, beta, a)
+                if d_gamma > 1:
+                    assert len(phi_a) == d_gamma
+                x_gamma_phi_a = self.root_subgroup_map(gamma, phi_a)
+                RHS = x_gamma_phi_a
+                assert LHS.equals(RHS), "Weyl conjugation coefficient is incorrect"
+                
+                # # Check that phi is self-inverse
+                # phi_phi_a = self.weyl_conjugation_coefficient_map(alpha, beta, phi_a)
+                
+                # print("\n\nalpha =",alpha)
+                # print("beta =",beta)
+                # print("sigma_alpha(beta) =",gamma)
+                # print("\nw_alpha =")
+                # sp.pprint(w_alpha)
+                # print("\nphi(a) =",phi_a)
+                # print("\nx_beta(a) =")
+                # sp.pprint(x_beta_a)
+                # print("\nx_gamma(phi(a)) =")
+                # sp.pprint(x_gamma_phi_a)
+                # print("\nphi(phi(a)) =",phi_phi_a)
+                
+                # assert a.equals(phi_phi_a), "Weyl conjugation map should have order 2"
         if display: print("done.")
-        
-        if display: print("\tChecking Weyl group conjugation coefficients square to 1... ", end="")
-        # INCOMPLETE
-        if display: print("TEST NOT YET IMPLEMENTED.")
         
         if display: print("Weyl group verifications complete.")
