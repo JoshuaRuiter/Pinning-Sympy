@@ -23,6 +23,26 @@ def group_constraints_SO(matrix_to_test, form):
     if not det_expr.is_zero: eqs.append(det_expr)
     return eqs
     
+def lie_algebra_constraints_SO(matrix_to_test, form):
+    X = matrix_to_test
+    n = X.shape[0]
+    B = form.matrix
+    M = X.T*B + B*X
+    eqs = []
+    for i in range(n):
+        for j in range(n):
+            expr = M[i,j]
+            if not expr.is_zero:
+                eqs.append(expr)
+    tr_expr = X.trace()
+    if not tr_expr.is_zero: eqs.append(tr_expr)
+    return eqs
+
+def is_lie_algebra_element_SO(matrix_to_test, form):
+    X = matrix_to_test
+    B = form.matrix
+    return (X.T*B).equals(-B*X) and sp.simplify(X.trace()) == 0
+
 def is_torus_element_SO(matrix_to_test, rank):
     n = matrix_to_test.shape[0]
     q = rank
@@ -54,11 +74,6 @@ def trivial_characters_SO(matrix_size, rank):
     if not (rank == 1 and matrix_size == 2): trivial_characters.append([1] * matrix_size)
     matrix_with_trivial_character_columns = np.array(np.stack(trivial_characters, axis=1))
     return matrix_with_trivial_character_columns
-
-def is_lie_algebra_element_SO(matrix_to_test, form):
-    X = matrix_to_test
-    B = form.matrix
-    return (X.T*B).equals(-B*X) and sp.simplify(X.trace()) == 0
 
 def generic_lie_algebra_element_SO(matrix_size, rank, form, letter = 'x'):
     n = matrix_size

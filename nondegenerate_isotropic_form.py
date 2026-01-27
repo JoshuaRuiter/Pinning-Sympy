@@ -56,6 +56,19 @@ class nondegenerate_isotropic_form:
     def build_symmetric_matrix(dimension,
                                witt_index,
                                anisotropic_vector):
+    
+        #  Let B be the matrix of a nondegenerate symmetric bilinear form of Witt index q
+        #       In general, using the theory of bilinear forms we can always assume that B is an (n x n) 
+        #       block matrix of the form 
+        #                   [0 I 0]
+        #                   [I 0 0]
+        #                   [0 0 C]
+        #       where I is the (q x q) identity matrix and C is (n-2q x n-2q) and diagonal (and invertible). 
+
+        #       In general, q<=n/2. If q=n/2 or q=(n-1)/2, then SO_n(k,B) is split.
+        #       If q=n/2-1, then SO_n(k,B) is quasi-split.
+        #       We ignore the case q=0, because in this case the group is not isotropic.
+        
         n = dimension
         q = witt_index
         I_q = sp.eye(q) 
@@ -84,6 +97,22 @@ class nondegenerate_isotropic_form:
                                anisotropic_vector,
                                epsilon,
                                primitive_element):
+        
+        #   Let H be the matrix of a nondegenerate hermitian or skew-hermitian form of Witt index q
+        #       eps = 1 or -1, and determines skew-ness: H is hermitian if eps=1, skew-hermitian of eps=-1
+        #   In general, using the theory of bilinear/hermitian forms we can always assume that H is an (n x n)
+        #       block matrix of the form
+        #                   [0      I       0]
+        #                   [eps*I  0       0]
+        #                   [0      0       C]
+        #       where C is diagonal and satisfies conj(C)=eps*C. 
+        #       More concretely, if eps=1, then C has entries from k, and if eps=-1 then C has 
+        #       "purely imaginary" entries from k(sqrt(d)), where sqrt(d) is the primitive element
+        #
+        #   In general, q<=n/2 because Witt index can never exceed half the dimension.
+        #       If q=n/2, the group SU_n_q is quasi-split.
+        #       We ignore the case q=0, because in this case the group SU_n_q is not isotropic.
+
         n = dimension
         q = witt_index
         I_q = sp.eye(q) 

@@ -58,6 +58,22 @@ def group_constraints_SU(matrix_to_test, form):
     if not det_expr.is_zero: eqs.append(det_expr)
     return eqs
 
+def lie_algebra_constraints_SU(matrix_to_test, form):
+    X = matrix_to_test
+    X_conjugate = custom_conjugate(X, form.primitive_element)
+    n = X.shape[0]
+    H = form.matrix
+    M = X_conjugate.T*H + H*X
+    eqs = []
+    for i in range(n):
+        for j in range(n):
+            expr = M[i,j]
+            if not expr.is_zero:
+                eqs.append(expr)
+    tr_expr = X.trace()
+    if not tr_expr.is_zero: eqs.append(tr_expr)
+    return eqs
+
 def is_torus_element_SU(matrix_to_test, rank):
     # Return true if matrix_to_test is an element of the diagonal torus of
     # the special unitary group.
@@ -74,8 +90,12 @@ def is_torus_element_SU(matrix_to_test, rank):
 def generic_torus_element_SU(matrix_size, rank, letter = 't'):
     # Output a 'generic' element of the diagonal torus subgroup of 
     # the special unitary group, which has the form
-    # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1)
-    # where q = rank
+    # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1) =
+    #       [T     0        0]
+    #       [0     T^(-1)   0]
+    #       [0     0        I]
+    # where q = is the rank (of SU_n_q, and also the rank of the torus)
+    #   and also q is the Witt index of the associated (skew)-Hermitian form
     vec_t = sp.symarray(letter,rank, nonzero = True)
     t = sp.eye(matrix_size)
     for i in range(rank):

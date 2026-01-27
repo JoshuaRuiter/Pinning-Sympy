@@ -2,7 +2,6 @@
 
 import sympy as sp
 import itertools
-import math
 from copy import deepcopy
 
 def is_diagonal(my_matrix):
@@ -13,7 +12,10 @@ def is_diagonal(my_matrix):
 def vector_variable(letter, length):
     return sp.Matrix(sp.symarray(letter, length))
 
-def pprint_map(lhs, rhs, arrow='->'):
+def indent_multiline(s, prefix="\t"):
+    return "\n".join(prefix + line for line in s.splitlines())
+
+def pretty_map(lhs, rhs, arrow='->'):
     lhs_lines = sp.pretty(lhs).splitlines()
     rhs_lines = sp.pretty(rhs).splitlines()
 
@@ -34,84 +36,21 @@ def pprint_map(lhs, rhs, arrow='->'):
     # Width of LHS for alignment
     max_lhs_width = max(len(line) for line in lhs_lines)
 
+    result = ""
     for i, (l, r) in enumerate(zip(lhs_lines, rhs_lines)):
         if i == arrow_line:
-            print(f"{l.ljust(max_lhs_width)} {arrow} {r}")
+            result = result + (f"{l.ljust(max_lhs_width)} {arrow} {r}\n")
         else:
             # maintain same spacing as arrow width
-            print(f"{l.ljust(max_lhs_width)} {' ' * len(arrow)} {r}")
-     
+            result = result + (f"{l.ljust(max_lhs_width)} {' ' * len(arrow)} {r}\n")
+    result = result[:-1] # chop off the very last newline character
+    return result
 
-def brute_force_vanishing_solutions(vanishing_conditions,
-                                    variable_candidate_dict,
-                                    stop_after_solution = False):
-    """
-    Parameters
-    ----------
-    vanishing_conditions : list
-        SymPy expressions assumed to vanish (== 0)
-    variable_candidates : dict
-        {symbol: [candidate values]}
-
-    Returns
-    -------
-    list of dict
-        Solutions in SymPy solve-style format
-    """
-
-    solutions = []
-
-    # Normalize inputs
-    vanishing_conditions = [sp.sympify(eq) for eq in vanishing_conditions]
-    variables = list(variable_candidate_dict.keys())
-    candidate_lists = [variable_candidate_dict[v] for v in variables]
-    total_combos = math.prod([len(x) for x in candidate_lists])
-    
-    # print("\n" + "="*40)
-    # print("Attempting a brute force solution")
-    # print("Variables:",list(variable_candidate_dict.keys()))
-    # print("Total combos to try:",total_combos,"\n")
-    # i = 0
-    
-    # print("Vanishing conditions:")
-    # for e in vanishing_conditions:
-    #     sp.pprint(e)
-
-    for values in itertools.product(*candidate_lists):
-        assignment = dict(zip(variables, values))
-        
-        # i = i + 1
-        # if i % 10000 == 0:
-        #     print("Trying candidate number:",i)
-        #     if i % 100000 == 0:
-        #         print("\nReminders:")
-        #         print("Candidate variables:",variable_candidate_dict)
-        #         print("Total combos to try:",total_combos,"\n")
-            
-        # keys = list(variable_candidate_dict.keys())
-        # w_1_0 = keys[0]
-        # w_0_1 = keys[1]
-        # my_mat = sp.Matrix([[0,w_1_0],[w_0_1,0]])
-        # sp.pprint(my_mat.subs(assignment))
-        
-        if all(eq.subs(assignment) == 0 for eq in vanishing_conditions):
-            # i = i + 1
-            # print("SOLUTION FOUND from candidate:",i)
-            solutions.append(assignment)
-            if stop_after_solution:
-                break
-
-    # print("Total candidates tried:",i)
-    # print("="*40 + "\n")
-
-    return solutions
-
-def brute_force_vanishing_solutions_sparse(
-    vanishing_conditions,
-    variable_candidate_dict,
-    min_nonzero=0,
-    stop_after_solution=False
-):
+def brute_force_vanishing_solutions_sparse(vanishing_conditions,
+                                           variable_candidate_dict,
+                                           min_nonzero=0,
+                                           stop_after_solution=False,
+                                           display = False):
     """
     Brute-force solver for vanishing conditions with sparsity ordering.
 
@@ -165,25 +104,22 @@ def brute_force_vanishing_solutions_sparse(
     k_min = max(0, min_nonzero - F)
     k_max = m
 
-    # print("\n" + "=" * 40)
-    # print("Attempting sparse brute force solution")
-    # print("Variables:", variables)
-    # print("Zero-allowed variables:", zero_allowed)
-    # print("Zero-forbidden variables:", zero_forbidden)
-    # print("Minimum total nonzero variables:", min_nonzero)
-    # print("\nVanishing conditions:")
-    # for e in vanishing_conditions:
-    #     sp.pprint(e)
-
-    # tried = 0
+    if display:
+        print("\n" + "=" * 60 + "\nAttempting sparse brute force solution")
+        print("Variables:", variables)
+        print("Candidate dictionary:",variable_candidate_dict)
+        print("Variables that can be zero:", zero_allowed)
+        print("Variables that can't be zero':", zero_forbidden)
+        print("Minimum nonzero variables:", min_nonzero)
+        print("Vanishing conditions:")
+        for e in vanishing_conditions:
+            sp.pprint(e)
+        tried = 0
 
     # k = number of nonzero variables chosen among zero-allowed ones
     for k in range(k_min, k_max + 1):
-        # print(
-        #     f"\nTrying assignments with "
-        #     f"{F + k} total nonzeros "
-        #     f"({m - k} zeros among zero-allowed)"
-        # )
+        
+        if display: print(f"\nTrying assignments with {F + k} total nonzeros")
 
         for support in itertools.combinations(zero_allowed, k):
 
@@ -199,44 +135,42 @@ def brute_force_vanishing_solutions_sparse(
                 assignment.update(dict(zip(support, values[:split])))
                 assignment.update(dict(zip(zero_forbidden, values[split:])))
 
-                # tried += 1
-                # if tried % 10000 == 0:
-                #     print("Tried:", tried)
+                if display:
+                    tried += 1
+                    if tried % 10000 == 0:
+                        print("Tried:", tried)
 
                 if all(eq.subs(assignment) == 0 for eq in vanishing_conditions):
-                    # print(
-                    #     "SOLUTION FOUND "
-                    #     f"(total nonzeros = {F + k})"
-                    # )
+                    if display: print(f"SOLUTION FOUND (total nonzeros = {F + k})")
                     solutions.append(assignment.copy())
 
                     if stop_after_solution:
-                        # print("Total candidates tried:", tried)
-                        # print("=" * 40 + "\n")
+                        if display: print(f"Total candidates tried: {tried}\n" + "="*60 + "\n")
                         return solutions
 
-    # print("\nTotal candidates tried:", tried)
-    # print("=" * 40 + "\n")
+    if display: print(f"\nTotal candidates tried: {tried}" + "=" * 60 + "\n")
     return solutions
 
-def brute_force_vanishing_solutions_exact_pairs(
-    vanishing_conditions,
-    variable_candidate_dict,
-    variable_pairs,
-    min_nonzero=0,
-    stop_after_solution=False
-):
+def brute_force_vanishing_solutions_exact_pairs(vanishing_conditions,
+                                                variable_candidate_dict,
+                                                variable_pairs,
+                                                min_nonzero=0,
+                                                stop_after_solution=False,
+                                                display = False):
+    
+    # This pair-based brute forcing method seemed useful for the case of
+    # brute-forcing in the scenario of variables x_i + p_e*y_i,
+    # but turned out not to be as useful as expected. I have kept it around
+    # because it might turn out to be necessary later.
+    
     """
     Brute-force solver enforcing exactly one nonzero per variable pair.
 
-    Each pair (x, y) satisfies:
-        exactly one of x, y is nonzero
+    Each pair (x, y) satisfies: exactly one of x, y is nonzero
     """
 
     solutions = []
-
     vanishing_conditions = [sp.sympify(eq) for eq in vanishing_conditions]
-
     num_pairs = len(list(variable_pairs))
 
     # Since exactly one nonzero per pair:
@@ -258,17 +192,16 @@ def brute_force_vanishing_solutions_exact_pairs(
             raise ValueError(
                 f"Neither variable in pair ({x}, {y}) has nonzero candidates"
             )
-
-    print("\n" + "=" * 40)
-    print("Attempting paired brute force solution")
-    print("Variable pairs:", list(variable_pairs))
-    print("Exactly one nonzero per pair")
-    print("Total nonzero variables:", total_nonzero)
-    print("\nVanishing conditions:")
-    for e in vanishing_conditions:
-        sp.pprint(e)
-
-    tried = 0
+        
+    if display:
+        print("\n" + "=" * 60 + "\nAttempting paired brute force solution")
+        print("Variable pairs:", list(variable_pairs))
+        print("Exactly one nonzero per pair")
+        print("Total nonzero variables:", total_nonzero)
+        print("Vanishing conditions:")
+        for e in vanishing_conditions:
+            sp.pprint(e)
+        tried = 0
 
     # For each pair: 0 = choose x, 1 = choose y
     side_choices = []
@@ -301,44 +234,36 @@ def brute_force_vanishing_solutions_exact_pairs(
         for values in itertools.product(*value_lists):
             assignment.update(dict(zip(value_vars, values)))
 
-            tried += 1
-            if tried % 10000 == 0:
-                print("Tried:", tried)
+            if display:
+                tried += 1
+                if tried % 10000 == 0: print("Tried:", tried)
 
             if all(eq.subs(assignment) == 0 for eq in vanishing_conditions):
-                print("SOLUTION FOUND")
+                if display: print("SOLUTION FOUND")
                 solutions.append(assignment.copy())
 
                 if stop_after_solution:
-                    print("Total candidates tried:", tried)
-                    print("=" * 40 + "\n")
+                    if display: print(f"Total candidates tried: {tried}" + "=" * 60 + "\n")
                     return solutions
 
-    print("\nTotal candidates tried:", tried)
-    print("=" * 40 + "\n")
+    if display: print(f"Total candidates tried: {tried}" + "=" * 60 + "\n")
     return solutions
 
 def find_zero_vars(expr, candidate_vars, generic_vars):
     zero_vars = set()
-
-    if expr.is_zero:
-        return zero_vars
-
+    if expr.is_zero: return zero_vars
     expr = sp.factor(sp.simplify(expr))
-
+    
     for var in candidate_vars:
-        if not expr.has(var):
-            continue
-
+        
+        if not expr.has(var): continue
         quotient = sp.simplify(expr / var)
 
         # Quotient must involve only generic variables
-        if quotient.free_symbols - generic_vars:
-            continue
+        if quotient.free_symbols - generic_vars: continue
 
         # Quotient must not be identically zero
-        if quotient.is_zero:
-            continue
+        if quotient.is_zero: continue
 
         zero_vars.add(var)
 

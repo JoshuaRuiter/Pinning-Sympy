@@ -19,6 +19,8 @@ from utility_roots import (vector,
                            directed_dynkin_graphs,
                            visualize_graph)
 
+valid_dynkin_types = ('A', 'B','C','BC','D','E','F','G')
+
 class root_system:
     
     # A model of a root system object
@@ -41,12 +43,6 @@ class root_system:
             "Root system can only be constructed using vectors"
         self.root_list = root_list
         
-        if lattice_matrix is None:
-            # make the lattice_matrix a single column of zeros if there isn't one
-            self.lattice_matrix = sp.zeros((self.vector_length, 1))
-        else:
-            self.lattice_matrix = lattice_matrix
-        
         # check that all roots are vectors have same length/dimension, 
         # which must also match the number of rows in the lattice matrix
         first_vec_length = len(self.root_list[0])
@@ -54,6 +50,13 @@ class root_system:
             assert len(alpha) == first_vec_length, \
                 "Root system can't have vectors of different lengths"
         self.vector_length = first_vec_length
+        
+        if lattice_matrix is None:
+            # make the lattice_matrix a single column of zeros if there isn't one
+            self.lattice_matrix = sp.zeros(self.vector_length, 1)
+        else:
+            self.lattice_matrix = lattice_matrix
+        
         assert self.vector_length ==  self.lattice_matrix.shape[0], \
             "Lattice matrix has wrong number of rows"
 
@@ -73,6 +76,7 @@ class root_system:
             self.components = [root_system(c, self.lattice_matrix) for c in component_root_lists]
             self.is_reduced = all([c.is_reduced for c in self.components])
             self.dynkin_type = [c.dynkin_type for c in self.components]
+            self.rank = [c.rank for c in self.components]
             self.name_strings = [c.name_string for c in self.components]
             self.name_string = "_x_".join(self.name_strings)
 
@@ -125,8 +129,12 @@ class root_system:
         
         # Check that the number of simple roots is the same as the
         # rank of the matrix spanned by the list of all roots
-        matrix_of_roots = sp.Matrix(self.root_list)
+        matrix_of_roots = sp.Matrix(self.root_list).T
         matrix_rank = matrix_of_roots.rank()
+        
+        print("\nNumber of simple roots:",len(self.simple_roots))
+        print("Matrix rank:",matrix_rank)
+        
         assert len(self.simple_roots) == matrix_rank, "Rank computations mismatch"
         self.rank = matrix_rank
         
@@ -177,8 +185,12 @@ class root_system:
         
         assert isinstance(alpha, vector), "Character must be a vector"
         assert self.is_root(alpha), "Can only find cocharacter of a root"
-        assert all(isinstance(a,int) for a in alpha), "Character must have integer entries"
         assert self.lattice_matrix is not None, "Root system must have a lattice matrix"
+        
+        # For E_6, E_7, and E_8, the easiest way to write the roots involves 
+        # half-integers, so we don't insist on integers in that case
+        if not self.dynkin_type == 'E':
+            assert all(isinstance(a,int) for a in alpha), "Character must have integer entries"
         
         n = self.vector_length
         L = sp.Matrix(self.lattice_matrix)
@@ -193,15 +205,6 @@ class root_system:
         # and this system has one entry for each column of L
         eq2 = (x.T * L)
         
-        #############################################################
-        # print("\n\nComputing a coroot")
-        # print("alpha =",alpha)
-        # print("alpha_check =",x)
-        # print("Vanishing conditions:")
-        # sp.pprint(eq1)
-        # sp.pprint(eq2)
-        #############################################################
-
         # Solve the equations
         solutions_list = sp.solve([eq1, eq2], x_vars, dict=True)
         assert len(solutions_list) >= 1, "No solution found for cocharacter equation"
@@ -210,13 +213,7 @@ class root_system:
         solutions_dict = solutions_list[0]
         
         x_general_solution = x.subs(solutions_dict)
-        
-        #############################################################
-        # print("General solution for coroot:")
-        # sp.pprint(x_general_solution)
-        # print()
-        #############################################################
-        
+
         # If there are no free variables remaining, we're done
         if len(x_general_solution.free_symbols) == 0:
             # Confirm that all entries are integers, 
@@ -403,6 +400,171 @@ class root_system:
         
         if display: print('Root system axiom checks completed.')
 
+def construct_root_list_from_dynkin_type(dynkin_type, rank):
+    # Construct a "standard" vector representation/model
+    # of a root system with specified Dynkin type and rank
+    assert dynkin_type in ['A','B','C','BC','D','E','F','G'], "Invalid Dynkin type"
+    assert rank >= 1, "Invalid rank"
+    
+    root_list = [] 
+    vector_length = None
+    
+    if dynkin_type == 'A':
+        # We represent A_q as a set of vectors in R^(q+1), as 
+        # vectors with two nonzero entries, one entry is +1, and another entry is -1
+        vector_length = rank + 1
+        root_list = [
+            vector([1 if i == p else -1 if i == q else 0 for i in range(vector_length)])
+            for p in range(vector_length)
+            for q in range(vector_length)
+            if p != q
+        ]
+    
+    elif dynkin_type in ['B','C','BC','D']:
+        # We represent B_q, C_q, D_q and BC_q as sets of vectors in R^q
+        # There are three types of vectors:
+        #   1) vectors with one nonzero entry of +/-1
+        #   2) vectors with one nonzero entry of +/-2
+        #   3) vectors with two nonzero entries of +/-1, with any combination of signs
+        # D_q contains (1)
+        # B_q contains (1) and (2)
+        # C_q contains (2) and (3)
+        # BC_q contains (1), (2), and (3)
+        vector_length = rank
+        two_nonzero_entries = [
+            vector([ (a if i == p else b if i == q else 0) for i in range(vector_length) ])
+            for p in range(vector_length)
+            for q in range(p+1, vector_length)
+            for a in (1, -1)
+            for b in (1, -1)
+        ]
+        one_nonzero_entry_1 = [
+            vector([s if i == p else 0 for i in range(vector_length)])
+            for p in range(vector_length)
+            for s in (1, -1)
+        ]
+        one_nonzero_entry_2 = [
+            vector([s if i == p else 0 for i in range(vector_length)])
+            for p in range(vector_length)
+            for s in (2, -2)
+        ]
+        if dynkin_type == 'B':
+            root_list = two_nonzero_entries + one_nonzero_entry_1
+        elif dynkin_type == 'C':
+            root_list = two_nonzero_entries + one_nonzero_entry_2
+        elif dynkin_type == 'D':
+            if rank == 1:
+                root_list = one_nonzero_entry_1
+            else:
+                root_list = two_nonzero_entries
+        else:
+            # type BC
+            root_list = two_nonzero_entries + one_nonzero_entry_1 + one_nonzero_entry_2
+        
+    elif dynkin_type == 'E':
+        assert rank in (6,7,8)
+        
+        # Following this page: https://en.wikipedia.org/wiki/E8_(mathematics)#E8_root_system
+        # we realize E_8 as the set of vectors in R^8 with squared length equal to 2, 
+        # such that all coordinates are integers or half-integers,
+        # and the sum of all coordinates is even
+        # Then we realize E_7 and E_6 as subsets of this
+        
+        # More explicitly, this consists of two subsets of vectors:
+        #   1) A copy of D_8, i.e. all vectors with two nonzero entries of +/-1 in any combination of signs (112 roots))
+        #   2) All vectors with 8 entries of +/-1/2 with an even number of negative signs (240 roots)
+        
+        vector_length = 8
+
+        two_nonzero_entries = [
+            vector([ (a if i == p else b if i == q else 0) for i in range(vector_length) ])
+            for p in range(vector_length)
+            for q in range(p+1, vector_length)
+            for a in (1, -1)
+            for b in (1, -1)
+        ]
+        assert len(two_nonzero_entries) == 112
+        
+        half_vectors_sum_even =  [
+            vector(v)
+            for v in itertools.product((1/2, -1/2), repeat=8)
+            if sum(v) % 2 == 0 # sum of coordinates being even is equivalent to having an even number of minus signs
+        ]
+        assert len(half_vectors_sum_even) == 128
+        
+        E_8_root_list = two_nonzero_entries + half_vectors_sum_even
+        
+        # # We realize E_7 as the subset of E_8 consisting of vectors such that the sum of the coordinates is zero
+        # # In other words, it sill contains the same copy of D_8, 
+        # # but for the vectors with 1/2 and -1/2 entries, now there must be 4 copies of 1/2 and 4 copies of -1/2
+        # E_7_root_list = [v for v in E_8_root_list if sum(v) == 0]
+        # assert len(E_7_root_list) == 126
+        
+        # We realize E_7 as the subset of E_8 consisting of vectors orthogonal to (0,0,0,0,0,0,1,1)
+        # and E_6 as the subset of E_7 consisting of vectors orthogonal to (0,0,0,0,0,1,1,0)
+        E_7_root_list = [v for v in E_8_root_list if v[-2] + v[-1] == 0]
+        E_6_root_list = [v for v in E_7_root_list if v[-3] + v[-2] == 0]
+        
+        if rank == 8: 
+            root_list = E_8_root_list
+        elif rank == 7:
+            root_list = E_7_root_list
+        else:
+            # rank = 6
+            root_list = E_6_root_list
+        
+    elif dynkin_type == 'F':
+        # We represent F_4 as a set of vectors in R^4
+        #   -vectors with one nonzero entry of +/-2
+        #   -vectors with two nonzero entries of +/-1, in any combination of signs
+        #   -vectors with four nonzero entries of +/-1, in any combination of signs
+        assert rank == 4
+        vector_length = 4
+        one_nonzero_entry_2 = [
+            vector([s if i == p else 0 for i in range(vector_length)])
+            for p in range(vector_length)
+            for s in (2, -2)
+        ]
+        two_nonzero_entries = [
+            vector([ (a if i == p else b if i == q else 0) for i in range(vector_length) ])
+            for p in range(vector_length)
+            for q in range(p+1, vector_length)
+            for a in (1, -1)
+            for b in (1, -1)
+        ]
+        four_nonzero_entries = [vector(v) for v in __import__('itertools').product((1, -1), repeat=vector_length)]
+        root_list = one_nonzero_entry_2 + two_nonzero_entries + four_nonzero_entries
+        
+    elif dynkin_type == 'G':
+        # We represent G_2 as a set of vectors in R^3
+        # Specifically, as vectors in which there is one entry of 0, 2, or -2
+        # and the other two components are 1 or -1, 
+        # and the sum of all entries is zero
+        assert rank == 2
+        vector_length = 3
+
+        root_list = [
+            vector([z if i == k else s if i == r[0] else -s for i in range(3)])
+            for k in range(3)                     # position of z
+            for z in (0, 2, -2)
+            for s in ( (1, -1) if z == 0 else (-1,) if z == 2 else (1,) )
+            for r in [[i for i in range(3) if i != k]]   # remaining positions
+        ]
+        
+        # print("\nG2 root list:")
+        # print("Number of roots:",len(root_list))
+        # for r in root_list:
+        #     print(r)
+        
+    else:
+        assert False, f'There is no root system of Dynkin type {dynkin_type}'
+    
+    return root_list
+
+def construct_root_system_from_dynkin_type(dynkin_type, rank):
+    root_list = construct_root_list_from_dynkin_type(dynkin_type, rank)
+    return root_system(root_list, lattice_matrix = None)
+
 def determine_irreducible_components(roots):
     # Build separate lists for each of the irreducible components, 
     # if there are multiple
@@ -568,6 +730,164 @@ def determine_dynkin_type(dynkin_graph):
                 assert(my_rank >= 3)
 
     return my_type, my_rank
+
+def expected_number_of_roots(dynkin_type, rank):
+    # Return the number of roots belonging to the root system of given type and rank
+    assert dynkin_type in valid_dynkin_types, "Invalid Dynkin type"
+    if dynkin_type == 'A':
+        return rank*(rank+1)
+    elif dynkin_type in ('B','C'):
+        return 2*(rank**2)
+    elif dynkin_type == 'BC':
+        return 2*(rank**2) + 2*rank
+    elif dynkin_type == 'D':
+        if rank == 1: 
+            return 2
+        else:
+            return 2*rank*(rank-1)
+    elif dynkin_type == 'E':
+        assert rank in (6,7,8)
+        if rank == 6: return 72
+        if rank == 7: return 126
+        if rank == 8: return 240
+    elif dynkin_type == 'F':
+        assert rank == 4
+        return 48
+    elif dynkin_type == 'G':
+        assert rank == 2
+        return 12
+    assert False, "Invalid Dynkin type"
+
+def test_dynkin_constructor(upper_bound):
+    # Use the constructor for a variety of root systems and verify the root system axioms
+
+    # Type A
+    for q in range(1,upper_bound + 1):
+        print(f"\nConstructing A{q}",end="")
+        A_q = construct_root_system_from_dynkin_type('A',q)
+        assert len(A_q.root_list) == expected_number_of_roots('A',q), \
+            f"Expected {expected_number_of_roots('A',q)} for A_{q} but constructor produced {len(A_q.root_list)}"
+        assert A_q.dynkin_type == 'A'
+        assert A_q.rank == q
+        assert A_q.is_reduced
+        assert A_q.is_irreducible
+        assert A_q.is_simply_laced
+        A_q.verify_root_system_axioms()
+    
+    # Type B
+    for q in range(1,upper_bound + 1):
+        print(f"\nConstructing B{q}",end="")
+        B_q = construct_root_system_from_dynkin_type('B',q)
+        assert len(B_q.root_list) == expected_number_of_roots('B',q), \
+            f"Expected {expected_number_of_roots('B',q)} for B_{q} but constructor produced {len(B_q.root_list)}"
+        if q == 1:
+            # B_1 and A_1 are isomorphic, and the traditional label is A_1
+            assert B_q.dynkin_type == 'A'
+            assert B_q.is_simply_laced
+        else:
+            assert B_q.dynkin_type == 'B'
+            assert not B_q.is_simply_laced
+        assert B_q.rank == q
+        assert B_q.is_reduced
+        assert B_q.is_irreducible
+        B_q.verify_root_system_axioms()
+        
+    # Type C
+    for q in range(1,upper_bound + 1):
+        print(f"\nConstructing C{q}",end="")
+        C_q = construct_root_system_from_dynkin_type('C',q)
+        assert len(C_q.root_list) == expected_number_of_roots('C',q), \
+            f"Expected {expected_number_of_roots('C',q)} for C_{q} but constructor produced {len(C_q.root_list)}"
+        if q == 1:
+            # C_1 and A_1 are isomorphic, and the traditional label is A_1
+            assert C_q.dynkin_type == 'A'
+            assert C_q.is_simply_laced
+        elif q == 2:
+            # C_2 and B_2 are isomorphic, and the traditional label is B_2
+            assert C_q.dynkin_type == 'B'
+            assert not C_q.is_simply_laced
+        else:
+            assert C_q.dynkin_type == 'C'
+            assert not C_q.is_simply_laced
+        assert C_q.rank == q
+        assert C_q.is_reduced
+        assert C_q.is_irreducible
+        C_q.verify_root_system_axioms()
+        
+    # Type BC
+    for q in range(1,upper_bound + 1):
+        print(f"\nConstructing BC{q}",end="")
+        BC_q = construct_root_system_from_dynkin_type('BC',q)
+        assert len(BC_q.root_list) == expected_number_of_roots('BC',q), \
+            f"Expected {expected_number_of_roots('BC',q)} for BC_{q} but constructor produced {len(BC_q.root_list)}"
+        assert BC_q.dynkin_type == 'BC'
+        assert BC_q.rank == q
+        assert not BC_q.is_reduced
+        assert not BC_q.is_simply_laced
+        assert BC_q.is_irreducible
+        BC_q.verify_root_system_axioms()
+    
+    # Type D
+    for q in range(1,upper_bound + 1):
+        print(f"\nConstructing D{q}",end="")
+        D_q = construct_root_system_from_dynkin_type('D',q)
+        assert len(D_q.root_list) == expected_number_of_roots('D',q), \
+            f"Expected {expected_number_of_roots('D',q)} for D_{q} but constructor produced {len(D_q.root_list)}"
+        if q in (1,3):
+            # A_1 and D_1 are isomorphic, as are A_3 and D_3
+            assert D_q.dynkin_type == 'A'
+            assert D_q.rank == q
+            assert D_q.is_irreducible
+        elif q == 2:
+            # D_2 is isomorphic to A_1 x A_1
+            assert D_q.dynkin_type == ['A','A']
+            assert D_q.rank == [1,1]
+            assert not D_q.is_irreducible
+        else:
+            assert D_q.dynkin_type == 'D'
+            assert D_q.is_irreducible
+        assert D_q.is_simply_laced
+        assert D_q.is_reduced
+        D_q.verify_root_system_axioms()
+    
+    # Type F
+    print("\nConstructing F4",end="")
+    F_4 = construct_root_system_from_dynkin_type('F',4)
+    assert len(F_4.root_list) == expected_number_of_roots('F',4), \
+        f"Expected {expected_number_of_roots('F',4)} for F_4 but constructor produced {len(F_4.root_list)}"
+    assert F_4.dynkin_type == 'F'
+    assert F_4.rank == 4
+    assert not F_4.is_simply_laced
+    assert F_4.is_reduced
+    assert F_4.is_irreducible
+    F_4.verify_root_system_axioms()
+    
+    # Type G
+    print("\nConstructing G2",end="")
+    G_2 = construct_root_system_from_dynkin_type('G',2)
+    assert len(G_2.root_list) == expected_number_of_roots('G',2), \
+        f"Expected {expected_number_of_roots('G',2)} for G_2 but constructor produced {len(G_2.root_list)}"
+    assert G_2.dynkin_type == 'G'
+    assert G_2.rank == 2
+    assert not G_2.is_simply_laced
+    assert G_2.is_reduced
+    assert G_2.is_irreducible
+    G_2.verify_root_system_axioms()
+    
+    # Type E    
+    for q in (6,7,8):
+        print(f"\nConstructing E{q}",end="")
+        E_q = construct_root_system_from_dynkin_type('E',q)
+        assert len(E_q.root_list) == expected_number_of_roots('E',q), \
+            f"Expected {expected_number_of_roots('E',q)} for E_{q} but constructor produced {len(E_q.root_list)}"
+        assert E_q.dynkin_type == 'E'
+        assert E_q.rank == q
+        assert E_q.is_simply_laced
+        assert E_q.is_reduced
+        assert E_q.is_irreducible
+        E_q.verify_root_system_axioms()
+
+test_dynkin_constructor(0)
 
 def test_dynkin_classifier():
     # Run a battery of tests to verify that the dynkin type classifier works

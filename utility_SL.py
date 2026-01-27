@@ -5,6 +5,9 @@ from utility_general import is_diagonal
 def group_constraints_SL(matrix_to_test, form = None):
     return [matrix_to_test.det() - 1]
 
+def lie_algebra_constraints_SL(matrix_to_test, form = None):
+    return [matrix_to_test.trace()]
+
 def is_torus_element_SL(matrix_to_test, rank = None):
     return (is_diagonal(matrix_to_test) and 
             matrix_to_test.det() == 1)
