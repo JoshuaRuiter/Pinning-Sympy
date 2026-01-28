@@ -129,12 +129,8 @@ class root_system:
         
         # Check that the number of simple roots is the same as the
         # rank of the matrix spanned by the list of all roots
-        matrix_of_roots = sp.Matrix(self.root_list).T
+        matrix_of_roots = sp.Matrix(self.root_list)
         matrix_rank = matrix_of_roots.rank()
-        
-        print("\nNumber of simple roots:",len(self.simple_roots))
-        print("Matrix rank:",matrix_rank)
-        
         assert len(self.simple_roots) == matrix_rank, "Rank computations mismatch"
         self.rank = matrix_rank
         
@@ -355,8 +351,7 @@ class root_system:
         return new_combos
 
     def verify_root_system_axioms(self, display = True):
-        if display: print('\nRunning tests to verify root system axioms for the ' 
-                          + self.name_string + ' root system.')
+        if display: print(f'\nVerifying root system axioms for the {self.name_string} root system.')
         
         if display: print('\tChecking that zero is not a root...',end='')
         zero_vector = vector([0] * self.vector_length)
@@ -488,15 +483,19 @@ def construct_root_list_from_dynkin_type(dynkin_type, rank):
         half_vectors_sum_even =  [
             vector(v)
             for v in itertools.product((1/2, -1/2), repeat=8)
-            if sum(v) % 2 == 0 # sum of coordinates being even is equivalent to having an even number of minus signs
+            if sum(v) % 2 == 0 
+            # sum of coordinates being even is equivalent 
+            # to having an even number of minus signs
         ]
         assert len(half_vectors_sum_even) == 128
         
         E_8_root_list = two_nonzero_entries + half_vectors_sum_even
         
-        # # We realize E_7 as the subset of E_8 consisting of vectors such that the sum of the coordinates is zero
-        # # In other words, it sill contains the same copy of D_8, 
-        # # but for the vectors with 1/2 and -1/2 entries, now there must be 4 copies of 1/2 and 4 copies of -1/2
+        # We realize E_7 as the subset of E_8 consisting of vectors 
+        # such that the sum of the coordinates is zero
+        # In other words, it sill contains the same copy of D_8, 
+        # but for the vectors with 1/2 and -1/2 entries, 
+        # now there must be 4 copies of 1/2 and 4 copies of -1/2
         # E_7_root_list = [v for v in E_8_root_list if sum(v) == 0]
         # assert len(E_7_root_list) == 126
         
@@ -509,9 +508,10 @@ def construct_root_list_from_dynkin_type(dynkin_type, rank):
             root_list = E_8_root_list
         elif rank == 7:
             root_list = E_7_root_list
-        else:
-            # rank = 6
+        elif rank == 6:
             root_list = E_6_root_list
+        else:
+            assert False, "Invalid rank for type E root system"
         
     elif dynkin_type == 'F':
         # We represent F_4 as a set of vectors in R^4
@@ -542,19 +542,16 @@ def construct_root_list_from_dynkin_type(dynkin_type, rank):
         # and the sum of all entries is zero
         assert rank == 2
         vector_length = 3
-
-        root_list = [
-            vector([z if i == k else s if i == r[0] else -s for i in range(3)])
-            for k in range(3)                     # position of z
-            for z in (0, 2, -2)
-            for s in ( (1, -1) if z == 0 else (-1,) if z == 2 else (1,) )
-            for r in [[i for i in range(3) if i != k]]   # remaining positions
+        allowed_patterns = [
+            (2, -1, -1),
+            (-2, 1, 1),
+            (0, 1, -1),
         ]
-        
-        # print("\nG2 root list:")
-        # print("Number of roots:",len(root_list))
-        # for r in root_list:
-        #     print(r)
+        root_list = [
+            vector(v)
+            for pattern in allowed_patterns
+            for v in set(itertools.permutations(pattern))
+        ]
         
     else:
         assert False, f'There is no root system of Dynkin type {dynkin_type}'
@@ -562,8 +559,8 @@ def construct_root_list_from_dynkin_type(dynkin_type, rank):
     return root_list
 
 def construct_root_system_from_dynkin_type(dynkin_type, rank):
-    root_list = construct_root_list_from_dynkin_type(dynkin_type, rank)
-    return root_system(root_list, lattice_matrix = None)
+    return root_system(root_list = construct_root_list_from_dynkin_type(dynkin_type, rank),
+                       lattice_matrix = None)
 
 def determine_irreducible_components(roots):
     # Build separate lists for each of the irreducible components, 
@@ -886,8 +883,6 @@ def test_dynkin_constructor(upper_bound):
         assert E_q.is_reduced
         assert E_q.is_irreducible
         E_q.verify_root_system_axioms()
-
-test_dynkin_constructor(0)
 
 def test_dynkin_classifier():
     # Run a battery of tests to verify that the dynkin type classifier works

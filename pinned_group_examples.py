@@ -27,9 +27,6 @@ from utility_SU import (group_constraints_SU,
 
 def main():
     to_do_list = ("To do list:" + "\n\t" + 
-                  "Add functionality to root_system class to construct standard " + 
-                      "models of root systems based on given Dynkin type" + "\n\t" +
-                  "After implementing standard root system, delete old root_system file" + "\n\t" +
                   "Solve for/implement h elements, which should enable taking x_alpha(u)" + 
                       "to x_alpha(u/2) or something like that" + "\n\t" +
                   "After implmenting h elements, return to the problem of testing w_alpha belonging " +
