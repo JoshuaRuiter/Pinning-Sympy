@@ -15,26 +15,47 @@ def custom_conjugate(my_expression, primitive_element):
         # just return the expression
         return my_expression
 
-def custom_real_part(my_expression, primitive_element):
+def custom_real_part(my_expression, primitive_element, is_matrix = False):
     # Return the "real part" of an element of a quadratic field extension k(p_e)
     # by replacing p_e with zero
-    if hasattr(my_expression, 'has') and my_expression.has(primitive_element):
-        return my_expression.subs(primitive_element, 0)
+    if not is_matrix:
+        if hasattr(my_expression, 'has') and my_expression.has(primitive_element):
+            return my_expression.subs(primitive_element, 0)
+        else:
+            # If the expression is an integer or such type, then 
+            # just return the expression
+            return my_expression
     else:
-        # If the expression is an integer or such type, then 
-        # just return the expression
-        return my_expression
+        # for a matrix, extrac the real part of each entry
+        rows, cols = my_expression.shape
+        imag_part_matrix = sp.zeros(rows, cols)
+        for i in range(rows):
+            for j in range(cols):
+                M_ij = my_expression[i,j]
+                imag_part_matrix[i,j] = custom_real_part(M_ij, primitive_element, is_matrix = False)
+        return imag_part_matrix
+        
 
-def custom_imag_part(my_expression, primitive_element):
+def custom_imag_part(my_expression, primitive_element, is_matrix = False):
     # Return the "real part" of an element of a quadratic field extension k(p_e)
     # by extracing the coefficient on p_e
-    if hasattr(my_expression, 'has') and my_expression.has(primitive_element):
-        return my_expression.coeff(primitive_element)
+    if not is_matrix:
+        if hasattr(my_expression, 'has') and my_expression.has(primitive_element):
+            return my_expression.coeff(primitive_element)
+        else:
+            # If the expression is an integer or such type, then 
+            # just return the expression
+            return 0
     else:
-        # If the expression is an integer or such type, then 
-        # just return the expression
-        return 0
-    
+        # for a matrix, extrac the imaginary part of each entry
+        rows, cols = my_expression.shape
+        imag_part_matrix = sp.zeros(rows, cols)
+        for i in range(rows):
+            for j in range(cols):
+                M_ij = my_expression[i,j]
+                imag_part_matrix[i,j] = custom_imag_part(M_ij, primitive_element, is_matrix = False)
+        return imag_part_matrix
+
 def group_constraints_SU(matrix_to_test, form):
     """
     Returns a list of SymPy equations enforcing:

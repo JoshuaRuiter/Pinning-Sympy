@@ -1,6 +1,7 @@
 # Various general utility functions related to matrices
 
 import sympy as sp
+import multiprocessing as mp
 import itertools
 from copy import deepcopy
 
@@ -45,6 +46,47 @@ def pretty_map(lhs, rhs, arrow='->'):
             result = result + (f"{l.ljust(max_lhs_width)} {' ' * len(arrow)} {r}\n")
     result = result[:-1] # chop off the very last newline character
     return result
+
+def has_structural_contradiction(eqs, nonzero_vars):
+    for eq in eqs:
+        eq = sp.together(sp.simplify(eq))
+
+        # Case 1: nonzero constant = 0
+        if eq.is_number and eq != 0:
+            return True
+
+        # Case 2: equation forces a nonzero variable to be zero
+        if eq.is_Symbol and eq in nonzero_vars:
+            return True
+
+        # Case 3: rational equation with constant numerator
+        num, den = eq.as_numer_denom()
+
+        if num.is_number and num != 0:
+            # check whether denominator involves only invertible vars
+            den_syms = den.free_symbols
+            if den_syms and den_syms.issubset(nonzero_vars):
+                return True
+
+    return False
+
+def _solve_worker(eqs, vars_to_solve_for, q):
+    try:
+        sol = sp.solve(eqs, vars_to_solve_for, dict=True, simplify=False)
+        q.put(sol)
+    except Exception:
+        q.put(None)
+
+def solve_with_timeout(eqs, vars_to_solve_for, timeout):
+    q = mp.Queue()
+    p = mp.Process(target=_solve_worker, args=(eqs, vars_to_solve_for, q))
+    p.start()
+    p.join(timeout)
+    if p.is_alive():
+        p.terminate()
+        p.join()
+        raise TimeoutError
+    return q.get()
 
 def brute_force_vanishing_solutions_sparse(vanishing_conditions,
                                            variable_candidate_dict,
@@ -105,11 +147,11 @@ def brute_force_vanishing_solutions_sparse(vanishing_conditions,
     k_max = m
 
     if display:
-        print("\n" + "=" * 60 + "\nAttempting sparse brute force solution")
+        print("\n\n" + "=" * 60 + "\nAttempting sparse brute force solution")
         print("Variables:", variables)
         print("Candidate dictionary:",variable_candidate_dict)
         print("Variables that can be zero:", zero_allowed)
-        print("Variables that can't be zero':", zero_forbidden)
+        print("Variables that can't be zero:", zero_forbidden)
         print("Minimum nonzero variables:", min_nonzero)
         print("Vanishing conditions:")
         for e in vanishing_conditions:

@@ -27,10 +27,11 @@ from utility_SU import (group_constraints_SU,
 
 def main():
     to_do_list = ("To do list:" + "\n\t" + 
+                  "Add selection criteria for w_alpha to belong to correct generated subgroup" +
+                      " in the process of solving for them" + "\n\t" +
+                  "Pass tests involving belongs_to_generated_subgroup" + "\n\t" +
                   "Solve for/implement h elements, which should enable taking x_alpha(u)" + 
                       "to x_alpha(u/2) or something like that" + "\n\t" +
-                  "After implmenting h elements, return to the problem of testing w_alpha belonging " +
-                      "to generated subgroups  because that needs to be able to adjust with h factors" + "\n\t" +
                   "Figure out what exactly the Weyl conjugation coefficients are supposed " + 
                       "to do in terms of 'square to 1', and implement a test for that" + "\n\t" +
                   "Add documentation, including a Readme on Github" + "\n\t" +
@@ -39,17 +40,18 @@ def main():
     
     print("\nDemonstrating usage of pinned group class")
     sp.init_printing(wrap_line=False)
-    n_min = 1
-    n_max = 6
-    q_min = 1
-    q_max = 4
-    eps_values = [-1,1] # should only include +/-1
+    n_min = 4
+    n_max = 4
+    q_min = 2
+    q_max = 2
+    eps_values = [1]
+    # eps_values = [-1,1] # should only include +/-1
     
-    run_SL_tests(n_min, min(n_max, 4))  # SL_5 takes a long time to compute roots
-    run_SO_split_tests(n_min, n_max, q_min, q_max)
-    run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
+    # run_SL_tests(n_min, min(n_max, 4))  # SL_5 takes a long time to compute roots
+    # run_SO_split_tests(n_min, n_max, q_min, q_max)
+    # run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
     run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
-    run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
+    # run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
     print("\nAll tests complete.")
     
     print("\n" + to_do_list)
