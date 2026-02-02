@@ -97,6 +97,10 @@ class vector(tuple):
     
     __rmul__ = __mul__  # allow scalar * vector
 
+    # Negation
+    def __neg__(self):
+        return (-1)*self
+
     # Equality
     def equals(self, other):
         assert isinstance(other, vector), "Invalid vector comparison"
