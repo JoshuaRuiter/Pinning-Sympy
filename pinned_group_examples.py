@@ -28,6 +28,12 @@ from utility_SU import (group_constraints_SU,
 def main():
     to_do_list = ("To do list:" + "\n\t" + 
                   "Pass tests involving belongs_to_generated_subgroup" + "\n\t" +
+                  "Clean up utility_SU" + "\n\t" + 
+                  "Clean up/organize utility_general" + "\n\t" +
+                  "Clean up/organize utility_roots" + "\n\t" +
+                  "Clean up/optimize belongs_to_subgroup" + "\n\t" +
+                  "Clean up/optimize fit_weyl_elements" + "\n\t" + 
+                  "Question: Why aren't anisotropic parts for eps=-1 not purely imaginary?" + "\n\t" +
                   "Solve for/implement h elements, which should enable taking x_alpha(u)" + 
                       "to x_alpha(u/2) or something like that" + "\n\t" +
                   "Figure out what exactly the Weyl conjugation coefficients are supposed " + 
@@ -39,15 +45,15 @@ def main():
     print("\nDemonstrating usage of pinned group class")
     sp.init_printing(wrap_line=False)
     n_min = 1
-    n_max = 6
+    n_max = 4
     q_min = 1
-    q_max = 4
+    q_max = 3
     eps_values = [-1,1] # should only include +/-1
     
-    # run_SL_tests(n_min, min(n_max, 4))  # SL_5 takes a long time to compute roots
-    # run_SO_split_tests(n_min, n_max, q_min, q_max)
-    # run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
-    # run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
+    run_SL_tests(n_min, min(n_max, 4))  # SL_5 takes a long time to compute roots
+    run_SO_split_tests(n_min, n_max, q_min, q_max)
+    run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
+    run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
     run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
     print("\nAll tests complete.")
     
@@ -227,7 +233,7 @@ def run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values):
     d = sp.symbols('d', nonzero = True)
     p_e = sp.sqrt(d)
     q_min = max(q_min, 2) # doesn't make sense if q=1, there are no roots
-    for q in range(q_min,q_max):
+    for q in range(q_min , q_max+1):
         n_min = max(2*q+1, n_min) # only non-quasi-split if n>=2*q+1
         for n in range(n_min, n_max + 1):
             for eps in eps_values:

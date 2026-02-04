@@ -35,7 +35,6 @@ def custom_real_part(my_expression, primitive_element, is_matrix = False):
                 imag_part_matrix[i,j] = custom_real_part(M_ij, primitive_element, is_matrix = False)
         return imag_part_matrix
         
-
 def custom_imag_part(my_expression, primitive_element, is_matrix = False):
     # Return the "real part" of an element of a quadratic field extension k(p_e)
     # by extracing the coefficient on p_e

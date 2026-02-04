@@ -260,8 +260,7 @@ class root_system:
         return vector([int(a) for a in x_min])
 
     def is_same_root(self, alpha, beta):
-        assert type(alpha) == vector, "same_root expects vector input 1st argument"
-        assert type(beta) == vector, "same_root expects vector input for 2nd argument"
+        assert type(alpha) == type(beta) == vector, "is_same_root requires vectors"
         return alpha.equals(beta) or in_integer_column_span(alpha - beta, self.lattice_matrix)
 
     def is_proportional(self, alpha, beta, with_ratio = False, max_denominator = 2):
@@ -284,16 +283,16 @@ class root_system:
         candidate_ratios = []
         for q in range(1, max_denominator+1):
             for p in range(-max_denominator, max_denominator+1):
-                
                 # If a candidate is zero, we don't need to
                 # go through computing the rank of an augmented
                 # matrix to check, so this saves a lot of time
                 # in that case
                 if zero_vec.equals(p*alpha - q*beta):
                     return (True, p/q) if with_ratio else True
-                
                 candidates.append(p*alpha - q*beta)
                 candidate_ratios.append(p / q)
+            
+        # Loop through candidates to check if p*alpha-q*beta is in the column span of L
         for candidate, ratio in zip(candidates, candidate_ratios):
             if in_integer_column_span(candidate, self.lattice_matrix):
                 return (True, ratio) if with_ratio else True
@@ -301,10 +300,8 @@ class root_system:
 
     def reflect_root(self, hyperplane_root, root_to_reflect):
         # Return the reflection of beta across the hyperplane perpendicular to alpha
-        
         alpha = hyperplane_root
         beta = root_to_reflect
-        
         numerator = 2*alpha.dot(beta)
         denominator = alpha.dot(alpha)
         assert numerator % denominator == 0
@@ -313,42 +310,73 @@ class root_system:
     def is_multipliable_root(self, vector_to_test):
         return self.is_root(vector_to_test) and self.is_root(2*vector_to_test)
 
-    def integer_linear_combos(self,alpha,beta):
-        # Return a list of all positive integer linear combinations
-        # of two roots alpha and beta within a list of roots
+    def integer_linear_combos(self, alpha, beta):
+        """Return all positive integer linear combinations of alpha and beta that are roots."""
         assert self.is_root(alpha) and self.is_root(beta), "Can't compute integer linear combos with non-roots"
-        
-        # The output is a dictionary, where keys are tuples (i,j)
-        # and values are roots of the form i*alpha+j*beta
-        combos = {}
-        my_sum = alpha+beta
-        if not(self.is_root(my_sum)):
-            # If alpha+beta is not a root, there are no integer linear combos
-            # and we return an empty dictionary
-            return combos
-        else:
-            combos[(1,1)] = my_sum
-        
-        # Run a loop where each iteration, we try adding alpha and beta
-        # to each existing combo
-        while True:
-            new_combos = self.increment_combos(alpha,beta,combos)
-            if len(combos) == len(new_combos):
-                break;
-            combos = new_combos
-        return combos
     
-    def increment_combos(self,alpha,beta,old_combos):
-        new_combos = old_combos.copy() # A shallow copy
-        for key in old_combos:
-            i = key[0]
-            j = key[1]
-            old_root = old_combos[key]
-            if self.is_root(alpha + old_root):
-                new_combos[(i+1,j)] = alpha + old_root
-            if self.is_root(beta + old_root):
-                new_combos[(i,j+1)] = beta + old_root
-        return new_combos
+        combos = {}
+        start = alpha + beta
+        if not self.is_root(start):
+            return combos
+    
+        combos[(1, 1)] = start
+        queue = [(1, 1, start)]  # store (i, j, root) tuples
+    
+        while queue:
+            i, j, root = queue.pop(0)
+    
+            # Try adding alpha
+            next_root = root + alpha
+            key = (i + 1, j)
+            if self.is_root(next_root) and key not in combos:
+                combos[key] = next_root
+                queue.append((i + 1, j, next_root))
+    
+            # Try adding beta
+            next_root = root + beta
+            key = (i, j + 1)
+            if self.is_root(next_root) and key not in combos:
+                combos[key] = next_root
+                queue.append((i, j + 1, next_root))
+    
+        return combos
+
+    # def integer_linear_combos_OLD(self,alpha,beta):
+    #     # Return a list of all positive integer linear combinations
+    #     # of two roots alpha and beta within a list of roots
+    #     assert self.is_root(alpha) and self.is_root(beta), "Can't compute integer linear combos with non-roots"
+        
+    #     # The output is a dictionary, where keys are tuples (i,j)
+    #     # and values are roots of the form i*alpha+j*beta
+    #     combos = {}
+    #     my_sum = alpha+beta
+    #     if not(self.is_root(my_sum)):
+    #         # If alpha+beta is not a root, there are no integer linear combos
+    #         # and we return an empty dictionary
+    #         return combos
+    #     else:
+    #         combos[(1,1)] = my_sum
+        
+    #     # Run a loop where each iteration, we try adding alpha and beta
+    #     # to each existing combo
+    #     while True:
+    #         new_combos = self.increment_combos(alpha,beta,combos)
+    #         if len(combos) == len(new_combos):
+    #             break;
+    #         combos = new_combos
+    #     return combos
+
+    # def increment_combos(self,alpha,beta,old_combos):
+    #     new_combos = old_combos.copy() # A shallow copy
+    #     for key in old_combos:
+    #         i = key[0]
+    #         j = key[1]
+    #         old_root = old_combos[key]
+    #         if self.is_root(alpha + old_root):
+    #             new_combos[(i+1,j)] = alpha + old_root
+    #         if self.is_root(beta + old_root):
+    #             new_combos[(i,j+1)] = beta + old_root
+    #     return new_combos
 
     def verify_root_system_axioms(self, display = True):
         if display: print(f'\nVerifying root system axioms for the {self.name_string} root system.')
@@ -458,6 +486,7 @@ def construct_root_list_from_dynkin_type(dynkin_type, rank):
         
     elif dynkin_type == 'E':
         assert rank in (6,7,8)
+        vector_length = 8
         
         # Following this page: https://en.wikipedia.org/wiki/E8_(mathematics)#E8_root_system
         # we realize E_8 as the set of vectors in R^8 with squared length equal to 2, 
@@ -468,8 +497,6 @@ def construct_root_list_from_dynkin_type(dynkin_type, rank):
         # More explicitly, this consists of two subsets of vectors:
         #   1) A copy of D_8, i.e. all vectors with two nonzero entries of +/-1 in any combination of signs (112 roots))
         #   2) All vectors with 8 entries of +/-1/2 with an even number of negative signs (240 roots)
-        
-        vector_length = 8
 
         two_nonzero_entries = [
             vector([ (a if i == p else b if i == q else 0) for i in range(vector_length) ])
@@ -504,14 +531,17 @@ def construct_root_list_from_dynkin_type(dynkin_type, rank):
         E_7_root_list = [v for v in E_8_root_list if v[-2] + v[-1] == 0]
         E_6_root_list = [v for v in E_7_root_list if v[-3] + v[-2] == 0]
         
-        if rank == 8: 
-            root_list = E_8_root_list
-        elif rank == 7:
-            root_list = E_7_root_list
-        elif rank == 6:
-            root_list = E_6_root_list
-        else:
-            assert False, "Invalid rank for type E root system"
+        root_list = {8: E_8_root_list, 7: E_7_root_list, 6: E_6_root_list}[rank]
+        
+        # OLD VERSION
+        # if rank == 8: 
+        #     root_list = E_8_root_list
+        # elif rank == 7:
+        #     root_list = E_7_root_list
+        # elif rank == 6:
+        #     root_list = E_6_root_list
+        # else:
+        #     assert False, "Invalid rank for type E root system"
         
     elif dynkin_type == 'F':
         # We represent F_4 as a set of vectors in R^4
@@ -563,24 +593,63 @@ def construct_root_system_from_dynkin_type(dynkin_type, rank):
                        lattice_matrix = None)
 
 def determine_irreducible_components(roots):
-    # Build separate lists for each of the irreducible components, 
-    # if there are multiple
-    n = len(roots)
-    visited = [False]*n
+    """
+    Determine the irreducible components of a root system.
+    Each component is a maximal set of roots that are connected via nonzero inner products.
+    
+    Returns a list of lists, where each inner list is an irreducible component.
+    """
+    unvisited = set(range(len(roots)))  # indices of roots not yet assigned to a component
     components = []
-    for i in range(n):
-        if visited[i]: continue
-        stack = [i]
-        comp_indices = []
+
+    while unvisited:
+        # Start a new component from an arbitrary unvisited root
+        start = unvisited.pop()
+        component_indices = {start}
+        stack = [start]
+
         while stack:
-            k = stack.pop()
-            if visited[k]: continue
-            visited[k] = True
-            comp_indices.append(k)
-            for j in range(n):
-                if not visited[j] and roots[k].dot(roots[j]) != 0: stack.append(j)
-        components.append([roots[k] for k in comp_indices])
+            root_index = stack.pop()
+            # Find neighbors among unvisited roots
+            neighbors = {j for j in unvisited if roots[root_index].dot(roots[j]) != 0}
+            stack.extend(neighbors)
+            component_indices.update(neighbors)
+            unvisited -= neighbors  # mark neighbors as visited
+
+        # Collect the actual roots for this component
+        components.append([roots[i] for i in component_indices])
+
     return components
+
+# def determine_irreducible_components_OLD(roots):
+#     # Build separate lists for each of the irreducible components, 
+#     # if there are multiple
+#     n = len(roots)
+#     visited = [False]*n
+#     components = []
+#     for i in range(n):
+#         if visited[i]: continue
+    
+#         # Start a new component
+#         stack = [i]
+#         current_component_indices = []
+        
+#         # Depth-first search
+#         while stack:
+#             k = stack.pop()
+#             if visited[k]: continue
+#             visited[k] = True
+#             current_component_indices.append(k)
+            
+#             # Add neighbors (roots with nonzero dot product)
+#             for j in range(n):
+#                 if not visited[j] and roots[k].dot(roots[j]) != 0: stack.append(j)
+                
+#         # Collect the roots for this component
+#         component = [roots[k] for k in current_component_indices]
+#         components.append(component)
+        
+#     return components
 
 def choose_positive_roots(root_list, max_tries = 100, seed = 0):
     # Procedure: choose a hyperplane not containing any of the roots

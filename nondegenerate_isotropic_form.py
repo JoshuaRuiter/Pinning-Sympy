@@ -71,25 +71,20 @@ class nondegenerate_isotropic_form:
         
         n = dimension
         q = witt_index
-        I_q = sp.eye(q) 
-        Z_qq = sp.zeros(q)
-        if n == 2*q:
-            M = sp.BlockMatrix([
-                [Z_qq, I_q],
-                [I_q, Z_qq]
-                ])
-        elif n > 2*q:
-            Z_qd = sp.zeros(q, n-2*q)
-            Z_dq = sp.zeros(n-2*q, q)
-            C = sp.diag(*anisotropic_vector)
-            M = sp.BlockMatrix([
-                [Z_qq, I_q, Z_qd],
-                [I_q, Z_qq, Z_qd],
-                [Z_dq, Z_dq, C]
-            ])
-        else:
-            raise Exception(f"Invalid values to construct symmetric matrix, n={n}, q={q}")
-        return M.as_explicit()
+        if n < 2*q:  raise ValueError(f"Invalid values to construct symmetric matrix, n={n}, q={q}")
+        I = sp.eye(q)
+        Z = sp.zeros(q)
+        d = n - 2*q
+        
+        blocks = (
+            [[Z, I], 
+             [I, Z]] if d == 0 
+            else
+            [[Z, I, sp.zeros(q, d)],
+             [I, Z, sp.zeros(q, d)],
+             [sp.zeros(d, q), sp.zeros(d, q), sp.diag(*anisotropic_vector)]]
+        )
+        return sp.BlockMatrix(blocks).as_explicit()
     
     @staticmethod
     def build_hermitian_matrix(dimension,
@@ -106,35 +101,37 @@ class nondegenerate_isotropic_form:
         #                   [eps*I  0       0]
         #                   [0      0       C]
         #       where C is diagonal and satisfies conj(C)=eps*C. 
-        #       More concretely, if eps=1, then C has entries from k, and if eps=-1 then C has 
+        #       In other words, if eps=1, then C has entries from k, and if eps=-1 then C has 
         #       "purely imaginary" entries from k(sqrt(d)), where sqrt(d) is the primitive element
         #
         #   In general, q<=n/2 because Witt index can never exceed half the dimension.
         #       If q=n/2, the group SU_n_q is quasi-split.
         #       We ignore the case q=0, because in this case the group SU_n_q is not isotropic.
 
+
         n = dimension
         q = witt_index
-        I_q = sp.eye(q) 
-        Z_qq = sp.zeros(q)
-        if n == 2*q:
-            M = sp.BlockMatrix([
-                [Z_qq, I_q],
-                [epsilon*I_q, Z_qq]
-            ])
-        elif n > 2*q:
-            Z_qd = sp.zeros(q, n-2*q)
-            Z_dq = sp.zeros(n-2*q, q)
-            C = sp.diag(*anisotropic_vector)
-            #if epsilon == -1:
-            #    C = C*primitive_element
-            M = sp.BlockMatrix([
-                [Z_qq, I_q, Z_qd],
-                [epsilon*I_q, Z_qq, Z_qd],
-                [Z_dq, Z_dq, C]
-            ])
-        else:
-            raise Exception(f"Invalid values to construct hermitian matrix, n={n}, q={q}")
-        return M.as_explicit()
+        if n < 2*q: raise ValueError(f"Invalid values to construct hermitian matrix, n={n}, q={q}")
+        I = sp.eye(q)
+        Z = sp.zeros(q)
+        d = n - 2*q
+        C = sp.diag(*anisotropic_vector)
+        
+        ################################################
+        # I don't understand why this was commented out
+        # It seems like it should be included
+        ################################################
+        # if epsilon == -1:
+        #     C *= primitive_element
+    
+        blocks = (
+            [[Z, I], [epsilon*I, Z]] if d == 0 else
+            [[Z, I, sp.zeros(q, d)],
+             [epsilon*I, Z, sp.zeros(q, d)],
+             [sp.zeros(d, q), sp.zeros(d, q), C]]
+        )
+    
+        return sp.BlockMatrix(blocks).as_explicit()
+
     
     

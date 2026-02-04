@@ -1,42 +1,21 @@
 import sympy as sp
 import numpy as np
+from utility_general import is_diagonal
 
 def group_constraints_SO(matrix_to_test, form):
-    """
-    Returns a list of SymPy equations enforcing:
-        1. X^T*B*X = B
-        2. det(X)) = 1
-    X : n x n SymPy Matrix
-    B : n x n SymPy Matrix representing the form
-    """
     X = matrix_to_test
-    n = X.shape[0]
     B = form.matrix
     M = X.T * B * X - B
-    eqs = []
-    for i in range(n):
-        for j in range(n):
-            expr = M[i,j]
-            if not expr.is_zero:
-                eqs.append(expr)
-    det_expr = X.det() - 1
-    if not det_expr.is_zero: eqs.append(det_expr)
-    return eqs
-    
+    eqs = [e for e in M if not e.is_zero]
+    d = X.det() - 1
+    return eqs + ([] if d.is_zero else [d])
+
 def lie_algebra_constraints_SO(matrix_to_test, form):
     X = matrix_to_test
-    n = X.shape[0]
-    B = form.matrix
-    M = X.T*B + B*X
-    eqs = []
-    for i in range(n):
-        for j in range(n):
-            expr = M[i,j]
-            if not expr.is_zero:
-                eqs.append(expr)
-    tr_expr = X.trace()
-    if not tr_expr.is_zero: eqs.append(tr_expr)
-    return eqs
+    M = X.T * form.matrix + form.matrix * X
+    eqs = [e for e in M if not e.is_zero]
+    t = X.trace()
+    return eqs + ([] if t.is_zero else [t])
 
 def is_lie_algebra_element_SO(matrix_to_test, form):
     X = matrix_to_test
@@ -44,27 +23,24 @@ def is_lie_algebra_element_SO(matrix_to_test, form):
     return (X.T*B).equals(-B*X) and sp.simplify(X.trace()) == 0
 
 def is_torus_element_SO(matrix_to_test, rank):
-    n = matrix_to_test.shape[0]
+    if not is_diagonal(matrix_to_test): return False
+    X = matrix_to_test
+    n = X.shape[0]
     q = rank
-    for i in range(q):
-        if (matrix_to_test[i,i]*matrix_to_test[q+i,q+i]!=1):
-            return False
-    for j in range(n - 2*q):
-        if (matrix_to_test[2*q+j,2*q+j]!=1):
-            return False
-    return True
+    return (
+        all(X[i, i] * X[q + i, q + i] == 1 for i in range(q)) and
+        all(X[2*q + j, 2*q + j] == 1 for j in range(n - 2*q))
+    )
 
 def generic_torus_element_SO(matrix_size, rank, letter = 't'):
     # Output a 'generic' element of the diagonal torus subgroup of 
     # the special orthogonal group, which has the form
     # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1)
     # where q = rank
-    vec_t = sp.symarray(letter,rank,nonzero=True)
-    t = sp.eye(matrix_size)
-    for i in range(rank):
-        t[i,i] = vec_t[i]
-        t[rank+i,rank+i] = 1/vec_t[i]
-    return t
+    n = matrix_size
+    q = rank
+    v = sp.symarray(letter, rank, nonzero=True)
+    return sp.diag(*v, *(1/v), *([1] * (n - 2*q)))
 
 def character_entries_SO(matrix_size, rank):
     return [1]*rank + [0]*(matrix_size - rank)
@@ -72,8 +48,8 @@ def character_entries_SO(matrix_size, rank):
 def trivial_characters_SO(matrix_size, rank):
     trivial_characters = [np.array([1 if j == i or j == i + rank else 0 for j in range(matrix_size)])for i in range(rank)]
     if not (rank == 1 and matrix_size == 2): trivial_characters.append([1] * matrix_size)
-    matrix_with_trivial_character_columns = np.array(np.stack(trivial_characters, axis=1))
-    return matrix_with_trivial_character_columns
+    # matrix_with_trivial_character_columns = np.array(np.stack(trivial_characters, axis=1))
+    return np.array(np.stack(trivial_characters, axis=1))
 
 def generic_lie_algebra_element_SO(matrix_size, rank, form, letter = 'x'):
     n = matrix_size
