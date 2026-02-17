@@ -381,25 +381,25 @@ class root_system:
     def verify_root_system_axioms(self, display = True):
         if display: print(f'\nVerifying root system axioms for the {self.name_string} root system.')
         
-        if display: print('\tChecking that zero is not a root...',end='')
+        if display: print('\tChecking that zero is not a root... ',end='')
         zero_vector = vector([0] * self.vector_length)
         assert not(self.is_root(zero_vector)), "Zero vector should not be a root"
         if display: print('done.')
         
-        if display: print('\tChecking that the negation of a root is a root...',end='')
+        if display: print('\tChecking that the negation of a root is a root... ',end='')
         for alpha in self.root_list:
             assert self.is_root(-1*alpha, with_equivalent = False), \
                 "Negative of root is not a root"
         if display: print('done.')
         
-        if display: print('\tChecking that a reflection of a root is a root...',end='')
+        if display: print('\tChecking that a reflection of a root is a root... ',end='')
         for alpha in self.root_list:
             for beta in self.root_list:
                 assert self.is_root(self.reflect_root(alpha,beta)), \
                 "Reflection of a root is not a root but should be"
         if display: print('done.')
         
-        if display: print('\tChecking that the angle bracket of two roots is an integer...',end='')
+        if display: print('\tChecking that the angle bracket of two roots is an integer... ',end='')
         for alpha in self.root_list:
             for beta in self.root_list:
                 angle_bracket = 2* alpha.dot(beta) / beta.dot(beta)
@@ -407,14 +407,14 @@ class root_system:
                     "Angle bracket of roots should be an integer"
         if display: print('done.')
         
-        if display: print('\tChecking that the dot product of a root with its coroot is 2...',end='')
+        if display: print('\tChecking that the dot product of a root with its coroot is 2... ',end='')
         for alpha in self.root_list:
             alpha_check = self.coroot_dict[alpha]
             angle_bracket = alpha.dot(alpha_check)
             assert angle_bracket == 2, "Dot product of a root with its coroot is not 2"
         if display: print('done.')
         
-        if display: print('\tChecking that ratios between proportional roots are +/-1, +/-2, or +/-0.5...',end='')
+        if display: print('\tChecking that ratios between proportional roots are +/-1, +/-2, or +/-0.5... ',end='')
         for alpha in self.root_list:
             for beta in self.root_list:
                 proportional, ratio = self.is_proportional(alpha,beta,with_ratio=True)

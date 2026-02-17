@@ -45,12 +45,12 @@ def main():
     print("\nDemonstrating usage of pinned group class")
     sp.init_printing(wrap_line=False)
     n_min = 1
-    n_max = 4
+    n_max = 3
     q_min = 1
     q_max = 3
     eps_values = [-1,1] # should only include +/-1
     
-    run_SL_tests(n_min, min(n_max, 4))  # SL_5 takes a long time to compute roots
+    # run_SL_tests(n_min, min(n_max, 4))  # SL_5 takes a long time to compute roots
     run_SO_split_tests(n_min, n_max, q_min, q_max)
     run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
     run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values)

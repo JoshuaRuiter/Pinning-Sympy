@@ -458,7 +458,7 @@ class pinned_group:
     def fit_weyl_group_elements(self, display = True):
         
         ####################################################
-        display_extra = False # toggle this for debugging
+        display_extra = True # toggle this for debugging
         ####################################################
         
         if display: print("Fitting torus reflections (s_alpha)")
@@ -495,7 +495,7 @@ class pinned_group:
             #     display_extra = True
             # else:
             #     display_extra = False
-            display_extra = False
+            display_extra = True
             ####################################################
         
             # The process for computing w_alpha is:
@@ -682,7 +682,7 @@ class pinned_group:
                                                                                   min_word_length = 3,
                                                                                   max_word_length = 3,
                                                                                   include_torus = False,
-                                                                                  solve_timeout = 30,
+                                                                                  solve_timeout = 100,
                                                                                   display = display_extra,
                                                                                   return_factors = True)
 
@@ -975,14 +975,14 @@ class pinned_group:
         A = self.generic_lie_algebra_element('a')
         B = self.generic_lie_algebra_element('b')
         
-        if display: print("\nVerifying properties of the torus...")
+        if display: print("\nVerifying properties of the torus... ")
         
         if display: print("\tChecking that a generic torus element is in the group... ", end="")
         assert self.is_group_element(s), "Generic torus element is not a group element"
         assert self.is_torus_element(s), "Generic torus element is not a torus element"
         if display: print("done.")
         
-        if display: print("\tChecking that cocharacters map into the torus...",end="")
+        if display: print("\tChecking that cocharacters map into the torus... ",end="")
         for alpha in self.root_system.root_list:
             alpha_check = self.root_system.coroot_dict[alpha]
             alpha_check_of_u = evaluate_cocharacter(alpha_check, u)
@@ -1002,7 +1002,7 @@ class pinned_group:
         assert self.is_lie_algebra_element(A+B), "Lie algebra is not additively closed"
         if display: print("done.")      
         
-        if display: print("\tChecking that the Lie algebra is closed under [X,Y] = XY-YX...", end="")
+        if display: print("\tChecking that the Lie algebra is closed under Lie bracket... ", end="")
         assert self.is_lie_algebra_element(A*B-B*A), 'Lie algebra is not closed under brackets'
         if display: print("done.")
         
@@ -1020,7 +1020,7 @@ class pinned_group:
                 f"Root space for alpha = {alpha} is not in the Lie algebra"
         if display: print("done.")
         
-        if display: print("\tChecking that roots of equal norm have same dimensional root spaces...",end="")
+        if display: print("\tChecking that roots of equal norm have same dimensional root spaces... ",end="")
         for alpha in self.root_system.root_list:
             d_alpha = self.root_space_dimension(alpha)
             for beta in self.root_system.root_list:
@@ -1044,7 +1044,7 @@ class pinned_group:
             assert LHS.equals(RHS), f"Root space map for alpha = {alpha} fails additivity"
         if display: print("done.")
         
-        if display: print("\tChecking that negative roots have transpose root spaces...", end="")
+        if display: print("\tChecking that negative roots have transpose root spaces... ", end="")
         for alpha in self.root_system.root_list:
             d_alpha = self.root_space_dimension(alpha)
             d_n_alpha = self.root_space_dimension(-1*alpha)
@@ -1132,7 +1132,7 @@ class pinned_group:
                                     f"alpha = {alpha} does not satisfy its defining formula"
         if display: print("done.")
         
-        if display: print("\tChecking that x_alpha(u) belongs to its own root subgroup...", end="")
+        if display: print("\tChecking that x_alpha(u) belongs to its own root subgroup... ", end="")
         for alpha in self.root_system.root_list:
             d_alpha = self.root_space_dimension(alpha)
             a = vector_variable('a',d_alpha)
@@ -1189,7 +1189,7 @@ class pinned_group:
                     assert LHS.equals(RHS), f"Commutator formula failed for alpha = {alpha}, beta = {beta}"
         if display: print("done.")
 
-        if display: print("\tChecking that swapping root order negates the coefficient...", end = "")
+        if display: print("\tChecking that swapping root order negates the coefficient... ", end = "")
         for alpha in self.root_system.root_list:
             d_alpha = self.root_space_dimension(alpha)
             a = vector_variable(letter = 'a', length = d_alpha)
@@ -1212,10 +1212,10 @@ class pinned_group:
         if display: print("Commutator verifications complete.")
 
     def validate_weyl_group_properties(self, display = True):
-        if display: print("\nVerifying properties of the Weyl group...")
+        if display: print("\nVerifying properties of the Weyl group... ")
         t = self.generic_torus_element('t')
     
-        if display: print("\tChecking that s_alpha outputs torus elements...",end="")
+        if display: print("\tChecking that s_alpha outputs torus elements... ",end="")
         for alpha in self.root_system.root_list:
             s_alpha_of_t = self.torus_reflection_map(alpha, t)
             assert self.is_torus_element(s_alpha_of_t), \
@@ -1230,7 +1230,7 @@ class pinned_group:
             assert k.equals(s_alpha_of_k), f"Torus reflection does not fix ker({alpha})"
         if display: print("done.")
     
-        if display: print("\tChecking that s_alpha inverts T/ker(alpha)...", end="")
+        if display: print("\tChecking that s_alpha inverts T/ker(alpha)... ", end="")
         for alpha in self.root_system.root_list:
             # The map s_alpha pointwise fixes ker(alpha),
             # so it induces a map on the quotient T/ker(alpha).
@@ -1276,7 +1276,7 @@ class pinned_group:
             assert LHS.equals(RHS), "Squared weyl element does not centralize the torus"
         if display: print("done.")
         
-        if display: print("\tChecking Weyl elements belong to appropriately generated subgroup...", end="")
+        if display: print("\tChecking Weyl elements belong to appropriately generated subgroup... ", end="")
         for alpha in self.root_system.root_list:
             w_alpha = self.weyl_element_map(alpha)
             generators = [alpha, -alpha]
@@ -1285,19 +1285,9 @@ class pinned_group:
                                                                   min_word_length = 3,
                                                                   max_word_length = 3,
                                                                   include_torus = False,
-                                                                  solve_timeout = 30,
+                                                                  solve_timeout = 100,
                                                                   display = False,
                                                                   return_factors = True)
-            
-            ############################################################################################
-            # if alpha == vector([-1,0,0,0,0]):
-            #     print("\n\nalpha =",alpha)
-            #     print("\nw_alpha =")
-            #     sp.pprint(w_alpha)
-            #     print("\nGenerating roots:",generators)
-            #     print("\nw_alpha belongs to the subgroup generated by x_alpha and x_{-alpha}?", belongs)
-            ############################################################################################
-            
             assert belongs
         if display: print("done.")
         
