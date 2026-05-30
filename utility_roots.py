@@ -133,7 +133,7 @@ def in_integer_column_span(v, M):
     # Return true if vector is in the integer column span of M
     M = np.asarray(M, dtype = int)
     rank_M = np.linalg.matrix_rank(M)
-    augmented = np.hstack([M,v.as_column]) # add vector as additional column to M
+    augmented = np.hstack([M,v.as_column]) # augment M with v as an additional vector
     rank_augmented = np.linalg.matrix_rank(augmented)
     return rank_augmented == rank_M
 
@@ -230,7 +230,6 @@ def connected_components(graph):
     return components
 
 def generate_character_list(nonzero_entries, upper_bound):
-    # Possible values for each coordinate
     values = []
     for allow in nonzero_entries:
         if allow:

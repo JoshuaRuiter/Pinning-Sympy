@@ -1,6 +1,7 @@
 # Various general utility functions related to matrices
 
 import sympy as sp
+import random
 import multiprocessing as mp
 from copy import deepcopy
 
@@ -11,6 +12,94 @@ def is_diagonal(my_matrix):
 
 def vector_variable(letter, length):
     return sp.Matrix(sp.symarray(letter, length))
+
+def random_int_vector(length, lower_bound, upper_bound, nonzero = True):
+    elements = []
+    for _ in range(length):
+        val = random.randint(lower_bound, upper_bound)
+        
+        # If nonzero is flagged, redraw if we hit 0
+        if nonzero:
+            while val == 0:
+                val = random.randint(lower_bound, upper_bound)
+                
+        elements.append(val)
+        
+    return sp.Matrix(elements)
+
+
+def entry_to_mask(val):
+    # 1. Fast track: explicit structural zero/nonzero
+    if val.is_zero is True: return 0
+    if val.is_zero is False: return 1
+        
+    # 2. Medium track: Quick numerical evaluation to catch non-zero constants
+    # (e.g., expressions with sqrt(d) that evaluate to a distinct float)
+    try:
+        # Chop eliminates tiny floating-point noise around zero
+        num_val = val.evalf(chop=True)
+        if num_val == 0:
+            return 0
+        if num_val.is_number and num_val != 0:
+            return 1
+    except (TypeError, ValueError):
+        pass
+
+    # 3. Slow track: Fallback to full algebraic simplification
+    return 0 if val.simplify().is_zero else 1
+
+def nonzero_pattern_match(A, B):
+    """
+    Compares the nonzero patterns of two matrices by building and comparing binary masks.
+    Optimized for cases where the matrices are highly likely to match.
+    """
+    if A.shape != B.shape: return False
+    mask_A = A.applyfunc(entry_to_mask)
+    mask_B = B.applyfunc(entry_to_mask)
+    return mask_A == mask_B
+
+def randomize_symbolic_matrix(matrix_expr, 
+                              lower_bound = -5, 
+                              upper_bound = 5,
+                              ignore_variables = None, 
+                              nonzero = True):
+    """
+    Takes a matrix expression containing free variables and returns a concrete, 
+    fully randomized numerical matrix by substituting integers within the specified range.
+    
+    Parameters:
+    -----------
+    matrix_expr : sp.Matrix
+        The symbolic matrix expression to randomize.
+    ignore_variables : iterable of sp.Symbol, optional
+        Symbols present in the matrix that should remain symbolic and not be substituted.
+    lower_bound : int, optional
+        Minimum integer value for random assignment.
+    upper_bound : int, optional
+        Maximum integer value for random assignment.
+    nonzero : bool, optional
+        If True, ensures no variables are substituted with 0.
+    """
+    # Normalize ignore_variables to a set for fast, unified lookups
+    if ignore_variables is None:
+        ignored = set()
+    elif isinstance(ignore_variables, (str, sp.Symbol)):
+        ignored = {ignore_variables}
+    else:
+        ignored = set(ignore_variables)
+        
+    # Isolate variables that are not explicitly ignored
+    symbols_to_randomize = matrix_expr.free_symbols - ignored
+    
+    substitution_dict = {}
+    for sym in symbols_to_randomize:
+        val = random.randint(lower_bound, upper_bound)
+        if nonzero:
+            while val == 0:
+                val = random.randint(lower_bound, upper_bound)
+        substitution_dict[sym] = sp.Integer(val)
+        
+    return matrix_expr.subs(substitution_dict)
 
 def indent_multiline(s, prefix="\t"):
     return "\n".join(prefix + line for line in s.splitlines())
@@ -71,7 +160,10 @@ def has_structural_contradiction(eqs, nonzero_vars):
 
 def _solve_worker(eqs, vars_to_solve_for, q):
     try:
-        sol = sp.solve(eqs, vars_to_solve_for, dict=True, simplify=False)
+        sol = sp.solve(eqs, 
+                       vars_to_solve_for, 
+                       dict = True, 
+                       simplify = False)
         q.put(sol)
     except Exception:
         q.put(None)

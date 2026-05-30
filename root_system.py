@@ -82,7 +82,20 @@ class root_system:
 
         # Set up a dictionary of coroots
         self.coroot_dict = {r : self.compute_coroot(r) for r in self.root_list}
-
+        
+        # Set up a list of non-proportional un-ordered pairs
+        self.non_proportional_pairs = [
+            (alpha, beta) for i, alpha in enumerate(self.root_list)
+            for beta in self.root_list[i+1:]
+            if not self.is_proportional(alpha, beta)
+        ]
+        
+        # Set up a list of ordered pairs whose sum is also a root
+        self.summable_non_proportional_pairs = [
+            (alpha, beta) for alpha in self.root_list for beta in self.root_list
+            if self.is_root(alpha + beta) and not self.is_proportional(alpha, beta)
+        ]
+        
     def determine_properties(self):
         # Determine and populate various internal variables of the root system, including:
         #   -sorted list of root lengths
@@ -173,11 +186,9 @@ class root_system:
         return (False, None) if with_equivalent else False
 
     def compute_coroot(self, alpha):
-        """
-        Given a root alpha (as vector of integers)
-        return a cocharacter vector alpha_check which must satisfy:
-            <alpha, alpha_check> = 2  i.e. alpha dot
-        """
+        # Given a root alpha (as vector of integers)
+        # return a cocharacter vector alpha_check which must satisfy:
+        #    <alpha, alpha_check> = 2
         
         assert isinstance(alpha, vector), "Character must be a vector"
         assert self.is_root(alpha), "Can only find cocharacter of a root"
@@ -340,43 +351,6 @@ class root_system:
                 queue.append((i, j + 1, next_root))
     
         return combos
-
-    # def integer_linear_combos_OLD(self,alpha,beta):
-    #     # Return a list of all positive integer linear combinations
-    #     # of two roots alpha and beta within a list of roots
-    #     assert self.is_root(alpha) and self.is_root(beta), "Can't compute integer linear combos with non-roots"
-        
-    #     # The output is a dictionary, where keys are tuples (i,j)
-    #     # and values are roots of the form i*alpha+j*beta
-    #     combos = {}
-    #     my_sum = alpha+beta
-    #     if not(self.is_root(my_sum)):
-    #         # If alpha+beta is not a root, there are no integer linear combos
-    #         # and we return an empty dictionary
-    #         return combos
-    #     else:
-    #         combos[(1,1)] = my_sum
-        
-    #     # Run a loop where each iteration, we try adding alpha and beta
-    #     # to each existing combo
-    #     while True:
-    #         new_combos = self.increment_combos(alpha,beta,combos)
-    #         if len(combos) == len(new_combos):
-    #             break;
-    #         combos = new_combos
-    #     return combos
-
-    # def increment_combos(self,alpha,beta,old_combos):
-    #     new_combos = old_combos.copy() # A shallow copy
-    #     for key in old_combos:
-    #         i = key[0]
-    #         j = key[1]
-    #         old_root = old_combos[key]
-    #         if self.is_root(alpha + old_root):
-    #             new_combos[(i+1,j)] = alpha + old_root
-    #         if self.is_root(beta + old_root):
-    #             new_combos[(i,j+1)] = beta + old_root
-    #     return new_combos
 
     def verify_root_system_axioms(self, display = True):
         if display: print(f'\nVerifying root system axioms for the {self.name_string} root system.')
@@ -620,36 +594,6 @@ def determine_irreducible_components(roots):
         components.append([roots[i] for i in component_indices])
 
     return components
-
-# def determine_irreducible_components_OLD(roots):
-#     # Build separate lists for each of the irreducible components, 
-#     # if there are multiple
-#     n = len(roots)
-#     visited = [False]*n
-#     components = []
-#     for i in range(n):
-#         if visited[i]: continue
-    
-#         # Start a new component
-#         stack = [i]
-#         current_component_indices = []
-        
-#         # Depth-first search
-#         while stack:
-#             k = stack.pop()
-#             if visited[k]: continue
-#             visited[k] = True
-#             current_component_indices.append(k)
-            
-#             # Add neighbors (roots with nonzero dot product)
-#             for j in range(n):
-#                 if not visited[j] and roots[k].dot(roots[j]) != 0: stack.append(j)
-                
-#         # Collect the roots for this component
-#         component = [roots[k] for k in current_component_indices]
-#         components.append(component)
-        
-#     return components
 
 def choose_positive_roots(root_list, max_tries = 100, seed = 0):
     # Procedure: choose a hyperplane not containing any of the roots

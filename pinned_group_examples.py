@@ -1,4 +1,5 @@
 import sympy as sp
+import time
 from pinned_group import pinned_group
 from nondegenerate_isotropic_form import nondegenerate_isotropic_form
 from split_torus import split_torus
@@ -26,38 +27,42 @@ from utility_SU import (group_constraints_SU,
                         generic_lie_algebra_element_SU)
 
 def main():
-    to_do_list = ("To do list:" + "\n\t" + 
-                  "Pass tests involving belongs_to_generated_subgroup" + "\n\t" +
-                  "Clean up utility_SU" + "\n\t" + 
+    to_do_list = ("TO DO LIST:" + "\n\t" + 
+                  "Implement coroot torus element tests" + "\n\t" +
                   "Clean up/organize utility_general" + "\n\t" +
-                  "Clean up/organize utility_roots" + "\n\t" +
-                  "Clean up/optimize belongs_to_subgroup" + "\n\t" +
                   "Clean up/optimize fit_weyl_elements" + "\n\t" + 
                   "Question: Why aren't anisotropic parts for eps=-1 not purely imaginary?" + "\n\t" +
-                  "Solve for/implement h elements, which should enable taking x_alpha(u)" + 
-                      "to x_alpha(u/2) or something like that" + "\n\t" +
-                  "Figure out what exactly the Weyl conjugation coefficients are supposed " + 
+                  "Solve for/implement h elements, which should enable taking" + "\n\t\t" 
+                      "x_alpha(u) to x_alpha(u/2) or something like that" + "\n\t" +
+                  "Figure out what exactly the Weyl conjugation coefficients are supposed" + "\n\t\t" +
                       "to do in terms of 'square to 1', and implement a test for that" + "\n\t" +
                   "Add documentation, including a Readme on Github" + "\n\t" +
                   "")
     print(to_do_list)
     
     print("\nDemonstrating usage of pinned group class")
+    start_time = time.perf_counter()
     sp.init_printing(wrap_line=False)
     n_min = 1
-    n_max = 3
+    n_max = 6
     q_min = 1
     q_max = 3
     eps_values = [-1,1] # should only include +/-1
     
-    # run_SL_tests(n_min, min(n_max, 4))  # SL_5 takes a long time to compute roots
+    n_max_SL = 3 # SL_4 and beyond take a long time to compute roots
+    run_SL_tests(n_min, min(n_max, n_max_SL))
     run_SO_split_tests(n_min, n_max, q_min, q_max)
     run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
     run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
     run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
     print("\nAll tests complete.")
+
+    end_time = time.perf_counter()
+    execution_time = end_time - start_time
+    print(f"Time to run tests: {round(execution_time/60)} minutes")
     
     print("\n" + to_do_list)
+
 
 def run_SL_tests(n_min, n_max):
     print("\n" + '=' * 100 + "\n")

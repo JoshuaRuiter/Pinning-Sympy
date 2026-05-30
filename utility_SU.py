@@ -141,18 +141,6 @@ def is_lie_algebra_element_SU(matrix_to_test, form):
     X = matrix_to_test
     H = form.matrix
     X_conjugate = custom_conjugate(X, form.primitive_element)
-    
-    ##########################################
-    # print("\nH =")
-    # sp.pprint(H)
-    # print("\nX =")
-    # sp.pprint(X)
-    # print("\ntrace(X) =")
-    # sp.pprint(X.trace())
-    # print("\nX_conjugate.T*H + H*X =")
-    # sp.pprint(X_conjugate.T*H + H*X)
-    ##########################################
-    
     return (X_conjugate.T*H).equals(-H*X) and sp.simplify(X.trace()) == 0
 
 def generic_lie_algebra_element_SU(matrix_size, rank, form, letter = 'x'):
@@ -180,7 +168,7 @@ def generic_lie_algebra_element_SU(matrix_size, rank, form, letter = 'x'):
     # X_33 = -C^(-1) (X_33)* C
     # trace(X) = 0
     
-    # In genera, the trace condition is equivalent to
+    # In general, the trace condition is equivalent to
     # trace(X_11) + trace(X_22) + trace(X_33) = 0
     # Since X_22 = -conjugate(X_11.T),
     # we have trace(X_22) = -conjugate(trace(X_11))
@@ -252,20 +240,6 @@ def generic_lie_algebra_element_SU(matrix_size, rank, form, letter = 'x'):
         X[i+2*q,i+2*q] = custom_imag_part(X[i+2*q,i+2*q], p_e)* p_e
         for j in range(i):
             X[i+2*q, j+2*q] = -c[j]/c[i] * custom_conjugate(X[j+2*q,i+2*q], p_e)
-    
-    ##########################################
-    # print("\nX=")
-    # sp.pprint(X)
-    # print("\ntrace(X) =")
-    # sp.pprint(sp.simplify(X.trace()))
-    # trace_X_11 = sp.simplify(sum(X[i,i] for i in range(q)))
-    # print("\nTrace(X_11) =")
-    # sp.pprint(trace_X_11)
-    # H = form.matrix
-    # X_conjugate = custom_conjugate(X,p_e)
-    # print("\nX_conjugate.T*H + H*X =")
-    # sp.pprint(X_conjugate.T*H + H*X)
-    ##########################################
     
     assert is_lie_algebra_element_SU(X, form)
     return X
