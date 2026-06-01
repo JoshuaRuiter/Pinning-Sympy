@@ -1,6 +1,7 @@
 # Various general utility functions related to matrices
 
 import sympy as sp
+import operator
 import random
 import multiprocessing as mp
 from copy import deepcopy
@@ -27,7 +28,6 @@ def random_int_vector(length, lower_bound, upper_bound, nonzero = True):
         
     return sp.Matrix(elements)
 
-
 def entry_to_mask(val):
     # 1. Fast track: explicit structural zero/nonzero
     if val.is_zero is True: return 0
@@ -48,15 +48,35 @@ def entry_to_mask(val):
     # 3. Slow track: Fallback to full algebraic simplification
     return 0 if val.simplify().is_zero else 1
 
-def nonzero_pattern_match(A, B):
-    """
-    Compares the nonzero patterns of two matrices by building and comparing binary masks.
-    Optimized for cases where the matrices are highly likely to match.
-    """
+def compare_nonzero_pattern(A, B, op = operator.eq):
+    
     if A.shape != B.shape: return False
     mask_A = A.applyfunc(entry_to_mask)
     mask_B = B.applyfunc(entry_to_mask)
-    return mask_A == mask_B
+    
+    # Standard: op(mask_A, mask_B) checks mask_A == mask_B
+    # Covering: op(mask_A, mask_B) checks mask_A <= mask_B (equivalent to B >= A)
+    return all(op(a, b) for a, b in zip(mask_A, mask_B))
+
+def compute_order(my_function, my_input, limit):
+    original_input = my_input
+    x = my_input
+    i = 1
+    while i <= limit:
+        x = my_function(x)
+        if x == original_input:
+            return i
+    
+        print("\noriginal input = ")
+        sp.pprint(original_input)
+        print("i =", i)
+        print("f^i(x) =")
+        sp.pprint(x)
+    
+        i = i + 1
+        
+    
+    assert False, "Order exceeds limit"
 
 def randomize_symbolic_matrix(matrix_expr, 
                               lower_bound = -5, 

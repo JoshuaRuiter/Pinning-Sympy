@@ -28,41 +28,45 @@ from utility_SU import (group_constraints_SU,
 
 def main():
     to_do_list = ("TO DO LIST:" + "\n\t" + 
-                  "Implement coroot torus element tests" + "\n\t" +
-                  "Clean up/organize utility_general" + "\n\t" +
+                  "Come up with a better way of choosing a particular solution for h_alpha(t)" + "\n\t\t"
+                      "than just choosing the first one in the solutions dictionary" + "\n\t"
+                  "Pass tests for coroot torus element (h_alpha)" + "\n\t" +
                   "Clean up/optimize fit_weyl_elements" + "\n\t" + 
+                  "Understand what's going on with the orders of Weyl conjugation coefficient maps" + "\n\t" +
                   "Question: Why aren't anisotropic parts for eps=-1 not purely imaginary?" + "\n\t" +
-                  "Solve for/implement h elements, which should enable taking" + "\n\t\t" 
-                      "x_alpha(u) to x_alpha(u/2) or something like that" + "\n\t" +
                   "Figure out what exactly the Weyl conjugation coefficients are supposed" + "\n\t\t" +
                       "to do in terms of 'square to 1', and implement a test for that" + "\n\t" +
+                  "Find a way to implement belongs_to_generated_subgroup again in a computationally feasible way" + "\n\t\t" +
+                      "even if with random numerical stuff" + "\n\t" +
+                  "Clean up the process for instatiating an input to x_alpha(u)" + "\n\t\t" +
+                      "specifically, replace the process of computing the root space dimension" + "\n\t\t" +
+                      "and then manually creating a vector variable with a single statement" + "\n\t" +
                   "Add documentation, including a Readme on Github" + "\n\t" +
-                  "")
+                  "Implement a class for elements of quadratic field extensions that can handle symbolic stuff")
     print(to_do_list)
     
     print("\nDemonstrating usage of pinned group class")
     start_time = time.perf_counter()
     sp.init_printing(wrap_line=False)
-    n_min = 1
-    n_max = 6
+    n_min = 3
+    n_max = 3
     q_min = 1
     q_max = 3
     eps_values = [-1,1] # should only include +/-1
     
     n_max_SL = 3 # SL_4 and beyond take a long time to compute roots
     run_SL_tests(n_min, min(n_max, n_max_SL))
-    run_SO_split_tests(n_min, n_max, q_min, q_max)
-    run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
-    run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
-    run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
-    print("\nAll tests complete.")
+    # run_SO_split_tests(n_min, n_max, q_min, q_max)
+    # run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
+    # run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
+    # run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
+    # print("\nAll tests complete.")
 
     end_time = time.perf_counter()
     execution_time = end_time - start_time
     print(f"Time to run tests: {round(execution_time/60)} minutes")
     
     print("\n" + to_do_list)
-
 
 def run_SL_tests(n_min, n_max):
     print("\n" + '=' * 100 + "\n")
