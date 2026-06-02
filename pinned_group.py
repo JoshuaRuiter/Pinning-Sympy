@@ -26,7 +26,7 @@ from utility_general import (vector_variable,
                              prune_singletons,
                              solve_with_timeout,
                              has_structural_contradiction,
-                             compute_order)
+                             formatted_table)
 from utility_roots import (generate_character_list, 
                            reduce_character_list, 
                            determine_roots, 
@@ -35,7 +35,6 @@ from utility_roots import (generate_character_list,
                            evaluate_cocharacter,
                            generic_kernel_element)
 from root_system import root_system
-from utility_SU import custom_real_part
 from functools import reduce
 from operator import mul
 
@@ -128,77 +127,84 @@ class pinned_group:
     def display_pinning_info(self):
         
         print(f"\nPinning information for {self.name_string}:")
-        
         print("\nRoot system:",self.root_system.name_string)
         print("Number of roots:",len(self.root_system.root_list))
         if self.root_system.is_irreducible:
             print("Dynkin diagram:",visualize_graph(self.root_system.dynkin_graph))
         
-        t = self.generic_torus_element('t')
-        tt = sp.symbols('t')
-        if self.root_system.is_reduced:
-            print("\nRoots, coroots, root spaces, root subgroups, torus reflection maps," + 
-                  f"\n\tWeyl elements, and coroot torus elements for {self.name_string}:")
-        else:
-            print("\nRoots, coroots, root spaces, root subgroups, torus reflection maps, " + 
-                           f"\n\tWeyl elements, coroot torus elements, and homomorphism defect coefficients for {self.name_string}:")
-        for alpha in self.root_space_dict:
-            dim = self.root_space_dimension(alpha)
-            mult_tag = ""
-            if not self.root_system.is_reduced:
-                if self.root_system.is_multipliable_root(alpha):
-                    mult_tag = "(multipliable)" 
-                else:
-                    mult_tag ="(not multipliable)"
-            print("\nRoot / alpha:", alpha, mult_tag)
-            print("Coroot / alpha^:", self.root_system.coroot_dict[alpha])
-            print("Root space dimension / d_alpha:", dim)
-            print("Root space generic element / X_alpha(u):")
-            u = vector_variable(letter = 'u', length = dim)
-            print(indent_multiline(sp.pretty(self.root_space_map(alpha, u))))
-            print("Root subgroup generic element / x_alpha(u):")
-            print(indent_multiline(sp.pretty(self.root_subgroup_map(alpha, u))))
-            print("Torus reflection map / s_alpha:")
-            print(indent_multiline(pretty_map(t, self.torus_reflection_map(alpha,t))))
-            print("Weyl element / w_alpha:")
-            print(indent_multiline(sp.pretty(self.weyl_element_map(alpha))))
-            print("Coroot torus element / h_alpha(t):")
-            print(indent_multiline(sp.pretty(self.coroot_torus_element_map(alpha, tt))))
-            if self.root_system.is_multipliable_root(alpha):
-                print("Homomorphism defect coefficient:", \
-                      self.homomorphism_defect_coefficient_dict[alpha][2])
-
+        print(f"\nRoots and associated data for {self.name_string}:")
+        print(self.get_roots_table())
+        
         if len(self.commutator_coefficient_dict) == 0:
             print("\nThere are no pairs of summable roots, so there are no commutator coefficients\n")
         else:
-            print(f"\nCommutator coefficients for {self.name_string}:\n")
-            for alpha in self.root_system.root_list:
-                d_alpha = self.root_space_dimension(alpha)
-                u = vector_variable(letter = 'u', length = d_alpha)
-                for beta in self.root_system.root_list:
-                    if (self.root_system.is_root(alpha + beta)
-                        and not self.root_system.is_proportional(alpha, beta, with_ratio = False)):
-                        d_beta = self.root_space_dimension(beta)
-                        v = vector_variable(letter = 'v', length = d_beta)
-                        linear_combos = self.root_system.integer_linear_combos(alpha,beta)
-                        print("\tRoot 1 / alpha:",alpha)
-                        print("\tRoot 2 / beta:",beta)
-                        for key in linear_combos:
-                            i = key[0]
-                            j = key[1]
-                            combo = linear_combos[key]
-                            assert(combo.equals(i*alpha + j*beta)), "Error with linear combos"
-                            coeff = self.commutator_coefficient_map(alpha, beta, i, j, u, v)
-                            coeff_for_printing = sp.pretty(coeff[0]) if len(coeff) == 1 else sp.pretty(coeff.T)
-                            print("\t\t(i,j):",(i,j))
-                            print("\t\ti*alpha + j*beta:",combo)
-                            print("\t\tCommutator coefficient:",end="")
-                            if len(coeff_for_printing.splitlines()) > 1: 
-                                coeff_for_printing = indent_multiline(coeff_for_printing, prefix = "\t\t\t")
-                                print("\n")
-                            print(coeff_for_printing,"\n")
-                            
-        print(f"Weyl conjugation coefficients for {self.name_string}:\n")
+            print(f"\nCommutator coefficients for {self.name_string}:")
+            print(self.get_commutator_table())
+        
+        print(f"Weyl conjugation coefficients for {self.name_string}:")
+        print(self.get_weyl_conjugation_table())
+
+        print(f"\nEnd of pinning information for {self.name_string}")
+    
+    def get_roots_table(self):
+        # Compile a text table for info on roots, coroots, etc.
+        
+        t = self.generic_torus_element('t')
+        tt = sp.symbols('t')
+        table = []
+        
+        for alpha in self.root_space_dict:
+            alpha_check = self.root_system.coroot_dict[alpha]
+            d_alpha = self.root_space_dimension(alpha)
+            u = vector_variable(letter = 'u', length = d_alpha)
+            X_alpha_u = sp.pretty(self.root_space_map(alpha, u), use_unicode=False)
+            x_alpha_u = sp.pretty(self.root_subgroup_map(alpha, u), use_unicode=False)
+            s_alpha = pretty_map(t, self.torus_reflection_map(alpha, t), use_unicode=False)
+            w_alpha = sp.pretty(self.weyl_element_map(alpha), use_unicode=False)
+            h_alpha_t = sp.pretty(self.coroot_torus_element_map(alpha, tt), use_unicode=False)
+    
+            if self.root_system.is_reduced:
+                table.append([alpha, alpha_check, d_alpha, X_alpha_u, x_alpha_u, s_alpha, w_alpha, h_alpha_t])
+            else:
+                # A non-reduced root system has multipliable and non-multipliable roots
+                # Also, for multipliable roots, there is a feature that I call the
+                # "homomorphism defect coefficient
+                mult = self.root_system.is_multipliable_root(alpha)
+                hdc = self.homomorphism_defect_coefficient_dict[alpha][2] if mult else "NA"
+                table.append([alpha, mult, alpha_check, d_alpha, X_alpha_u, x_alpha_u, s_alpha, w_alpha, h_alpha_t, hdc])
+    
+        if self.root_system.is_reduced:
+            headers = ["α", "α^", "d_α", "X_α(u)", "x_α(u)", "s_α", "w_α", "h_α(t)"]
+        else:
+            headers = ["α", "Multipliable", "α^", "d_α", "X_α(u)", "x_α(u)", "s_α", "w_α", "h_α(t)", "Hom defect"]
+
+        return formatted_table(table, headers)
+    
+    def get_commutator_table(self):
+        if len(self.commutator_coefficient_dict) == 0: 
+            return("\nThere are no pairs of summable roots, so there are no commutator coefficients\n")
+
+        table = []
+        for (alpha, beta) in self.root_system.summable_non_proportional_pairs:
+            d_alpha = self.root_space_dimension(alpha)
+            d_beta = self.root_space_dimension(beta)
+            u = vector_variable(letter = 'u', length = d_alpha)
+            v = vector_variable(letter = 'v', length = d_beta)
+            linear_combos = self.root_system.integer_linear_combos(alpha,beta)
+            for key in linear_combos:
+                i = key[0]
+                j = key[1]
+                combo = linear_combos[key]
+                assert(combo.equals(i*alpha + j*beta)), "Error with linear combos"
+                coeff = self.commutator_coefficient_map(alpha, beta, i, j, u, v)
+                coeff_for_printing = sp.pretty(coeff[0]) if len(coeff) == 1 else sp.pretty(coeff.T)
+                table.append([alpha, beta, i, j, combo, coeff_for_printing])
+        headers = ["α", "β", "i", "j", "iα + jβ", "N_ij^αβ(u,v) (commutator coefficient)"]
+        
+        return formatted_table(table, headers)
+
+    def get_weyl_conjugation_table(self):
+        table = []
         for alpha in self.root_system.root_list:
             for beta in self.root_system.root_list:
                 d_beta = self.root_space_dimension(beta)
@@ -209,18 +215,13 @@ class pinned_group:
                 assert d_beta == d_gamma
                 phi_u = self.weyl_conjugation_coefficient_map(alpha, beta, u)
                 phi_u_for_printing = sp.pretty(phi_u[0]) if len(phi_u) == 1 else sp.pretty(phi_u.T)
-                print("\tRoot 1 / alpha:",alpha)
-                print("\tRoot 2 / beta:",beta)
-                print("\tReflection / sigma_alpha(beta):",gamma)
-                print("\tWeyl conjugation coefficient: ", end="")
-                if len(phi_u_for_printing.splitlines()) > 1: 
-                    phi_u_for_printing = indent_multiline(phi_u_for_printing, prefix = "\t\t\t")
-                    print("\n")
-                print(phi_u_for_printing)
-                print()
-                                
-        print(f"End of pinning information for {self.name_string}")
+                table.append([alpha, beta, gamma, phi_u_for_printing])
+        headers = ["α", "β", "γ=σ_α(β)", "Weyl conjugation coefficient"]
         
+        return formatted_table(table, 
+                               headers,
+                               replace_square_brackets = False)
+    
     def fit_root_system(self, display = True):
         t = self.generic_torus_element('t')
         x = self.generic_lie_algebra_element('x')
@@ -232,7 +233,7 @@ class pinned_group:
                                                   lattice_matrix = self.torus.trivial_character_matrix)
         
         if display:
-            print("\nFitting root system (Phi)")
+            print("\nFitting root system (Φ)")
             print("\tCandidate characters:",len(full_char_list))                
             print("\tCandidates after quotient by trivial characters:",len(reduced_char_list))
         
@@ -246,7 +247,7 @@ class pinned_group:
          
     def fit_root_spaces(self, display = True):
         
-        if display: print("Fitting root spaces/root space maps (X_alpha)")
+        if display: print("Fitting root spaces/root space maps (X_α)")
         
         # In the case of any split group, the root spaces all have dimension 1
         # In general though, root space dimensions can be large
@@ -290,7 +291,7 @@ class pinned_group:
     
     def fit_root_subgroup_maps(self, display = True):
         
-        if display: print("Fitting root subgroup maps (x_alpha)")
+        if display: print("Fitting root subgroup maps (x_α)")
         
         # We compute root subgroups by matrix exponentiating the root spaces
         # This is not valid in characteristic 2, because it involves dividing by 2
@@ -366,7 +367,7 @@ class pinned_group:
 
     def fit_commutator_coefficients(self, display = True):
         
-        if display: print("Fitting commutator coefficients (N_{i,j}^{alpha,beta}(u,v))")
+        if display: print("Fitting commutator coefficients (N_ij^αβ(u,v))")
         
         # In SL_n, a commutator [x_alpha(u), x_beta(v)]
         # is nontrivial if and only if alpha+beta is a root,
@@ -468,7 +469,7 @@ class pinned_group:
         display_extra = False  # toggle for debugging
         #############################################
         
-        if display: print("Fitting torus reflections (s_alpha)")
+        if display: print("Fitting torus reflections (s_α)")
         # Fit reflections s_alpha of the torus,
         # and elements w_alpha in the normalizer of the torus
         def torus_refl_map(alpha, t):
@@ -482,7 +483,7 @@ class pinned_group:
             return t*alpha_check_of_alpha_of_t_inverse
         self.torus_reflection_map = torus_refl_map
         
-        if display: print("Fitting Weyl elements (w_alpha)")
+        if display: print("Fitting Weyl elements (w_α)")
         
         # Populate a dictionary of Weyl elements
         # Keys are roots (as tuples)
@@ -786,7 +787,7 @@ class pinned_group:
         # However, this relies on a generalization of the Weyl elements which is not implemented here
         # (we don't have w_alpha(t), just things like w_alpha(1))
         
-        if display: print("Fitting coroot torus elements (h_alpha)")
+        if display: print("Fitting coroot torus elements (h_α)")
         
         # Populate a dictionary of coroot torus elements
         # Keys are roots (as tuples)
@@ -815,7 +816,10 @@ class pinned_group:
             vanishing_expression = sp.simplify(LHS - RHS)
             solutions_list = sp.solve(vanishing_expression, vars_to_solve_for, dict=True)
             solutions_dict = solutions_list[0]
-            h_sol = sp.simplify(h.subs(solutions_dict))
+            h_sol_1 = sp.simplify(h.subs(solutions_dict))
+            
+            # For any remaning variables in h_sol that are not t, just set them to 1
+            h_sol_2 = h_sol_1.subs({sym: 1 for sym in h_sol_1.free_symbols if sym != t})
             
             ##############################################################
             #### FOR DEBUGGING
@@ -834,14 +838,16 @@ class pinned_group:
             # sp.pprint(vanishing_expression)
             # print("\nSolutions list: ", solutions_list)
             # print("\nSolutions dict: ", solutions_dict)
-            # print("\nSolution for h_alpha(t) = ")
-            # sp.pprint(h_sol)
+            # print("\nSolution for h_alpha(t), may have free parameters:")
+            # sp.pprint(h_sol_1)
+            # print("\nSolution for h_alpha(t) with free parameters set to 1:")
+            # sp.pprint(h_sol_2)
             ##############################################################
             
             assert len(solutions_list) >= 1, f"No solutions for h_alpha(t), alpha = {alpha}"
             
             # plug in solutions and transfer to the storage dictionary
-            self.coroot_torus_element_list[alpha] = h_sol
+            self.coroot_torus_element_list[alpha] = h_sol_2
 
         def cte(alpha, t):
             # t should be a scalar
@@ -851,12 +857,12 @@ class pinned_group:
             
             #############################################
             ### FOR DEBUGGING
-            print("\nalpha = ")
-            sp.pprint(alpha)
-            print("\nt = ", t)
-            print("\nh_alpha(t) = ")
-            sp.pprint(h_alpha_var)
-            print("\nVariables in h_alpha(t):", h_vars)
+            # print("\nalpha = ")
+            # sp.pprint(alpha)
+            # print("\nt = ", t)
+            # print("\nh_alpha(t) = ")
+            # sp.pprint(h_alpha_var)
+            # print("\nVariables in h_alpha(t):", h_vars)
             #############################################
             
             assert(len(h_vars) == 1)
@@ -1236,14 +1242,14 @@ class pinned_group:
         if display: print("\nVerifying properties of the Weyl group... ")
         t = self.generic_torus_element('t')
     
-        if display: print("\tChecking that s_alpha outputs torus elements... ",end="")
+        if display: print("\tChecking that s_α outputs torus elements... ",end="")
         for alpha in self.root_system.root_list:
             s_alpha_of_t = self.torus_reflection_map(alpha, t)
             assert self.is_torus_element(s_alpha_of_t), \
-                f"Torus reflection by s_alpha (with alpha = {alpha}) does not land in the torus"
+                f"Torus reflection by s_α (with α = {alpha}) does not land in the torus"
         if display: print("done.")
     
-        if display: print("\tChecking that s_alpha pointwise fixes ker(alpha)...", end="")
+        if display: print("\tChecking that s_α pointwise fixes ker(α)...", end="")
         for alpha in self.root_system.root_list:
             k = generic_kernel_element(alpha, t)
             assert self.is_torus_element(k)
@@ -1251,7 +1257,7 @@ class pinned_group:
             assert k.equals(s_alpha_of_k), f"Torus reflection does not fix ker({alpha})"
         if display: print("done.")
     
-        if display: print("\tChecking that s_alpha inverts T/ker(alpha)... ", end="")
+        if display: print("\tChecking that s_α inverts T/ker(α)... ", end="")
         for alpha in self.root_system.root_list:
             # The map s_alpha pointwise fixes ker(alpha),
             # so it induces a map on the quotient T/ker(alpha).
@@ -1264,14 +1270,14 @@ class pinned_group:
             s_alpha_of_t = self.torus_reflection_map(alpha, t)
             alpha_of_s_times_t = evaluate_character(alpha, s_alpha_of_t * t)
             assert alpha_of_s_times_t == 1, \
-                f"The map s_alpha does not properly invert T/ker(alpha) for alpha={alpha}"
+                f"The map s_α does not properly invert T/ker(α) for α={alpha}"
         if display: print("done.")
         
-        if display: print("\tChecking that s_alpha^2 is the identity on the torus...",end="")
+        if display: print("\tChecking that s_α^2 is the identity on the torus...",end="")
         for alpha in self.root_system.root_list:
             s_alpha_of_t = self.torus_reflection_map(alpha,t)
             s_alpha_squared_of_t = self.torus_reflection_map(alpha, s_alpha_of_t)
-            assert t.equals(s_alpha_squared_of_t), f"s_alpha^2 is not identity for alpha={alpha}"
+            assert t.equals(s_alpha_squared_of_t), f"s_α^2 is not identity for α={alpha}"
         if display: print("done.")
     
         if display: print("\tChecking Weyl elements are in the group... ", end="")

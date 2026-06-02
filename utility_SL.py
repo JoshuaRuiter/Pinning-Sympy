@@ -35,11 +35,3 @@ def generic_lie_algebra_element_SL(matrix_size, rank = None, form = None, letter
     X = sp.Matrix(sp.symarray(letter, (matrix_size, matrix_size)))
     X[matrix_size-1, matrix_size-1] -= X.trace()
     return X
-    
-    # OLD VERSION
-    # X = sp.Matrix(sp.symarray(letter, (matrix_size, matrix_size)))
-    # trace = X.trace()
-    # bottom_right_entry = X[matrix_size -1, matrix_size - 1]
-    # X[matrix_size - 1, matrix_size - 1] = bottom_right_entry - trace
-    # assert X.trace().is_zero
-    # return X

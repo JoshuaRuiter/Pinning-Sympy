@@ -5,6 +5,8 @@ import operator
 import random
 import multiprocessing as mp
 from copy import deepcopy
+from tabulate import tabulate
+import re
 
 def is_diagonal(my_matrix):
     # Return true if matrix is diagonal'    
@@ -14,19 +16,17 @@ def is_diagonal(my_matrix):
 def vector_variable(letter, length):
     return sp.Matrix(sp.symarray(letter, length))
 
-def random_int_vector(length, lower_bound, upper_bound, nonzero = True):
-    elements = []
-    for _ in range(length):
-        val = random.randint(lower_bound, upper_bound)
-        
-        # If nonzero is flagged, redraw if we hit 0
-        if nonzero:
-            while val == 0:
-                val = random.randint(lower_bound, upper_bound)
-                
-        elements.append(val)
-        
-    return sp.Matrix(elements)
+### DEPRECATED
+# def random_int_vector(length, lower_bound, upper_bound, nonzero = True):
+#     elements = []
+#     for _ in range(length):
+#         val = random.randint(lower_bound, upper_bound)
+#         # If nonzero is flagged, redraw if we hit 0
+#         if nonzero:
+#             while val == 0:
+#                 val = random.randint(lower_bound, upper_bound)
+#         elements.append(val)
+#     return sp.Matrix(elements)
 
 def entry_to_mask(val):
     # 1. Fast track: explicit structural zero/nonzero
@@ -49,7 +49,6 @@ def entry_to_mask(val):
     return 0 if val.simplify().is_zero else 1
 
 def compare_nonzero_pattern(A, B, op = operator.eq):
-    
     if A.shape != B.shape: return False
     mask_A = A.applyfunc(entry_to_mask)
     mask_B = B.applyfunc(entry_to_mask)
@@ -58,75 +57,79 @@ def compare_nonzero_pattern(A, B, op = operator.eq):
     # Covering: op(mask_A, mask_B) checks mask_A <= mask_B (equivalent to B >= A)
     return all(op(a, b) for a, b in zip(mask_A, mask_B))
 
-def compute_order(my_function, my_input, limit):
-    original_input = my_input
-    x = my_input
-    i = 1
-    while i <= limit:
-        x = my_function(x)
-        if x == original_input:
-            return i
-    
-        print("\noriginal input = ")
-        sp.pprint(original_input)
-        print("i =", i)
-        print("f^i(x) =")
-        sp.pprint(x)
-    
-        i = i + 1
-        
-    
-    assert False, "Order exceeds limit"
+### DEPRECATED
+# def compute_order(my_function, my_input, limit):
+#     original_input = my_input
+#     x = my_input
+#     i = 1
+#     while i <= limit:
+#         x = my_function(x)
+#         if x == original_input:
+#             return i
+#         print("\noriginal input = ")
+#         sp.pprint(original_input)
+#         print("i =", i)
+#         print("f^i(x) =")
+#         sp.pprint(x)
+#         i = i + 1
+#     assert False, "Order exceeds limit"
 
-def randomize_symbolic_matrix(matrix_expr, 
-                              lower_bound = -5, 
-                              upper_bound = 5,
-                              ignore_variables = None, 
-                              nonzero = True):
-    """
-    Takes a matrix expression containing free variables and returns a concrete, 
-    fully randomized numerical matrix by substituting integers within the specified range.
+### DEPRECATED
+# def randomize_symbolic_matrix(matrix_expr, 
+#                               lower_bound = -5, 
+#                               upper_bound = 5,
+#                               ignore_variables = None, 
+#                               nonzero = True):
+#     """
+#     Takes a matrix expression containing free variables and returns a concrete, 
+#     fully randomized numerical matrix by substituting integers within the specified range.
     
-    Parameters:
-    -----------
-    matrix_expr : sp.Matrix
-        The symbolic matrix expression to randomize.
-    ignore_variables : iterable of sp.Symbol, optional
-        Symbols present in the matrix that should remain symbolic and not be substituted.
-    lower_bound : int, optional
-        Minimum integer value for random assignment.
-    upper_bound : int, optional
-        Maximum integer value for random assignment.
-    nonzero : bool, optional
-        If True, ensures no variables are substituted with 0.
-    """
-    # Normalize ignore_variables to a set for fast, unified lookups
-    if ignore_variables is None:
-        ignored = set()
-    elif isinstance(ignore_variables, (str, sp.Symbol)):
-        ignored = {ignore_variables}
-    else:
-        ignored = set(ignore_variables)
+#     Parameters:
+#     -----------
+#     matrix_expr : sp.Matrix
+#         The symbolic matrix expression to randomize.
+#     ignore_variables : iterable of sp.Symbol, optional
+#         Symbols present in the matrix that should remain symbolic and not be substituted.
+#     lower_bound : int, optional
+#         Minimum integer value for random assignment.
+#     upper_bound : int, optional
+#         Maximum integer value for random assignment.
+#     nonzero : bool, optional
+#         If True, ensures no variables are substituted with 0.
+#     """
+#     # Normalize ignore_variables to a set for fast, unified lookups
+#     if ignore_variables is None:
+#         ignored = set()
+#     elif isinstance(ignore_variables, (str, sp.Symbol)):
+#         ignored = {ignore_variables}
+#     else:
+#         ignored = set(ignore_variables)
         
-    # Isolate variables that are not explicitly ignored
-    symbols_to_randomize = matrix_expr.free_symbols - ignored
+#     # Isolate variables that are not explicitly ignored
+#     symbols_to_randomize = matrix_expr.free_symbols - ignored
     
-    substitution_dict = {}
-    for sym in symbols_to_randomize:
-        val = random.randint(lower_bound, upper_bound)
-        if nonzero:
-            while val == 0:
-                val = random.randint(lower_bound, upper_bound)
-        substitution_dict[sym] = sp.Integer(val)
+#     substitution_dict = {}
+#     for sym in symbols_to_randomize:
+#         val = random.randint(lower_bound, upper_bound)
+#         if nonzero:
+#             while val == 0:
+#                 val = random.randint(lower_bound, upper_bound)
+#         substitution_dict[sym] = sp.Integer(val)
         
-    return matrix_expr.subs(substitution_dict)
+#     return matrix_expr.subs(substitution_dict)
 
 def indent_multiline(s, prefix="\t"):
     return "\n".join(prefix + line for line in s.splitlines())
 
-def pretty_map(lhs, rhs, arrow='->'):
-    lhs_lines = sp.pretty(lhs).splitlines()
-    rhs_lines = sp.pretty(rhs).splitlines()
+def pretty_map(lhs, rhs, arrow='->', use_unicode=True):
+    # Pass the use_unicode flag down to SymPy's pretty printer
+    lhs_lines = sp.pretty(lhs, use_unicode=use_unicode).splitlines()
+    rhs_lines = sp.pretty(rhs, use_unicode=use_unicode).splitlines()
+
+    # Optional: Fallback to an ASCII arrow if unicode is disabled 
+    # and the user passed a unicode arrow by default.
+    if not use_unicode and arrow == '→':
+        arrow = '->'
 
     # Heights
     h_lhs = len(lhs_lines)
@@ -143,7 +146,7 @@ def pretty_map(lhs, rhs, arrow='->'):
     arrow_line = h_max // 2
 
     # Width of LHS for alignment
-    max_lhs_width = max(len(line) for line in lhs_lines)
+    max_lhs_width = max(len(line) for line in lhs_lines) if lhs_lines else 0
 
     result = ""
     for i, (l, r) in enumerate(zip(lhs_lines, rhs_lines)):
@@ -152,8 +155,102 @@ def pretty_map(lhs, rhs, arrow='->'):
         else:
             # maintain same spacing as arrow width
             result = result + (f"{l.ljust(max_lhs_width)} {' ' * len(arrow)} {r}\n")
+            
     result = result[:-1] # chop off the very last newline character
     return result
+
+def formatted_table(table, headers, replace_square_brackets = True):
+
+    # Subscript formatting
+    subscript_map = {"_0": "₀", "_1": "₁", "_2": "₂", "_3": "₃", "_4": "₄",
+                     "_5": "₅", "_6": "₆", "_7": "₇", "_8": "₈", "_9": "₉"}
+    
+    cleaned_table = []
+    for row in table:
+        cleaned_row = []
+        for cell in row:
+            cell_str = str(cell)
+            
+            # Replace square brackets [ and ] with |
+            if replace_square_brackets:
+                cell_str = cell_str.replace('[', '|').replace(']', '|')
+            
+            # Use regex to find variable names with subscripts (e.g., t_0, u_0)
+            for ascii_sub, uni_sub in subscript_map.items():
+                pattern = rf"(\w){ascii_sub}"
+                cell_str = re.sub(pattern, rf" \1{uni_sub}", cell_str)
+            
+            # --- New Step: Clean up multiplied subscripted variables ---
+            # Looks for: subscript (Group 1), then '* ', then a space, then a letter (Group 2), then a subscript (Group 3)
+            # Example match: "₀* u₀" -> transforms to "₀u₀  "
+            prod_pattern = r"([₀-₉])\*\s+(\w)([₀-₉])"
+            cell_str = re.sub(prod_pattern, r"\1\2\3  ", cell_str)
+                
+            cleaned_row.append(cell_str)
+        cleaned_table.append(cleaned_row)
+    
+    # Use tabulate
+    table_str = tabulate(cleaned_table, headers=headers, tablefmt="fancy_grid")
+    
+    return table_str
+
+def formatted_table_OLD_1(table, headers, replace_square_brackets = True):
+
+    # Subscript formatting
+    subscript_map = {"_0": "₀", "_1": "₁", "_2": "₂", "_3": "₃", "_4": "₄",
+                     "_5": "₅", "_6": "₆", "_7": "₇", "_8": "₈", "_9": "₉"}
+    
+    cleaned_table = []
+    for row in table:
+        cleaned_row = []
+        for cell in row:
+            cell_str = str(cell)
+            
+            # Replace square brackets [ and ] with |
+            if replace_square_brackets:
+                cell_str = cell_str.replace('[', '|').replace(']', '|')
+            
+            # Use regex to find variable names with subscripts (e.g., t_0, u_0)
+            # (\w) captures the variable character, (_[0-9]) captures the subscript
+            for ascii_sub, uni_sub in subscript_map.items():
+                # This pattern matches any letter right before the target underscore index
+                # and replaces 'x_0' with ' x₀'
+                pattern = rf"(\w){ascii_sub}"
+                cell_str = re.sub(pattern, rf" \1{uni_sub}", cell_str)
+                
+            cleaned_row.append(cell_str)
+        cleaned_table.append(cleaned_row)
+    
+    # Use tabulate
+    table_str = tabulate(cleaned_table, headers=headers, tablefmt="fancy_grid")
+    
+    return table_str
+
+def formatted_table_OLD(table, headers, replace_square_brackets = True):
+
+    # Subscript formatting
+    subscript_map = {"_0": "₀", "_1": "₁", "_2": "₂", "_3": "₃", "_4": "₄",
+                 "_5": "₅", "_6": "₆", "_7": "₇", "_8": "₈", "_9": "₉"}
+    
+    cleaned_table = []
+    for row in table:
+        cleaned_row = []
+        for cell in row:
+            cell_str = str(cell)
+            
+            # Replace square brackets [ and ] with |
+            if replace_square_brackets:
+                cell_str = cell_str.replace('[', '|').replace(']', '|')
+            
+            for ascii_sub, uni_sub in subscript_map.items():
+                cell_str = cell_str.replace(ascii_sub, uni_sub)
+            cleaned_row.append(cell_str)
+        cleaned_table.append(cleaned_row)
+    
+    # Use tabulate
+    table_str = tabulate(cleaned_table, headers=headers, tablefmt="fancy_grid")
+    
+    return table_str
 
 def has_structural_contradiction(eqs, nonzero_vars):
     for eq in eqs:
