@@ -28,15 +28,19 @@ from utility_SU import (group_constraints_SU,
 
 def main():
     to_do_list = ("TO DO LIST:" + "\n\t" + 
-                  "A few small fixes related to table formatting and printing for subscripted variables, some parenthesis issues in commutator coefficient tables, and other things" + "\n\t" +
-                  "Some commutator coefficient seem to be zero, what's going on there?" + "\n\t" +
                   "Improve speed/optimization in a number of places. Top candidates:" + "\n\t\t" + 
                       "fit_weyl_elements, reduce_character_list/determine_roots, " + "\n\t\t" + 
                       "weyl group nonzero pattern matching, reducing test redundancy" + "\n\t" +
+                  "Add documentation to root_system" + "\n\t" +
+                  "Add documentation to utility_general" + "\n\t" +
+                  "Add documentation to split_torus" + "\n\t" +
+                  "Add documentation to utility_roots" + "\n\t" +
+                  "Add documentation to pinned_group" + "\n\t" +
+                  "Add documentation to pinned_group_examples" + "\n\t" +
+                  "Write a Readme for Github" + "\n\t" +
                   "Understand what's going on with the orders of Weyl conjugation coefficient maps" + "\n\t" +
                   "Find a way to implement belongs_to_generated_subgroup again in a" + "\n\t\t" +
                       "computationally feasible way, even if with random numerical stuff" + "\n\t" +
-                  "Add documentation, including a Readme on Github" + "\n\t" +
                   "Implement a class for elements of quadratic field extensions that can handle symbolic stuff" + "\n\t" +
                   "Implement other groups? maybe type G2, twisted groups?" + "\n\t"
                   "Implement a non-split torus class, maybe" + "\n\t" +
@@ -46,21 +50,28 @@ def main():
     print("\nDemonstrating usage of pinned group class")
     start_time = time.perf_counter()
     sp.init_printing(wrap_line=False)
+    eps_values = [-1,1] # should only include +/-1
+    
+    #############################################
+    ### Edit these to change which tests are run
+    ### A "full test" is 2<=n<=6 and 1<=q<=3
     n_min = 1
     n_max = 6
     q_min = 1
     q_max = 3
-
-    eps_values = [-1,1] # should only include +/-1
+    #############################################
     
+    #####################################################################
+    ### Comment these out temporarily to shorten tests
     n_max_SL = 3 # SL_4 and beyond take a long time to compute roots
     run_SL_tests(n_min, min(n_max, n_max_SL))
-    # run_SO_split_tests(n_min, n_max, q_min, q_max)
-    # run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
-    # run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
-    # run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
+    run_SO_split_tests(n_min, n_max, q_min, q_max)
+    run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
+    run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
+    run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
+    #####################################################################
+    
     print("\nAll tests complete.")
-
     end_time = time.perf_counter()
     execution_time = end_time - start_time
     print(f"Time to run tests: {round(execution_time/60, 1)} minutes")

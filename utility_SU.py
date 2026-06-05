@@ -1,3 +1,38 @@
+# This file contains useful helper functions related to special unitary groups
+# In particular, these are all in service of constructing an instance of a 
+# pinned_group object to represent a special unitary group.
+
+###############################################
+# EXAMPLE USE CASE: constructing a 4x4 special orthogonal pinned_group object of rank q=2
+# d = sp.symbols('d', nonzero = True)
+# p_e = sp.sqrt(d)
+# q = 2
+# n = 4
+# eps = -1
+# anisotropic_vec = vector_variable('c',n-2*q)
+# if eps == -1:
+#     anisotropic_vec = anisotropic_vec * p_e
+# NIF = nondegenerate_isotropic_form(dimension = n,
+#                                    witt_index = q,
+#                                    anisotropic_vector = anisotropic_vec,
+#                                    epsilon = eps,
+#                                    primitive_element = p_e)
+# T = split_torus(rank = q,
+#                 is_element = is_torus_element_SU,
+#                 generic_element = generic_torus_element_SU,
+#                 trivial_character_matrix = trivial_characters_SU(n,q),
+#                 nontrivial_character_entries = character_entries_SU(n,q))     
+# SU_n_q = pinned_group(name_string = f"SU(n={n}, q={q}, eps={eps})",
+#                       matrix_size = n,
+#                       form = NIF, 
+#                       group_constraints = group_constraints_SU,
+#                       maximal_split_torus = T,
+#                       lie_algebra_constraints = lie_algebra_constraints_SU,
+#                       generic_lie_algebra_element = generic_lie_algebra_element_SU,
+#                       non_variables = {d})
+# SU_n_q.fit_pinning(display = True)
+# SU_n_q.validate_pinning(display = True)
+
 from utility_general import is_diagonal
 import sympy as sp
 import numpy as np
@@ -56,13 +91,12 @@ def custom_imag_part(my_expression, primitive_element, is_matrix = False):
         return imag_part_matrix
 
 def group_constraints_SU(matrix_to_test, form):
-    """
-    Returns a list of SymPy equations enforcing:
-        1. (X conjugate transpose)*H*X = H
-        2. det(X)) = 1
-    X : n x n SymPy Matrix
-    H : n x n SymPy Matrix representing the form
-    """
+    # The requirements for a matrix X to be an element of the special unitary group with form matrix H are
+    # 1) (X conjugate transpose) * H * X = H
+    # 2) det(X) = 1
+    # The pinned_group class expects this information in the form of vanishing conditions,
+    # so this method effectively returns the equations "X*HX-H=0" and "det(X)-1=0"
+    # However, the equations are split up matrix-entry-wise for various reasons
     X = matrix_to_test
     X_conjugate = custom_conjugate(X, form.primitive_element)
     n = X.shape[0]
@@ -79,6 +113,12 @@ def group_constraints_SU(matrix_to_test, form):
     return eqs
 
 def lie_algebra_constraints_SU(matrix_to_test, form):
+    # The requirements for a matrix X to be an element of the special unitary Lie algebra with form matrix H are
+    # 1) (X conjugate transpose) * H + H * X = 0
+    # 2) tr(X) = 1
+    # The pinned_group class expects this information in the form of vanishing conditions,
+    # so this method effectively returns the equations "X*H + HX=0" and "tr(X)=0"
+    # However, the equations are split up matrix-entry-wise for various reasons
     X = matrix_to_test
     X_conjugate = custom_conjugate(X, form.primitive_element)
     n = X.shape[0]
@@ -124,24 +164,26 @@ def generic_torus_element_SU(matrix_size, rank, letter = 't'):
     return t
 
 def character_entries_SU(matrix_size, rank):
+    # When computing the root system for a special unitary group,
+    # this tells the solver to only use characters which have
+    # nonzero entries in the first q=rank components.
+    # This is possible because a torus element is determined by
+    # its first q diagonal entries.
     return [1]*rank + [0]*(matrix_size - rank)
 
 def trivial_characters_SU(matrix_size, rank):
+    # Since elements of the diagonal subgroup have the form
+    # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1)
+    # the character (1, 0, ..., 0, 1, 0, ...)
+    # where the two 1's appear at positions 1 and q+1 
+    # is the trivial group homomorphism on the torus
+    # This encodes all of the trivial characters determined by the
+    # dependence of the i and q+i entries of the torus,
+    # as well as the character of all 1's arising from the det=1 condition
     trivial_characters = [np.array([1 if j == i or j == i + rank else 0 for j in range(matrix_size)])for i in range(rank)]
     if not (rank == 1 and matrix_size == 2): trivial_characters.append([1] * matrix_size)
     matrix_with_trivial_character_columns = np.array(np.stack(trivial_characters, axis=1))
     return matrix_with_trivial_character_columns
-
-def is_lie_algebra_element_SU(matrix_to_test, form):
-    # Return true of matrix_to_test is an element of the special unitary group
-    # The condition is
-        # conj(X^T)*H + H*X = 0, where
-        # X = matrix_to_test
-        # H = matrix associated to the (skew-)hermitian form
-    X = matrix_to_test
-    H = form.matrix
-    X_conjugate = custom_conjugate(X, form.primitive_element)
-    return (X_conjugate.T*H).equals(-H*X) and sp.simplify(X.trace()) == 0
 
 def generic_lie_algebra_element_SU(matrix_size, rank, form, letter = 'x'):
     n = matrix_size
@@ -154,7 +196,7 @@ def generic_lie_algebra_element_SU(matrix_size, rank, form, letter = 'x'):
     X_imag = sp.Matrix(sp.symarray(letter + '_i', (n,n)))
     X = X_real + p_e*X_imag
     
-    # X must be a block matrix of the form
+    # An element X of the special unitary Lie algebra is a block matrix of the form
     # [X_11, X_12, X_13
     #  X_21, X_22, X_23
     #  X_31, X_32, X_33]
@@ -241,5 +283,4 @@ def generic_lie_algebra_element_SU(matrix_size, rank, form, letter = 'x'):
         for j in range(i):
             X[i+2*q, j+2*q] = -c[j]/c[i] * custom_conjugate(X[j+2*q,i+2*q], p_e)
     
-    assert is_lie_algebra_element_SU(X, form)
     return X

@@ -2,11 +2,11 @@
 
 import sympy as sp
 import operator
-import random
+# import random
 import multiprocessing as mp
 from copy import deepcopy
 from tabulate import tabulate
-import re
+# from wcwidth import wcswidth
 
 def is_diagonal(my_matrix):
     # Return true if matrix is diagonal'    
@@ -15,6 +15,229 @@ def is_diagonal(my_matrix):
 
 def vector_variable(letter, length):
     return sp.Matrix(sp.symarray(letter, length))
+
+def format_table(table, headers):
+    """
+    Formats math expressions within a table to utilize clean Unicode symbols,
+    manually constructs a rigid fancy_grid layout, and cleanly isolates fraction
+    components from SymPy matrix wrappers to prevent mangled stacked blocks.
+    """
+    import re
+
+    subscript_map = {"_0": "₀", "_1": "₁", "_2": "₂", "_3": "₃", "_4": "₄",
+                     "_5": "₅", "_6": "₆", "_7": "₇", "_8": "₈", "_9": "₉"}
+    exponent_map = {"**2": "²", "**3": "³", "**4": "⁴"}
+
+    def get_visual_width(text):
+        return len(text)
+
+    def visual_ljust(text, width):
+        return text + " " * (width - get_visual_width(text))
+
+    # --- Phase 1: Process and clean text symbols ---
+    processed_rows = []
+    for row in table:
+        new_row = [str(item) for item in row]
+        raw_str = new_row[-1]
+
+        # 1. Clean up outer SymPy Matrix wrappers and structural brackets globally
+        if 'Matrix' in raw_str:
+            raw_str = re.sub(r'Matrix\(\[?', '', raw_str)
+            raw_str = re.sub(r'\]?\)', '', raw_str)
+        raw_str = raw_str.replace('[', '').replace(']', '')
+
+        # 2. Convert power representations to clean unicode superscripts
+        for ascii_exp, uni_exp in exponent_map.items():
+            raw_str = raw_str.replace(ascii_exp, uni_exp)
+
+        # 3. Convert subscripts cleanly
+        for ascii_sub, uni_sub in subscript_map.items():
+            raw_str = raw_str.replace(ascii_sub, uni_sub)
+
+        # 4. Replace multiplication with dots safely
+        raw_str = raw_str.replace('* ', '⋅').replace('*', '⋅')
+
+        # 5. Handle vertical stacked fractions cleanly without carrying stray brackets
+        if '/' in raw_str:
+            parts = raw_str.split('/')
+            numerator = parts[0].strip()
+            denominator = parts[1].strip()
+            
+            # Extract explicit signs (+/-) from the front of the numerator to keep the fraction centered
+            prefix = ""
+            sign_match = re.match(r"^([-\s+]+)", numerator)
+            if sign_match:
+                prefix = sign_match.group(1)
+                numerator = numerator[len(prefix):].strip()
+
+            w = max(get_visual_width(numerator), get_visual_width(denominator))
+            
+            num_pad = (w - get_visual_width(numerator)) // 2
+            denom_pad = (w - get_visual_width(denominator)) // 2
+            
+            num_line = " " * num_pad + numerator + " " * (w - get_visual_width(numerator) - num_pad)
+            bar_line = '-' * w
+            denom_line = " " * denom_pad + denominator + " " * (w - get_visual_width(denominator) - denom_pad)
+            
+            padding = " " * get_visual_width(prefix)
+            raw_str = f"{prefix}{num_line}\n{padding}{bar_line}\n{padding}{denom_line}"
+        else:
+            raw_str = raw_str.strip()
+
+        new_row[-1] = raw_str
+        processed_rows.append(new_row)
+
+    # Convert headers to strings and establish absolute dimensions
+    str_headers = [str(h) for h in headers]
+    num_cols = len(str_headers)
+
+    # --- Phase 2: Compute uniform column widths using visual tracking ---
+    col_widths = [get_visual_width(h) for h in str_headers]
+    
+    for row in processed_rows:
+        for col_idx in range(num_cols):
+            cell_lines = row[col_idx].split('\n')
+            max_line_len = max(get_visual_width(line) for line in cell_lines) if cell_lines else 0
+            if max_line_len > col_widths[col_idx]:
+                col_widths[col_idx] = max_line_len
+
+    # --- Phase 3: Construct the rigid Unicode fancy_grid ---
+    top_border = "╒" + "╤".join("═" * (w + 2) for w in col_widths) + "╕"
+    mid_header = "╞" + "╪".join("═" * (w + 2) for w in col_widths) + "╡"
+    row_sep = "├" + "┼".join("─" * (w + 2) for w in col_widths) + "┤"
+    bot_border = "╘" + "╧".join("═" * (w + 2) for w in col_widths) + "╛"
+
+    def render_row_block(cells):
+        split_cells = [cell.split('\n') for cell in cells]
+        max_lines = max(len(lines) for lines in split_cells)
+        
+        row_output_lines = []
+        for line_idx in range(max_lines):
+            line_parts = []
+            for col_idx in range(num_cols):
+                cell_lines = split_cells[col_idx]
+                text_segment = cell_lines[line_idx] if line_idx < len(cell_lines) else ""
+                padded_text = visual_ljust(text_segment, col_widths[col_idx])
+                line_parts.append(f" {padded_text} ")
+            row_output_lines.append("│" + "│".join(line_parts) + "│")
+            
+        return "\n".join(row_output_lines)
+
+    # Assemble final layout output
+    output_lines = [top_border]
+    output_lines.append(render_row_block(str_headers))
+    output_lines.append(mid_header)
+    
+    for r_idx, row in enumerate(processed_rows):
+        output_lines.append(render_row_block(row))
+        if r_idx < len(processed_rows) - 1:
+            output_lines.append(row_sep)
+            
+    output_lines.append(bot_border)
+    return "\n".join(output_lines)
+
+def format_table_OLD(table, headers):
+    """
+    Formats math expressions within a table to utilize clean Unicode symbols,
+    constructs multi-line fraction boxes cleanly, stabilizes line lengths
+    using visual character widths to prevent tabulate border clipping, 
+    and returns a fancy_grid tabulate string.
+    """
+    import re
+    import unicodedata
+
+    subscript_map = {"_0": "₀", "_1": "₁", "_2": "₂", "_3": "₃", "_4": "₄",
+                     "_5": "₅", "_6": "₆", "_7": "₇", "_8": "₈", "_9": "₉"}
+    exponent_map = {"**2": "²", "**3": "³", "**4": "⁴"}
+
+    def get_visual_width(text):
+        """Calculates accurate visual printing width for strings containing unicode symbols."""
+        return sum(2 if unicodedata.east_asian_width(c) in ('F', 'W') else 1 for c in text)
+
+    def visual_ljust(text, width):
+        """Pads a string out to a specific visual width taking unicode spacing into account."""
+        current_width = get_visual_width(text)
+        return text + " " * (width - current_width)
+
+    formatted_table = []
+
+    for row in table:
+        new_row = list(row)
+        raw_str = str(new_row[-1])
+
+        # 1. Convert power representations to clean unicode superscripts FIRST
+        for ascii_exp, uni_exp in exponent_map.items():
+            raw_str = raw_str.replace(ascii_exp, uni_exp)
+
+        # 2. Apply variable transformations (fixes the "- u_0" spacing bug)
+        for ascii_sub, uni_sub in subscript_map.items():
+            pattern = rf"(\b\w){ascii_sub}([²³⁴])?"
+            # Avoid inserting a hard space if the variable immediately follows a negative sign
+            def replace_sub(m):
+                var = m.group(1)
+                exp = m.group(2) if m.group(2) else ''
+                # Look backwards in the raw string up to the match index to check for a minus
+                match_start = m.start()
+                if match_start > 0 and raw_str[match_start - 1] in ('-', '+', '[', '(', ' '):
+                    return f"{var}{uni_sub}{exp}"
+                return f" {var}{uni_sub}{exp}"
+                
+            raw_str = re.sub(pattern, replace_sub, raw_str)
+
+        # 3. Replace multiplication with dots
+        prod_pattern = r"([₀-₉])([²³⁴])?\*\s*(\w)([₀-₉])([²³⁴])?"
+        def replace_prod(m):
+            p1 = m.group(2) if m.group(2) else ''
+            p2 = m.group(5) if m.group(5) else ''
+            return f"{m.group(1)}{p1}⋅{m.group(3)}{m.group(4)}{p2}"
+        
+        raw_str = re.sub(prod_pattern, replace_prod, raw_str)
+        raw_str = raw_str.replace('* ', '⋅').replace('*', '⋅')
+
+        # 4. Reconstruct fraction layout cleanly if an explicit division is present
+        if ' / ' in raw_str or '/' in raw_str:
+            parts = raw_str.split('/')
+            numerator = parts[0].strip()
+            denominator = parts[1].strip()
+
+            if numerator.startswith('Matrix(['):
+                numerator = numerator.replace('Matrix([', '').replace('])', '')
+            if numerator.startswith('[') and denominator.endswith(']'):
+                numerator = numerator[1:]
+                denominator = denominator[:-1]
+
+            prefix = ""
+            sign_match = re.match(r"^([-\s+]+)", numerator)
+            if sign_match:
+                prefix = sign_match.group(1)
+                numerator = numerator[len(prefix):].strip()
+
+            width = max(len(numerator), len(denominator))
+
+            num_line = numerator.center(width)
+            bar_line = '-' * width
+            denom_line = denominator.center(width)
+
+            padding = " " * len(prefix)
+            coeff_for_printing = (
+                f"{prefix}{num_line}\n"
+                f"{padding}{bar_line}\n"
+                f"{padding}{denom_line}"
+            )
+        else:
+            if raw_str.startswith('Matrix('):
+                raw_str = raw_str.replace('Matrix(', '').rstrip(')')
+            coeff_for_printing = raw_str
+
+        # 5. Fix right-edge border alignment using exact visual widths
+        lines = coeff_for_printing.split('\n')
+        max_visual_len = max(get_visual_width(line) for line in lines) if lines else 0
+        padded_coeff = '\n'.join(visual_ljust(line, max_visual_len) for line in lines)
+
+        new_row[-1] = padded_coeff
+        formatted_table.append(new_row)
+
+    return tabulate(formatted_table, headers=headers, tablefmt="fancy_grid")
 
 ### DEPRECATED
 # def random_int_vector(length, lower_bound, upper_bound, nonzero = True):
@@ -158,99 +381,6 @@ def pretty_map(lhs, rhs, arrow='->', use_unicode=True):
             
     result = result[:-1] # chop off the very last newline character
     return result
-
-def formatted_table(table, headers, replace_square_brackets = True):
-
-    # Subscript formatting
-    subscript_map = {"_0": "₀", "_1": "₁", "_2": "₂", "_3": "₃", "_4": "₄",
-                     "_5": "₅", "_6": "₆", "_7": "₇", "_8": "₈", "_9": "₉"}
-    
-    cleaned_table = []
-    for row in table:
-        cleaned_row = []
-        for cell in row:
-            cell_str = str(cell)
-            
-            # Replace square brackets [ and ] with |
-            if replace_square_brackets:
-                cell_str = cell_str.replace('[', '|').replace(']', '|')
-            
-            # Use regex to find variable names with subscripts (e.g., t_0, u_0)
-            for ascii_sub, uni_sub in subscript_map.items():
-                pattern = rf"(\w){ascii_sub}"
-                cell_str = re.sub(pattern, rf" \1{uni_sub}", cell_str)
-            
-            # --- New Step: Clean up multiplied subscripted variables ---
-            # Looks for: subscript (Group 1), then '* ', then a space, then a letter (Group 2), then a subscript (Group 3)
-            # Example match: "₀* u₀" -> transforms to "₀u₀  "
-            prod_pattern = r"([₀-₉])\*\s+(\w)([₀-₉])"
-            cell_str = re.sub(prod_pattern, r"\1\2\3  ", cell_str)
-                
-            cleaned_row.append(cell_str)
-        cleaned_table.append(cleaned_row)
-    
-    # Use tabulate
-    table_str = tabulate(cleaned_table, headers=headers, tablefmt="fancy_grid")
-    
-    return table_str
-
-def formatted_table_OLD_1(table, headers, replace_square_brackets = True):
-
-    # Subscript formatting
-    subscript_map = {"_0": "₀", "_1": "₁", "_2": "₂", "_3": "₃", "_4": "₄",
-                     "_5": "₅", "_6": "₆", "_7": "₇", "_8": "₈", "_9": "₉"}
-    
-    cleaned_table = []
-    for row in table:
-        cleaned_row = []
-        for cell in row:
-            cell_str = str(cell)
-            
-            # Replace square brackets [ and ] with |
-            if replace_square_brackets:
-                cell_str = cell_str.replace('[', '|').replace(']', '|')
-            
-            # Use regex to find variable names with subscripts (e.g., t_0, u_0)
-            # (\w) captures the variable character, (_[0-9]) captures the subscript
-            for ascii_sub, uni_sub in subscript_map.items():
-                # This pattern matches any letter right before the target underscore index
-                # and replaces 'x_0' with ' x₀'
-                pattern = rf"(\w){ascii_sub}"
-                cell_str = re.sub(pattern, rf" \1{uni_sub}", cell_str)
-                
-            cleaned_row.append(cell_str)
-        cleaned_table.append(cleaned_row)
-    
-    # Use tabulate
-    table_str = tabulate(cleaned_table, headers=headers, tablefmt="fancy_grid")
-    
-    return table_str
-
-def formatted_table_OLD(table, headers, replace_square_brackets = True):
-
-    # Subscript formatting
-    subscript_map = {"_0": "₀", "_1": "₁", "_2": "₂", "_3": "₃", "_4": "₄",
-                 "_5": "₅", "_6": "₆", "_7": "₇", "_8": "₈", "_9": "₉"}
-    
-    cleaned_table = []
-    for row in table:
-        cleaned_row = []
-        for cell in row:
-            cell_str = str(cell)
-            
-            # Replace square brackets [ and ] with |
-            if replace_square_brackets:
-                cell_str = cell_str.replace('[', '|').replace(']', '|')
-            
-            for ascii_sub, uni_sub in subscript_map.items():
-                cell_str = cell_str.replace(ascii_sub, uni_sub)
-            cleaned_row.append(cell_str)
-        cleaned_table.append(cleaned_row)
-    
-    # Use tabulate
-    table_str = tabulate(cleaned_table, headers=headers, tablefmt="fancy_grid")
-    
-    return table_str
 
 def has_structural_contradiction(eqs, nonzero_vars):
     for eq in eqs:

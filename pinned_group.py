@@ -20,13 +20,13 @@ import copy
 import itertools
 from utility_general import (vector_variable, 
                              compare_nonzero_pattern,
+                             format_table,
                              pretty_map,
                              find_zero_vars, 
                              indent_multiline,
                              prune_singletons,
                              solve_with_timeout,
-                             has_structural_contradiction,
-                             formatted_table)
+                             has_structural_contradiction)
 from utility_roots import (generate_character_list, 
                            reduce_character_list, 
                            determine_roots, 
@@ -37,6 +37,7 @@ from utility_roots import (generate_character_list,
 from root_system import root_system
 from functools import reduce
 from operator import mul
+from tabulate import tabulate
 
 class pinned_group:
 
@@ -136,18 +137,20 @@ class pinned_group:
         print(self.get_roots_table())
         
         if len(self.commutator_coefficient_dict) == 0:
-            print("\nThere are no pairs of summable roots, so there are no commutator coefficients\n")
+            print("\nThere are no pairs of summable roots, so there are no commutator coefficients")
         else:
             print(f"\nCommutator coefficients for {self.name_string}:")
             print(self.get_commutator_table())
         
-        print(f"Weyl conjugation coefficients for {self.name_string}:")
+        print(f"\nWeyl conjugation coefficients for {self.name_string}:")
         print(self.get_weyl_conjugation_table())
 
         print(f"\nEnd of pinning information for {self.name_string}")
     
     def get_roots_table(self):
         # Compile a text table for info on roots, coroots, etc.
+        import re
+        import sympy as sp
         
         t = self.generic_torus_element('t')
         tt = sp.symbols('t')
@@ -168,7 +171,7 @@ class pinned_group:
             else:
                 # A non-reduced root system has multipliable and non-multipliable roots
                 # Also, for multipliable roots, there is a feature that I call the
-                # "homomorphism defect coefficient
+                # "homomorphism defect coefficient"
                 mult = self.root_system.is_multipliable_root(alpha)
                 hdc = self.homomorphism_defect_coefficient_dict[alpha][2] if mult else "NA"
                 table.append([alpha, mult, alpha_check, d_alpha, X_alpha_u, x_alpha_u, s_alpha, w_alpha, h_alpha_t, hdc])
@@ -178,33 +181,67 @@ class pinned_group:
         else:
             headers = ["α", "Multipliable", "α^", "d_α", "X_α(u)", "x_α(u)", "s_α", "w_α", "h_α(t)", "Hom defect"]
 
-        return formatted_table(table, headers)
+        subscript_map = {"_0": "₀", "_1": "₁", "_2": "₂", "_3": "₃", "_4": "₄",
+                         "_5": "₅", "_6": "₆", "_7": "₇", "_8": "₈", "_9": "₉"}
+        cleaned_table = []
+    
+        for row in table:
+            cleaned_row = []
+            for cell in row:
+                cell_str = str(cell)
+                
+                # Replace square brackets [ and ] with |
+                cell_str = cell_str.replace('[', '|').replace(']', '|')
+                
+                # 1. Substitute subscripts: '_x' (2 chars) -> 'ₓ ' (1 char + 1 space = 2 chars)
+                # This guarantees that the string length does not change.
+                for ascii_sub, uni_sub in subscript_map.items():
+                    pattern = rf"(\w){ascii_sub}(\^\d+)?"
+                    cell_str = re.sub(
+                        pattern, 
+                        lambda m: f"{m.group(1)}{uni_sub} {m.group(2) if m.group(2) else ''}", 
+                        cell_str
+                    )
+                    
+                # 2. Substitute multiplication asterisks with dots
+                # Matches '*' and strips any trailing space to keep width at exactly 1
+                cell_str = re.sub(r"\*\s?", "⋅", cell_str)
+                    
+                cleaned_row.append(cell_str)
+            cleaned_table.append(cleaned_row)
+    
+        return tabulate(cleaned_table, headers=headers, tablefmt="fancy_grid")
+    
     
     def get_commutator_table(self):
-        if len(self.commutator_coefficient_dict) == 0: 
-            return("\nThere are no pairs of summable roots, so there are no commutator coefficients\n")
-
+        assert(len(self.commutator_coefficient_dict) > 0)
+        
         table = []
+
         for (alpha, beta) in self.root_system.summable_non_proportional_pairs:
             d_alpha = self.root_space_dimension(alpha)
             d_beta = self.root_space_dimension(beta)
             u = vector_variable(letter = 'u', length = d_alpha)
             v = vector_variable(letter = 'v', length = d_beta)
-            linear_combos = self.root_system.integer_linear_combos(alpha,beta)
+            linear_combos = self.root_system.integer_linear_combos(alpha, beta)
+            
             for key in linear_combos:
                 i = key[0]
                 j = key[1]
-                combo = linear_combos[key]
-                assert(combo.equals(i*alpha + j*beta)), "Error with linear combos"
+                combo = linear_combos[key]  # combo = i*alpha + j*beta
                 coeff = self.commutator_coefficient_map(alpha, beta, i, j, u, v)
-                coeff_for_printing = sp.pretty(coeff[0]) if len(coeff) == 1 else sp.pretty(coeff.T)
-                table.append([alpha, beta, i, j, combo, coeff_for_printing])
-        headers = ["α", "β", "i", "j", "iα + jβ", "N_ij^αβ(u,v) (commutator coefficient)"]
-        
-        return formatted_table(table, headers)
-
+                
+                # Extract expression; pass object directly or string conversion inside format_table
+                raw_expr = coeff[0] if len(coeff) == 1 else coeff.T
+                
+                table.append([alpha, beta, i, j, combo, raw_expr])
+                
+        headers = ["α", "β", "i", "j", "iα + jβ", "N_ij^αβ(u,v)"]
+        return format_table(table, headers)    
+    
     def get_weyl_conjugation_table(self):
         table = []
+        
         for alpha in self.root_system.root_list:
             for beta in self.root_system.root_list:
                 d_beta = self.root_space_dimension(beta)
@@ -214,13 +251,15 @@ class pinned_group:
                 d_gamma = self.root_space_dimension(gamma)
                 assert d_beta == d_gamma
                 phi_u = self.weyl_conjugation_coefficient_map(alpha, beta, u)
-                phi_u_for_printing = sp.pretty(phi_u[0]) if len(phi_u) == 1 else sp.pretty(phi_u.T)
-                table.append([alpha, beta, gamma, phi_u_for_printing])
-        headers = ["α", "β", "γ=σ_α(β)", "Weyl conjugation coefficient"]
+                
+                # Extract the expression object directly so format_table can stringify it
+                raw_expr = phi_u[0] if len(phi_u) == 1 else phi_u.T
+                
+                table.append([alpha, beta, gamma, raw_expr])
+                
+        headers = ["\nα", "\nβ", "\nγ=σ_α(β)", "Weyl \nconjugation \ncoefficient"]
         
-        return formatted_table(table, 
-                               headers,
-                               replace_square_brackets = False)
+        return format_table(table, headers)
     
     def fit_root_system(self, display = True):
         t = self.generic_torus_element('t')

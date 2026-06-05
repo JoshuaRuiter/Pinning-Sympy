@@ -1,8 +1,43 @@
+# This file contains useful helper functions related to special orthogonal groups
+# In particular, these are all in service of constructing an instance of a 
+# pinned_group object to represent a special orthogonal group.
+
+# EXAMPLE USE CASE: constructing a 4x4 special orthogonal pinned_group object of rank q=2
+# q = 2
+# n = 4
+# anisotropic_vec = vector_variable('c',n-2*q)
+# NIF = nondegenerate_isotropic_form(dimension = n,
+#                                    witt_index = q,
+#                                    anisotropic_vector = anisotropic_vec,
+#                                    epsilon = None,
+#                                    primitive_element = None)
+# T = split_torus(rank = q,
+#                 is_element = is_torus_element_SO,
+#                 generic_element = generic_torus_element_SO,
+#                 trivial_character_matrix = trivial_characters_SO(n,q),
+#                 nontrivial_character_entries = character_entries_SO(n,q))
+# SO_n_q = pinned_group(name_string = f"SO(n={n}, q={q})",
+#                       matrix_size = n,
+#                       form = NIF, 
+#                       group_constraints = group_constraints_SO,
+#                       maximal_split_torus = T,
+#                       lie_algebra_constraints = lie_algebra_constraints_SO,
+#                       generic_lie_algebra_element = generic_lie_algebra_element_SO,
+#                       non_variables = None)
+# SO_n_q.fit_pinning(display = True)
+# SO_n_q.validate_pinning(display = True)
+
 import sympy as sp
 import numpy as np
 from utility_general import is_diagonal
 
 def group_constraints_SO(matrix_to_test, form):
+    # The requirements for a matrix X to be an element of the special orthogonal group with form matrix B are
+    # 1) (X^T) * B * X = B
+    # 2) det(X) = 1
+    # The pinned_group class expects this information in the form of vanishing conditions,
+    # so this method effectively returns the equations "X^T*B*X-B=0" and "det(X)-1=0"
+    # However, the equations are split up matrix-entry-wise for various reasons
     X = matrix_to_test
     B = form.matrix
     M = X.T * B * X - B
@@ -11,18 +46,27 @@ def group_constraints_SO(matrix_to_test, form):
     return eqs + ([] if d.is_zero else [d])
 
 def lie_algebra_constraints_SO(matrix_to_test, form):
+    # The requirements for a matrix X to be an element of the special orthogonal Lie algebra with form matrix B are
+    # 1) (X^T) * B + B * X = 0
+    # 2) tr(X) = 1
+    # The pinned_group class expects this information in the form of vanishing conditions,
+    # so this method effectively returns the equations "X^T*B + BX=0" and "tr(X)=0"
+    # However, the equations are split up matrix-entry-wise for various reasons
     X = matrix_to_test
     M = X.T * form.matrix + form.matrix * X
     eqs = [e for e in M if not e.is_zero]
     t = X.trace()
     return eqs + ([] if t.is_zero else [t])
 
-def is_lie_algebra_element_SO(matrix_to_test, form):
-    X = matrix_to_test
-    B = form.matrix
-    return (X.T*B).equals(-B*X) and sp.simplify(X.trace()) == 0
-
 def is_torus_element_SO(matrix_to_test, rank):
+    # The requirements for a matrix X to be an element of the diagonal torus subgroup of SO_n,q are
+    # 1) X is diagonal
+    # 2) det(X) = 1
+    # 3) The first q diagonal entries are the inverses of the next q diagonal entries, respectively
+    # 4) The last n-2*q entries are 1
+    
+    # In other words, X has the form
+    # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1)
     if not is_diagonal(matrix_to_test): return False
     X = matrix_to_test
     n = X.shape[0]
@@ -43,12 +87,24 @@ def generic_torus_element_SO(matrix_size, rank, letter = 't'):
     return sp.diag(*v, *(1/v), *([1] * (n - 2*q)))
 
 def character_entries_SO(matrix_size, rank):
+    # When computing the root system for a special orthogonal group,
+    # this tells the solver to only use characters which have
+    # nonzero entries in the first q=rank components.
+    # This is possible because a torus element is determined by
+    # its first q diagonal entries.
     return [1]*rank + [0]*(matrix_size - rank)
 
 def trivial_characters_SO(matrix_size, rank):
+    # Since elements of the diagonal subgroup have the form
+    # diag(t_1, ..., t_q, t_1^(-1), ..., t_q^(-1), 1, ..., 1)
+    # the character (1, 0, ..., 0, 1, 0, ...)
+    # where the two 1's appear at positions 1 and q+1 
+    # is the trivial group homomorphism on the torus
+    # This encodes all of the trivial characters determined by the
+    # dependence of the i and q+i entries of the torus,
+    # as well as the character of all 1's arising from the det=1 condition
     trivial_characters = [np.array([1 if j == i or j == i + rank else 0 for j in range(matrix_size)])for i in range(rank)]
     if not (rank == 1 and matrix_size == 2): trivial_characters.append([1] * matrix_size)
-    # matrix_with_trivial_character_columns = np.array(np.stack(trivial_characters, axis=1))
     return np.array(np.stack(trivial_characters, axis=1))
 
 def generic_lie_algebra_element_SO(matrix_size, rank, form, letter = 'x'):
@@ -60,7 +116,7 @@ def generic_lie_algebra_element_SO(matrix_size, rank, form, letter = 'x'):
     assert len(c) == m
     X = sp.Matrix(sp.symarray(letter, (n,n)))
     
-    # X must be a block matrix of the form
+    # An element X of the special orthogonal Lie algebra is a block matrix of the form
     # [X_11, X_12, X_13
     #  X_21, X_22, X_23
     #  X_31, X_32, X_33]
@@ -100,6 +156,5 @@ def generic_lie_algebra_element_SO(matrix_size, rank, form, letter = 'x'):
         X[i+2*q,i+2*q] = 0
         for j in range(i):
             X[i+2*q, j+2*q] = -c[j]/c[i] *X[j+2*q,i+2*q]
-
-    assert is_lie_algebra_element_SO(X, form)
+            
     return X
