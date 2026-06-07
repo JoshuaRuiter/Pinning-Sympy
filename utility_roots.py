@@ -64,6 +64,13 @@ directed_dynkin_graphs = {
     "G2": {0: {1: 3}, 1: {0: 1}},
 }
 
+# vector is basically a light wrapper for the tuple class,
+# which allows for entry-wise addition and scalar multiplication
+# in the usual manner of vectors.
+# At some point I tried using Numpy arrays for this kind of thing, 
+# but Numpy arrays are not hashable so they cannot be used as keys
+# for dictionary objects. Since this vector type is an extension
+# of tuple, it is hashable and thus can be used as keys for dictionaries.
 class vector(tuple):
     def __new__(cls, iterable):
         values = tuple(iterable)
@@ -72,7 +79,7 @@ class vector(tuple):
                 raise TypeError(f"vector entries must be int, float, or complex, got {type(x)}")
         return super().__new__(cls, iterable)
 
-    # Addition
+    # Addition (entry-wise)
     def __add__(self, other):
         assert isinstance(other, vector), "Invalid vector addition"
         assert len(self) == len(other), "Can't add vectors of different lengths"
@@ -80,7 +87,7 @@ class vector(tuple):
         assert len(result) == len(self), "Addition changed vector length"
         return result
 
-    # Subtraction
+    # Subtraction (entry-wise)
     def __sub__(self, other):
         assert isinstance(other, vector), "Invalid vector subtraction"
         assert len(self) == len(other), "Can't subtract vectors of different lengths"
@@ -97,11 +104,11 @@ class vector(tuple):
     
     __rmul__ = __mul__  # allow scalar * vector
 
-    # Negation
+    # Negation (entry-wise)
     def __neg__(self):
         return (-1)*self
 
-    # Equality
+    # Equality (entry-wise)
     def equals(self, other):
         assert isinstance(other, vector), "Invalid vector comparison"
         return (len(self) == len(other)
@@ -117,7 +124,7 @@ class vector(tuple):
     def norm(self):
         return np.sqrt(self.dot(self))
 
-    # Representation
+    # String representation
     def __repr__(self):
         return f"{tuple(self)}"
     
@@ -131,6 +138,10 @@ class vector(tuple):
 
 def in_integer_column_span(v, M):
     # Return true if vector is in the integer column span of M
+    # This is tested by augmenting M with v as an additional column,
+    # then comparing the ranks of M and the augmented matrix (M|v)
+    # If the rank changed, then v is not in the column span of M,
+    # and if the rank did not change, v is in the column span of M
     M = np.asarray(M, dtype = int)
     rank_M = np.linalg.matrix_rank(M)
     augmented = np.hstack([M,v.as_column]) # augment M with v as an additional vector
@@ -139,6 +150,11 @@ def in_integer_column_span(v, M):
 
 def evaluate_character(alpha,torus_element):
     # Evaluate a character at a particular torus element
+    # More concretely, given a diagonal matrix
+    # t = diag(t_1, t_2, ..., t_n)
+    # and a character (integer tuple) alpha = (a_1, a_2, ..., a_n)
+    # return the product
+    # t_1^(a_1) * (t_2)^(a_2) * ... * (t_n)^(a_n)
     
     # Validate the inputs
     assert isinstance(alpha, vector), "Characters must be represented as vectors"
@@ -151,14 +167,30 @@ def evaluate_character(alpha,torus_element):
 
 def evaluate_cocharacter(cocharacter,scalar):
     # Evaluate a cocharacter at a scalar
+    # More concretely, given a scalar x 
+    # and a cocharacter (integer tuple) c = (c_1, c_2, ..., c_n)
+    # return the matrix
+    # diag(x^(c_1), x^(c_2), ..., x^(c_n))
     assert isinstance(cocharacter, vector), "Cocharacters must be represented as vectors"
-    length = len(cocharacter)
-    output = sp.eye(length, dtype=int)
-    for i in range(length):
-        output[i,i] = scalar**cocharacter[i]
-    return output
+    diag_elements = [scalar**int(exp) for exp in cocharacter]
+    return sp.diag(*diag_elements)
 
-def generic_kernel_element(alpha, t):
+    # OLD VERSION
+    # length = len(cocharacter)
+    # output = sp.eye(length, dtype=int)
+    # for i in range(length):
+    #     output[i,i] = scalar**cocharacter[i]
+    # return output
+
+def generic_kernel_element(alpha, generic_torus_element):
+    # Return a generic element of the kernel of a character alpha,
+    # using a generic torus element t as a starting point
+    # More concretely, solve the equation alpha(t) = 1
+    # for entries of t, then return a substituted version of t
+    # which is a solution to that equation
+    
+    t = generic_torus_element
+    
     assert isinstance(alpha, vector), "Characters and roots must be represented by vectors"
     assert all(isinstance(a, int) for a in alpha), "Character components must be integers"
     assert is_diagonal(t), "Torus element must be diagonal"
@@ -175,6 +207,9 @@ def generic_kernel_element(alpha, t):
     return t.subs(solutions_dict)
 
 def determine_irreducible_components(roots):
+    # Determine the irreducible components of a root system
+    # That is, find subsets of roots which are mutually orthogonal
+    
     n = len(roots)
     visited = [False]*n
     components = []
@@ -190,17 +225,17 @@ def determine_irreducible_components(roots):
             visited[k] = True
             comp_indices.append(k)
             for j in range(n):
+                # Check for orthogonality
                 if not visited[j] and np.dot(roots[k], roots[j]) != 0:
                     stack.append(j)
         components.append([roots[k] for k in comp_indices])
     return components
 
 def connected_components(graph):
-    """
-    Given a graph g represented as
-        {v: {u: w, ...}, ...}
-    return a list of connected components, each in the same format.
-    """
+    # Given a graph g represented as
+    #     {v: {u: w, ...}, ...}
+    # return a list of connected components, each in the same format.
+
     visited = set()
     components = []
 
@@ -208,7 +243,7 @@ def connected_components(graph):
         if start in visited:
             continue
 
-        # DFS to collect one component
+        # Depth-first search to collect one component
         stack = [start]
         component_vertices = set()
 
@@ -230,6 +265,18 @@ def connected_components(graph):
     return components
 
 def generate_character_list(nonzero_entries, upper_bound):
+    # Generate a potential list of characters (vectors)
+    # This just returns a list of all vectors of certain length with nonzero entries
+    # in allowed positions, with all possible integer values between
+    # -upper_bound and upper_bound
+    # EXAMPLE: if nonzero_entries = [1,1,0] and upper_bound = 2,
+    # this returns this list of vectors
+    # (-2,-2,0), (-2,-1,0), (-2,0,0), (-2,1,0), (-2,2,0)
+    # (-1,-2,0), (-1,-1,0), (-1,0,0), (-1,1,0), (-1,2,0)
+    # (0,-2,0),  (0,-1,0),  (0,0,0),  (0,1,0),  (0,2,0)
+    # (1,-2,0),  (1,-1,0),  (1,0,0),  (1,1,0),  (1,2,0)
+    # (2,-2,0),  (2,-1,0),  (2,0,0),  (2,1,0),  (2,2,0)
+    
     values = []
     for allow in nonzero_entries:
         if allow:
@@ -239,7 +286,7 @@ def generate_character_list(nonzero_entries, upper_bound):
     return [vector(v) for v in itertools.product(*values)]
 
 def reduce_character_list(vector_list, lattice_matrix):
-    # take a list of numpy vectors, and return a sub-list
+    # Take a list of vectors, and return a sub-list
     # consisting of only vectors which are not pairwise equivalent
     # under quotienting by a lattice generated by the columns of lattice_matrix
     
@@ -286,9 +333,16 @@ def determine_roots(generic_torus_element,
                     vars_to_solve_for,
                     time_updates = False):
     
-    # Caculate roots and root spaces
-    # return in a dictionary format, where keys are roots (as tuples)
+    # Caculate roots and root spaces.
+    # Return in a dictionary format, where keys are roots (as tuples)
     # and the value is the generic element of the root space
+    
+    # The key equation is
+    # t * X * t^(-1) = alpha(t) * X
+    # The goal is to find alpha's that solve this equation,
+    # where t and X are arbitrary/generic elements of the 
+    # torus and Lie algebra respectively
+    
     root_space_dict = {}
     t = generic_torus_element
     x = sp.Matrix(generic_lie_algebra_element)
@@ -338,21 +392,21 @@ def determine_roots(generic_torus_element,
     return root_space_dict
 
 def visualize_graph(graph):
-    """
-    ASCII Dynkin diagram for chain-like graphs with fixed 3-character edges.
-    Arrows follow the adjacency dict convention (outgoing multiplicity).
     
-    Args:
-        graph (dict): adjacency dict {node: {neighbor: multiplicity, ...}}
+    # Create an ASCII Dynkin diagram from a graph adjacency dictionary.
+    # Arrows follow the adjacency dictionary convention for outgoing multiplicity.
+    # That is, graph[u][v] represents the multiplicity of the directed edge from node u to node v. 
+    # In Dynkin diagrams, arrows point from the longer root to the shorter root, 
+    # which means the arrow points toward node v if and only if graph[u][v] > graph[v][u].
     
-    Returns:
-        str: ASCII diagram as a string
-    """
-    # Step 1: start at a leaf node
+    # Input: graph in the form of an adjacency dict {node: {neighbor: multiplicity, ...}}
+    # Ouput: ASCII diagram as a string
+    
+    # Step 1: Start at a leaf node
     leaf_nodes = [v for v, neighbors in graph.items() if len(neighbors) == 1]
     start = min(leaf_nodes) if leaf_nodes else min(graph)
 
-    # Step 2: traverse the chain
+    # Step 2: Traverse the chain
     visited = {start}
     order = [start]
     current = start
@@ -365,7 +419,7 @@ def visualize_graph(graph):
         visited.add(next_node)
         current = next_node
 
-    # Step 3: build ASCII
+    # Step 3: Build ASCII
     ascii_parts = [str(order[0])]
     for i in range(1, len(order)):
         prev = order[i-1]

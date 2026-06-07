@@ -31,10 +31,8 @@ def main():
                   "Improve speed/optimization in a number of places. Top candidates:" + "\n\t\t" + 
                       "fit_weyl_elements, reduce_character_list/determine_roots, " + "\n\t\t" + 
                       "weyl group nonzero pattern matching, reducing test redundancy" + "\n\t" +
-                  "Add documentation to root_system" + "\n\t" +
-                  "Add documentation to utility_general" + "\n\t" +
-                  "Add documentation to split_torus" + "\n\t" +
-                  "Add documentation to utility_roots" + "\n\t" +
+                  "Fix test_dynkin_constructor" + "\n\t" + 
+                  "Fix test_dynkin_classifier" + "\n\t" +
                   "Add documentation to pinned_group" + "\n\t" +
                   "Add documentation to pinned_group_examples" + "\n\t" +
                   "Write a Readme for Github" + "\n\t" +
@@ -55,6 +53,7 @@ def main():
     #############################################
     ### Edit these to change which tests are run
     ### A "full test" is 2<=n<=6 and 1<=q<=3
+    ### Full test takes over an hour to run
     n_min = 1
     n_max = 6
     q_min = 1

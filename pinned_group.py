@@ -23,17 +23,17 @@ from utility_general import (vector_variable,
                              format_table,
                              pretty_map,
                              find_zero_vars, 
-                             indent_multiline,
-                             prune_singletons,
-                             solve_with_timeout,
-                             has_structural_contradiction)
+                             #indent_multiline,
+                             #solve_with_timeout,
+                             #has_structural_contradiction,
+                             prune_singletons)
 from utility_roots import (generate_character_list, 
                            reduce_character_list, 
                            determine_roots, 
                            visualize_graph, 
                            evaluate_character,
-                           evaluate_cocharacter,
-                           generic_kernel_element)
+                           generic_kernel_element,
+                           evaluate_cocharacter)
 from root_system import root_system
 from functools import reduce
 from operator import mul
@@ -211,7 +211,6 @@ class pinned_group:
             cleaned_table.append(cleaned_row)
     
         return tabulate(cleaned_table, headers=headers, tablefmt="fancy_grid")
-    
     
     def get_commutator_table(self):
         assert(len(self.commutator_coefficient_dict) > 0)

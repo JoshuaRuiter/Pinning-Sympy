@@ -2,26 +2,31 @@
 
 import sympy as sp
 import operator
-# import random
 import multiprocessing as mp
 from copy import deepcopy
-from tabulate import tabulate
-# from wcwidth import wcswidth
+# import random
+
 
 def is_diagonal(my_matrix):
-    # Return true if matrix is diagonal'    
+    # Return true if matrix is diagonal
     rows, cols = my_matrix.shape
     return all(my_matrix[i,j] == 0 for i in range(rows) for j in range(cols) if i != j)
 
 def vector_variable(letter, length):
+    # Given a letter 'v'
+    # and length n,
+    # return a vector of variables (v_1, v_2, ..., v_n)
     return sp.Matrix(sp.symarray(letter, length))
 
 def format_table(table, headers):
-    """
-    Formats math expressions within a table to utilize clean Unicode symbols,
-    manually constructs a rigid fancy_grid layout, and cleanly isolates fraction
-    components from SymPy matrix wrappers to prevent mangled stacked blocks.
-    """
+    # Format math expressions within a table to:
+    # utilize Unicode symbols,
+    # manually construct a rigid fancy_grid layout, 
+    # and isolates fraction components from SymPy matrix wrappers to prevent mangled stacked blocks.
+    
+    # There is some fundamental issue with the regex module
+    # which makes importing it globally an issue, but
+    # importing it locally avoids the issue.
     import re
 
     subscript_map = {"_0": "₀", "_1": "₁", "_2": "₂", "_3": "₃", "_4": "₄",
@@ -136,110 +141,11 @@ def format_table(table, headers):
     output_lines.append(bot_border)
     return "\n".join(output_lines)
 
-def format_table_OLD(table, headers):
-    """
-    Formats math expressions within a table to utilize clean Unicode symbols,
-    constructs multi-line fraction boxes cleanly, stabilizes line lengths
-    using visual character widths to prevent tabulate border clipping, 
-    and returns a fancy_grid tabulate string.
-    """
-    import re
-    import unicodedata
-
-    subscript_map = {"_0": "₀", "_1": "₁", "_2": "₂", "_3": "₃", "_4": "₄",
-                     "_5": "₅", "_6": "₆", "_7": "₇", "_8": "₈", "_9": "₉"}
-    exponent_map = {"**2": "²", "**3": "³", "**4": "⁴"}
-
-    def get_visual_width(text):
-        """Calculates accurate visual printing width for strings containing unicode symbols."""
-        return sum(2 if unicodedata.east_asian_width(c) in ('F', 'W') else 1 for c in text)
-
-    def visual_ljust(text, width):
-        """Pads a string out to a specific visual width taking unicode spacing into account."""
-        current_width = get_visual_width(text)
-        return text + " " * (width - current_width)
-
-    formatted_table = []
-
-    for row in table:
-        new_row = list(row)
-        raw_str = str(new_row[-1])
-
-        # 1. Convert power representations to clean unicode superscripts FIRST
-        for ascii_exp, uni_exp in exponent_map.items():
-            raw_str = raw_str.replace(ascii_exp, uni_exp)
-
-        # 2. Apply variable transformations (fixes the "- u_0" spacing bug)
-        for ascii_sub, uni_sub in subscript_map.items():
-            pattern = rf"(\b\w){ascii_sub}([²³⁴])?"
-            # Avoid inserting a hard space if the variable immediately follows a negative sign
-            def replace_sub(m):
-                var = m.group(1)
-                exp = m.group(2) if m.group(2) else ''
-                # Look backwards in the raw string up to the match index to check for a minus
-                match_start = m.start()
-                if match_start > 0 and raw_str[match_start - 1] in ('-', '+', '[', '(', ' '):
-                    return f"{var}{uni_sub}{exp}"
-                return f" {var}{uni_sub}{exp}"
-                
-            raw_str = re.sub(pattern, replace_sub, raw_str)
-
-        # 3. Replace multiplication with dots
-        prod_pattern = r"([₀-₉])([²³⁴])?\*\s*(\w)([₀-₉])([²³⁴])?"
-        def replace_prod(m):
-            p1 = m.group(2) if m.group(2) else ''
-            p2 = m.group(5) if m.group(5) else ''
-            return f"{m.group(1)}{p1}⋅{m.group(3)}{m.group(4)}{p2}"
-        
-        raw_str = re.sub(prod_pattern, replace_prod, raw_str)
-        raw_str = raw_str.replace('* ', '⋅').replace('*', '⋅')
-
-        # 4. Reconstruct fraction layout cleanly if an explicit division is present
-        if ' / ' in raw_str or '/' in raw_str:
-            parts = raw_str.split('/')
-            numerator = parts[0].strip()
-            denominator = parts[1].strip()
-
-            if numerator.startswith('Matrix(['):
-                numerator = numerator.replace('Matrix([', '').replace('])', '')
-            if numerator.startswith('[') and denominator.endswith(']'):
-                numerator = numerator[1:]
-                denominator = denominator[:-1]
-
-            prefix = ""
-            sign_match = re.match(r"^([-\s+]+)", numerator)
-            if sign_match:
-                prefix = sign_match.group(1)
-                numerator = numerator[len(prefix):].strip()
-
-            width = max(len(numerator), len(denominator))
-
-            num_line = numerator.center(width)
-            bar_line = '-' * width
-            denom_line = denominator.center(width)
-
-            padding = " " * len(prefix)
-            coeff_for_printing = (
-                f"{prefix}{num_line}\n"
-                f"{padding}{bar_line}\n"
-                f"{padding}{denom_line}"
-            )
-        else:
-            if raw_str.startswith('Matrix('):
-                raw_str = raw_str.replace('Matrix(', '').rstrip(')')
-            coeff_for_printing = raw_str
-
-        # 5. Fix right-edge border alignment using exact visual widths
-        lines = coeff_for_printing.split('\n')
-        max_visual_len = max(get_visual_width(line) for line in lines) if lines else 0
-        padded_coeff = '\n'.join(visual_ljust(line, max_visual_len) for line in lines)
-
-        new_row[-1] = padded_coeff
-        formatted_table.append(new_row)
-
-    return tabulate(formatted_table, headers=headers, tablefmt="fancy_grid")
-
+##################################################################################################
 ### DEPRECATED
+### This was used for some randomized numerical testing, but that was abandoned.
+### Keeping this around in case we need to return to the numerical testing idea at some point.
+##################################################################################################
 # def random_int_vector(length, lower_bound, upper_bound, nonzero = True):
 #     elements = []
 #     for _ in range(length):
@@ -250,54 +156,13 @@ def format_table_OLD(table, headers):
 #                 val = random.randint(lower_bound, upper_bound)
 #         elements.append(val)
 #     return sp.Matrix(elements)
+##################################################################################################
 
-def entry_to_mask(val):
-    # 1. Fast track: explicit structural zero/nonzero
-    if val.is_zero is True: return 0
-    if val.is_zero is False: return 1
-        
-    # 2. Medium track: Quick numerical evaluation to catch non-zero constants
-    # (e.g., expressions with sqrt(d) that evaluate to a distinct float)
-    try:
-        # Chop eliminates tiny floating-point noise around zero
-        num_val = val.evalf(chop=True)
-        if num_val == 0:
-            return 0
-        if num_val.is_number and num_val != 0:
-            return 1
-    except (TypeError, ValueError):
-        pass
-
-    # 3. Slow track: Fallback to full algebraic simplification
-    return 0 if val.simplify().is_zero else 1
-
-def compare_nonzero_pattern(A, B, op = operator.eq):
-    if A.shape != B.shape: return False
-    mask_A = A.applyfunc(entry_to_mask)
-    mask_B = B.applyfunc(entry_to_mask)
-    
-    # Standard: op(mask_A, mask_B) checks mask_A == mask_B
-    # Covering: op(mask_A, mask_B) checks mask_A <= mask_B (equivalent to B >= A)
-    return all(op(a, b) for a, b in zip(mask_A, mask_B))
-
+##################################################################################################
 ### DEPRECATED
-# def compute_order(my_function, my_input, limit):
-#     original_input = my_input
-#     x = my_input
-#     i = 1
-#     while i <= limit:
-#         x = my_function(x)
-#         if x == original_input:
-#             return i
-#         print("\noriginal input = ")
-#         sp.pprint(original_input)
-#         print("i =", i)
-#         print("f^i(x) =")
-#         sp.pprint(x)
-#         i = i + 1
-#     assert False, "Order exceeds limit"
-
-### DEPRECATED
+### This was used for some randomized numerical testing, but that was abandoned.
+### Keeping this around in case we need to return to the numerical testing idea at some point.
+##################################################################################################
 # def randomize_symbolic_matrix(matrix_expr, 
 #                               lower_bound = -5, 
 #                               upper_bound = 5,
@@ -340,11 +205,83 @@ def compare_nonzero_pattern(A, B, op = operator.eq):
 #         substitution_dict[sym] = sp.Integer(val)
         
 #     return matrix_expr.subs(substitution_dict)
+##################################################################################################
 
-def indent_multiline(s, prefix="\t"):
-    return "\n".join(prefix + line for line in s.splitlines())
+def entry_to_mask(val):
+    # Convert a variable to a binary mask
+    # with 1 replacing anything nonzero
+    
+    # 1. Fast track: explicit structural zero/nonzero
+    if val.is_zero is True: return 0
+    if val.is_zero is False: return 1
+        
+    # 2. Medium track: Quick numerical evaluation to catch non-zero constants
+    # (e.g., expressions with sqrt(d) that evaluate to a distinct float)
+    try:
+        # Chop eliminates tiny floating-point noise around zero
+        num_val = val.evalf(chop=True)
+        if num_val == 0:
+            return 0
+        if num_val.is_number and num_val != 0:
+            return 1
+    except (TypeError, ValueError):
+        pass
+
+    # 3. Slow track: Fallback to full algebraic simplification
+    return 0 if val.simplify().is_zero else 1
+
+def compare_nonzero_pattern(A, B, op = operator.eq):
+    # Compare two matrices entry-wise
+    # using a given operator
+    # The default operator is equality,
+    # but other options include operator.le for <=
+    # and operator.ge for >=
+    
+    if A.shape != B.shape: return False
+    mask_A = A.applyfunc(entry_to_mask)
+    mask_B = B.applyfunc(entry_to_mask)
+    
+    # Standard: op(mask_A, mask_B) checks mask_A == mask_B
+    # Covering: op(mask_A, mask_B) checks mask_A <= mask_B (equivalent to B >= A)
+    return all(op(a, b) for a, b in zip(mask_A, mask_B))
+
+##################################################################################################
+### DEPRECATED
+### This was used to compute the order of an invertible function
+### which is known/suspected to have finite order within a given bound,
+### but the functions I was using it on turned out to sometimes have
+### infinite order, so I abandoned usage of this. 
+##################################################################################################
+# def compute_order(my_function, my_input, limit):
+#     original_input = my_input
+#     x = my_input
+#     i = 1
+#     while i <= limit:
+#         x = my_function(x)
+#         if x == original_input:
+#             return i
+#         print("\noriginal input = ")
+#         sp.pprint(original_input)
+#         print("i =", i)
+#         print("f^i(x) =")
+#         sp.pprint(x)
+#         i = i + 1
+#     assert False, "Order exceeds limit"
+##################################################################################################
+
+##################################################################################################
+### DEPRECATED
+### This was used for some print formatting, but I moved to printing things in tables,
+### so this is not needed anymore.
+##################################################################################################
+# def indent_multiline(s, prefix="\t"):
+#     return "\n".join(prefix + line for line in s.splitlines())
+##################################################################################################
 
 def pretty_map(lhs, rhs, arrow='->', use_unicode=True):
+    # Create a 'pretty' string version of a function/map
+    # of matrices
+    
     # Pass the use_unicode flag down to SymPy's pretty printer
     lhs_lines = sp.pretty(lhs, use_unicode=use_unicode).splitlines()
     rhs_lines = sp.pretty(rhs, use_unicode=use_unicode).splitlines()
@@ -382,51 +319,79 @@ def pretty_map(lhs, rhs, arrow='->', use_unicode=True):
     result = result[:-1] # chop off the very last newline character
     return result
 
-def has_structural_contradiction(eqs, nonzero_vars):
-    for eq in eqs:
-        eq = sp.together(sp.simplify(eq))
+##################################################################################################
+### DEPRECATED
+### This was used for solving for Weyl elements at some point,
+### but is not currently being used for that or anything else.
+##################################################################################################
+# def has_structural_contradiction(eqs, nonzero_vars):
+#     for eq in eqs:
+#         eq = sp.together(sp.simplify(eq))
 
-        # Case 1: nonzero constant = 0
-        if eq.is_number and eq != 0:
-            return True
+#         # Case 1: nonzero constant = 0
+#         if eq.is_number and eq != 0:
+#             return True
 
-        # Case 2: equation forces a nonzero variable to be zero
-        if eq.is_Symbol and eq in nonzero_vars:
-            return True
+#         # Case 2: equation forces a nonzero variable to be zero
+#         if eq.is_Symbol and eq in nonzero_vars:
+#             return True
 
-        # Case 3: rational equation with constant numerator
-        num, den = eq.as_numer_denom()
+#         # Case 3: rational equation with constant numerator
+#         num, den = eq.as_numer_denom()
 
-        if num.is_number and num != 0:
-            # check whether denominator involves only invertible vars
-            den_syms = den.free_symbols
-            if den_syms and den_syms.issubset(nonzero_vars):
-                return True
+#         if num.is_number and num != 0:
+#             # check whether denominator involves only invertible vars
+#             den_syms = den.free_symbols
+#             if den_syms and den_syms.issubset(nonzero_vars):
+#                 return True
 
-    return False
+#     return False
+##################################################################################################
 
-def _solve_worker(eqs, vars_to_solve_for, q):
-    try:
-        sol = sp.solve(eqs, 
-                       vars_to_solve_for, 
-                       dict = True, 
-                       simplify = False)
-        q.put(sol)
-    except Exception:
-        q.put(None)
 
-def solve_with_timeout(eqs, vars_to_solve_for, timeout):
-    q = mp.Queue()
-    p = mp.Process(target=_solve_worker, args=(eqs, vars_to_solve_for, q))
-    p.start()
-    p.join(timeout)
-    if p.is_alive():
-        p.terminate()
-        p.join()
-        raise TimeoutError
-    return q.get()
+##################################################################################################
+### DEPRECATED
+### This was used for solving for Weyl elements at some point,
+### but is not currently being used for that or anything else.
+##################################################################################################
+# def _solve_worker(eqs, vars_to_solve_for, q):
+#     try:
+#         sol = sp.solve(eqs, 
+#                        vars_to_solve_for, 
+#                        dict = True, 
+#                        simplify = False)
+#         q.put(sol)
+#     except Exception:
+#         q.put(None)
+##################################################################################################
+
+##################################################################################################
+### DEPRECATED
+### This was used for solving for Weyl elements at some point,
+### but is not currently being used for that or anything else.
+##################################################################################################
+# def solve_with_timeout(eqs, vars_to_solve_for, timeout):
+#     q = mp.Queue()
+#     p = mp.Process(target=_solve_worker, args=(eqs, vars_to_solve_for, q))
+#     p.start()
+#     p.join(timeout)
+#     if p.is_alive():
+#         p.terminate()
+#         p.join()
+#         raise TimeoutError
+#     return q.get()
+##################################################################################################
 
 def find_zero_vars(expr, candidate_vars, generic_vars):
+    # Given an expression E 
+    # and a list of candidate variables [x1, x2, ...]
+    # and a list of generic variables [g1, g2, ...]
+    # check if E = 0 forces any of x variables to be zero
+    
+    # For example, the equation x1*g1 = 0
+    # implies that x1 = 0 since g1 is generic
+    # that is, g1 ranges over something like all real numbers
+    
     zero_vars = set()
     if expr.is_zero: return zero_vars
     expr = sp.factor(sp.simplify(expr))
@@ -447,11 +412,9 @@ def find_zero_vars(expr, candidate_vars, generic_vars):
     return zero_vars
             
 def prune_singletons(matrix, variable_candidate_dict):
-    """
-    Return a pruned copy of variable_candidate_dict where any variable that is
-    the sole remaining nonzero entry in a row or column has 0 removed
-    from its candidate list.
-    """
+    # Return a pruned copy of variable_candidate_dict where any variable that is
+    # the sole remaining nonzero entry in a row or column has 0 removed
+    # from its candidate list.
 
     pruned = deepcopy(variable_candidate_dict)
     n, m = matrix.shape
