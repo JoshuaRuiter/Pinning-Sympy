@@ -8,7 +8,7 @@ A Python project for symbolic computation with pinned algebraic groups, root sys
 - a `pinned_group` class for storing and computing pinned group data,
 - symbolic construction of root systems, Lie algebras, root spaces, and Weyl group elements,
 - computation and verification of commutator coefficients and conjugation formulas,
-- support for classical groups such as `SL`, `SO`, and `SU`.
+- support for classical groups: special linear, special orthogonal, and special unitary
 
 ## Installation
 
@@ -26,7 +26,7 @@ Run the example driver to exercise the library and see how pinned groups are bui
 python pinned_group_examples.py
 ```
 
-By default, the example script runs tests for special linear groups. There are additional commented examples for `SO` and `SU` cases.
+By default, the example script runs tests for special linear groups. There are additional commented examples for orthogonal and unitary groups.
 
 ## Project layout
 
