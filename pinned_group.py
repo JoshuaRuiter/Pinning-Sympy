@@ -500,6 +500,98 @@ class pinned_group:
             return sp.simplify(coeff)
         self.commutator_coefficient_map = ccm
 
+    #############################################################################
+    # Experimental/demo Weyl element construction methods.
+    #
+    # These are not used by fit_pinning() or the original fit_weyl_group_elements()
+    # method. They are a separate attempt at replacing the brute-force Weyl search
+    # in cases where the standard rank-one formula applies directly.
+    #############################################################################
+
+    def demo_construct_weyl_element_from_root_subgroups(self, alpha):
+        # Standard rank-one Weyl representative. This is expected to work
+        # for one-dimensional root spaces, such as the split SL_n roots.
+        assert self.root_system.is_root(alpha), \
+            "Cannot construct a Weyl element from a non-root"
+        if self.root_space_dimension(alpha) != 1:
+            return None
+        if self.root_space_dimension(-alpha) != 1:
+            return None
+
+        one = sp.Matrix([1])
+        minus_one = sp.Matrix([-1])
+        return sp.simplify(
+            self.root_subgroup_map(alpha, one)
+            * self.root_subgroup_map(-alpha, minus_one)
+            * self.root_subgroup_map(alpha, one)
+        )
+
+    def demo_is_valid_weyl_element_candidate(self, alpha, w_alpha):
+        assert self.root_system.is_root(alpha), \
+            "Cannot validate a Weyl element candidate for a non-root"
+        if not self.is_group_element(w_alpha):
+            return False
+
+        t = self.generic_torus_element('t')
+        if not self.is_torus_element(sp.simplify(w_alpha * t * w_alpha.inv())):
+            return False
+
+        w_alpha_inverse = w_alpha.inv()
+        for beta in self.root_system.root_list:
+            gamma = self.root_system.reflect_root(alpha, beta)
+            d_beta = self.root_space_dimension(beta)
+            d_gamma = self.root_space_dimension(gamma)
+            if d_beta != d_gamma:
+                return False
+
+            u = vector_variable('u', d_beta)
+            v = vector_variable('v', d_gamma)
+            x_beta_u = self.root_subgroup_map(beta, u)
+            x_gamma_v = self.root_subgroup_map(gamma, v)
+            lhs = sp.simplify(w_alpha * x_beta_u * w_alpha_inverse)
+            try:
+                sols = sp.solve(lhs - x_gamma_v, v.free_symbols, dict=True)
+            except Exception:
+                return False
+            if len(sols) == 0:
+                return False
+
+        return True
+
+    def demo_fit_weyl_group_elements_from_root_subgroups(self, display = True):
+        # Experimental alternative Weyl-element fitting method.
+        # This leaves fit_weyl_group_elements unchanged and only uses the
+        # standard rank-one formula when it works directly.
+        if display: print("Fitting torus reflections (s_α)")
+        def torus_refl_map(alpha, t):
+            assert self.root_system.is_root(alpha), "Can only perform torus reflection with a root from the root system"
+            assert self.is_torus_element(t), "Can only perform torus reflection on a torus element"
+            alpha_of_t = evaluate_character(alpha, t)
+            alpha_of_t_inverse = alpha_of_t**(-1)
+            alpha_check = self.root_system.coroot_dict[alpha]
+            alpha_check_of_alpha_of_t_inverse = evaluate_cocharacter(alpha_check, alpha_of_t_inverse)
+            assert self.is_torus_element(alpha_check_of_alpha_of_t_inverse), "Cocharacter must return torus element"
+            return t*alpha_check_of_alpha_of_t_inverse
+        self.torus_reflection_map = torus_refl_map
+
+        if display: print("Fitting Weyl elements (w_α) from root subgroups")
+        self.weyl_element_list = {}
+        for alpha in self.root_system.root_list:
+            w_alpha = self.demo_construct_weyl_element_from_root_subgroups(alpha)
+            assert w_alpha is not None, \
+                f"Direct root-subgroup Weyl construction does not apply to alpha = {alpha}"
+            assert self.demo_is_valid_weyl_element_candidate(alpha, w_alpha), \
+                f"Direct root-subgroup Weyl construction failed validation for alpha = {alpha}"
+            self.weyl_element_list[alpha] = w_alpha
+
+        def wem(alpha):
+            return self.weyl_element_list[alpha]
+        self.weyl_element_map = wem
+
+    def fit_weyl_group_elements_from_root_subgroups(self, display = True):
+        # Backward-compatible alias for the experimental/demo method above.
+        return self.demo_fit_weyl_group_elements_from_root_subgroups(display)
+
     def fit_weyl_group_elements(self, display = True):
         
         #############################################

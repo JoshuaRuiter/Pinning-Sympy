@@ -28,10 +28,21 @@ python pinned_group_examples.py
 
 By default, the example script runs tests for special linear groups. There are additional commented examples for orthogonal and unitary groups.
 
+There is also an experimental command-line runner that lets you choose examples without editing `pinned_group_examples.py`:
+
+```bash
+python pinned_group_cli.py --help
+python pinned_group_cli.py sl --n-max 3
+python pinned_group_cli.py sl --n-max 3 --weyl-method root-subgroups
+```
+
+The `root-subgroups` Weyl method is a demo/experimental method for the direct rank-one formula, not a replacement for the default brute-force method.
+
 ## Project layout
 
 - `pinned_group.py` - core class and algorithms for pinned algebraic groups.
 - `pinned_group_examples.py` - example usage and verification routines.
+- `pinned_group_cli.py` - optional command-line runner for selecting example suites and Weyl methods.
 - `root_system.py` - root system and reflection utilities.
 - `split_torus.py` - split torus construction and helpers.
 - `nondegenerate_isotropic_form.py` - anisotropic form and quadratic extension utilities.
