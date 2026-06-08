@@ -136,7 +136,7 @@ class vector(tuple):
     def as_row(self):
         return np.array(self).reshape(1,-1)
 
-def in_integer_column_span(v, M):
+def in_column_span(v, M):
     # Return true if vector is in the integer column span of M
     # This is tested by augmenting M with v as an additional column,
     # then comparing the ranks of M and the augmented matrix (M|v)
@@ -392,63 +392,100 @@ def determine_roots(generic_torus_element,
     return root_space_dict
 
 def visualize_graph(graph):
-    
-    # Create an ASCII Dynkin diagram from a graph adjacency dictionary.
-    # Arrows follow the adjacency dictionary convention for outgoing multiplicity.
-    # That is, graph[u][v] represents the multiplicity of the directed edge from node u to node v. 
-    # In Dynkin diagrams, arrows point from the longer root to the shorter root, 
-    # which means the arrow points toward node v if and only if graph[u][v] > graph[v][u].
-    
-    # Input: graph in the form of an adjacency dict {node: {neighbor: multiplicity, ...}}
-    # Ouput: ASCII diagram as a string
-    
-    # Step 1: Start at a leaf node
-    leaf_nodes = [v for v, neighbors in graph.items() if len(neighbors) == 1]
-    start = min(leaf_nodes) if leaf_nodes else min(graph)
+    if not graph:
+        return ""
 
-    # Step 2: Traverse the chain
-    visited = {start}
-    order = [start]
-    current = start
-    while True:
-        unvisited_neighbors = [u for u in graph[current] if u not in visited]
-        if not unvisited_neighbors:
-            break
-        next_node = unvisited_neighbors[0]
-        order.append(next_node)
-        visited.add(next_node)
-        current = next_node
+    def get_edge_str(u, v):
+        mult_u_to_v = graph[u].get(v, 1)
+        mult_v_to_u = graph[v].get(u, 1)
+        if mult_u_to_v > mult_v_to_u:
+            if mult_u_to_v == 2: return "=>="
+            if mult_u_to_v == 3: return "≡>≡"
+            return f"-{mult_u_to_v}>"
+        elif mult_u_to_v < mult_v_to_u:
+            if mult_v_to_u == 2: return "=<="
+            if mult_v_to_u == 3: return "≡<≡"
+            return f"<-{mult_v_to_u}"
+        return "---"
 
-    # Step 3: Build ASCII
-    ascii_parts = [str(order[0])]
-    for i in range(1, len(order)):
-        prev = order[i-1]
-        curr = order[i]
+    degrees = {v: len(neighbors) for v, neighbors in graph.items()}
+    fork_nodes = [v for v, deg in degrees.items() if deg >= 3]
 
-        mult_prev_to_curr = graph[prev].get(curr, 1)
-        mult_curr_to_prev = graph[curr].get(prev, 1)
+    # --- BRANCHED CASE (Dynkin types D and E) ---
+    if fork_nodes:
+        fork = fork_nodes[0]
+        
+        # Helper to trace a linear path starting from a neighbor of the fork
+        def get_path_from_neighbor(start_node):
+            path = [start_node]
+            visited = {fork, start_node}
+            curr = start_node
+            while True:
+                next_nodes = [n for n in graph[curr] if n not in visited]
+                if not next_nodes:
+                    break
+                curr = next_nodes[0]
+                path.append(curr)
+                visited.add(curr)
+            return path
 
-        # Decide edge symbol
-        if mult_prev_to_curr > mult_curr_to_prev:
-            # arrow from prev -> curr
-            if mult_prev_to_curr == 2:
-                edge = "=>="
-            elif mult_prev_to_curr == 3:
-                edge = "≡>≡"
-            else:
-                edge = f"-{mult_prev_to_curr}>"
-        elif mult_prev_to_curr < mult_curr_to_prev:
-            # arrow from curr -> prev
-            if mult_curr_to_prev == 2:
-                edge = "=<="
-            elif mult_curr_to_prev == 3:
-                edge = "≡<≡"
-            else:
-                edge = f"<-{mult_curr_to_prev}"
-        else:
-            # symmetric or single edge
-            edge = "---"
+        # Get the 3 distinct paths branching out from the fork
+        branches = [get_path_from_neighbor(n) for n in graph[fork].keys()]
+        
+        # Sort branches by length. The shortest path is always the vertical arm!
+        branches.sort(key=len)
+        vertical_branch = branches[0]  # e.g., [stub_node]
+        left_branch = branches[1]      # e.g., [node, node...]
+        right_branch = branches[2]     # e.g., [node, node...]
+        
+        # We like the backbone to read left-to-right cleanly. 
+        # Reverse the left branch so it ends at the fork connection point.
+        left_branch.reverse()
+        
+        # Construct the full horizontal backbone order
+        # left_nodes ---> fork ---> right_nodes
+        backbone_order = left_branch + [fork] + right_branch
+        
+        # Build the horizontal string representation
+        ascii_parts = [str(backbone_order[0])]
+        for i in range(1, len(backbone_order)):
+            ascii_parts.append(get_edge_str(backbone_order[i-1], backbone_order[i]) + str(backbone_order[i]))
+        backbone_line = "".join(ascii_parts)
+        
+        # Calculate exactly where the fork sits in the final string to line up the vertical arm
+        fork_str = str(fork)
+        padding_len = backbone_line.rfind(fork_str)
+        padding = " " * padding_len
+        centering_offset = " " * (len(fork_str) // 2)
+        
+        # Pick the vertical stub node (and any extra nodes if the branch was longer, though it's 1 for D/E)
+        vertical_node = vertical_branch[0]
+        
+        return (
+            f"\n{padding}{centering_offset}{vertical_node}"
+            f"\n{padding}{centering_offset}|"
+            f"\n{backbone_line}"
+        )
 
-        ascii_parts.append(edge + str(curr))
+    # --- LINEAR CASE (Dynkin types A, B, C, F, G) ---
+    else:
+        leaf_nodes = [v for v, deg in degrees.items() if deg == 1]
+        start = min(leaf_nodes) if leaf_nodes else min(graph)
 
-    return "".join(ascii_parts)
+        visited = {start}
+        order = [start]
+        current = start
+        while True:
+            unvisited_neighbors = [u for u in graph[current] if u not in visited]
+            if not unvisited_neighbors:
+                break
+            next_node = unvisited_neighbors[0]
+            order.append(next_node)
+            visited.add(next_node)
+            current = next_node
+
+        ascii_parts = [str(order[0])]
+        for i in range(1, len(order)):
+            ascii_parts.append(get_edge_str(order[i-1], order[i]) + str(order[i]))
+
+        return "".join(ascii_parts)

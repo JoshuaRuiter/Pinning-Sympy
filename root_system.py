@@ -14,7 +14,7 @@ import numpy as np
 import itertools
 from utility_general import vector_variable
 from utility_roots import (vector, 
-                           in_integer_column_span, 
+                           in_column_span, 
                            connected_components, 
                            directed_dynkin_graphs,
                            visualize_graph)
@@ -57,7 +57,7 @@ class root_system:
         else:
             self.lattice_matrix = lattice_matrix
         
-        assert self.vector_length ==  self.lattice_matrix.shape[0], \
+        assert self.vector_length == self.lattice_matrix.shape[0], \
             "Lattice matrix has wrong number of rows"
 
         # Determine the irreducible components
@@ -185,7 +185,7 @@ class root_system:
         # The vector_to_test is not one of the representatives in root_list
         # so now we have to check if it is equivalent to any of them
         for r in self.root_list:
-            if in_integer_column_span(vector_to_test - r, self.lattice_matrix):
+            if in_column_span(vector_to_test - r, self.lattice_matrix):
                 return (True, r) if with_equivalent else True
 
         return (False, None) if with_equivalent else False
@@ -201,7 +201,10 @@ class root_system:
         
         # For E_6, E_7, and E_8, the easiest way to write the roots involves 
         # half-integers, so we don't insist on integers in that case
-        if not self.dynkin_type == 'E':
+        if self.dynkin_type == 'E':
+            assert all((2 * a) == int(2 * a) for a in alpha), \
+                "Character must have integer or half-integer entries for Type E"
+        else:
             assert all(isinstance(a,int) for a in alpha), "Character must have integer entries"
         
         n = self.vector_length
@@ -228,11 +231,15 @@ class root_system:
 
         # If there are no free variables remaining, we're done
         if len(x_general_solution.free_symbols) == 0:
-            # Confirm that all entries are integers, 
-            # then convert to vector and return
-            assert all(a == int(a) for a in x_general_solution)
-            return vector([int(a) for a in x_general_solution])
-            return x_general_solution
+            if self.dynkin_type == 'E':
+                # In type E, allow half-integers
+                assert all((2 * a) == int(2 * a) for a in x_general_solution)
+                return vector([float(a) if a % 1 != 0 else int(a) for a in x_general_solution])
+            else:
+                # Outside type E, only allow integers
+                # Convert to vector and return
+                assert all(a == int(a) for a in x_general_solution)
+                return vector([int(a) for a in x_general_solution])
         
         # If there are free variables remaining, there is more to do
         # In this case, the general solution has the form
@@ -271,16 +278,68 @@ class root_system:
         def norm_sq(v): return v.dot(v)
         x_min = min(candidates, key = norm_sq)
         
-        # Confirm that all entries are integers, then convert to vector and return
-        assert all(a == int(a) for a in x_min)
-        return vector([int(a) for a in x_min])
+        # Convert SymPy objects to standard Python numbers ---
+        x_min_clean = [float(a) for a in x_min]
+        
+        # For Type E, allow half-integers. Otherwise, strictly enforce integers.
+        if self.dynkin_type == 'E':
+            # For type E, allow integers and half-integers
+            assert all((2 * a) == int(2 * a) for a in x_min_clean)
+            return vector([a if a % 1 != 0 else int(a) for a in x_min_clean])
+        else:
+            # For types other than E, only allow integers
+            assert all(a == int(a) for a in x_min_clean)
+            return vector([int(a) for a in x_min_clean])
 
     def is_same_root(self, alpha, beta):
         # Compare roots, up to equivalence by the integer lattice
         assert type(alpha) == type(beta) == vector, "is_same_root requires vectors"
-        return alpha.equals(beta) or in_integer_column_span(alpha - beta, self.lattice_matrix)
+        return alpha.equals(beta) or in_column_span(alpha - beta, self.lattice_matrix)
 
     def is_proportional(self, alpha, beta, with_ratio = False, max_denominator = 2):
+        # Return true if alpha and beta are proportional roots
+        # In most root systems, this only happens if alpha = beta or alpha = -beta,
+        # but in the type BC root system it is possible to have alpha = 2*beta
+        
+        # Because this proportionality is modulo the lattice L,
+        # testing whether alpha and beta are proportional is equivalent
+        # to asking whether there exists a rational number k such that
+        # k*alpha - beta is in the integer span of L
+        # Equivalently,
+        # p*alpha - q*beta is in the integer span of L for some integers p and q
+        # This second formulation has the advantage of only involving integers
+        
+        # --- FAST GEOMETRIC FILTER ---
+        # If two vectors are proportional, their dot product squared equals the product of their norms:
+        # (alpha . beta)^2 == (alpha . alpha) * (beta . beta)
+        # We do this using exact integer/rational arithmetic to avoid float issues.
+        dot_prod = alpha.dot(beta)
+        if dot_prod * dot_prod != alpha.dot(alpha) * beta.dot(beta):
+            return (False, None) if with_ratio else False
+
+        # If they passed the geometric filter, they ARE collinear.
+        # Now we just find the ratio and see if it fits your lattice criteria.
+        zero_vec = vector([0] * len(alpha))
+        
+        # Prepare candidate vectors for all small denominators
+        candidates = []
+        candidate_ratios = []
+        for q in range(1, max_denominator+1):
+            for p in range(-max_denominator, max_denominator+1):
+                # This fast check catches almost everything if they are collinear
+                if zero_vec.equals(p*alpha - q*beta):
+                    return (True, p/q) if with_ratio else True
+                candidates.append(p*alpha - q*beta)
+                candidate_ratios.append(p / q)
+            
+        # Loop through candidates ONLY if the fast zero_vec check didn't catch it
+        for candidate, ratio in zip(candidates, candidate_ratios):
+            if in_column_span(candidate, self.lattice_matrix):
+                return (True, ratio) if with_ratio else True
+                
+        return (False, None) if with_ratio else False
+
+    def is_proportional_OLD(self, alpha, beta, with_ratio = False, max_denominator = 2):
         # Return true if alpha and beta are proportional roots
         # In most root systems, this only happens if alpha = beta or alpha = -beta,
         # but in the type BC root system it is possible to have alpha = 2*beta
@@ -311,7 +370,7 @@ class root_system:
             
         # Loop through candidates to check if p*alpha-q*beta is in the column span of L
         for candidate, ratio in zip(candidates, candidate_ratios):
-            if in_integer_column_span(candidate, self.lattice_matrix):
+            if in_column_span(candidate, self.lattice_matrix):
                 return (True, ratio) if with_ratio else True
         return (False, None) if with_ratio else False
 
@@ -442,7 +501,6 @@ class root_system:
         if display: print('done.')
         
         if display: print('Root system axiom checks completed.')
-    
 
 def construct_root_list_from_dynkin_type(dynkin_type, rank):
     # Construct a "standard" vector representation/model
@@ -546,30 +604,17 @@ def construct_root_list_from_dynkin_type(dynkin_type, rank):
         
         E_8_root_list = two_nonzero_entries + half_vectors_sum_even
         
-        # We realize E_7 as the subset of E_8 consisting of vectors 
-        # such that the sum of the coordinates is zero
-        # In other words, it sill contains the same copy of D_8, 
-        # but for the vectors with 1/2 and -1/2 entries, 
-        # now there must be 4 copies of 1/2 and 4 copies of -1/2
-        # E_7_root_list = [v for v in E_8_root_list if sum(v) == 0]
-        # assert len(E_7_root_list) == 126
-        
-        # We realize E_7 as the subset of E_8 consisting of vectors orthogonal to (0,0,0,0,0,0,1,1)
-        # and E_6 as the subset of E_7 consisting of vectors orthogonal to (0,0,0,0,0,1,1,0)
-        E_7_root_list = [v for v in E_8_root_list if v[-2] + v[-1] == 0]
-        E_6_root_list = [v for v in E_7_root_list if v[-3] + v[-2] == 0]
-        
-        root_list = {8: E_8_root_list, 7: E_7_root_list, 6: E_6_root_list}[rank]
-        
-        # OLD VERSION
-        # if rank == 8: 
-        #     root_list = E_8_root_list
-        # elif rank == 7:
-        #     root_list = E_7_root_list
-        # elif rank == 6:
-        #     root_list = E_6_root_list
-        # else:
-        #     assert False, "Invalid rank for type E root system"
+        if rank == 8:
+            root_list = E_8_root_list
+        elif rank == 7:
+            # We realize E_7 as the subset of E_8 consisting of vectors orthogonal to (0,0,0,0,0,0,1,1)
+            E_7_root_list = [v for v in E_8_root_list if v[-2] + v[-1] == 0]
+            root_list = E_7_root_list
+        if rank == 6:
+            # We realize E_6 as the subset of E_7 consisting of vectors orthogonal to (0,0,0,0,0,1,1,0)
+            E_7_root_list = [v for v in E_8_root_list if v[-2] + v[-1] == 0]
+            E_6_root_list = [v for v in E_7_root_list if v[-3] + v[-2] == 0]
+            root_list = E_6_root_list
         
     elif dynkin_type == 'F':
         # We represent F_4 as a set of vectors in R^4
@@ -683,22 +728,22 @@ def choose_positive_roots(root_list, max_tries = 100, seed = 0):
     raise RuntimeError("Failed to find a vector not proportional to a root.")
 
 def choose_simple_roots(positive_roots):
-    # A choice of simple roots is a linearly independent subset of maximal size.
-    # There are many valid choices of a set of simple roots from a given 
-    # list of positive roots, so this is just a simple greedy algorithm
-    # which appends roots from earlier in the list as long as they 
-    # don't invalidate linear independence.
-    
+    # A root is simple if it cannot be written as the sum of two other positive roots.
+
     simple_roots = []
     for alpha in positive_roots:
-        is_simple = True
+        is_sum = False
         for beta in positive_roots:
-            if alpha.equals(beta): continue
-            if alpha - beta in positive_roots:
-                is_simple = False
+            if alpha.equals(beta): 
+                continue
+            # If (alpha - beta) is also a positive root, 
+            # then alpha = beta + (alpha - beta) is not simple.
+            if any((alpha - beta).equals(gamma) for gamma in positive_roots):
+                is_sum = True
                 break
-        if is_simple:
+        if not is_sum:
             simple_roots.append(alpha)
+            
     return simple_roots
 
 def build_cartan_matrix(simple_roots):
@@ -860,12 +905,13 @@ def expected_number_of_roots(dynkin_type, rank):
 
 def test_dynkin_constructor(upper_bound = 4):
     # Use the constructor for a variety of root systems and verify the root system axioms
-
+    print("Testing constructor for root systems from Dynkin type...")
+    
     # Type A
     for q in range(1,upper_bound + 1):
         print(f"\nConstructing A{q}",end="")
         A_q = construct_root_system_from_dynkin_type('A',q)
-        print(f"\nDynkin diagram of type A{q}:", visualize_graph(A_q.dynkin_graph))
+        print(f"\nDynkin diagram of type A{q}:", visualize_graph(A_q.dynkin_graph),end="")
         assert len(A_q.root_list) == expected_number_of_roots('A',q), \
             f"Expected {expected_number_of_roots('A',q)} for A_{q} but constructor produced {len(A_q.root_list)}"
         assert A_q.dynkin_type == 'A'
@@ -879,7 +925,7 @@ def test_dynkin_constructor(upper_bound = 4):
     for q in range(1,upper_bound + 1):
         print(f"\nConstructing B{q}",end="")
         B_q = construct_root_system_from_dynkin_type('B',q)
-        print(f"\nDynkin diagram of type B{q}:", visualize_graph(B_q.dynkin_graph))
+        print(f"\nDynkin diagram of type B{q}:", visualize_graph(B_q.dynkin_graph),end="")
         assert len(B_q.root_list) == expected_number_of_roots('B',q), \
             f"Expected {expected_number_of_roots('B',q)} for B_{q} but constructor produced {len(B_q.root_list)}"
         if q == 1:
@@ -898,7 +944,7 @@ def test_dynkin_constructor(upper_bound = 4):
     for q in range(1,upper_bound + 1):
         print(f"\nConstructing C{q}",end="")
         C_q = construct_root_system_from_dynkin_type('C',q)
-        print(f"\nDynkin diagram of type C{q}:", visualize_graph(C_q.dynkin_graph))
+        print(f"\nDynkin diagram of type C{q}:", visualize_graph(C_q.dynkin_graph),end="")
         assert len(C_q.root_list) == expected_number_of_roots('C',q), \
             f"Expected {expected_number_of_roots('C',q)} for C_{q} but constructor produced {len(C_q.root_list)}"
         if q == 1:
@@ -921,6 +967,7 @@ def test_dynkin_constructor(upper_bound = 4):
     for q in range(1,upper_bound + 1):
         print(f"\nConstructing BC{q}",end="")
         BC_q = construct_root_system_from_dynkin_type('BC',q)
+        print(f"\nDynkin diagram of type BC{q}:", visualize_graph(BC_q.dynkin_graph),end="")
         assert len(BC_q.root_list) == expected_number_of_roots('BC',q), \
             f"Expected {expected_number_of_roots('BC',q)} for BC_{q} but constructor produced {len(BC_q.root_list)}"
         assert BC_q.dynkin_type == 'BC'
@@ -934,7 +981,7 @@ def test_dynkin_constructor(upper_bound = 4):
     for q in range(1,upper_bound + 1):
         print(f"\nConstructing D{q}",end="")
         D_q = construct_root_system_from_dynkin_type('D',q)
-        print(f"\nDynkin diagram of type D{q}:", visualize_graph(D_q.dynkin_graph))
+        if q != 2: print(f"\nDynkin diagram of type D{q}:", visualize_graph(D_q.dynkin_graph),end="")
         assert len(D_q.root_list) == expected_number_of_roots('D',q), \
             f"Expected {expected_number_of_roots('D',q)} for D_{q} but constructor produced {len(D_q.root_list)}"
         if q in (1,3):
@@ -957,7 +1004,7 @@ def test_dynkin_constructor(upper_bound = 4):
     # Type F
     print("\nConstructing F4",end="")
     F_4 = construct_root_system_from_dynkin_type('F',4)
-    print("\nDynkin diagram of type F4:", visualize_graph(F_4.dynkin_graph))
+    print("\nDynkin diagram of type F4:", visualize_graph(F_4.dynkin_graph),end="")
     assert len(F_4.root_list) == expected_number_of_roots('F',4), \
         f"Expected {expected_number_of_roots('F',4)} for F_4 but constructor produced {len(F_4.root_list)}"
     assert F_4.dynkin_type == 'F'
@@ -970,7 +1017,7 @@ def test_dynkin_constructor(upper_bound = 4):
     # Type G
     print("\nConstructing G2",end="")
     G_2 = construct_root_system_from_dynkin_type('G',2)
-    print("\nDynkin diagram of type G2:", visualize_graph(G_2.dynkin_graph))
+    print("\nDynkin diagram of type G2:", visualize_graph(G_2.dynkin_graph),end="")
     assert len(G_2.root_list) == expected_number_of_roots('G',2), \
         f"Expected {expected_number_of_roots('G',2)} for G_2 but constructor produced {len(G_2.root_list)}"
     assert G_2.dynkin_type == 'G'
@@ -984,7 +1031,7 @@ def test_dynkin_constructor(upper_bound = 4):
     for q in (6,7,8):
         print(f"\nConstructing E{q}",end="")
         E_q = construct_root_system_from_dynkin_type('E',q)
-        print(f"\nDynkin diagram of type E{q}:", visualize_graph(E_q.dynkin_graph))
+        print(f"\nDynkin diagram of type E{q}:", visualize_graph(E_q.dynkin_graph),end="")
         assert len(E_q.root_list) == expected_number_of_roots('E',q), \
             f"Expected {expected_number_of_roots('E',q)} for E_{q} but constructor produced {len(E_q.root_list)}"
         assert E_q.dynkin_type == 'E'
@@ -993,11 +1040,12 @@ def test_dynkin_constructor(upper_bound = 4):
         assert E_q.is_reduced
         assert E_q.is_irreducible
         E_q.verify_root_system_axioms()
+        
+    print("\nAll tests passed for root system constructor.")
 
 def test_dynkin_classifier():
     # Run a battery of tests to verify that the dynkin type classifier works
-    print("Testing Dynkin type classifier on a pre-populated "+
-          "list of irreducible reduced root systems...")
+    print("Testing Dynkin type classifier...")
     for name in directed_dynkin_graphs:
         print("\nName:",name)
         true_type = name[0]
@@ -1007,10 +1055,19 @@ def test_dynkin_classifier():
         graph = directed_dynkin_graphs[name]
         print("\tGraph visualization:", visualize_graph(graph))
         print("\tGraph as dictionary:",graph)
-        calculated_type = root_system.dynkin_type
-        calculated_rank = root_system.rank
-        print("\tDetermined type:",calculated_type)
-        print("\tDetermined rank:",calculated_rank)
+        calculated_type, calculated_rank = determine_dynkin_type(graph)
+        print("\tCalculated type:",calculated_type)
+        print("\tCalculated rank:",calculated_rank)
         assert true_type == calculated_type
         assert true_rank == calculated_rank
-    print("\nAll tests passed.")
+    print("\nAll tests passed for Dynkin classifier.")
+    
+    
+
+def main():
+    test_dynkin_classifier()
+    print()
+    test_dynkin_constructor(upper_bound = 5)
+    
+if __name__ == "__main__":
+    main()

@@ -24,9 +24,9 @@ class nondegenerate_isotropic_form:
         self.dimension = dimension  # The dimension of the associated vector space V,
                                     # also the size of the associated matrix
         self.witt_index = witt_index
-        self.epsilon = epsilon  # epsilon=None to indicate symmetric bilinear
-                                # epsilon=1 to indicate hermitian
-                                # epsilon=-1 to indicate skew-hermitian
+        self.epsilon = epsilon  # epsilon = None to indicate symmetric bilinear
+                                # epsilon = 1 to indicate hermitian
+                                # epsilon = -1 to indicate skew-hermitian
         self.anisotropic_vector = anisotropic_vector    # A vector to store the diagonal entries
                                                         # of the anisotropic block of the matrix
     

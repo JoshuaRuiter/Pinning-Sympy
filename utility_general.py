@@ -2,8 +2,8 @@
 
 import sympy as sp
 import operator
-import multiprocessing as mp
 from copy import deepcopy
+# import multiprocessing as mp
 # import random
 
 

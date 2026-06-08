@@ -1,3 +1,18 @@
+# This file is used to run the primary battery of tests utilizing all of the 
+# important tools related to pinned groups.
+
+# The main battery of tests does the following for each of a list of classical groups:
+#   1. Create a split_torus object
+#   2. Create a pinned_group object
+#   3. Fit a pinning for that pinned_group object
+#   4. Check that the Dynkin type is as expected
+#   5. Run a battery of tests to validate the pinning
+
+# The groups considered here are:
+#   Special linear group
+#   Special orthogonal group associated to a nondegenerate isotropic bilinear form
+#   Special unitary group associated to a nondegenerate isotropic hermitian or skew-hermitian form
+
 import sympy as sp
 import time
 from pinned_group import pinned_group
@@ -31,17 +46,10 @@ def main():
                   "Improve speed/optimization in a number of places. Top candidates:" + "\n\t\t" + 
                       "fit_weyl_elements, reduce_character_list/determine_roots, " + "\n\t\t" + 
                       "weyl group nonzero pattern matching, reducing test redundancy" + "\n\t" +
-                  "Fix test_dynkin_constructor" + "\n\t" + 
-                  "Fix test_dynkin_classifier" + "\n\t" +
-                  "Add documentation to pinned_group" + "\n\t" +
-                  "Add documentation to pinned_group_examples" + "\n\t" +
-                  "Write a Readme for Github" + "\n\t" +
-                  "Understand what's going on with the orders of Weyl conjugation coefficient maps" + "\n\t" +
                   "Find a way to implement belongs_to_generated_subgroup again in a" + "\n\t\t" +
                       "computationally feasible way, even if with random numerical stuff" + "\n\t" +
                   "Implement a class for elements of quadratic field extensions that can handle symbolic stuff" + "\n\t" +
                   "Implement other groups? maybe type G2, twisted groups?" + "\n\t"
-                  "Implement a non-split torus class, maybe" + "\n\t" +
                   "Re-design root_system class to be root_datum, maybe")
     print(to_do_list)
     

@@ -77,7 +77,7 @@ class pinned_group:
         self.generic_lie_algebra_element = lambda letter : \
             generic_lie_algebra_element(self.matrix_size, self.rank, self.form, letter)
 
-        # These get set by running .fit_pinning()
+        # These get set by running fit_pinning
         self.root_system = None
         self.root_space_dimension_dict = None
         self.root_space_dimension = None
@@ -93,7 +93,7 @@ class pinned_group:
         self.torus_coroot_map = None
     
     def fit_pinning(self, display = True):
-        # work out all the computational details related to Lie algebra, roots, etc.
+        # Work out all the computational details related to Lie algebra, roots, etc.
         
         if display:
             print("\n" + '-' * 100 + "\n")
@@ -126,7 +126,6 @@ class pinned_group:
             print("\n" + '-' * 100 + "\n")
     
     def display_pinning_info(self):
-        
         print(f"\nPinning information for {self.name_string}:")
         print("\nRoot system:",self.root_system.name_string)
         print("Number of roots:",len(self.root_system.root_list))
@@ -150,7 +149,6 @@ class pinned_group:
     def get_roots_table(self):
         # Compile a text table for info on roots, coroots, etc.
         import re
-        import sympy as sp
         
         t = self.generic_torus_element('t')
         tt = sp.symbols('t')
@@ -185,6 +183,7 @@ class pinned_group:
                          "_5": "₅", "_6": "₆", "_7": "₇", "_8": "₈", "_9": "₉"}
         cleaned_table = []
     
+    
         for row in table:
             cleaned_row = []
             for cell in row:
@@ -211,7 +210,7 @@ class pinned_group:
             cleaned_table.append(cleaned_row)
     
         return tabulate(cleaned_table, headers=headers, tablefmt="fancy_grid")
-    
+
     def get_commutator_table(self):
         assert(len(self.commutator_coefficient_dict) > 0)
         
@@ -758,8 +757,7 @@ class pinned_group:
         self.weyl_element_map = wem
 
     def fit_weyl_conjugation_coefficients(self, display = True):
-        # given a weyl element w_alpha,
-        # and a root beta, 
+        # Given a weyl element w_alpha and a root beta, 
         # find the coefficient/function phi so that
         # w_alpha * x_beta(u) * w_alpha^(-1) = x_{sigma_alpha(beta)} ( phi(u) )
         
@@ -805,6 +803,7 @@ class pinned_group:
                 output = output.subs(var, u[i])
             return output
         self.weyl_conjugation_coefficient_map = wccm
+
 
     def fit_coroot_torus_elements(self, display = True):
         # Fit the elemnents h_alpha(t)
@@ -910,6 +909,10 @@ class pinned_group:
         self.coroot_torus_element_map = cte
 
     def without_non_variables(self, list_of_variables):
+        # Sometimes when solving, we need to ignore some variables
+        # such as the primitive element p_e = sqrt(d)
+        # or the variables c1, c2, ... in the bottom right corner
+        # of the form matrix
         new_list = copy.deepcopy(list_of_variables)
         if self.non_variables is not None:
             for v in self.non_variables:
@@ -985,7 +988,8 @@ class pinned_group:
         return False
 
     def validate_pinning(self, display = True):
-        # run tests to verify the pinning, run only after fitting
+        # Run tests to verify the pinning
+        # Run this only after fitting
         
         if display:
             print("\n" + '-' * 100 + "\n")
@@ -1004,8 +1008,6 @@ class pinned_group:
             print("\n" + '-' * 100 + "\n")
              
     def validate_basics(self, display = True):
-        # Test that the generic torus element is in the group
-        
         s = self.generic_torus_element('s')
         u = sp.symbols('u')
         A = self.generic_lie_algebra_element('a')
@@ -1028,8 +1030,7 @@ class pinned_group:
             print("done.")
             print("Torus verifications complete.")
             print("\nVerifying properties of the Lie algebra...")
-        
-        # Tests for is_in_lie_algebra
+
         if display: print("\tChecking that a generic Lie algebra element is in the Lie algebra... ", end="")
         assert self.is_lie_algebra_element(A), "Generic lie algebra element is not a Lie algebra element"
         if display: print("done.")      
@@ -1168,9 +1169,7 @@ class pinned_group:
                                     f"alpha = {alpha} does not satisfy its defining formula"
         if display: print("done.")
 
-        
         if display: print("\tChecking subgroup nonzero pattern matching... ", end="")
-        
         for alpha in self.root_system.root_list:
             d_alpha = self.root_space_dimension(alpha)
             a = vector_variable(letter = 'a', length = d_alpha)
