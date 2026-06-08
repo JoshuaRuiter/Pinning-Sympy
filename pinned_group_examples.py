@@ -47,10 +47,7 @@ def main():
                       "fit_weyl_elements, reduce_character_list/determine_roots, " + "\n\t\t" + 
                       "weyl group nonzero pattern matching, reducing test redundancy" + "\n\t" +
                   "Find a way to implement belongs_to_generated_subgroup again in a" + "\n\t\t" +
-                      "computationally feasible way, even if with random numerical stuff" + "\n\t" +
-                  "Implement a class for elements of quadratic field extensions that can handle symbolic stuff" + "\n\t" +
-                  "Implement other groups? maybe type G2, twisted groups?" + "\n\t"
-                  "Re-design root_system class to be root_datum, maybe")
+                      "computationally feasible way, even if with random numerical stuff" + "\n\t")
     print(to_do_list)
     
     print("\nDemonstrating usage of pinned group class")
@@ -63,7 +60,7 @@ def main():
     ### A "full test" is 2<=n<=6 and 1<=q<=3
     ### Full test takes over an hour to run
     n_min = 1
-    n_max = 6
+    n_max = 4
     q_min = 1
     q_max = 3
     #############################################
@@ -90,7 +87,8 @@ def run_SL_tests(n_min, n_max):
     print("Running calculations and verifications for special linear groups")
     n_min = max(n_min, 2) # n=1 doesn't make sense, SL_1 is just the trivial group
     for n in range(n_min, n_max + 1):
-        T = split_torus(rank = n-1,
+        T = split_torus(matrix_size = n,
+                        rank = n-1,
                         is_element = is_torus_element_SL,
                         generic_element = generic_torus_element_SL,
                         trivial_character_matrix = trivial_characters_SL(n),
@@ -127,7 +125,8 @@ def run_SO_split_tests(n_min, n_max, q_min, q_max):
                                                 anisotropic_vector = anisotropic_vec,
                                                 epsilon = None,
                                                 primitive_element = None)
-            T = split_torus(rank = q,
+            T = split_torus(matrix_size = n,
+                            rank = q,
                             is_element = is_torus_element_SO,
                             generic_element = generic_torus_element_SO,
                             trivial_character_matrix = trivial_characters_SO(n,q),
@@ -176,7 +175,8 @@ def run_SO_nonsplit_tests(n_min, n_max, q_min, q_max):
                                                 anisotropic_vector = anisotropic_vec,
                                                 epsilon = None,
                                                 primitive_element = None)
-            T = split_torus(rank = q,
+            T = split_torus(matrix_size = n,
+                            rank = q,
                             is_element = is_torus_element_SO,
                             generic_element = generic_torus_element_SO,
                             trivial_character_matrix = trivial_characters_SO(n,q),
@@ -222,7 +222,8 @@ def run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values):
                                                     anisotropic_vector = anisotropic_vec,
                                                     epsilon = eps,
                                                     primitive_element = p_e)
-                T = split_torus(rank = q,
+                T = split_torus(matrix_size = n,
+                                rank = q,
                                 is_element = is_torus_element_SU,
                                 generic_element = generic_torus_element_SU,
                                 trivial_character_matrix = trivial_characters_SU(n,q),
@@ -271,7 +272,8 @@ def run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values):
                                                     anisotropic_vector = anisotropic_vec,
                                                     epsilon = eps,
                                                     primitive_element = p_e)
-                T = split_torus(rank = q,
+                T = split_torus(matrix_size = n,
+                                rank = q,
                                 is_element = is_torus_element_SU,
                                 generic_element = generic_torus_element_SU,
                                 trivial_character_matrix = trivial_characters_SU(n,q),

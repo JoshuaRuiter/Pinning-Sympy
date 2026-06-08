@@ -1,15 +1,21 @@
 # A class to package all of the information related 
 # to a split torus subgroup of a pinned group.
 
+import sympy as sp
+
 class split_torus:
     
     def __init__(self, 
+                 matrix_size,
                  rank, 
                  is_element, 
                  generic_element, 
                  trivial_character_matrix, 
                  nontrivial_character_entries):
         
+        assert isinstance(matrix_size, int) and matrix_size >= 1
+        self.matrix_size = matrix_size
+                
         assert isinstance(rank, int) and rank >= 1, "Rank of a split torus must be a positive integer"
         self.rank = rank
         
@@ -64,3 +70,6 @@ class split_torus:
         #     return [1]*rank + [0]*(matrix_size - rank)
         self.nontrivial_character_entries = nontrivial_character_entries
         
+    def __repr__(self):
+        element = self.generic_element(self.matrix_size, self.rank, letter = 't')
+        return f"Split torus with \nMatrix size: {self.matrix_size} \nRank: {self.rank} \nGeneric element:\n" + sp.pretty(element)
