@@ -72,4 +72,4 @@ class split_torus:
         
     def __repr__(self):
         element = self.generic_element(self.matrix_size, self.rank, letter = 't')
-        return f"Split torus with \nMatrix size: {self.matrix_size} \nRank: {self.rank} \nGeneric element:\n" + sp.pretty(element)
+        return f"Split torus with \n\tMatrix size: {self.matrix_size} \n\tRank: {self.rank} \n\tGeneric element:\n" + sp.pretty(element)

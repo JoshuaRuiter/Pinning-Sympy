@@ -804,7 +804,6 @@ class pinned_group:
             return output
         self.weyl_conjugation_coefficient_map = wccm
 
-
     def fit_coroot_torus_elements(self, display = True):
         # Fit the elemnents h_alpha(t)
         # These elements are defined by the following properties:
@@ -1363,20 +1362,10 @@ class pinned_group:
                 d_gamma = self.root_space_dimension(gamma)
                 assert d_beta == d_gamma, "Reflected roots have mismatched dimensions"
                 a = vector_variable('a',d_beta)
-                b = vector_variable('b',d_gamma)
                 x_beta_a = self.root_subgroup_map(beta,a)
-                x_gamma_b = self.root_subgroup_map(gamma,b)
                 LHS = w_alpha * x_beta_a * (w_alpha_inverse)
-                
-                # Flexible test, just check if there is a solution
-                sols = sp.solve(LHS-x_gamma_b, b.free_symbols, dict=True)
-                assert len(sols) >= 1, f"Weyl element for alpha = {alpha} doesn't properly" + \
-                                        f"conjugate the root subgroup U_beta where beta = {beta}"
-                                        
-                # Rigid test, verify that the solution is as expected
                 phi_a = self.weyl_conjugation_coefficient_map(alpha, beta, a)
-                if d_gamma > 1:
-                    assert len(phi_a) == d_gamma
+                if d_gamma > 1: assert len(phi_a) == d_gamma
                 x_gamma_phi_a = self.root_subgroup_map(gamma, phi_a)
                 RHS = x_gamma_phi_a
                 assert LHS.equals(RHS), "Weyl conjugation coefficient is incorrect"

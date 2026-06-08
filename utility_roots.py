@@ -175,13 +175,6 @@ def evaluate_cocharacter(cocharacter,scalar):
     diag_elements = [scalar**int(exp) for exp in cocharacter]
     return sp.diag(*diag_elements)
 
-    # OLD VERSION
-    # length = len(cocharacter)
-    # output = sp.eye(length, dtype=int)
-    # for i in range(length):
-    #     output[i,i] = scalar**cocharacter[i]
-    # return output
-
 def generic_kernel_element(alpha, generic_torus_element):
     # Return a generic element of the kernel of a character alpha,
     # using a generic torus element t as a starting point
@@ -371,25 +364,177 @@ def determine_roots(generic_torus_element,
                 print("\tEstimated time remaining:", int(remaining), "seconds")
             
         alpha_of_t = evaluate_character(alpha,t)
-        if alpha_of_t != 1: # ignore cases where the character is trivial
-            RHS = alpha_of_t*x
-            my_equation = sp.simplify(LHS-RHS)
-            solutions_list = sp.solve(my_equation,vars_to_solve_for,dict=True)
-            assert(len(solutions_list) == 1)
-            solutions_dict = solutions_list[0]
-            if len(solutions_dict) > 0 :
-                all_zero = True 
-                for var in vars_to_solve_for:  # check that not all variables are zero
-                    if not(var in solutions_dict.keys()) or solutions_dict[var] != 0:
-                        all_zero = False
-                        break
-                if not(all_zero): # For nonzero characters with a solution, add as a root
-                    generic_root_space_element = x
-                    for var, value in solutions_dict.items():
-                        generic_root_space_element = generic_root_space_element.subs(var,value)
-                    if not generic_root_space_element.is_zero_matrix:
-                        root_space_dict[alpha] = sp.simplify(generic_root_space_element)
+        
+        if alpha_of_t == 1: 
+            # If the character evaluates to trivial on a generic torus element, 
+            # then it is definitely not a root
+            continue 
+        
+        RHS = alpha_of_t*x
+        my_equation = sp.simplify(LHS-RHS) # trying to save time by skipping this simplify step
+        # my_equation = LHS - RHS
+        
+        solutions_list = sp.solve(my_equation, vars_to_solve_for, dict=True)
+        assert(len(solutions_list) == 1)
+        solutions_dict = solutions_list[0]
+        solutions_list = sp.solve(my_equation,vars_to_solve_for,dict=True)
+        assert(len(solutions_list) == 1)
+        solutions_dict = solutions_list[0]
+        
+        
+        if solutions_dict:
+            all_zero = all(var in solutions_dict and solutions_dict[var] == 0 for var in vars_to_solve_for)
+            if not(all_zero): # For nonzero characters with a solution, add as a root
+                generic_root_space_element = x.subs(solutions_dict)
+                if not generic_root_space_element.is_zero_matrix:
+                    root_space_dict[alpha] = sp.simplify(generic_root_space_element)
+        
+        # if len(solutions_dict) > 0 :
+        #     all_zero = True 
+        #     for var in vars_to_solve_for:  # check that not all variables are zero
+        #         if not(var in solutions_dict.keys()) or solutions_dict[var] != 0:
+        #             all_zero = False
+        #             break
+        #     if not(all_zero): # For nonzero characters with a solution, add as a root
+        #         generic_root_space_element = x
+        #         for var, value in solutions_dict.items():
+        #             generic_root_space_element = generic_root_space_element.subs(var,value)
+        #         if not generic_root_space_element.is_zero_matrix:
+        #             root_space_dict[alpha] = sp.simplify(generic_root_space_element)
+                    
     return root_space_dict
+
+# def determine_roots_OLD(generic_torus_element,
+#                     generic_lie_algebra_element,
+#                     list_of_characters,
+#                     vars_to_solve_for,
+#                     time_updates = False):
+    
+#     # Caculate roots and root spaces.
+#     # Return in a dictionary format, where keys are roots (as tuples)
+#     # and the value is the generic element of the root space
+    
+#     # The key equation is
+#     # t * X * t^(-1) = alpha(t) * X
+#     # The goal is to find alpha's that solve this equation,
+#     # where t and X are arbitrary/generic elements of the 
+#     # torus and Lie algebra respectively
+    
+#     root_space_dict = {}
+#     t = generic_torus_element
+#     x = sp.Matrix(generic_lie_algebra_element)
+#     LHS = sp.simplify(t*x*t**(-1))
+    
+#     if time_updates:
+#         print("\nComputing roots...")
+#         n = len(list_of_characters)
+#         print("Testing " + str(n) + " candidate characters.")
+#         i = 0
+#         t0 = time.time()
+    
+#     for alpha in list_of_characters:
+        
+#         if time_updates:
+#             i = i + 1
+#             t1 = time.time()
+#             if i % 100 == 0:
+#                 print("\tTesting candidate", i)
+#                 print("\tRoots found so far:", len(root_space_dict))
+#                 elapsed = t1-t0
+#                 avg = elapsed/i
+#                 remaining = (n-i)*avg
+#                 print("\tTime elapsed:", int(elapsed), "seconds")
+#                 print("\tAverage time per candidate:", round(avg,2), "seconds")
+#                 print("\tEstimated time remaining:", int(remaining), "seconds")
+            
+#         alpha_of_t = evaluate_character(alpha,t)
+        
+#         if alpha_of_t != 1: # ignore cases where the character is trivial
+#             RHS = alpha_of_t*x
+#             my_equation = sp.simplify(LHS-RHS)
+#             solutions_list = sp.solve(my_equation,vars_to_solve_for,dict=True)
+#             assert(len(solutions_list) == 1)
+#             solutions_dict = solutions_list[0]
+#             if len(solutions_dict) > 0 :
+#                 all_zero = True 
+#                 for var in vars_to_solve_for:  # check that not all variables are zero
+#                     if not(var in solutions_dict.keys()) or solutions_dict[var] != 0:
+#                         all_zero = False
+#                         break
+#                 if not(all_zero): # For nonzero characters with a solution, add as a root
+#                     generic_root_space_element = x
+#                     for var, value in solutions_dict.items():
+#                         generic_root_space_element = generic_root_space_element.subs(var,value)
+#                     if not generic_root_space_element.is_zero_matrix:
+#                         root_space_dict[alpha] = sp.simplify(generic_root_space_element)
+#     return root_space_dict
+
+
+# def determine_roots_NEW(generic_torus_element,
+#                     generic_lie_algebra_element,
+#                     list_of_characters,
+#                     vars_to_solve_for,
+#                     time_updates = False):
+    
+#     # Caculate roots and root spaces.
+#     # Return in a dictionary format, where keys are roots (as tuples)
+#     # and the value is the generic element of the root space
+    
+#     # The key equation is
+#     # t * X * t^(-1) = alpha(t) * X
+#     # The goal is to find alpha's that solve this equation,
+#     # where t and X are arbitrary/generic elements of the 
+#     # torus and Lie algebra respectively
+    
+#     root_space_dict = {}
+#     t = generic_torus_element
+#     x = sp.Matrix(generic_lie_algebra_element)
+#     LHS = sp.simplify(t*x*t**(-1))
+    
+#     if time_updates:
+#         print("\nComputing roots...")
+#         n = len(list_of_characters)
+#         print("Testing " + str(n) + " candidate characters.")
+#         i = 0
+#         t0 = time.time()
+    
+#     for alpha in list_of_characters:
+        
+#         if time_updates:
+#             i = i + 1
+#             t1 = time.time()
+#             if i % 100 == 0:
+#                 print("\tTesting candidate", i)
+#                 print("\tRoots found so far:", len(root_space_dict))
+#                 elapsed = t1-t0
+#                 avg = elapsed/i
+#                 remaining = (n-i)*avg
+#                 print("\tTime elapsed:", int(elapsed), "seconds")
+#                 print("\tAverage time per candidate:", round(avg,2), "seconds")
+#                 print("\tEstimated time remaining:", int(remaining), "seconds")
+            
+#         alpha_of_t = evaluate_character(alpha,t)
+        
+#         if alpha_of_t == 1: 
+#             # If the character evaluates to trivial on a generic torus element, 
+#             # then it is definitely not a root
+#             continue 
+    
+#         RHS = alpha_of_t*x
+#         # my_equation = LHS - RHS
+#         my_equation = sp.simplify(LHS-RHS) # this simplification step seems to be unnecessary
+#         solutions_list = sp.solve(my_equation, vars_to_solve_for, dict=True)
+#         assert(len(solutions_list) == 1)
+#         solutions_dict = solutions_list[0]
+        
+#         if solutions_dict:
+#             all_zero = all(var in solutions_dict and solutions_dict[var] == 0 for var in vars_to_solve_for)
+#             if not(all_zero): # For nonzero characters with a solution, add as a root
+#                 generic_root_space_element = x.subs(solutions_dict)
+#                 if not generic_root_space_element.is_zero_matrix:
+#                     root_space_dict[alpha] = sp.simplify(generic_root_space_element)
+                    
+#     return root_space_dict
 
 def visualize_graph(graph):
     if not graph:
