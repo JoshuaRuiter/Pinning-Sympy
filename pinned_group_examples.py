@@ -43,11 +43,11 @@ from utility_SU import (group_constraints_SU,
 
 def main():
     to_do_list = ("TO DO LIST:" + "\n\t" + 
+                  "Make some tools or tables for visualizing equations/identites" + "\n\t" +
                   "Improve speed/optimization in a number of places. Top candidates:" + "\n\t\t" + 
                       "fit_weyl_elements, weyl group nonzero pattern matching" + "\n\t" +
                   "Find a way to implement belongs_to_generated_subgroup again in a" + "\n\t\t" +
-                      "computationally feasible way, even if with random numerical stuff"
-                      )
+                      "computationally feasible way, even if with random numerical stuff")
     print(to_do_list)
     
     print("\nDemonstrating usage of pinned group class")
