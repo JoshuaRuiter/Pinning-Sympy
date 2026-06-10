@@ -67,12 +67,12 @@ def main():
     
     #####################################################################
     ### Comment these out temporarily to shorten tests
-    # n_max_SL = 4 # SL_4 and beyond take a long time to compute roots
-    # run_SL_tests(n_min, min(n_max, n_max_SL))
+    n_max_SL = 4 # SL_4 and beyond take a long time to compute roots
+    run_SL_tests(n_min, min(n_max, n_max_SL))
     # run_SO_split_tests(n_min, n_max, q_min, q_max)
     # run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
-    run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
-    run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
+    # run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
+    # run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
     #####################################################################
     
     print("\nAll tests complete.")
