@@ -28,6 +28,7 @@ from utility_SU import (character_entries_SU,
                         is_torus_element_SU,
                         lie_algebra_constraints_SU,
                         trivial_characters_SU)
+from weyl_element_demo import fit_weyl_group_elements_from_root_subgroups
 
 
 def parse_args():
@@ -76,7 +77,7 @@ def fit_group(G, display=True, validate=True, weyl_method="brute"):
         G.fit_root_subgroup_maps(display)
         G.fit_homomorphism_defect_coefficients(display)
         G.fit_commutator_coefficients(display)
-        G.demo_fit_weyl_group_elements_from_root_subgroups(display)
+        fit_weyl_group_elements_from_root_subgroups(G, display)
         G.fit_weyl_conjugation_coefficients(display)
         G.fit_coroot_torus_elements(display)
         if display:
