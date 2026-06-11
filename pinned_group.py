@@ -1286,9 +1286,44 @@ class pinned_group:
                                                  max_word_length = 4,
                                                  op = operator.eq,
                                                  display = False)
-        if display: 
-            print("done.")
-            print("Root subgroup map verifications complete.")
+        if display: print("done.")
+        
+        if display: print("\tChecking belongs_to_generated_subgroup works... ", end="")
+        for alpha in self.root_system.root_list:
+            d_alpha = self.root_space_dimension(alpha)
+            a = vector_variable(letter = 'a', length = d_alpha)
+            x_alpha_a = self.root_subgroup_map(alpha,a)
+            assert self.belongs_to_generated_subgroup(matrix_to_test = x_alpha_a,
+                                                      generating_roots = [alpha],
+                                                      min_word_length = 1,
+                                                      max_word_length = 1,
+                                                      display = False)
+        
+        for (alpha, beta) in self.root_system.non_proportional_pairs:
+            d_alpha = self.root_space_dimension(alpha)
+            a = vector_variable(letter = 'a', length = d_alpha)
+            x = self.root_subgroup_map(alpha, a)
+            d_beta = self.root_space_dimension(beta)
+            b = vector_variable(letter = 'b', length = d_beta)
+            y = self.root_subgroup_map(beta, b)
+            assert self.belongs_to_generated_subgroup(matrix_to_test = x*y,
+                                                      generating_roots = [alpha,beta],
+                                                      min_word_length = 2,
+                                                      max_word_length = 2,
+                                                      display = False)
+            assert self.belongs_to_generated_subgroup(matrix_to_test = x*y*x,
+                                                      generating_roots = [alpha,beta],
+                                                      min_word_length = 3,
+                                                      max_word_length = 3,
+                                                      display = False)
+            assert self.belongs_to_generated_subgroup(matrix_to_test = x*y*x*y,
+                                                      generating_roots = [alpha,beta],
+                                                      min_word_length = 4,
+                                                      max_word_length = 4,
+                                                      display = False)
+        if display: print("done.")
+        
+        if display: print("Root subgroup map verifications complete.")
     
     def validate_commutator_formula(self, display = True):
         
