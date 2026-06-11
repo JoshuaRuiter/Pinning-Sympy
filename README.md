@@ -61,9 +61,10 @@ These are the only external dependencies required by the repository.
 ## Current development notes
 
 The project is still in experimental development. Current focus areas include:
+- update the notes document,
 - improving performance and reducing brute-force search in the Weyl element solver,
-- fixing formatting and symbolic printing for subscripted variables,
-- resolving parenthesis and coefficient issues in commutator tables,
+- implementing a tool for visualizing equations/identities,
+- implement a belongs_to_generated_subgroup method for pinned_group in a computational feasible way,
 - extending support to more group types and non-split torus structures,
 - moving `root_system` toward a `root_datum` design.
 

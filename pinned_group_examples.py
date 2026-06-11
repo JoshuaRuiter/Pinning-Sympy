@@ -47,7 +47,8 @@ def main():
                   "Improve speed/optimization in a number of places. Top candidates:" + "\n\t\t" + 
                       "fit_weyl_elements, weyl group nonzero pattern matching" + "\n\t" +
                   "Find a way to implement belongs_to_generated_subgroup again in a" + "\n\t\t" +
-                      "computationally feasible way, even if with random numerical stuff")
+                      "computationally feasible way, even if with random numerical stuff" +
+                  "Implement some kind of quadratic field extension class")
     print(to_do_list)
     
     print("\nDemonstrating usage of pinned group class")
@@ -67,12 +68,12 @@ def main():
     
     #####################################################################
     ### Comment these out temporarily to shorten tests
-    n_max_SL = 4 # SL_4 and beyond take a long time to compute roots
+    n_max_SL = 3 # SL_4 and beyond take a long time to compute roots
     run_SL_tests(n_min, min(n_max, n_max_SL))
-    # run_SO_split_tests(n_min, n_max, q_min, q_max)
-    # run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
-    # run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
-    # run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
+    run_SO_split_tests(n_min, n_max, q_min, q_max)
+    run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
+    run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
+    run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
     #####################################################################
     
     print("\nAll tests complete.")
