@@ -30,7 +30,10 @@ from utility_SU import (character_entries_SU,
                         is_torus_element_SU,
                         lie_algebra_constraints_SU,
                         trivial_characters_SU)
-from weyl_element_demo import fit_weyl_group_elements_from_root_subgroups
+from weyl_element_demo import (
+    fit_weyl_group_elements_from_root_subgroups,
+    try_fit_weyl_group_elements_from_root_subgroups,
+)
 
 
 def parse_args():
@@ -58,9 +61,13 @@ def parse_args():
     )
     parser.add_argument(
         "--weyl-method",
-        choices=["brute", "root-subgroups"],
+        choices=["brute", "root-subgroups", "auto"],
         default="brute",
-        help="Weyl element construction method. root-subgroups is experimental/demo only. Default: brute.",
+        help=(
+            "Weyl element construction method. root-subgroups is strict "
+            "experimental/demo mode; auto tries root-subgroups first and "
+            "falls back to brute. Default: brute."
+        ),
     )
     parser.add_argument("--quiet", action="store_true")
     parser.add_argument("--skip-validation", action="store_true")
@@ -230,25 +237,42 @@ def latex_document(groups):
     ])
 
 
+def fit_group_with_demo_weyl_method(G, display=True, weyl_method="root-subgroups"):
+    if display:
+        print("\n" + "-" * 100 + "\n")
+        print(f"Fitting a pinning for {G.name_string}")
+    G.fit_root_system(display)
+    G.fit_root_spaces(display)
+    G.fit_root_subgroup_maps(display)
+    G.fit_homomorphism_defect_coefficients(display)
+    G.fit_commutator_coefficients(display)
+
+    if weyl_method == "root-subgroups":
+        fit_weyl_group_elements_from_root_subgroups(G, display)
+    elif weyl_method == "auto":
+        used_fast_path = try_fit_weyl_group_elements_from_root_subgroups(G, display)
+        if not used_fast_path:
+            if display:
+                print("Falling back to brute-force Weyl element search")
+            G.fit_weyl_group_elements(display)
+    else:
+        raise ValueError(f"Unknown demo Weyl method: {weyl_method}")
+
+    G.fit_weyl_conjugation_coefficients(display)
+    G.fit_coroot_torus_elements(display)
+    if display:
+        print("Fitting complete")
+        G.display_pinning_info()
+        print("\n" + "-" * 100 + "\n")
+
+
 def fit_group(G, display=True, validate=True, weyl_method="brute"):
     if weyl_method == "brute":
         G.fit_pinning(display=display)
-    elif weyl_method == "root-subgroups":
+    elif weyl_method in ("root-subgroups", "auto"):
         if display:
-            print("\n" + "-" * 100 + "\n")
-            print(f"Fitting a pinning for {G.name_string}")
-        G.fit_root_system(display)
-        G.fit_root_spaces(display)
-        G.fit_root_subgroup_maps(display)
-        G.fit_homomorphism_defect_coefficients(display)
-        G.fit_commutator_coefficients(display)
-        fit_weyl_group_elements_from_root_subgroups(G, display)
-        G.fit_weyl_conjugation_coefficients(display)
-        G.fit_coroot_torus_elements(display)
-        if display:
-            print("Fitting complete")
-            G.display_pinning_info()
-            print("\n" + "-" * 100 + "\n")
+            print(f"Using demo Weyl method: {weyl_method}")
+        fit_group_with_demo_weyl_method(G, display, weyl_method)
     else:
         raise ValueError(f"Unknown Weyl method: {weyl_method}")
 

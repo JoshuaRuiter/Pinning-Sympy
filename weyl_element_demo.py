@@ -94,10 +94,7 @@ def is_valid_weyl_element_candidate(G, alpha, w_alpha):
     return True
 
 
-def fit_weyl_group_elements_from_root_subgroups(G, display=True):
-    # Experimental alternative Weyl-element fitting method.
-    # This lives outside pinned_group.py so it can be tested without changing
-    # the core fitting path.
+def fit_torus_reflections_from_coroots(G, display=True):
     if display:
         print("Fitting torus reflections (s_α)")
 
@@ -113,18 +110,62 @@ def fit_weyl_group_elements_from_root_subgroups(G, display=True):
 
     G.torus_reflection_map = torus_refl_map
 
-    if display:
-        print("Fitting Weyl elements (w_α) from root subgroups")
-    G.weyl_element_list = {}
+
+def construct_validated_weyl_elements_from_root_subgroups(G):
+    # Build every direct rank-one Weyl element first, then mutate G only after
+    # all roots have passed validation. This makes the helper safe to use as a
+    # fast path before falling back to the brute-force method.
+    weyl_elements = {}
     for alpha in G.root_system.root_list:
         w_alpha = construct_weyl_element_from_root_subgroups(G, alpha)
-        assert w_alpha is not None, \
-            f"Direct root-subgroup Weyl construction does not apply to alpha = {alpha}"
-        assert is_valid_weyl_element_candidate(G, alpha, w_alpha), \
-            f"Direct root-subgroup Weyl construction failed validation for alpha = {alpha}"
-        G.weyl_element_list[alpha] = w_alpha
+        if w_alpha is None:
+            return None, (
+                "direct root-subgroup formula requires one-dimensional "
+                f"opposite root spaces; skipped alpha = {alpha}"
+            )
+        if not is_valid_weyl_element_candidate(G, alpha, w_alpha):
+            return None, (
+                "direct root-subgroup Weyl construction failed validation "
+                f"for alpha = {alpha}"
+            )
+        weyl_elements[alpha] = w_alpha
+    return weyl_elements, None
+
+
+def install_weyl_element_map(G, weyl_elements):
+    G.weyl_element_list = weyl_elements
 
     def wem(alpha):
         return G.weyl_element_list[alpha]
 
     G.weyl_element_map = wem
+
+
+def try_fit_weyl_group_elements_from_root_subgroups(G, display=True):
+    # Non-throwing fast path for callers that want to fall back to the original
+    # brute-force Weyl search when the rank-one formula is not applicable.
+    fit_torus_reflections_from_coroots(G, display)
+    if display:
+        print("Trying Weyl elements (w_α) from root subgroups")
+
+    weyl_elements, failure_reason = construct_validated_weyl_elements_from_root_subgroups(G)
+    if failure_reason is not None:
+        if display:
+            print(f"Root-subgroup Weyl fast path skipped: {failure_reason}")
+        return False
+
+    install_weyl_element_map(G, weyl_elements)
+    return True
+
+
+def fit_weyl_group_elements_from_root_subgroups(G, display=True):
+    # Experimental alternative Weyl-element fitting method.
+    # This lives outside pinned_group.py so it can be tested without changing
+    # the core fitting path.
+    fit_torus_reflections_from_coroots(G, display)
+    if display:
+        print("Fitting Weyl elements (w_α) from root subgroups")
+
+    weyl_elements, failure_reason = construct_validated_weyl_elements_from_root_subgroups(G)
+    assert failure_reason is None, failure_reason
+    install_weyl_element_map(G, weyl_elements)
