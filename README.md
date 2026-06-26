@@ -34,21 +34,29 @@ There is also an experimental command-line runner that lets you choose examples 
 python pinned_group_cli.py --help
 python pinned_group_cli.py sl --n-max 3
 python pinned_group_cli.py sl --n-max 3 --weyl-method root-subgroups
+python pinned_group_cli.py sl --n-max 3 --weyl-method auto
 ```
 
-The `root-subgroups` Weyl method is a demo/experimental method for the direct rank-one formula, not a replacement for the default brute-force method.
+The `root-subgroups` Weyl method is a strict demo/experimental method for the
+direct rank-one formula. The `auto` method tries that demo method first and
+falls back to the default brute-force Weyl search when the direct formula does
+not apply or fails validation.
 
 ## Project layout
 
 - `pinned_group.py` - core class and algorithms for pinned algebraic groups.
 - `pinned_group_examples.py` - example usage and verification routines.
 - `pinned_group_cli.py` - optional command-line runner for selecting example suites and Weyl methods.
+- `weyl_element_demo.py` - experimental Weyl element construction helpers kept outside the core class.
 - `root_system.py` - root system and reflection utilities.
 - `split_torus.py` - split torus construction and helpers.
 - `nondegenerate_isotropic_form.py` - anisotropic form and quadratic extension utilities.
 - `utility_general.py` - general symbolic utilities, solver helpers, and pruning logic.
 - `utility_roots.py` - root-character list generation and reduction tools.
 - `utility_SL.py`, `utility_SO.py`, `utility_SU.py` - group-specific constraint definitions and torus generators.
+- `Notes document/` - longer mathematical notes and bibliography used during development.
+- `temp_workspace.py` - scratch workspace for ad hoc calculations.
+- `SU_5_2_1.pkl` - saved exploratory data for a unitary example.
 
 ## Dependencies
 
@@ -63,6 +71,7 @@ These are the only external dependencies required by the repository.
 The project is still in experimental development. Current focus areas include:
 - update the notes document,
 - improving performance and reducing brute-force search in the Weyl element solver,
+- testing the experimental root-subgroup Weyl fast path before moving any logic into the core class,
 - implementing a tool for visualizing equations/identities,
 - implement a belongs_to_generated_subgroup method for pinned_group in a computational feasible way,
 - extending support to more group types and non-split torus structures,
