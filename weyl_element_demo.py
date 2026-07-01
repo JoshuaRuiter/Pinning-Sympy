@@ -26,14 +26,34 @@ from utility_roots import evaluate_character, evaluate_cocharacter
 #     and root-space dimension data.
 
 
-def construct_weyl_element_from_root_subgroups(G, alpha):
-    # Standard rank-one Weyl representative. This is expected to work
-    # for one-dimensional root spaces, such as the split SL_n roots.
+def root_subgroup_formula_applies(G, alpha):
+    """Return whether the direct rank-one formula is defined.
+
+    Input:
+        G: a partially fitted pinned_group with root spaces and root subgroups.
+        alpha: a root of G.root_system.
+    Output:
+        True if both U_alpha and U_-alpha are one-dimensional; otherwise False.
+    """
     assert G.root_system.is_root(alpha), \
         "Cannot construct a Weyl element from a non-root"
-    if G.root_space_dimension(alpha) != 1:
-        return None
-    if G.root_space_dimension(-alpha) != 1:
+    return (
+        G.root_space_dimension(alpha) == 1
+        and G.root_space_dimension(-alpha) == 1
+    )
+
+
+def construct_weyl_element_from_root_subgroups(G, alpha):
+    """Construct a Weyl representative using the root-subgroup formula.
+
+    Input:
+        G: a partially fitted pinned_group with root subgroup maps available.
+        alpha: a root of G.root_system.
+    Output:
+        The matrix x_alpha(1) x_-alpha(-1) x_alpha(1), or None if the
+        direct formula is not canonical for this root.
+    """
+    if not root_subgroup_formula_applies(G, alpha):
         return None
 
     one = sp.Matrix([1])
@@ -45,56 +65,166 @@ def construct_weyl_element_from_root_subgroups(G, alpha):
     )
 
 
-def is_valid_weyl_element_candidate(G, alpha, w_alpha):
-    # Validation is intentionally exact and group-level. The shortcut is only
-    # useful if the constructed matrix satisfies the same properties expected
-    # from the brute-force Weyl element:
-    #   - w_alpha is in G,
-    #   - w_alpha normalizes the torus,
-    #   - w_alpha sends each root subgroup U_beta to U_{sigma_alpha(beta)}.
-    assert G.root_system.is_root(alpha), \
-        "Cannot validate a Weyl element candidate for a non-root"
-    if not G.is_group_element(w_alpha):
-        return False
+def validate_weyl_candidate_is_group_element(G, w_alpha):
+    """Check that a candidate Weyl element lies in the matrix group.
 
+    Input:
+        G: a pinned_group.
+        w_alpha: a matrix candidate for one Weyl element.
+    Output:
+        True if w_alpha satisfies G's group equations; otherwise False.
+    """
+    return G.is_group_element(w_alpha)
+
+
+def validate_weyl_candidate_normalizes_torus(G, w_alpha):
+    """Check that a candidate Weyl element normalizes the split torus.
+
+    Input:
+        G: a pinned_group with a generic torus element available.
+        w_alpha: a matrix candidate for one Weyl element.
+    Output:
+        True if w_alpha * t * w_alpha^-1 is a torus element for generic t.
+    """
     t = G.generic_torus_element('t')
-    if not G.is_torus_element(sp.simplify(w_alpha * t * w_alpha.inv())):
-        return False
+    conjugation = sp.simplify(w_alpha * t * w_alpha.inv())
+    return G.is_torus_element(conjugation)
 
-    w_alpha_inverse = w_alpha.inv()
+
+def get_reflected_root_data(G, alpha, beta, root_data_cache=None):
+    """Return root-system data used in one Weyl conjugation check.
+
+    Input:
+        G: a pinned_group with root-space dimensions available.
+        alpha: the root defining the Weyl reflection.
+        beta: the root being reflected.
+        root_data_cache: optional dict for memoizing data inside one pass.
+    Output:
+        A tuple (gamma, d_beta, d_gamma), where gamma = sigma_alpha(beta).
+    """
+    key = (alpha, beta)
+    if root_data_cache is not None and key in root_data_cache:
+        return root_data_cache[key]
+
+    gamma = G.root_system.reflect_root(alpha, beta)
+    root_data = (
+        gamma,
+        G.root_space_dimension(beta),
+        G.root_space_dimension(gamma),
+    )
+    if root_data_cache is not None:
+        root_data_cache[key] = root_data
+    return root_data
+
+
+def solve_weyl_conjugation_for_beta(G, alpha, beta, w_alpha, root_data_cache=None):
+    """Solve the root-subgroup conjugation equation for one beta.
+
+    Input:
+        G: a pinned_group with root subgroup maps available.
+        alpha: the root defining the candidate Weyl element.
+        beta: the root subgroup to conjugate.
+        w_alpha: the matrix candidate for the alpha Weyl element.
+        root_data_cache: optional dict shared across beta checks.
+    Output:
+        A solution dict for v in
+        w_alpha * x_beta(u) * w_alpha^-1 = x_sigma_alpha(beta)(v),
+        or None if the equation cannot be solved.
+    """
+    gamma, d_beta, d_gamma = get_reflected_root_data(
+        G, alpha, beta, root_data_cache
+    )
+    if d_beta != d_gamma:
+        return None
+
+    u = vector_variable('u', d_beta)
+    v = vector_variable('v', d_gamma)
+    x_beta_u = G.root_subgroup_map(beta, u)
+    x_gamma_v = G.root_subgroup_map(gamma, v)
+    lhs = sp.simplify(w_alpha * x_beta_u * w_alpha.inv())
+
+    try:
+        sols = sp.solve(lhs - x_gamma_v, v.free_symbols, dict=True)
+    except Exception:
+        return None
+    if len(sols) == 0:
+        return None
+    return sols[0]
+
+
+def validate_weyl_candidate_conjugates_root_subgroups(G, alpha, w_alpha):
+    """Check all root-subgroup conjugation equations for one candidate.
+
+    Input:
+        G: a pinned_group with root subgroup maps available.
+        alpha: the root defining the candidate Weyl element.
+        w_alpha: the matrix candidate for the alpha Weyl element.
+    Output:
+        True if every root subgroup U_beta is sent to
+        U_sigma_alpha(beta); otherwise False.
+    """
     root_data_cache = {}
     for beta in G.root_system.root_list:
-        # Cache root data inside this validation pass. These values are purely
-        # determined by the root system and do not depend on the candidate
-        # matrix entries.
-        key = (alpha, beta)
-        if key not in root_data_cache:
-            gamma = G.root_system.reflect_root(alpha, beta)
-            root_data_cache[key] = (
-                gamma,
-                G.root_space_dimension(beta),
-                G.root_space_dimension(gamma),
-            )
-        gamma, d_beta, d_gamma = root_data_cache[key]
-        if d_beta != d_gamma:
+        sol = solve_weyl_conjugation_for_beta(
+            G, alpha, beta, w_alpha, root_data_cache
+        )
+        if sol is None:
             return False
-
-        u = vector_variable('u', d_beta)
-        v = vector_variable('v', d_gamma)
-        x_beta_u = G.root_subgroup_map(beta, u)
-        x_gamma_v = G.root_subgroup_map(gamma, v)
-        lhs = sp.simplify(w_alpha * x_beta_u * w_alpha_inverse)
-        try:
-            sols = sp.solve(lhs - x_gamma_v, v.free_symbols, dict=True)
-        except Exception:
-            return False
-        if len(sols) == 0:
-            return False
-
     return True
 
 
+def is_valid_weyl_element_candidate(G, alpha, w_alpha):
+    """Run the shared validation checks for one candidate Weyl element.
+
+    Input:
+        G: a pinned_group with torus and root subgroup data available.
+        alpha: the root defining the candidate Weyl element.
+        w_alpha: the matrix candidate to validate.
+    Output:
+        True if w_alpha is in G, normalizes the torus, and conjugates each
+        U_beta into U_sigma_alpha(beta); otherwise False.
+    """
+    assert G.root_system.is_root(alpha), \
+        "Cannot validate a Weyl element candidate for a non-root"
+    return (
+        validate_weyl_candidate_is_group_element(G, w_alpha)
+        and validate_weyl_candidate_normalizes_torus(G, w_alpha)
+        and validate_weyl_candidate_conjugates_root_subgroups(G, alpha, w_alpha)
+    )
+
+
+def construct_validated_weyl_element_from_root_subgroups(G, alpha):
+    """Construct and validate one root-subgroup Weyl element.
+
+    Input:
+        G: a partially fitted pinned_group.
+        alpha: a root of G.root_system.
+    Output:
+        (w_alpha, None) on success, or (None, failure_reason) on failure.
+    """
+    w_alpha = construct_weyl_element_from_root_subgroups(G, alpha)
+    if w_alpha is None:
+        return None, (
+            "direct root-subgroup formula requires one-dimensional "
+            f"opposite root spaces; skipped alpha = {alpha}"
+        )
+    if not is_valid_weyl_element_candidate(G, alpha, w_alpha):
+        return None, (
+            "direct root-subgroup Weyl construction failed validation "
+            f"for alpha = {alpha}"
+        )
+    return w_alpha, None
+
+
 def fit_torus_reflections_from_coroots(G, display=True):
+    """Install the torus reflection map s_alpha on G.
+
+    Input:
+        G: a partially fitted pinned_group with coroots available.
+        display: whether to print progress.
+    Output:
+        None. Mutates G by assigning G.torus_reflection_map.
+    """
     if display:
         print("Fitting torus reflections (s_α)")
 
@@ -112,27 +242,35 @@ def fit_torus_reflections_from_coroots(G, display=True):
 
 
 def construct_validated_weyl_elements_from_root_subgroups(G):
-    # Build every direct rank-one Weyl element first, then mutate G only after
-    # all roots have passed validation. This makes the helper safe to use as a
-    # fast path before falling back to the brute-force method.
+    """Construct and validate root-subgroup Weyl elements for every root.
+
+    Input:
+        G: a partially fitted pinned_group.
+    Output:
+        (weyl_elements, None) on success, where weyl_elements maps roots to
+        matrices; otherwise (None, failure_reason). This function does not
+        mutate G.
+    """
     weyl_elements = {}
     for alpha in G.root_system.root_list:
-        w_alpha = construct_weyl_element_from_root_subgroups(G, alpha)
-        if w_alpha is None:
-            return None, (
-                "direct root-subgroup formula requires one-dimensional "
-                f"opposite root spaces; skipped alpha = {alpha}"
-            )
-        if not is_valid_weyl_element_candidate(G, alpha, w_alpha):
-            return None, (
-                "direct root-subgroup Weyl construction failed validation "
-                f"for alpha = {alpha}"
-            )
+        w_alpha, failure_reason = construct_validated_weyl_element_from_root_subgroups(
+            G, alpha
+        )
+        if failure_reason is not None:
+            return None, failure_reason
         weyl_elements[alpha] = w_alpha
     return weyl_elements, None
 
 
 def install_weyl_element_map(G, weyl_elements):
+    """Install a completed Weyl element dictionary on G.
+
+    Input:
+        G: a pinned_group to mutate.
+        weyl_elements: dict mapping each root alpha to its matrix w_alpha.
+    Output:
+        None. Mutates G by assigning G.weyl_element_list and G.weyl_element_map.
+    """
     G.weyl_element_list = weyl_elements
 
     def wem(alpha):
@@ -142,8 +280,15 @@ def install_weyl_element_map(G, weyl_elements):
 
 
 def try_fit_weyl_group_elements_from_root_subgroups(G, display=True):
-    # Non-throwing fast path for callers that want to fall back to the original
-    # brute-force Weyl search when the rank-one formula is not applicable.
+    """Try the root-subgroup Weyl method without raising on method failure.
+
+    Input:
+        G: a partially fitted pinned_group.
+        display: whether to print progress and failure reasons.
+    Output:
+        True if Weyl elements were constructed and installed; False if this
+        method does not apply or fails validation.
+    """
     fit_torus_reflections_from_coroots(G, display)
     if display:
         print("Trying Weyl elements (w_α) from root subgroups")
@@ -159,9 +304,15 @@ def try_fit_weyl_group_elements_from_root_subgroups(G, display=True):
 
 
 def fit_weyl_group_elements_from_root_subgroups(G, display=True):
-    # Experimental alternative Weyl-element fitting method.
-    # This lives outside pinned_group.py so it can be tested without changing
-    # the core fitting path.
+    """Fit Weyl elements using the strict root-subgroup demo method.
+
+    Input:
+        G: a partially fitted pinned_group.
+        display: whether to print progress.
+    Output:
+        None. Mutates G by installing torus reflections and Weyl elements.
+        Raises AssertionError if the root-subgroup method cannot handle G.
+    """
     fit_torus_reflections_from_coroots(G, display)
     if display:
         print("Fitting Weyl elements (w_α) from root subgroups")
