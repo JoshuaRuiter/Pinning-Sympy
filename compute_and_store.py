@@ -1,12 +1,8 @@
-# This file is used to run the primary battery of tests utilizing all of the 
-# important tools related to pinned groups.
-
-# The main battery of tests does the following for each of a list of classical groups:
+# Compute and store data on a list of classical groups. For each group,
 #   1. Create a split_torus object
 #   2. Create a pinned_group object
 #   3. Fit a pinning for that pinned_group object
-#   4. Check that the Dynkin type is as expected
-#   5. Run a battery of tests to validate the pinning
+#   4. Store the pinned_group object
 
 # The groups considered here are:
 #   Special linear group
@@ -42,52 +38,37 @@ from utility_SU import (group_constraints_SU,
                         generic_lie_algebra_element_SU)
 
 def main():
-    to_do_list = ("TO DO LIST:" + "\n\t" + 
-                  "Implement a Latex output file instead of console output" + "\n\t" +
-                  "Implement a save to dill file thing" + "\n\t" +
-                  "Make some tools or tables for visualizing equations/identites" + "\n\t" +
-                  "Improve speed/optimization in a number of places. Top candidates:" + "\n\t\t" + 
-                      "fit_weyl_elements, weyl group nonzero pattern matching" + "\n\t" +
-                  "Find a way to implement belongs_to_generated_subgroup again in a" + "\n\t\t" +
-                      "computationally feasible way, even if with random numerical stuff" +
-                  "Implement some kind of quadratic field extension class")
-    print(to_do_list)
     
-    print("\nDemonstrating usage of pinned group class")
+    print("\nBuilding pinned groups")
     start_time = time.perf_counter()
     sp.init_printing(wrap_line=False)
     eps_values = [-1,1] # should only include +/-1
     
-    #############################################
-    ### Edit these to change which tests are run
-    ### A "full test" is 2<=n<=6 and 1<=q<=3
-    ### Full test takes over an hour to run
+    ##################
+    overwrite = False
+    ##################
+    
+    ##########
     n_min = 1
     n_max = 6
     q_min = 1
     q_max = 3
-    #############################################
+    ##########
     
-    #####################################################################
-    ### Comment these out temporarily to shorten tests
-    n_max_SL = 3 # SL_4 and beyond take a long time to compute roots
-    run_SL_tests(n_min, min(n_max, n_max_SL))
-    run_SO_split_tests(n_min, n_max, q_min, q_max)
-    run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
-    run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
-    run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
-    #####################################################################
+    #######################################################################################
+    build_and_store_SL(n_min, n_max, overwrite)
+    build_and_store_SO_split(n_min, n_max, q_min, q_max, overwrite)
+    build_and_store_SO_nonsplit(n_min, n_max, q_min, q_max, overwrite)
+    build_and_store_SU_quasisplit(n_min, n_max, q_min, q_max, eps_values, overwrite)
+    build_and_store_SU_nonquasisplit(n_min, n_max, q_min, q_max, eps_values, overwrite)
+    #######################################################################################
     
-    print("\nAll tests complete.")
     end_time = time.perf_counter()
     execution_time = end_time - start_time
-    print(f"Time to run tests: {round(execution_time/60, 1)} minutes")
-    
-    print("\n" + to_do_list)
+    print(f"\nAll constructions complete, total time: {round(execution_time/60, 1)} minutes")
 
-def run_SL_tests(n_min, n_max):
-    print("\n" + '=' * 100 + "\n")
-    print("Running calculations and verifications for special linear groups")
+def build_and_store_SL(n_min, n_max, overwrite):
+    print("\tSpecial linear groups")
     n_min = max(n_min, 2) # n=1 doesn't make sense, SL_1 is just the trivial group
     for n in range(n_min, n_max + 1):
         T = split_torus(matrix_size = n,
@@ -104,20 +85,19 @@ def run_SL_tests(n_min, n_max):
                             lie_algebra_constraints = lie_algebra_constraints_SL,
                             generic_lie_algebra_element = generic_lie_algebra_element_SL,
                             non_variables = None)
-        SL_n.fit_pinning(display = True)
-        assert SL_n.root_system.dynkin_type == 'A', \
-            f"SL(n={n}) should have type A but " + \
-            f"computations gave type {SL_n.root_system.dynkin_type}"
-        SL_n.validate_pinning(display = True)
-    print("\nDone with special linear groups")
-    print("\n" + '=' * 100 + "\n")
+        
+        if SL_n.file_exists() and not overwrite:
+            print(f"\t\tFile already exists for {SL_n.name_string}")
+        else:
+            print(f"\t\tCreating file for {SL_n.name_string}")
+            SL_n.fit_pinning(display = False)
+            SL_n.write_to_file()
 
-def run_SO_split_tests(n_min, n_max, q_min, q_max):
+def build_and_store_SO_split(n_min, n_max, q_min, q_max, overwrite):
     ###################################################
     ## SPLIT SPECIAL ORTHOGONAL GROUPS (n=2q or n=2q+1) 
     ###################################################
-    print("\n" + '=' * 100 + "\n")
-    print("Running calculations and verifications for split special orthogonal groups")
+    print("\tSplit special orthogonal groups")
     q_min = max(q_min, 2) # doesn't make sense if q=1, there are no roots
     for q in range(q_min, q_max + 1):
         n_range = [n for n in (2*q, 2*q+1) if n_min <= n and n <= n_max]
@@ -142,33 +122,22 @@ def run_SO_split_tests(n_min, n_max, q_min, q_max):
                                 lie_algebra_constraints = lie_algebra_constraints_SO,
                                 generic_lie_algebra_element = generic_lie_algebra_element_SO,
                                 non_variables = None)
-            SO_n_q.fit_pinning(display = True)
-            if n==2*q:
-                if q==2:
-                    expected_type = ['A','A']
-                elif q==3:
-                    expected_type = 'A'
-                else:
-                    expected_type = 'D'
+            
+            if SO_n_q.file_exists() and not overwrite:
+                print(f"\t\tFile already exists for {SO_n_q.name_string}")
             else:
-                expected_type = 'B'
-            assert SO_n_q.root_system.dynkin_type == expected_type, \
-                    f"SO(n={n}, q={q}) is type {expected_type} but computations " + \
-                    f"gave type {SO_n_q.root_system.dynkin_type}"
-                    
-            SO_n_q.validate_pinning(display = True)
-    print("\nDone with split special orthogonal groups")
-    print("\n" + '=' * 100 + "\n")
+                print(f"\t\tCreating file for {SO_n_q.name_string}")
+                SO_n_q.fit_pinning(display = False)
+                SO_n_q.write_to_file()
 
-def run_SO_nonsplit_tests(n_min, n_max, q_min, q_max):
+def build_and_store_SO_nonsplit(n_min, n_max, q_min, q_max, overwrite):
     #############################################################################
     ## NON-SPLIT SPECIAL ORTHOGONAL GROUPS 
         ## SO_n_q is quasi-split if n=2q+2, and
         ## neither split nor quasi-split if n>2+2q, 
         ## but the behavior seems to be basically the same in these two cases
     #############################################################################
-    print("\n" + '=' * 100 + "\n")
-    print("Running calculations and verifications for non-split special orthogonal groups")
+    print("\tNon-split special orthogonal groups")
     for q in range(q_min, q_max + 1):
         n_min = max(2*q+2, n_min) # only non-split if n >= 2q+2
         for n in range(n_min, n_max + 1):
@@ -192,25 +161,20 @@ def run_SO_nonsplit_tests(n_min, n_max, q_min, q_max):
                                 lie_algebra_constraints = lie_algebra_constraints_SO,
                                 generic_lie_algebra_element = generic_lie_algebra_element_SO,
                                 non_variables = None)
-            SO_n_q.fit_pinning(display = True)
-            if q == 1:
-                expected_type = 'A'
+            
+            if SO_n_q.file_exists() and not overwrite:
+                print(f"\t\tFile already exists for {SO_n_q.name_string}")
             else:
-                expected_type = 'B'
-            assert SO_n_q.root_system.dynkin_type == expected_type, \
-                    f"SO(n={n}, q={q}) is type {expected_type} but computations " + \
-                    f"gave type {SO_n_q.root_system.dynkin_type}"
-            SO_n_q.validate_pinning(display = True)
-    print("Done with non-split special orthogonal groups")
-    print("\n" + '=' * 100 + "\n")
+                print(f"\t\tCreating file for {SO_n_q.name_string}")
+                SO_n_q.fit_pinning(display = False)
+                SO_n_q.write_to_file()
     
-def run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values):
+def build_and_store_SU_quasisplit(n_min, n_max, q_min, q_max, eps_values, overwrite):
     ############################################################
     ## QUASI-SPLIT SPECIAL UNITARY GROUPS (n=2q)
     ## eps=1 is Hermitian, eps=-1 is skew-Hermitian
     ###########################################################
-    print("\n" + '=' * 100 + "\n")
-    print("Running calculations and verifications for quasi-split special unitary groups")
+    print("\tQuasi-split special unitary groups")
     d = sp.symbols('d', nonzero = True)
     p_e = sp.sqrt(d)
     for q in range(q_min, q_max + 1):
@@ -239,27 +203,20 @@ def run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values):
                                       lie_algebra_constraints = lie_algebra_constraints_SU,
                                       generic_lie_algebra_element = generic_lie_algebra_element_SU,
                                       non_variables = {d})
-                SU_n_q.fit_pinning(display = True)
-                if q == 1:
-                    expected_type = 'A'
-                elif q == 2:
-                    expected_type = 'B'
-                else:
-                    expected_type = 'C'
-                assert SU_n_q.root_system.dynkin_type == expected_type, \
-                        f"SU(n={n}, q={q}, eps={eps}) is type {expected_type} but computations " + \
-                        f"gave type {SU_n_q.root_system.dynkin_type}"
-                SU_n_q.validate_pinning(display = True)
-    print("Done with quasi-split special unitary groups")
-    print("\n" + '=' * 100 + "\n")
-
-def run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values):
+                
+            if SU_n_q.file_exists() and not overwrite:
+                print(f"\t\tFile already exists for {SU_n_q.name_string}")
+            else:
+                print(f"\t\tCreating file for {SU_n_q.name_string}")
+                SU_n_q.fit_pinning(display = False)
+                SU_n_q.write_to_file()
+                
+def build_and_store_SU_nonquasisplit(n_min, n_max, q_min, q_max, eps_values, overwrite):
     ############################################################
     ## NON-QUASI-SPLIT SPECIAL UNITARY GROUPS (n>2q)
     ## eps=1 is Hermitian, eps=-1 is skew-Hermitian
     ###########################################################
-    print("\n" + '=' * 100 + "\n")
-    print("Running calculations and verifications for non-(quasi-split) special unitary groups")
+    print("\tNon-(quasi-split) special unitary groups")
     d = sp.symbols('d', nonzero = True)
     p_e = sp.sqrt(d)
     q_min = max(q_min, 2) # doesn't make sense if q=1, there are no roots
@@ -289,13 +246,14 @@ def run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values):
                                       lie_algebra_constraints = lie_algebra_constraints_SU,
                                       generic_lie_algebra_element = generic_lie_algebra_element_SU,
                                       non_variables = {d})
-                SU_n_q.fit_pinning(display = True)
-                assert SU_n_q.root_system.dynkin_type == 'BC', \
-                    f"SU(n={n}, q={q}, eps={eps}) is type BC but computations " + \
-                    f"gave type {SU_n_q.root_system.dynkin_type}"
-                SU_n_q.validate_pinning(display = True)
-    print("\nDone with non-(quasi-split) special unitary groups")
-    print("\n" + '=' * 100 + "\n")
+                
+                
+            if SU_n_q.file_exists() and not overwrite:
+                print(f"\t\tFile already exists for {SU_n_q.name_string}")
+            else:
+                print(f"\t\tCreating file for {SU_n_q.name_string}")
+                SU_n_q.fit_pinning(display = False)
+                SU_n_q.write_to_file()   
 
 if __name__ == "__main__":
     main()

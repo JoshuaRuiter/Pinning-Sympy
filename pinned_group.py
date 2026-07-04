@@ -38,6 +38,11 @@ from root_system import root_system
 from functools import reduce
 from operator import mul
 from tabulate import tabulate
+import os
+import dill
+from pathlib import Path
+
+groups_path = Path("./groups")
 
 class pinned_group:
 
@@ -52,6 +57,7 @@ class pinned_group:
                  non_variables = None):
         
         self.name_string = name_string
+        self.file_path = os.path.join(groups_path, name_string)
         self.matrix_size = matrix_size
         self.form = form
         self.group_constraints = group_constraints
@@ -125,6 +131,23 @@ class pinned_group:
             print("Fitting complete")
             self.display_pinning_info()
             print("\n" + '-' * 100 + "\n")
+    
+    def file_exists(self):
+        return os.path.exists(self.file_path)
+    
+    def write_to_file(self):
+        with open(self.file_path, 'wb') as f:
+            dill.dump(self, f)
+    
+    @classmethod
+    def load_from_file(cls, name_string, filepath=groups_path):
+        # Instantiate a pinned_group directly from a saved file.
+        full_path = os.path.join(filepath, name_string)
+        if not os.path.exists(full_path):
+            raise FileNotFoundError(f"No saved pinning file found for '{name_string}' at {full_path}")
+        with open(full_path, 'rb') as f:
+            loaded_instance = dill.load(f)
+        return loaded_instance
     
     def display_pinning_info(self):
         print(f"\nPinning information for {self.name_string}:")
@@ -709,7 +732,7 @@ class pinned_group:
                 if solution_found: break
                 if display_extra: 
                     print(f"\nTrying combinations with {k} nonzero variables")
-                    forced_factor = reduce(mul,(len(nonzero_candidates[v]) for v in zero_forbidden),1)
+                    forced_factor = reduce(mul,(len(nonzero_candidates[v]) for v in zero_forbidden), 1)
                     support_factor = sum(reduce(mul, (len(nonzero_candidates[v]) for v in support), 1)
                         for support in itertools.combinations(zero_allowed, k))
                     print("Combinations to try:",support_factor * forced_factor)
