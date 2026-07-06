@@ -39,21 +39,21 @@ from utility_SU import (group_constraints_SU,
 
 def main():
     
-    print("\nBuilding pinned groups")
-    start_time = time.perf_counter()
-    sp.init_printing(wrap_line=False)
-    eps_values = [-1,1] # should only include +/-1
-    
     ##################
-    overwrite = False
+    overwrite = True
     ##################
     
-    ##########
+    ########################
     n_min = 1
     n_max = 6
     q_min = 1
     q_max = 3
-    ##########
+    eps_values = [-1,1]
+    ########################
+    
+    print(f"\nBuilding pinned groups with overwrite = {overwrite}")
+    start_time = time.perf_counter()
+    sp.init_printing(wrap_line = False)
     
     #######################################################################################
     build_and_store_SL(n_min, n_max, overwrite)
@@ -67,8 +67,23 @@ def main():
     execution_time = end_time - start_time
     print(f"\nAll constructions complete, total time: {round(execution_time/60, 1)} minutes")
 
+def write_group(G, overwrite):
+    print()
+    if G.file_exists():
+        print(f"File already exists for {G.name_string}")
+        if not overwrite:
+            print(f"Skipping {G.name_string}")
+        else:
+            print(f"Creating a new file to overwrite {G.name_string}")
+            G.fit_pinning(display = False)
+            G.write_to_file(overwrite)
+    else:
+        print(f"File does not yet exist for {G.name_string}")
+        G.fit_pinning(display = False)
+        G.write_to_file(overwrite)
+
 def build_and_store_SL(n_min, n_max, overwrite):
-    print("\tSpecial linear groups")
+    print("\nSpecial linear groups")
     n_min = max(n_min, 2) # n=1 doesn't make sense, SL_1 is just the trivial group
     for n in range(n_min, n_max + 1):
         T = split_torus(matrix_size = n,
@@ -85,19 +100,13 @@ def build_and_store_SL(n_min, n_max, overwrite):
                             lie_algebra_constraints = lie_algebra_constraints_SL,
                             generic_lie_algebra_element = generic_lie_algebra_element_SL,
                             non_variables = None)
-        
-        if SL_n.file_exists() and not overwrite:
-            print(f"\t\tFile already exists for {SL_n.name_string}")
-        else:
-            print(f"\t\tCreating file for {SL_n.name_string}")
-            SL_n.fit_pinning(display = False)
-            SL_n.write_to_file()
+        write_group(SL_n, overwrite)
 
 def build_and_store_SO_split(n_min, n_max, q_min, q_max, overwrite):
     ###################################################
     ## SPLIT SPECIAL ORTHOGONAL GROUPS (n=2q or n=2q+1) 
     ###################################################
-    print("\tSplit special orthogonal groups")
+    print("\nSplit special orthogonal groups")
     q_min = max(q_min, 2) # doesn't make sense if q=1, there are no roots
     for q in range(q_min, q_max + 1):
         n_range = [n for n in (2*q, 2*q+1) if n_min <= n and n <= n_max]
@@ -122,13 +131,7 @@ def build_and_store_SO_split(n_min, n_max, q_min, q_max, overwrite):
                                 lie_algebra_constraints = lie_algebra_constraints_SO,
                                 generic_lie_algebra_element = generic_lie_algebra_element_SO,
                                 non_variables = None)
-            
-            if SO_n_q.file_exists() and not overwrite:
-                print(f"\t\tFile already exists for {SO_n_q.name_string}")
-            else:
-                print(f"\t\tCreating file for {SO_n_q.name_string}")
-                SO_n_q.fit_pinning(display = False)
-                SO_n_q.write_to_file()
+            write_group(SO_n_q, overwrite)
 
 def build_and_store_SO_nonsplit(n_min, n_max, q_min, q_max, overwrite):
     #############################################################################
@@ -137,7 +140,7 @@ def build_and_store_SO_nonsplit(n_min, n_max, q_min, q_max, overwrite):
         ## neither split nor quasi-split if n>2+2q, 
         ## but the behavior seems to be basically the same in these two cases
     #############################################################################
-    print("\tNon-split special orthogonal groups")
+    print("\nNon-split special orthogonal groups")
     for q in range(q_min, q_max + 1):
         n_min = max(2*q+2, n_min) # only non-split if n >= 2q+2
         for n in range(n_min, n_max + 1):
@@ -161,20 +164,14 @@ def build_and_store_SO_nonsplit(n_min, n_max, q_min, q_max, overwrite):
                                 lie_algebra_constraints = lie_algebra_constraints_SO,
                                 generic_lie_algebra_element = generic_lie_algebra_element_SO,
                                 non_variables = None)
-            
-            if SO_n_q.file_exists() and not overwrite:
-                print(f"\t\tFile already exists for {SO_n_q.name_string}")
-            else:
-                print(f"\t\tCreating file for {SO_n_q.name_string}")
-                SO_n_q.fit_pinning(display = False)
-                SO_n_q.write_to_file()
+            write_group(SO_n_q, overwrite)
     
 def build_and_store_SU_quasisplit(n_min, n_max, q_min, q_max, eps_values, overwrite):
     ############################################################
     ## QUASI-SPLIT SPECIAL UNITARY GROUPS (n=2q)
     ## eps=1 is Hermitian, eps=-1 is skew-Hermitian
     ###########################################################
-    print("\tQuasi-split special unitary groups")
+    print("\nQuasi-split special unitary groups")
     d = sp.symbols('d', nonzero = True)
     p_e = sp.sqrt(d)
     for q in range(q_min, q_max + 1):
@@ -203,20 +200,14 @@ def build_and_store_SU_quasisplit(n_min, n_max, q_min, q_max, eps_values, overwr
                                       lie_algebra_constraints = lie_algebra_constraints_SU,
                                       generic_lie_algebra_element = generic_lie_algebra_element_SU,
                                       non_variables = {d})
-                
-            if SU_n_q.file_exists() and not overwrite:
-                print(f"\t\tFile already exists for {SU_n_q.name_string}")
-            else:
-                print(f"\t\tCreating file for {SU_n_q.name_string}")
-                SU_n_q.fit_pinning(display = False)
-                SU_n_q.write_to_file()
+                write_group(SU_n_q, overwrite)
                 
 def build_and_store_SU_nonquasisplit(n_min, n_max, q_min, q_max, eps_values, overwrite):
     ############################################################
     ## NON-QUASI-SPLIT SPECIAL UNITARY GROUPS (n>2q)
     ## eps=1 is Hermitian, eps=-1 is skew-Hermitian
     ###########################################################
-    print("\tNon-(quasi-split) special unitary groups")
+    print("\nNon-(quasi-split) special unitary groups")
     d = sp.symbols('d', nonzero = True)
     p_e = sp.sqrt(d)
     q_min = max(q_min, 2) # doesn't make sense if q=1, there are no roots
@@ -246,14 +237,7 @@ def build_and_store_SU_nonquasisplit(n_min, n_max, q_min, q_max, eps_values, ove
                                       lie_algebra_constraints = lie_algebra_constraints_SU,
                                       generic_lie_algebra_element = generic_lie_algebra_element_SU,
                                       non_variables = {d})
-                
-                
-            if SU_n_q.file_exists() and not overwrite:
-                print(f"\t\tFile already exists for {SU_n_q.name_string}")
-            else:
-                print(f"\t\tCreating file for {SU_n_q.name_string}")
-                SU_n_q.fit_pinning(display = False)
-                SU_n_q.write_to_file()   
+                write_group(SU_n_q, overwrite)
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,86 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{geometry}
+\geometry{letterpaper, margin=1in}
+\usepackage{booktabs}
+
+\newcommand{\NameText}{\texttt{SL(n=2)}}
+\newcommand{\MatrixSize}{2}
+\newcommand{\Rank}{1}
+
+\title{Pinned Group Computation Report: \NameText{}}
+\author{Pinning-Sympy Automated Output}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\newpage
+
+\section{Basic attributes}
+
+\begin{tabular}{ll}
+    \toprule
+    Group & \NameText \\
+    \midrule
+    Matrix size & $\MatrixSize \times \MatrixSize$ \\
+    Rank & $\Rank$ \\
+    \bottomrule
+\end{tabular}
+
+\subsection{Form matrix}
+\[
+\text{None}
+\]
+
+\subsection{Generic Lie algebra element}
+\[
+\left[\begin{matrix}x_{0 0} & x_{0 1}\\x_{1 0} & - x_{0 0}\end{matrix}\right]
+\]
+
+\subsection{Generic torus element}
+\[
+\left[\begin{matrix}t_{0} & 0\\0 & \frac{1}{t_{0}}\end{matrix}\right]
+\]
+
+\subsection{Trivial characters}
+\[
+\left[\begin{matrix}1 & 1\end{matrix}\right]
+\]
+
+\newpage
+\section{Root system}
+
+\subsection*{Summary Properties}
+\begin{tabular}{ll}
+    \toprule
+    \textbf{Property} & \textbf{Value} \\
+    \midrule
+    Dynkin type & \texttt{A1} \\
+    Reduced & True \\
+    Simply laced & True \\
+    Number of roots & 2 \\
+    \bottomrule
+\end{tabular}
+
+\subsection*{Cartan Matrix}
+\[
+\left[\begin{matrix}2\end{matrix}\right]
+\]
+
+\subsection*{Root to Coroot Mapping}
+\begin{center}
+\begin{tabular}{cc}
+    \toprule
+    \textbf{Root ($\alpha$)} & \textbf{Coroot ($\alpha^{\vee}$)} \\
+    \midrule
+    $\left( -1, \  1\right)$ & $\left( -1, \  1\right)$ \\
+    $\left( 1, \  -1\right)$ & $\left( 1, \  -1\right)$ \\
+    \bottomrule
+\end{tabular}
+\end{center}
+
+
+\end{document}

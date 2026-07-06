@@ -1,38 +1,38 @@
 # Load pinned_groups from stored files,
 # and run validation tests on each.
 
-import pinned_group
+from pinned_group import pinned_group
 import time
 import sympy as sp
 
 def main():
     
     print("\nRunning tests on groups")
-    
     start_time = time.perf_counter()
     sp.init_printing(wrap_line=False)
-    eps_values = [-1,1] # should only include +/-1
     
-    ##########
+    ########################
+    display = True
     n_min = 1
     n_max = 6
     q_min = 1
     q_max = 3
-    ##########
+    eps_values = [-1,1]
+    ########################
     
     #####################################################################
-    run_SL_tests(n_min, n_max)
-    run_SO_split_tests(n_min, n_max, q_min, q_max)
-    run_SO_nonsplit_tests(n_min, n_max, q_min, q_max)
-    run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
-    run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values)
+    run_SL_tests(n_min, n_max, display)
+    run_SO_split_tests(n_min, n_max, q_min, q_max, display)
+    run_SO_nonsplit_tests(n_min, n_max, q_min, q_max, display)
+    run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values, display)
+    run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values, display)
     #####################################################################
     
     end_time = time.perf_counter()
     execution_time = end_time - start_time
     print(f"\nAll tests complete, total time: {round(execution_time/60, 1)} minutes")
 
-def run_SL_tests(n_min, n_max):
+def run_SL_tests(n_min, n_max, display):
     print("Running tests for special linear groups")
     n_min = max(n_min, 2) # n=1 doesn't make sense, SL_1 is just the trivial group
     for n in range(n_min, n_max + 1):
@@ -41,9 +41,9 @@ def run_SL_tests(n_min, n_max):
         assert SL_n.root_system.dynkin_type == 'A', \
             f"SL(n={n}) should have type A but " + \
             f"computations gave type {SL_n.root_system.dynkin_type}"
-        SL_n.validate_pinning(display = False)
+        SL_n.validate_pinning(display = display)
 
-def run_SO_split_tests(n_min, n_max, q_min, q_max):
+def run_SO_split_tests(n_min, n_max, q_min, q_max, display):
     ###################################################
     ## SPLIT SPECIAL ORTHOGONAL GROUPS (n=2q or n=2q+1) 
     ###################################################
@@ -66,9 +66,9 @@ def run_SO_split_tests(n_min, n_max, q_min, q_max):
             assert SO_n_q.root_system.dynkin_type == expected_type, \
                     f"SO(n={n}, q={q}) is type {expected_type} but computations " + \
                     f"gave type {SO_n_q.root_system.dynkin_type}"
-            SO_n_q.validate_pinning(display = True)
+            SO_n_q.validate_pinning(display = display)
 
-def run_SO_nonsplit_tests(n_min, n_max, q_min, q_max):
+def run_SO_nonsplit_tests(n_min, n_max, q_min, q_max, display):
     #############################################################################
     ## NON-SPLIT SPECIAL ORTHOGONAL GROUPS 
         ## SO_n_q is quasi-split if n=2q+2, and
@@ -88,9 +88,9 @@ def run_SO_nonsplit_tests(n_min, n_max, q_min, q_max):
             assert SO_n_q.root_system.dynkin_type == expected_type, \
                     f"SO(n={n}, q={q}) is type {expected_type} but computations " + \
                     f"gave type {SO_n_q.root_system.dynkin_type}"
-            SO_n_q.validate_pinning(display = True)
+            SO_n_q.validate_pinning(display = display)
     
-def run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values):
+def run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values, display):
     ############################################################
     ## QUASI-SPLIT SPECIAL UNITARY GROUPS (n=2q)
     ## eps=1 is Hermitian, eps=-1 is skew-Hermitian
@@ -111,9 +111,9 @@ def run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values):
                 assert SU_n_q.root_system.dynkin_type == expected_type, \
                         f"SU(n={n}, q={q}, eps={eps}) is type {expected_type} but computations " + \
                         f"gave type {SU_n_q.root_system.dynkin_type}"
-                SU_n_q.validate_pinning(display = True)
+                SU_n_q.validate_pinning(display = display)
 
-def run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values):
+def run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values, display):
     ############################################################
     ## NON-QUASI-SPLIT SPECIAL UNITARY GROUPS (n>2q)
     ## eps=1 is Hermitian, eps=-1 is skew-Hermitian
@@ -129,7 +129,7 @@ def run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values):
                 assert SU_n_q.root_system.dynkin_type == 'BC', \
                     f"SU(n={n}, q={q}, eps={eps}) is type BC but computations " + \
                     f"gave type {SU_n_q.root_system.dynkin_type}"
-                SU_n_q.validate_pinning(display = True)
+                SU_n_q.validate_pinning(display = display)
                 
 if __name__ == "__main__":
     main()

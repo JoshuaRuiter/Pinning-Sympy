@@ -425,6 +425,64 @@ class root_system:
         s += "\n" + tabulate(table, headers)
         return s
 
+    def to_tex(self):
+        # Generate a formatted LaTex string
+        
+        # 1. Base Summary Properties arranged in a table
+        tex = "\\subsection*{Summary Properties}\n"
+        tex += "\\begin{tabular}{ll}\n"
+        tex += "    \\toprule\n"
+        tex += "    \\textbf{Property} & \\textbf{Value} \\\\\n"
+        tex += "    \\midrule\n"
+        
+        safe_name_string = self.name_string.replace("_", "\\_")
+        tex += f"    Dynkin type & \\texttt{{{safe_name_string}}} \\\\\n"
+        tex += f"    Reduced & {self.is_reduced} \\\\\n"
+        tex += f"    Simply laced & {self.is_simply_laced} \\\\\n"
+        tex += f"    Number of roots & {len(self.root_list)} \\\\\n"
+        tex += "    \\bottomrule\n"
+        tex += "\\end{tabular}\n\n"
+
+        # 2. Structural Details (Cartan Matrix / Components)
+        if self.is_irreducible:
+            # Force conversion to a SymPy Matrix so it uses a clean matrix environment
+            cartan_latex = sp.latex(sp.Matrix(self.cartan_matrix))
+            tex += "\\subsection*{Cartan Matrix}\n"
+            tex += f"\\[\n{cartan_latex}\n\\]\n\n"
+        else:
+            tex += "\\subsection*{Decomposition Components}\n"
+            tex += "This is a reducible root system with the following components:\n\n"
+            tex += "\\noindent \\begin{tabular}{cc}\n"
+            tex += "    \\toprule\n"
+            tex += "    \\textbf{Component Type} & \\textbf{Component Rank} \\\\\n"
+            tex += "    \\midrule\n"
+            for c in self.components:
+                tex += f"    \\texttt{{{c.name_string}}} & {c.rank} \\\\\n"
+            tex += "    \\bottomrule\n"
+            tex += "\\end{tabular}\n\n"
+
+        # 3. Root vs. Coroot Mapping Table
+        tex += "\\subsection*{Root to Coroot Mapping}\n"
+        tex += "\\begin{center}\n"
+        tex += "\\begin{tabular}{cc}\n"
+        tex += "    \\toprule\n"
+        tex += "    \\textbf{Root ($\\alpha$)} & \\textbf{Coroot ($\\alpha^{\\vee}$)} \\\\\n"
+        tex += "    \\midrule\n"
+        
+        for alpha in self.root_list:
+            alpha_coroot = self.coroot_dict[alpha]
+            # Wrap the generated math formatting strings explicitly in $...$ math blocks
+            alpha_latex = f"${sp.latex(alpha)}$"
+            coroot_latex = f"${sp.latex(alpha_coroot)}$"
+            tex += f"    {alpha_latex} & {coroot_latex} \\\\\n"
+            
+        tex += "    \\bottomrule\n"
+        tex += "\\end{tabular}\n"
+        tex += "\\end{center}\n"
+
+        return tex
+
+
     def verify_root_system_axioms(self, display = True):
         # A list of tests to verify the root system axioms
         # for a given root_system object.
