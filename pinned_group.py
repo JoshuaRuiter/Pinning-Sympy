@@ -38,6 +38,7 @@ from tabulate import tabulate
 import os
 import dill
 from pathlib import Path
+import subprocess
 
 groups_path = Path("./groups")
 groups_tex_path = Path("./groups_tex")
@@ -133,7 +134,7 @@ class pinned_group:
     def file_exists(self):
         return os.path.exists(self.file_path)
     
-    def write_to_file(self, overwrite):
+    def write_to_file(self, overwrite = False):
         # Store pinned_group object in a dill binary file
         
         # Check if the file already exists
@@ -149,7 +150,7 @@ class pinned_group:
             dill.dump(self, f)
         print(f"Successfully saved object data to: {self.file_path}")
     
-    def write_to_tex(self, overwrite):
+    def write_to_tex(self, overwrite = False, compile_pdf = False):
         # Generate a .tex file summarizing the group, utilizing a template file
         
         # Ensure directories exist
@@ -165,7 +166,6 @@ class pinned_group:
         # 1. Read the base template
         if not template_file.exists():
             raise FileNotFoundError(f"Template not found at {template_file}. Please create it first.")
-            
         with open(template_file, "r", encoding="utf-8") as f:
             content = f.read()
 
@@ -180,27 +180,63 @@ class pinned_group:
                     return r"\text{Functional Property}"
             return sp.latex(obj)
 
+        root_system_basics, root_linear_combos_table = self.root_system.to_tex()
+
         # 2. Swap placeholders with real data
         replacements = {
             "GroupNamePlaceholder": f"\\texttt{{{self.name_string}}}",
             "MatrixSizePlaceholder": f"{self.matrix_size}",
             "RankPlaceholder": f"{self.rank}",
-            "FormMatrixPlaceholder": to_latex(self.form.matrix if hasattr(self.form, 'matrix') else self.form),
             "GenericTorusElementPlaceholder": to_latex(self.generic_torus_element('t')),
             "TrivialCharactersPlaceholder": sp.latex(sp.Matrix(self.torus.trivial_character_matrix).T),
             "GenericLieAlgebraElementPlaceholder": to_latex(self.generic_lie_algebra_element('x')),
-            "RootSystemPlaceholder": self.root_system.to_tex()
+            "RootSystemPlaceholder": root_system_basics,
+            "LinearCombinationsPlaceholder" : root_linear_combos_table
         }
-
+        
+        # Check if self.form exists and has a to_tex method, otherwise default to an empty string or notice
+        if getattr(self, 'form', None) is not None:
+            replacements['BilinearFormPlaceholder'] = self.form.to_tex() or "None"
+        else:
+            replacements['BilinearFormPlaceholder'] = ""
+            
         for placeholder, value in replacements.items():
-            content = content.replace(placeholder, value)
+            if value is None:
+                # Fallback to an explicit string token so .replace doesn't crash
+                value = "\\text{None}"
+            content = content.replace(placeholder, str(value))
 
         # 3. Write out to the final file
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(content)
             
         print(f"Successfully generated: {output_file}")
-    
+        
+        # 4. Compile the PDF if requested
+        if compile_pdf:
+            print(f"Compiling {output_file.name}...")
+            try:
+                # Removed check=True so Python doesn't automatically throw an exception
+                result = subprocess.run(
+                    ["pdflatex", "-interaction=nonstopmode", f"-output-directory={groups_tex_path}", str(output_file)],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True
+                )
+                
+                # Check if the PDF file was successfully created despite any minor errors
+                pdf_file = output_file.with_suffix('.pdf')
+                if pdf_file.exists() and result.returncode in [0, 1]: 
+                    # returncode 1 often just means LaTeX had warnings/minor errors but completed
+                    print(f"Successfully compiled PDF: {pdf_file}")
+                else:
+                    print(f"Compilation failed for {output_file.name} (Exit code: {result.returncode}).")
+                    print("LaTeX Compiler Output (last 10 lines):")
+                    print("\n".join(result.stdout.splitlines()[-10:]))
+                    
+            except FileNotFoundError:
+                print("Error: 'pdflatex' executable not found. Please ensure a LaTeX distribution is installed.")
+                
     @classmethod
     def load_from_file(cls, name_string, filepath=groups_path):
         # Instantiate a pinned_group directly from a saved file.

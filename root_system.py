@@ -425,63 +425,254 @@ class root_system:
         s += "\n" + tabulate(table, headers)
         return s
 
-    def to_tex(self):
-        # Generate a formatted LaTex string
+    def _get_tikz_dynkin_tex(self, subgraph):
+        # Assert that we are passing a single, valid irreducible graph slice
+        degrees = {v: len(neighbors) for v, neighbors in subgraph.items()}
+        fork_nodes = [v for v, deg in degrees.items() if deg >= 3]
         
-        # 1. Base Summary Properties arranged in a table
+        # An irreducible system has at most one fork node (Type D, E)
+        assert len(fork_nodes) <= 1, "Passed subgraph is not irreducible (multiple branching junctions found)"
+        
+        node_positions = {}
+
+        # --- Branched component layout (D, E) ---
+        if fork_nodes:
+            fork = fork_nodes[0]
+            
+            def get_path_from_neighbor(start_node):
+                path = [start_node]
+                visited = {fork, start_node}
+                curr = start_node
+                while True:
+                    next_nodes = [n for n in subgraph[curr] if n not in visited]
+                    if not next_nodes: 
+                        break
+                    curr = next_nodes[0]
+                    path.append(curr)
+                    visited.add(curr)
+                return path
+
+            branches = [get_path_from_neighbor(n) for n in subgraph[fork].keys()]
+            branches.sort(key=len)
+            
+            vertical_branch = branches[0]
+            left_branch = branches[1]
+            right_branch = branches[2]
+            left_branch.reverse()
+            
+            backbone = left_branch + [fork] + right_branch
+            
+            for x_idx, node in enumerate(backbone):
+                node_positions[node] = (x_idx * 1.5, 0.0)
+                    
+            fork_x, _ = node_positions[fork]
+            for y_idx, node in enumerate(vertical_branch):
+                node_positions[node] = (fork_x, (y_idx + 1) * 1.2)
+
+        # --- Linear component layout (A, B, C, F, G, or isolated points) ---
+        else:
+            leaf_nodes = [v for v, deg in degrees.items() if deg == 1]
+            start = min(leaf_nodes) if leaf_nodes else min(subgraph)
+            
+            visited = {start}
+            order = [start]
+            current = start
+            while True:
+                unvisited = [u for u in subgraph[current] if u not in visited]
+                if not unvisited: 
+                    break
+                next_node = unvisited[0]
+                order.append(next_node)
+                visited.add(next_node)
+                current = next_node
+                
+            for x_idx, node in enumerate(order):
+                node_positions[node] = (x_idx * 1.5, 0.0)
+
+        # --- BUILD ENVIRONMENT STRING ---
+        comp_tex = []
+        comp_tex.append(r"\begin{tikzpicture}[")
+        comp_tex.append(r"    node/.style={circle, draw, fill=black!5, minimum size=6mm, inner sep=0pt},")
+        comp_tex.append(r"    arrow/.style={-latex, thick},")
+        comp_tex.append(r"    doublearrow/.style={double, double distance=2pt, -latex, thick},")
+        comp_tex.append(r"    triplearrow/.style={double, double distance=4pt, -latex, thick},")
+        comp_tex.append(r"    plain/.style={thick},")
+        comp_tex.append(r"    baseline=(current bounding box.center)")
+        comp_tex.append(r"]")
+
+        # Render nodes
+        for node, (x, y) in node_positions.items():
+            comp_tex.append(f"    \\node[node] ({node}) at ({x:.2f}, {y:.2f}) {{${node}$}};")
+
+        # Render edges
+        drawn_edges = set()
+        for u in subgraph:
+            for v in subgraph[u]:
+                if (u, v) in drawn_edges or (v, u) in drawn_edges:
+                    continue
+                
+                mult_u_to_v = subgraph[u].get(v, 1)
+                mult_v_to_u = subgraph[v].get(u, 1)
+                
+                if mult_u_to_v > mult_v_to_u:
+                    if mult_u_to_v == 2:
+                        comp_tex.append(f"    \\draw[doublearrow] ({u}) -- ({v});")
+                    elif mult_u_to_v == 3:
+                        comp_tex.append(f"    \\draw[plain] ({u}) -- ({v});")
+                        comp_tex.append(f"    \\draw[doublearrow] ({u}) -- ({v});")
+                    else:
+                        comp_tex.append(f"    \\draw[arrow] ({u}) -- node[above] {{{mult_u_to_v}}} ({v});")
+                elif mult_u_to_v < mult_v_to_u:
+                    if mult_v_to_u == 2:
+                        comp_tex.append(f"    \\draw[doublearrow] ({v}) -- ({u});")
+                    elif mult_v_to_u == 3:
+                        comp_tex.append(f"    \\draw[plain] ({v}) -- ({u});")
+                        comp_tex.append(f"    \\draw[doublearrow] ({v}) -- ({u});")
+                    else:
+                        comp_tex.append(f"    \\draw[arrow] ({v}) -- node[above] {{{mult_v_to_u}}} ({u});")
+                else:
+                    comp_tex.append(f"    \\draw[plain] ({u}) -- ({v});")
+                
+                drawn_edges.add((u, v))
+
+        comp_tex.append(r"\end{tikzpicture}")
+        return "\n".join(comp_tex)
+
+    def to_tex(self):
+        # Generate a formatted LaTeX string for the base properties, matrices, and roots table
+        
+        # 1. Base summary properties in a table
         tex = "\\subsection*{Summary Properties}\n"
-        tex += "\\begin{tabular}{ll}\n"
-        tex += "    \\toprule\n"
-        tex += "    \\textbf{Property} & \\textbf{Value} \\\\\n"
-        tex += "    \\midrule\n"
+        tex += r"\begin{tabular}{|l|l|}" + "\n"
+        tex += r"    \hline" + "\n"
         
         safe_name_string = self.name_string.replace("_", "\\_")
         tex += f"    Dynkin type & \\texttt{{{safe_name_string}}} \\\\\n"
+        tex += r"    \hline" + "\n"
         tex += f"    Reduced & {self.is_reduced} \\\\\n"
+        tex += r"    \hline" + "\n"
         tex += f"    Simply laced & {self.is_simply_laced} \\\\\n"
+        tex += r"    \hline" + "\n"
         tex += f"    Number of roots & {len(self.root_list)} \\\\\n"
-        tex += "    \\bottomrule\n"
+        tex += r"    \hline" + "\n"
         tex += "\\end{tabular}\n\n"
+
+        # =====================================================================
+        # DYNKIN DIAGRAM SECTION (Loops over connected components)
+        # =====================================================================
+        tex += "\\subsection{Dynkin diagram}\n"
+        
+        # Gather subgraphs cleanly based on whether the system is reducible or not
+        subgraphs = []
+        if self.is_irreducible:
+            # If the top-level system has the attribute, use it directly
+            if hasattr(self, 'dynkin_graph'):
+                subgraphs.append(self.dynkin_graph)
+            else:
+                # Fallback if an irreducible system hasn't calculated it yet
+                subgraphs.append(build_directed_dynkin_graph(self.simple_roots))
+        else:
+            # Reducible system: extract the graph from each individual component
+            for comp in self.components:
+                if hasattr(comp, 'dynkin_graph'):
+                    subgraphs.append(comp.dynkin_graph)
+                else:
+                    subgraphs.append(build_directed_dynkin_graph(comp.simple_roots))
+
+        # Generate a standalone tikzpicture for each isolated component subgraph
+        tikz_diagrams = []
+        for subgraph in subgraphs:
+            tikz_str = self._get_tikz_dynkin_tex(subgraph)
+            tikz_diagrams.append(tikz_str)
+
+        if tikz_diagrams:
+            tex += "\\begin{center}\n"
+            # Separate components with a horizontal gap (\quad) side-by-side
+            tex += "\n\\quad\n".join(tikz_diagrams) + "\n"
+            tex += "\\end{center}\n\n"
 
         # 2. Structural Details (Cartan Matrix / Components)
         if self.is_irreducible:
-            # Force conversion to a SymPy Matrix so it uses a clean matrix environment
             cartan_latex = sp.latex(sp.Matrix(self.cartan_matrix))
-            tex += "\\subsection*{Cartan Matrix}\n"
+            tex += "\\subsection{Cartan matrix}\n"
             tex += f"\\[\n{cartan_latex}\n\\]\n\n"
         else:
-            tex += "\\subsection*{Decomposition Components}\n"
+            tex += "\\subsection{Irreducible components}\n"
             tex += "This is a reducible root system with the following components:\n\n"
-            tex += "\\noindent \\begin{tabular}{cc}\n"
-            tex += "    \\toprule\n"
-            tex += "    \\textbf{Component Type} & \\textbf{Component Rank} \\\\\n"
-            tex += "    \\midrule\n"
+            tex += r"\noindent \begin{tabular}{|c|c|}" + "\n"
+            tex += r"    \hline" + "\n"
+            tex += "    \\textbf{Dynkin type} & \\textbf{Rank} \\\\\n"
+            tex += r"    \hline" + "\n"
             for c in self.components:
-                tex += f"    \\texttt{{{c.name_string}}} & {c.rank} \\\\\n"
-            tex += "    \\bottomrule\n"
+                safe_comp_name = c.name_string.replace("_", "\\_")
+                tex += f"    \\texttt{{{safe_comp_name}}} & {c.rank} \\\\\n"
             tex += "\\end{tabular}\n\n"
 
-        # 3. Root vs. Coroot Mapping Table
-        tex += "\\subsection*{Root to Coroot Mapping}\n"
+        # 3. Roots, coroots, and root properties table
+        tex += "\\subsection{Roots and coroots}\n"
         tex += "\\begin{center}\n"
-        tex += "\\begin{tabular}{cc}\n"
-        tex += "    \\toprule\n"
-        tex += "    \\textbf{Root ($\\alpha$)} & \\textbf{Coroot ($\\alpha^{\\vee}$)} \\\\\n"
-        tex += "    \\midrule\n"
+        tex += r"\begin{tabular}{|l|l|c|c|c|}" + "\n"
+        tex += r"    \hline" + "\n"
+        tex += "    \\textbf{Root} & \\textbf{Coroot} & \\textbf{Simple} & \\textbf{Sign} & \\textbf{Multipliable} \\\\\n"
+        tex += r"    \hline" + "\n"
         
         for alpha in self.root_list:
             alpha_coroot = self.coroot_dict[alpha]
-            # Wrap the generated math formatting strings explicitly in $...$ math blocks
             alpha_latex = f"${sp.latex(alpha)}$"
             coroot_latex = f"${sp.latex(alpha_coroot)}$"
-            tex += f"    {alpha_latex} & {coroot_latex} \\\\\n"
             
-        tex += "    \\bottomrule\n"
+            if self.is_irreducible:
+                target_simple = self.simple_roots
+                target_positive = self.positive_roots
+            else:
+                comp = next((c for c in self.components if any(alpha.equals(r) for r in c.root_list)), None)
+                target_simple = comp.simple_roots if comp else []
+                target_positive = comp.positive_roots if comp else []
+
+            is_simple = any(alpha.equals(s) for s in target_simple)
+            is_positive = any(alpha.equals(p) for p in target_positive)
+            is_multipliable = self.is_multipliable_root(alpha)
+            
+            simple_str = "Yes" if is_simple else "No"
+            sign_str = "$+$" if is_positive else "$-$"
+            multipliable_str = "Yes" if is_multipliable else "No"
+            
+            tex += f"    {alpha_latex} & {coroot_latex} & {simple_str} & {sign_str} & {multipliable_str} \\\\\n"
+            tex += r"    \hline" + "\n"
+            
         tex += "\\end{tabular}\n"
         tex += "\\end{center}\n"
 
-        return tex
+        # Generate the formatted LaTeX string strictly for the combinations section
+        pair_rows = []
+        for idx, alpha in enumerate(self.root_list):
+            for beta in self.root_list[idx + 1:]:
+                combos = self.integer_linear_combos(alpha, beta)
+                if combos:
+                    alpha_lat = sp.latex(alpha)
+                    beta_lat = sp.latex(beta)
+                    
+                    sorted_pairs = sorted(combos.keys())
+                    pairs_str = ", ".join(f"({i},{j})" for (i, j) in sorted_pairs)
+                    
+                    pair_rows.append(f"    ${alpha_lat}$ & ${beta_lat}$ & ${pairs_str}$ \\\\\n")
 
+        combo_table = ""
+        if pair_rows:
+            combo_table += "\\begin{center}\n"
+            combo_table += r"\begin{tabular}{|l|l|c|}" + "\n"
+            combo_table += r"    \hline" + "\n"
+            combo_table += "    $\\alpha$ & $\\beta$ & Pairs $(i,j)$ \\\\\n"
+            combo_table += r"    \hline" + "\n"
+            for row in pair_rows:
+                combo_table += row
+                combo_table += r"    \hline" + "\n"
+            combo_table += "\\end{tabular}\n"
+            combo_table += "\\end{center}\n"
+        else:
+            combo_table += "\\noindent No pairs of roots generate positive integer linear combinations.\n"
+
+        return tex, combo_table
 
     def verify_root_system_axioms(self, display = True):
         # A list of tests to verify the root system axioms

@@ -1,0 +1,10 @@
+\contentsline {section}{\numberline {1}Basic attributes}{2}
+\contentsline {subsection}{\numberline {1.1}Symmetric bilinear form}{2}
+\contentsline {subsection}{\numberline {1.2}Generic Lie algebra element}{2}
+\contentsline {subsection}{\numberline {1.3}Generic torus element}{2}
+\contentsline {subsection}{\numberline {1.4}Trivial characters}{2}
+\contentsline {section}{\numberline {2}Root system}{3}
+\contentsline {subsection}{\numberline {2.1}Dynkin diagram}{3}
+\contentsline {subsection}{\numberline {2.2}Irreducible components}{3}
+\contentsline {subsection}{\numberline {2.3}Roots and coroots}{3}
+\contentsline {subsection}{\numberline {2.4}Linear combinations of roots}{3}

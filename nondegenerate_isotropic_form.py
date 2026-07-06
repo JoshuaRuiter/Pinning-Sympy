@@ -52,6 +52,37 @@ class nondegenerate_isotropic_form:
                                                       epsilon, 
                                                       primitive_element)
     
+    def to_tex(self):
+        # Generate a formatted LaTex string for pinned_group summary documents
+        
+        # Guard clause: If there is no matrix or name, it's a trivial or non-existent form
+        if self.matrix is None or not self.name_string:
+            return "No invariant bilinear form defined for this group configuration."
+            
+        tex = f"\\subsection{{{self.name_string.capitalize()} form}}\n"
+        
+        # Format optional/none fields safely for text mode
+        prim_elem = f"${sp.latex(self.primitive_element)}$" if self.primitive_element is not None else "N/A"
+        eps_val = f"${self.epsilon}$" if self.epsilon is not None else "N/A"
+
+        # Using raw strings r"..." removes escaping head-scratchers entirely
+        tex += r"\begin{tabular}{|l|l|}" + "\n"
+        tex += r"    \hline" + "\n" 
+        tex += f"    Dimension & {self.dimension} \\\\\n"
+        tex += r"    \hline" + "\n"  
+        tex += f"    Witt index & {self.witt_index} \\\\\n"
+        tex += r"    \hline" + "\n"  
+        tex += f"    Primitive element & {prim_elem} \\\\\n"
+        tex += r"    \hline" + "\n"  
+        tex += f"    Epsilon & {eps_val} \\\\\n"
+        tex += r"    \hline" + "\n"  
+        tex += r"\end{tabular}" + "\n\n"
+        
+        tex += "\\bigskip\n"  # Added a newline for clean LaTeX output
+        tex += f"\\noindent Matrix: \\(\n{sp.latex(self.matrix)}\n\\)\n\n"
+        
+        return tex
+    
     @staticmethod
     def build_symmetric_matrix(dimension,
                                witt_index,

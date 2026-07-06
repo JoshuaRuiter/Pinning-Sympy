@@ -1,15 +1,19 @@
 \documentclass[11pt]{article}
-\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{amsmath, amssymb, amsfonts, amsthm}
 \usepackage{geometry}
-\geometry{letterpaper, margin=1in}
+\geometry{letterpaper, margin=0.5in}
 \usepackage{booktabs}
+\usepackage{tikz}
+
+\theoremstyle{definition} 
+\newtheorem{definition}{Definition}[section] % [section] resets numbering per section
 
 \newcommand{\NameText}{GroupNamePlaceholder}
 \newcommand{\MatrixSize}{MatrixSizePlaceholder}
 \newcommand{\Rank}{RankPlaceholder}
 
-\title{Pinned Group Computation Report: \NameText{}}
-\author{Pinning-Sympy Automated Output}
+\title{Pinned group summary: \NameText{}}
+\author{Pinning-Sympy automated output}
 \date{\today}
 
 \begin{document}
@@ -21,19 +25,17 @@
 
 \section{Basic attributes}
 
-\begin{tabular}{ll}
-    \toprule
+\begin{tabular}{|l|l|}
+	\hline
     Group & \NameText \\
-    \midrule
+	\hline
     Matrix size & $\MatrixSize \times \MatrixSize$ \\
+	\hline
     Rank & $\Rank$ \\
-    \bottomrule
+	\hline
 \end{tabular}
 
-\subsection{Form matrix}
-\[
-FormMatrixPlaceholder
-\]
+BilinearFormPlaceholder
 
 \subsection{Generic Lie algebra element}
 \[
@@ -54,5 +56,16 @@ TrivialCharactersPlaceholder
 \section{Root system}
 
 RootSystemPlaceholder
+
+\subsection{Linear combinations of roots}
+
+\begin{definition}
+For two roots $\alpha, \beta$ in a root system $\Phi$, the set of positive integral linear combinations of $\alpha, \beta$ that are also roots is denoted
+\[
+	(\alpha, \beta) = \{ i \alpha + j \beta \in \Phi : i, j \in \mathbb{Z}_{\ge 1} \}
+\]
+\end{definition}
+
+LinearCombinationsPlaceholder
 
 \end{document}

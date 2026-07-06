@@ -1,0 +1,134 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, amsfonts, amsthm}
+\usepackage{geometry}
+\geometry{letterpaper, margin=0.5in}
+\usepackage{booktabs}
+\usepackage{tikz}
+
+\theoremstyle{definition} 
+\newtheorem{definition}{Definition}[section] % [section] resets numbering per section
+
+\newcommand{\NameText}{\texttt{SO(n=5, q=1)}}
+\newcommand{\MatrixSize}{5}
+\newcommand{\Rank}{1}
+
+\title{Pinned group summary: \NameText{}}
+\author{Pinning-Sympy automated output}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\newpage
+
+\section{Basic attributes}
+
+\begin{tabular}{|l|l|}
+	\hline
+    Group & \NameText \\
+	\hline
+    Matrix size & $\MatrixSize \times \MatrixSize$ \\
+	\hline
+    Rank & $\Rank$ \\
+	\hline
+\end{tabular}
+
+\subsection{Symmetric bilinear form}
+\begin{tabular}{|l|l|}
+    \hline
+    Dimension & 5 \\
+    \hline
+    Witt index & 1 \\
+    \hline
+    Primitive element & N/A \\
+    \hline
+    Epsilon & N/A \\
+    \hline
+\end{tabular}
+
+\bigskip
+\noindent Matrix: \(
+\left[\begin{matrix}0 & 1 & 0 & 0 & 0\\1 & 0 & 0 & 0 & 0\\0 & 0 & c_{0} & 0 & 0\\0 & 0 & 0 & c_{1} & 0\\0 & 0 & 0 & 0 & c_{2}\end{matrix}\right]
+\)
+
+
+
+\subsection{Generic Lie algebra element}
+\[
+\left[\begin{matrix}x_{0 0} & 0 & - c_{0} x_{2 1} & - c_{1} x_{3 1} & - c_{2} x_{4 1}\\0 & - x_{0 0} & - c_{0} x_{2 0} & - c_{1} x_{3 0} & - c_{2} x_{4 0}\\x_{2 0} & x_{2 1} & 0 & x_{2 3} & x_{2 4}\\x_{3 0} & x_{3 1} & - \frac{c_{0} x_{2 3}}{c_{1}} & 0 & x_{3 4}\\x_{4 0} & x_{4 1} & - \frac{c_{0} x_{2 4}}{c_{2}} & - \frac{c_{1} x_{3 4}}{c_{2}} & 0\end{matrix}\right]
+\]
+
+\subsection{Generic torus element}
+\[
+\left[\begin{matrix}t_{0} & 0 & 0 & 0 & 0\\0 & \frac{1}{t_{0}} & 0 & 0 & 0\\0 & 0 & 1 & 0 & 0\\0 & 0 & 0 & 1 & 0\\0 & 0 & 0 & 0 & 1\end{matrix}\right]
+\]
+
+\subsection{Trivial characters}
+\[
+\left[\begin{matrix}1 & 1 & 0 & 0 & 0\\1 & 1 & 1 & 1 & 1\end{matrix}\right]
+\]
+
+\newpage
+\section{Root system}
+
+\subsection*{Summary Properties}
+\begin{tabular}{|l|l|}
+    \hline
+    Dynkin type & \texttt{A1} \\
+    \hline
+    Reduced & True \\
+    \hline
+    Simply laced & True \\
+    \hline
+    Number of roots & 2 \\
+    \hline
+\end{tabular}
+
+\subsection{Dynkin diagram}
+\begin{center}
+\begin{tikzpicture}[
+    node/.style={circle, draw, fill=black!5, minimum size=6mm, inner sep=0pt},
+    arrow/.style={-latex, thick},
+    doublearrow/.style={double, double distance=2pt, -latex, thick},
+    triplearrow/.style={double, double distance=4pt, -latex, thick},
+    plain/.style={thick},
+    baseline=(current bounding box.center)
+]
+    \node[node] (0) at (0.00, 0.00) {$0$};
+\end{tikzpicture}
+\end{center}
+
+\subsection{Cartan matrix}
+\[
+\left[\begin{matrix}2\end{matrix}\right]
+\]
+
+\subsection{Roots and coroots}
+\begin{center}
+\begin{tabular}{|l|l|c|c|c|}
+    \hline
+    \textbf{Root} & \textbf{Coroot} & \textbf{Simple} & \textbf{Sign} & \textbf{Multipliable} \\
+    \hline
+    $\left( -1, \  0, \  0, \  0, \  0\right)$ & $\left( -2, \  2, \  0, \  0, \  0\right)$ & No & $-$ & No \\
+    \hline
+    $\left( 1, \  0, \  0, \  0, \  0\right)$ & $\left( 2, \  -2, \  0, \  0, \  0\right)$ & Yes & $+$ & No \\
+    \hline
+\end{tabular}
+\end{center}
+
+
+\subsection{Linear combinations of roots}
+
+\begin{definition}
+For two roots $\alpha, \beta$ in a root system $\Phi$, the set of positive integral linear combinations of $\alpha, \beta$ that are also roots is denoted
+\[
+	(\alpha, \beta) = \{ i \alpha + j \beta \in \Phi : i, j \in \mathbb{Z}_{\ge 1} \}
+\]
+\end{definition}
+
+\noindent No pairs of roots generate positive integer linear combinations.
+
+
+\end{document}
