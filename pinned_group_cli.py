@@ -32,6 +32,7 @@ from utility_SU import (character_entries_SU,
                         trivial_characters_SU)
 from weyl_element_demo import (
     fit_weyl_group_elements_from_root_subgroups,
+    record_weyl_demo_brute_force_fallback_time,
     try_fit_weyl_group_elements_from_root_subgroups,
 )
 
@@ -254,7 +255,12 @@ def fit_group_with_demo_weyl_method(G, display=True, weyl_method="root-subgroups
         if not used_fast_path:
             if display:
                 print("Falling back to brute-force Weyl element search")
+            brute_force_start = time.perf_counter()
             G.fit_weyl_group_elements(display)
+            brute_force_elapsed = time.perf_counter() - brute_force_start
+            record_weyl_demo_brute_force_fallback_time(G, brute_force_elapsed)
+            if display:
+                print(f"Brute-force Weyl fallback time: {brute_force_elapsed:.4f} seconds")
     else:
         raise ValueError(f"Unknown demo Weyl method: {weyl_method}")
 
