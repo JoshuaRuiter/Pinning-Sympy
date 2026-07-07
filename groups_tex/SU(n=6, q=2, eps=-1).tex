@@ -4,15 +4,12 @@
 \geometry{letterpaper, margin=0.5in}
 \usepackage{booktabs}
 \usepackage{tikz}
+\usepackage{hyperref}
 
 \theoremstyle{definition} 
-\newtheorem{definition}{Definition}[section] % [section] resets numbering per section
+\newtheorem{definition}{Definition}[section]
 
-\newcommand{\NameText}{\texttt{SU(n=6, q=2, eps=-1)}}
-\newcommand{\MatrixSize}{6}
-\newcommand{\Rank}{2}
-
-\title{Pinned group summary: \NameText{}}
+\title{Pinned group summary: \texttt{SU(n=6, q=2, eps=-1)}}
 \author{Pinning-Sympy automated output}
 \date{\today}
 
@@ -23,15 +20,17 @@
 
 \newpage
 
-\section{Basic attributes}
+\section{Basic group attributes}
 
 \begin{tabular}{|l|l|}
 	\hline
-    Group & \NameText \\
+    Group & \texttt{SU(n=6, q=2, eps=-1)} \\
 	\hline
-    Matrix size & $\MatrixSize \times \MatrixSize$ \\
+    Matrix size & $6 \times 6$ \\
 	\hline
-    Rank & $\Rank$ \\
+    Rank & $2$ \\
+	\hline
+	Defining equations & $DefiningEquationPlaceholder$ \\
 	\hline
 \end{tabular}
 
@@ -77,6 +76,8 @@
 \begin{tabular}{|l|l|}
     \hline
     Dynkin type & \texttt{BC2} \\
+    \hline
+    Irreducible & True \\
     \hline
     Reduced & False \\
     \hline
@@ -145,9 +146,9 @@
 
 \begin{definition}
 For two roots $\alpha, \beta$ in a root system $\Phi$, the set of positive integral linear combinations of $\alpha, \beta$ that are also roots is denoted
-\[
+\(
 	(\alpha, \beta) = \{ i \alpha + j \beta \in \Phi : i, j \in \mathbb{Z}_{\ge 1} \}
-\]
+\)
 \end{definition}
 
 \begin{center}
@@ -214,5 +215,66 @@ For two roots $\alpha, \beta$ in a root system $\Phi$, the set of positive integ
 \end{tabular}
 \end{center}
 
+
+\section{Root spaces}
+
+\begin{center}
+\begin{tabular}{|l|c|}
+\hline
+Root & Dimension \\
+\hline
+$\left( -2, \  0, \  0, \  0, \  0, \  0\right)$ & $1$ \\
+\hline
+$\left( -1, \  -1, \  0, \  0, \  0, \  0\right)$ & $2$ \\
+\hline
+$\left( -1, \  0, \  0, \  0, \  0, \  0\right)$ & $4$ \\
+\hline
+$\left( -1, \  1, \  0, \  0, \  0, \  0\right)$ & $2$ \\
+\hline
+$\left( 0, \  -2, \  0, \  0, \  0, \  0\right)$ & $1$ \\
+\hline
+$\left( 0, \  -1, \  0, \  0, \  0, \  0\right)$ & $4$ \\
+\hline
+$\left( 0, \  1, \  0, \  0, \  0, \  0\right)$ & $4$ \\
+\hline
+$\left( 0, \  2, \  0, \  0, \  0, \  0\right)$ & $1$ \\
+\hline
+$\left( 1, \  -1, \  0, \  0, \  0, \  0\right)$ & $2$ \\
+\hline
+$\left( 1, \  0, \  0, \  0, \  0, \  0\right)$ & $4$ \\
+\hline
+$\left( 1, \  1, \  0, \  0, \  0, \  0\right)$ & $2$ \\
+\hline
+$\left( 2, \  0, \  0, \  0, \  0, \  0\right)$ & $1$ \\
+\hline
+\end{tabular}\end{center}
+
+RootSpaceTablePlaceholder
+
+\section{Root subgroups}
+
+RootSubgroupTablePlaceholder
+
+HomomorphismDefectTablePlaceholder
+
+HomomorphismDefectIdentitiesPlaceholder
+
+\section{Commutators}
+
+CommutatorCoefficientTablePlaceholder
+
+CommutatorIdentitiesPlaceholder
+
+\section{Weyl group}
+
+WeylGroupPlaceholder
+
+WeylConjugationCoefficientPlaceholder
+
+WeylConjugationIdentitiesPlaceholder
+
+\section{Coroot torus elements ($h_\alpha$)}
+
+CorootTorusElementPlaceholder
 
 \end{document}

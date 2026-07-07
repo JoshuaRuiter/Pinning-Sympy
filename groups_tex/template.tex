@@ -4,15 +4,12 @@
 \geometry{letterpaper, margin=0.5in}
 \usepackage{booktabs}
 \usepackage{tikz}
+\usepackage{hyperref}
 
 \theoremstyle{definition} 
-\newtheorem{definition}{Definition}[section] % [section] resets numbering per section
+\newtheorem{definition}{Definition}[section]
 
-\newcommand{\NameText}{GroupNamePlaceholder}
-\newcommand{\MatrixSize}{MatrixSizePlaceholder}
-\newcommand{\Rank}{RankPlaceholder}
-
-\title{Pinned group summary: \NameText{}}
+\title{Pinned group summary: GroupNamePlaceholder}
 \author{Pinning-Sympy automated output}
 \date{\today}
 
@@ -23,15 +20,17 @@
 
 \newpage
 
-\section{Basic attributes}
+\section{Basic group attributes}
 
 \begin{tabular}{|l|l|}
 	\hline
-    Group & \NameText \\
+    Group & GroupNamePlaceholder \\
 	\hline
-    Matrix size & $\MatrixSize \times \MatrixSize$ \\
+    Matrix size & $MatrixSizePlaceholder \times MatrixSizePlaceholder$ \\
 	\hline
-    Rank & $\Rank$ \\
+    Rank & $RankPlaceholder$ \\
+	\hline
+	Defining equations & $DefiningEquationPlaceholder$ \\
 	\hline
 \end{tabular}
 
@@ -61,11 +60,43 @@ RootSystemPlaceholder
 
 \begin{definition}
 For two roots $\alpha, \beta$ in a root system $\Phi$, the set of positive integral linear combinations of $\alpha, \beta$ that are also roots is denoted
-\[
+\(
 	(\alpha, \beta) = \{ i \alpha + j \beta \in \Phi : i, j \in \mathbb{Z}_{\ge 1} \}
-\]
+\)
 \end{definition}
 
 LinearCombinationsPlaceholder
+
+\section{Root spaces}
+
+RootSpaceDimensionPlaceholder
+
+RootSpaceTablePlaceholder
+
+\section{Root subgroups}
+
+RootSubgroupTablePlaceholder
+
+HomomorphismDefectTablePlaceholder
+
+HomomorphismDefectIdentitiesPlaceholder
+
+\section{Commutators}
+
+CommutatorCoefficientTablePlaceholder
+
+CommutatorIdentitiesPlaceholder
+
+\section{Weyl group}
+
+WeylGroupPlaceholder
+
+WeylConjugationCoefficientPlaceholder
+
+WeylConjugationIdentitiesPlaceholder
+
+\section{Coroot torus elements ($h_\alpha$)}
+
+CorootTorusElementPlaceholder
 
 \end{document}

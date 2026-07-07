@@ -182,6 +182,17 @@ class pinned_group:
 
         root_system_basics, root_linear_combos_table = self.root_system.to_tex()
 
+        dimension_table =  "\\begin{center}\n"
+        dimension_table += r"\begin{tabular}{|l|c|}" + "\n"
+        dimension_table += r"\hline" + "\n"
+        dimension_table += r"\textbf{Root} & \textbf{Dimension} \\" + "\n"
+        dimension_table += r"\hline" + "\n"
+        for alpha in self.root_system.root_list:
+            dimension_table += f"${sp.latex(alpha)}$ & ${self.root_space_dimension(alpha)}$ \\\\\n"
+            dimension_table += r"\hline" + "\n"
+        dimension_table += r"\end{tabular}"
+        dimension_table += "\\end{center}"
+
         # 2. Swap placeholders with real data
         replacements = {
             "GroupNamePlaceholder": f"\\texttt{{{self.name_string}}}",
@@ -191,7 +202,8 @@ class pinned_group:
             "TrivialCharactersPlaceholder": sp.latex(sp.Matrix(self.torus.trivial_character_matrix).T),
             "GenericLieAlgebraElementPlaceholder": to_latex(self.generic_lie_algebra_element('x')),
             "RootSystemPlaceholder": root_system_basics,
-            "LinearCombinationsPlaceholder" : root_linear_combos_table
+            "LinearCombinationsPlaceholder" : root_linear_combos_table,
+            "RootSpaceDimensionPlaceholder" : dimension_table
         }
         
         # Check if self.form exists and has a to_tex method, otherwise default to an empty string or notice

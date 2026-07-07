@@ -549,6 +549,8 @@ class root_system:
         safe_name_string = self.name_string.replace("_", "\\_")
         tex += f"    Dynkin type & \\texttt{{{safe_name_string}}} \\\\\n"
         tex += r"    \hline" + "\n"
+        tex += f"    Irreducible & {self.is_irreducible} \\\\\n"
+        tex += r"    \hline" + "\n"
         tex += f"    Reduced & {self.is_reduced} \\\\\n"
         tex += r"    \hline" + "\n"
         tex += f"    Simply laced & {self.is_simply_laced} \\\\\n"
