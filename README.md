@@ -36,13 +36,16 @@ python pinned_group_cli.py sl --n-max 3
 python pinned_group_cli.py so-split --n-max 5 --q-max 2
 python pinned_group_cli.py sl --n-max 3 --weyl-method root-subgroups
 python pinned_group_cli.py sl --n-max 3 --weyl-method auto
+python pinned_group_cli.py sl --n-max 3 --weyl-method factored-brute
 python pinned_group_cli.py sl --n-max 3 --output latex --out output.tex
 ```
 
 The `root-subgroups` Weyl method is a strict demo/experimental method for the
 direct rank-one formula. The `auto` method tries that demo method first and
 falls back to the default brute-force Weyl search when the direct formula does
-not apply or fails validation.
+not apply or fails validation. The `factored-brute` method runs an external
+factored copy of the original brute-force Weyl solver without modifying
+`pinned_group.py`.
 
 There is also an experimental file-based TeX pipeline for larger batches:
 
@@ -73,7 +76,8 @@ python examples_for_chat.py
 - `compute_and_store.py` - batch script for computing pinned groups and storing fitted objects in `groups/`.
 - `build_tex_files.py` - batch script for generating `.tex` and optional PDF summaries from stored groups.
 - `load_and_test.py` - validation script for pinned groups loaded from stored files.
-- `weyl_element_demo.py` - experimental Weyl element construction helpers kept outside the core class.
+- `test_demo.py` - experimental direct root-subgroup Weyl fast path kept outside the core class.
+- `weyl_element_factored.py` - external factored copy of the brute-force Weyl solver for experimentation.
 - `examples_for_chat.py` - small interactive example that loads or builds a cached `SL_3` pinned group.
 - `root_system.py` - root system and reflection utilities.
 - `split_torus.py` - split torus construction and helpers.

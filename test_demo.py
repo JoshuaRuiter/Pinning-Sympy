@@ -9,10 +9,11 @@ from utility_roots import evaluate_character, evaluate_cocharacter
 
 # This module is intentionally separate from pinned_group.py.
 #
-# It is a demo/experimental path for constructing Weyl elements using the
-# rank-one root-subgroup formula instead of the brute-force Weyl search in the
-# core class. Keeping it here lets us test the mathematical shortcut without
-# changing the original fitting pipeline.
+# It is a test/demo path for constructing Weyl elements using the rank-one
+# root-subgroup formula instead of the brute-force Weyl search in the core
+# class. The original brute-force support/value enumeration still lives in
+# pinned_group.py; a factored external copy of that algorithm lives in
+# weyl_element_factored.py.
 #
 # The method is:
 #   1. Try the direct formula w_alpha = X_alpha(1) X_{-alpha}(-1) X_alpha(1).

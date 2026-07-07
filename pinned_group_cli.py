@@ -30,11 +30,12 @@ from utility_SU import (character_entries_SU,
                         is_torus_element_SU,
                         lie_algebra_constraints_SU,
                         trivial_characters_SU)
-from weyl_element_demo import (
+from test_demo import (
     fit_weyl_group_elements_from_root_subgroups,
     record_weyl_demo_brute_force_fallback_time,
     try_fit_weyl_group_elements_from_root_subgroups,
 )
+from weyl_element_factored import fit_weyl_group_elements_factored
 
 
 def parse_args():
@@ -62,12 +63,13 @@ def parse_args():
     )
     parser.add_argument(
         "--weyl-method",
-        choices=["brute", "root-subgroups", "auto"],
+        choices=["brute", "root-subgroups", "auto", "factored-brute"],
         default="brute",
         help=(
             "Weyl element construction method. root-subgroups is strict "
             "experimental/demo mode; auto tries root-subgroups first and "
-            "falls back to brute. Default: brute."
+            "falls back to brute. factored-brute uses the external factored "
+            "copy of the original brute-force solver. Default: brute."
         ),
     )
     parser.add_argument("--quiet", action="store_true")
@@ -261,6 +263,8 @@ def fit_group_with_demo_weyl_method(G, display=True, weyl_method="root-subgroups
             record_weyl_demo_brute_force_fallback_time(G, brute_force_elapsed)
             if display:
                 print(f"Brute-force Weyl fallback time: {brute_force_elapsed:.4f} seconds")
+    elif weyl_method == "factored-brute":
+        fit_weyl_group_elements_factored(G, display)
     else:
         raise ValueError(f"Unknown demo Weyl method: {weyl_method}")
 
@@ -275,7 +279,7 @@ def fit_group_with_demo_weyl_method(G, display=True, weyl_method="root-subgroups
 def fit_group(G, display=True, validate=True, weyl_method="brute"):
     if weyl_method == "brute":
         G.fit_pinning(display=display)
-    elif weyl_method in ("root-subgroups", "auto"):
+    elif weyl_method in ("root-subgroups", "auto", "factored-brute"):
         if display:
             print(f"Using demo Weyl method: {weyl_method}")
         fit_group_with_demo_weyl_method(G, display, weyl_method)
