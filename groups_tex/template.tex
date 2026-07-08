@@ -6,8 +6,13 @@
 \usepackage{tikz}
 \usepackage{hyperref}
 
+\newcommand{\noi}{\noindent}
+
 \theoremstyle{definition} 
 \newtheorem{definition}{Definition}[section]
+
+\newif\ifrootsystemirreducible
+\rootsystemirreducibletrue
 
 \title{Pinned group summary: GroupNamePlaceholder}
 \author{Pinning-Sympy automated output}
@@ -36,17 +41,24 @@
 
 BilinearFormPlaceholder
 
-\subsection{Generic Lie algebra element}
+\subsection{Lie algebra}
+
+The defining equations for the Lie algebra are:
+\[
+LieAlgebraEquationPlaceholder
+\]
+A generic element of the Lie algebra is:
 \[
 GenericLieAlgebraElementPlaceholder
 \]
 
-\subsection{Generic torus element}
+\subsection{Torus}
+
+The torus has rank $RankPlaceholder$. A generic element of the torus is
 \[
 GenericTorusElementPlaceholder
 \]
-
-\subsection{Trivial characters}
+The rows of the matrix below are trivial characters:
 \[
 TrivialCharactersPlaceholder
 \]
@@ -54,7 +66,49 @@ TrivialCharactersPlaceholder
 \newpage
 \section{Root system}
 
-RootSystemPlaceholder
+\begin{tabular}{|l|l|}
+	\hline
+    Dynkin type & DynkinTypePlaceholder \\
+	\hline
+    Irreducible & IrreduciblePlaceholder \\
+	\hline
+    Reduced & ReducedPlaceholder \\
+	\hline
+	Simply laced & SimplyLacedPlaceholder \\
+	\hline
+	Number of roots & $NumberOfRootsPlaceholder$ \\
+	\hline
+\end{tabular}
+
+\subsection{Dynkin diagram}
+
+\ifrootsystemirreducible
+The root system is irreducible and has Dynkin diagram:
+\else
+The root system is reducible with RootSystemComponentsPlaceholder components. The Dynkin diagrams of the respective components are:
+\fi
+
+DynkinDiagramPlaceholder
+
+\subsection{Cartan matrix}
+
+\ifrootsystemirreducible
+The root system is irreducible and has Cartan matrix:
+\else
+The root system is reducible with RootSystemComponentsPlaceholder components. The Cartan matrices of the respective components are:
+\fi
+
+\[
+CartanMatrixPlaceholder
+\]
+
+\subsection{Roots}
+
+RootTablePlaceholder
+
+\subsection{Coroots}
+
+CorootTablePlaceholder
 
 \subsection{Linear combinations of roots}
 
@@ -62,41 +116,87 @@ RootSystemPlaceholder
 For two roots $\alpha, \beta$ in a root system $\Phi$, the set of positive integral linear combinations of $\alpha, \beta$ that are also roots is denoted
 \(
 	(\alpha, \beta) = \{ i \alpha + j \beta \in \Phi : i, j \in \mathbb{Z}_{\ge 1} \}
-\)
+\).
 \end{definition}
 
 LinearCombinationsPlaceholder
 
+\newpage
 \section{Root spaces}
+
+\subsection{Dimensions}
+
+The table below lists each root along with the dimension of the associated root space (and root subgroup).
 
 RootSpaceDimensionPlaceholder
 
+\subsection{Root space table}
+
+\noi The table below lists each root along with a generic element of the associated root space (inside the Lie algebra). Include a definition here? INCOMPLETE
+
 RootSpaceTablePlaceholder
 
+\newpage
 \section{Root subgroups}
+
+\subsection{Root subgroup table}
+
+\noi The table below lists each root along with a generic element of the associated root subgroup.
 
 RootSubgroupTablePlaceholder
 
+\subsection{Homomorphism property}
+
+\noi Background theoretical info on homomorphism/pseudo-homomorphism property INCOMPLETE
+
 HomomorphismDefectTablePlaceholder
+
+\noi Below is an explicit formulation of the homomorphism/pseudo-homomorphism identities.
 
 HomomorphismDefectIdentitiesPlaceholder
 
+\newpage
 \section{Commutators}
+
+\noi Background theoretical info on commutator relation INCOMPLETE
+
+\noi Because of its relevance to commutators, we repeat here the table of linear combinations of roots.
+
+LinearCombinationsPlaceholder
+
+\subsection{Commutator coefficient table}
+
+\noi The table below gives the coefficients $N_{ij}^{\alpha\beta}$.
 
 CommutatorCoefficientTablePlaceholder
 
+\subsection{Commutator identities}
+
+\noi Below is an explicit formulation of the commutator formula identities.
+
 CommutatorIdentitiesPlaceholder
 
+\newpage
 \section{Weyl group}
+
+\noi Background theoretical info on Weyl group, especially as realized inside the group, including info on conjugation between root subgroups INCOMPLETE
+
+\subsection{Weyl group elements}
+
+\noi The table below lists roots along with an associated Weyl group element.
 
 WeylGroupPlaceholder
 
+\subsection{Weyl group conjugation coefficients}
+
+\noi The table below lists roots along with the coefficients obtain in performing conjugation by an associated Weyl element.
+
 WeylConjugationCoefficientPlaceholder
 
+\subsection{Weyl group conjugation identities}
+
+\noi Below is an explicit formulation of the Weyl group conjugation identities.
+
 WeylConjugationIdentitiesPlaceholder
-
-\section{Coroot torus elements ($h_\alpha$)}
-
-CorootTorusElementPlaceholder
 
 \end{document}

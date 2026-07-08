@@ -31,6 +31,8 @@ from utility_roots import (generate_character_list,
                            evaluate_character,
                            generic_kernel_element,
                            evaluate_cocharacter)
+from utility_tex import (groups_tex_path,
+                         pinned_group_to_tex)
 from root_system import root_system
 from functools import reduce
 from operator import mul
@@ -41,7 +43,6 @@ from pathlib import Path
 import subprocess
 
 groups_path = Path("./groups")
-groups_tex_path = Path("./groups_tex")
 
 class pinned_group:
 
@@ -148,14 +149,11 @@ class pinned_group:
         # Open the file path and write it
         with open(self.file_path, 'wb') as f:
             dill.dump(self, f)
-        print(f"Successfully saved object data to: {self.file_path}")
-    
+        print(f"Successfully saved object data to: {self.file_path}")  
+
     def write_to_tex(self, overwrite = False, compile_pdf = False):
         # Generate a .tex file summarizing the group, utilizing a template file
         
-        # Ensure directories exist
-        groups_tex_path.mkdir(parents=True, exist_ok=True)
-        template_file = groups_tex_path / "template.tex"
         output_file = groups_tex_path / f"{self.name_string}.tex"
 
         # Check if file exists and handle overwrite rules
@@ -163,64 +161,11 @@ class pinned_group:
             print(f"Skipping: {output_file} already exists and overwrite=False.")
             return
 
-        # 1. Read the base template
-        if not template_file.exists():
-            raise FileNotFoundError(f"Template not found at {template_file}. Please create it first.")
-        with open(template_file, "r", encoding="utf-8") as f:
-            content = f.read()
-
-        # Helper function to convert SymPy objects safely to LaTeX string
-        def to_latex(obj):
-            if obj is None:
-                return r"\text{None}"
-            if callable(obj):
-                try:
-                    return sp.latex(obj('x'))
-                except Exception:
-                    return r"\text{Functional Property}"
-            return sp.latex(obj)
-
-        root_system_basics, root_linear_combos_table = self.root_system.to_tex()
-
-        dimension_table =  "\\begin{center}\n"
-        dimension_table += r"\begin{tabular}{|l|c|}" + "\n"
-        dimension_table += r"\hline" + "\n"
-        dimension_table += r"\textbf{Root} & \textbf{Dimension} \\" + "\n"
-        dimension_table += r"\hline" + "\n"
-        for alpha in self.root_system.root_list:
-            dimension_table += f"${sp.latex(alpha)}$ & ${self.root_space_dimension(alpha)}$ \\\\\n"
-            dimension_table += r"\hline" + "\n"
-        dimension_table += r"\end{tabular}"
-        dimension_table += "\\end{center}"
-
-        # 2. Swap placeholders with real data
-        replacements = {
-            "GroupNamePlaceholder": f"\\texttt{{{self.name_string}}}",
-            "MatrixSizePlaceholder": f"{self.matrix_size}",
-            "RankPlaceholder": f"{self.rank}",
-            "GenericTorusElementPlaceholder": to_latex(self.generic_torus_element('t')),
-            "TrivialCharactersPlaceholder": sp.latex(sp.Matrix(self.torus.trivial_character_matrix).T),
-            "GenericLieAlgebraElementPlaceholder": to_latex(self.generic_lie_algebra_element('x')),
-            "RootSystemPlaceholder": root_system_basics,
-            "LinearCombinationsPlaceholder" : root_linear_combos_table,
-            "RootSpaceDimensionPlaceholder" : dimension_table
-        }
-        
-        # Check if self.form exists and has a to_tex method, otherwise default to an empty string or notice
-        if getattr(self, 'form', None) is not None:
-            replacements['BilinearFormPlaceholder'] = self.form.to_tex() or "None"
-        else:
-            replacements['BilinearFormPlaceholder'] = ""
-            
-        for placeholder, value in replacements.items():
-            if value is None:
-                # Fallback to an explicit string token so .replace doesn't crash
-                value = "\\text{None}"
-            content = content.replace(placeholder, str(value))
-
+        output_file_contents = pinned_group_to_tex(self)
+    
         # 3. Write out to the final file
         with open(output_file, "w", encoding="utf-8") as f:
-            f.write(content)
+            f.write(output_file_contents)
             
         print(f"Successfully generated: {output_file}")
         

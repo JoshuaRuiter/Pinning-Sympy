@@ -6,10 +6,15 @@
 \usepackage{tikz}
 \usepackage{hyperref}
 
+\newcommand{\noi}{\noindent}
+
 \theoremstyle{definition} 
 \newtheorem{definition}{Definition}[section]
 
-\title{Pinned group summary: \texttt{SU(n=5, q=2, eps=-1)}}
+\newif\ifrootsystemirreducible
+\rootsystemirreducibletrue
+
+\title{Pinned group summary: SU(n=5, q=2, eps=-1)}
 \author{Pinning-Sympy automated output}
 \date{\today}
 
@@ -24,7 +29,7 @@
 
 \begin{tabular}{|l|l|}
 	\hline
-    Group & \texttt{SU(n=5, q=2, eps=-1)} \\
+    Group & SU(n=5, q=2, eps=-1) \\
 	\hline
     Matrix size & $5 \times 5$ \\
 	\hline
@@ -54,17 +59,24 @@
 
 
 
-\subsection{Generic Lie algebra element}
+\subsection{Lie algebra}
+
+The defining equations for the Lie algebra are:
+\[
+LieAlgebraEquationPlaceholder
+\]
+A generic element of the Lie algebra is:
 \[
 \left[\begin{matrix}\sqrt{d} x_{i 0 0} + x_{r 0 0} & \sqrt{d} x_{i 0 1} + x_{r 0 1} & - x_{r 0 2} & - \sqrt{d} x_{i 1 2} + x_{r 1 2} & c_{0} \sqrt{d} \left(- \sqrt{d} x_{i 4 2} + x_{r 4 2}\right)\\\sqrt{d} x_{i 1 0} + x_{r 1 0} & - \sqrt{d} x_{i 0 0} - \frac{\sqrt{d} x_{i 4 4}}{2} + x_{r 1 1} & \sqrt{d} x_{i 1 2} + x_{r 1 2} & - x_{r 1 3} & c_{0} \sqrt{d} \left(- \sqrt{d} x_{i 4 3} + x_{r 4 3}\right)\\- x_{r 2 0} & - \sqrt{d} x_{i 3 0} + x_{r 3 0} & \sqrt{d} x_{i 0 0} - x_{r 0 0} & \sqrt{d} x_{i 1 0} - x_{r 1 0} & - c_{0} \sqrt{d} \left(- \sqrt{d} x_{i 4 0} + x_{r 4 0}\right)\\\sqrt{d} x_{i 3 0} + x_{r 3 0} & - x_{r 3 1} & \sqrt{d} x_{i 0 1} - x_{r 0 1} & - \sqrt{d} x_{i 0 0} - \frac{\sqrt{d} x_{i 4 4}}{2} - x_{r 1 1} & - c_{0} \sqrt{d} \left(- \sqrt{d} x_{i 4 1} + x_{r 4 1}\right)\\\sqrt{d} x_{i 4 0} + x_{r 4 0} & \sqrt{d} x_{i 4 1} + x_{r 4 1} & \sqrt{d} x_{i 4 2} + x_{r 4 2} & \sqrt{d} x_{i 4 3} + x_{r 4 3} & \sqrt{d} x_{i 4 4}\end{matrix}\right]
 \]
 
-\subsection{Generic torus element}
+\subsection{Torus}
+
+The torus has rank $2$. A generic element of the torus is
 \[
 \left[\begin{matrix}t_{0} & 0 & 0 & 0 & 0\\0 & t_{1} & 0 & 0 & 0\\0 & 0 & \frac{1}{t_{0}} & 0 & 0\\0 & 0 & 0 & \frac{1}{t_{1}} & 0\\0 & 0 & 0 & 0 & 1\end{matrix}\right]
 \]
-
-\subsection{Trivial characters}
+The rows of the matrix below are trivial characters:
 \[
 \left[\begin{matrix}1 & 0 & 1 & 0 & 0\\0 & 1 & 0 & 1 & 0\\1 & 1 & 1 & 1 & 1\end{matrix}\right]
 \]
@@ -72,23 +84,28 @@
 \newpage
 \section{Root system}
 
-\subsection*{Summary Properties}
 \begin{tabular}{|l|l|}
-    \hline
-    Dynkin type & \texttt{BC2} \\
-    \hline
+	\hline
+    Dynkin type & $BC_2$ \\
+	\hline
     Irreducible & True \\
-    \hline
+	\hline
     Reduced & False \\
-    \hline
-    Simply laced & False \\
-    \hline
-    Number of roots & 12 \\
-    \hline
+	\hline
+	Simply laced & False \\
+	\hline
+	Number of roots & $12$ \\
+	\hline
 \end{tabular}
 
 \subsection{Dynkin diagram}
-\begin{center}
+
+\ifrootsystemirreducible
+The root system is irreducible and has Dynkin diagram:
+\else
+The root system is reducible with RootSystemComponentsPlaceholder components. The Dynkin diagrams of the respective components are:
+\fi
+
 \begin{tikzpicture}[
     node/.style={circle, draw, fill=black!5, minimum size=6mm, inner sep=0pt},
     arrow/.style={-latex, thick},
@@ -101,45 +118,83 @@
     \node[node] (1) at (1.50, 0.00) {$1$};
     \draw[doublearrow] (1) -- (0);
 \end{tikzpicture}
-\end{center}
 
 \subsection{Cartan matrix}
+
+\ifrootsystemirreducible
+The root system is irreducible and has Cartan matrix:
+\else
+The root system is reducible with RootSystemComponentsPlaceholder components. The Cartan matrices of the respective components are:
+\fi
+
 \[
 \left[\begin{matrix}2 & -1\\-2 & 2\end{matrix}\right]
 \]
 
-\subsection{Roots and coroots}
-\begin{center}
-\begin{tabular}{|l|l|c|c|c|}
+\subsection{Roots}
+
+\begin{tabular}{|l|c|c|c|}
     \hline
-    \textbf{Root} & \textbf{Coroot} & \textbf{Simple} & \textbf{Sign} & \textbf{Multipliable} \\
+    \textbf{Root} & \textbf{Simple} & \textbf{Sign} & \textbf{Multipliable} \\
     \hline
-    $\left( -2, \  0, \  0, \  0, \  0\right)$ & $\left( -1, \  0, \  1, \  0, \  0\right)$ & No & $-$ & No \\
+    $\left( -2, \  0, \  0, \  0, \  0\right)$ & No & $-$ & No \\
     \hline
-    $\left( -1, \  -1, \  0, \  0, \  0\right)$ & $\left( -1, \  -1, \  1, \  1, \  0\right)$ & No & $-$ & No \\
+    $\left( -1, \  -1, \  0, \  0, \  0\right)$ & No & $-$ & No \\
     \hline
-    $\left( -1, \  0, \  0, \  0, \  0\right)$ & $\left( -2, \  0, \  2, \  0, \  0\right)$ & No & $-$ & Yes \\
+    $\left( -1, \  0, \  0, \  0, \  0\right)$ & No & $-$ & Yes \\
     \hline
-    $\left( -1, \  1, \  0, \  0, \  0\right)$ & $\left( -1, \  1, \  1, \  -1, \  0\right)$ & No & $-$ & No \\
+    $\left( -1, \  1, \  0, \  0, \  0\right)$ & No & $-$ & No \\
     \hline
-    $\left( 0, \  -2, \  0, \  0, \  0\right)$ & $\left( 0, \  -1, \  0, \  1, \  0\right)$ & No & $-$ & No \\
+    $\left( 0, \  -2, \  0, \  0, \  0\right)$ & No & $-$ & No \\
     \hline
-    $\left( 0, \  -1, \  0, \  0, \  0\right)$ & $\left( 0, \  -2, \  0, \  2, \  0\right)$ & No & $-$ & Yes \\
+    $\left( 0, \  -1, \  0, \  0, \  0\right)$ & No & $-$ & Yes \\
     \hline
-    $\left( 0, \  1, \  0, \  0, \  0\right)$ & $\left( 0, \  2, \  0, \  -2, \  0\right)$ & Yes & $+$ & Yes \\
+    $\left( 0, \  1, \  0, \  0, \  0\right)$ & Yes & $+$ & Yes \\
     \hline
-    $\left( 0, \  2, \  0, \  0, \  0\right)$ & $\left( 0, \  1, \  0, \  -1, \  0\right)$ & No & $+$ & No \\
+    $\left( 0, \  2, \  0, \  0, \  0\right)$ & No & $+$ & No \\
     \hline
-    $\left( 1, \  -1, \  0, \  0, \  0\right)$ & $\left( 1, \  -1, \  -1, \  1, \  0\right)$ & Yes & $+$ & No \\
+    $\left( 1, \  -1, \  0, \  0, \  0\right)$ & Yes & $+$ & No \\
     \hline
-    $\left( 1, \  0, \  0, \  0, \  0\right)$ & $\left( 2, \  0, \  -2, \  0, \  0\right)$ & No & $+$ & Yes \\
+    $\left( 1, \  0, \  0, \  0, \  0\right)$ & No & $+$ & Yes \\
     \hline
-    $\left( 1, \  1, \  0, \  0, \  0\right)$ & $\left( 1, \  1, \  -1, \  -1, \  0\right)$ & No & $+$ & No \\
+    $\left( 1, \  1, \  0, \  0, \  0\right)$ & No & $+$ & No \\
     \hline
-    $\left( 2, \  0, \  0, \  0, \  0\right)$ & $\left( 1, \  0, \  -1, \  0, \  0\right)$ & No & $+$ & No \\
+    $\left( 2, \  0, \  0, \  0, \  0\right)$ & No & $+$ & No \\
     \hline
 \end{tabular}
-\end{center}
+
+
+\subsection{Coroots}
+
+\begin{tabular}{|l|l|}
+    \hline
+    \textbf{Root} & \textbf{Coroot} \\
+    \hline
+    $\left( -2, \  0, \  0, \  0, \  0\right)$ & $\left( -1, \  0, \  1, \  0, \  0\right)$ \\
+    \hline
+    $\left( -1, \  -1, \  0, \  0, \  0\right)$ & $\left( -1, \  -1, \  1, \  1, \  0\right)$ \\
+    \hline
+    $\left( -1, \  0, \  0, \  0, \  0\right)$ & $\left( -2, \  0, \  2, \  0, \  0\right)$ \\
+    \hline
+    $\left( -1, \  1, \  0, \  0, \  0\right)$ & $\left( -1, \  1, \  1, \  -1, \  0\right)$ \\
+    \hline
+    $\left( 0, \  -2, \  0, \  0, \  0\right)$ & $\left( 0, \  -1, \  0, \  1, \  0\right)$ \\
+    \hline
+    $\left( 0, \  -1, \  0, \  0, \  0\right)$ & $\left( 0, \  -2, \  0, \  2, \  0\right)$ \\
+    \hline
+    $\left( 0, \  1, \  0, \  0, \  0\right)$ & $\left( 0, \  2, \  0, \  -2, \  0\right)$ \\
+    \hline
+    $\left( 0, \  2, \  0, \  0, \  0\right)$ & $\left( 0, \  1, \  0, \  -1, \  0\right)$ \\
+    \hline
+    $\left( 1, \  -1, \  0, \  0, \  0\right)$ & $\left( 1, \  -1, \  -1, \  1, \  0\right)$ \\
+    \hline
+    $\left( 1, \  0, \  0, \  0, \  0\right)$ & $\left( 2, \  0, \  -2, \  0, \  0\right)$ \\
+    \hline
+    $\left( 1, \  1, \  0, \  0, \  0\right)$ & $\left( 1, \  1, \  -1, \  -1, \  0\right)$ \\
+    \hline
+    $\left( 2, \  0, \  0, \  0, \  0\right)$ & $\left( 1, \  0, \  -1, \  0, \  0\right)$ \\
+    \hline
+\end{tabular}
 
 
 \subsection{Linear combinations of roots}
@@ -148,10 +203,9 @@
 For two roots $\alpha, \beta$ in a root system $\Phi$, the set of positive integral linear combinations of $\alpha, \beta$ that are also roots is denoted
 \(
 	(\alpha, \beta) = \{ i \alpha + j \beta \in \Phi : i, j \in \mathbb{Z}_{\ge 1} \}
-\)
+\).
 \end{definition}
 
-\begin{center}
 \begin{tabular}{|l|l|c|}
     \hline
     $\alpha$ & $\beta$ & Pairs $(i,j)$ \\
@@ -213,68 +267,145 @@ For two roots $\alpha, \beta$ in a root system $\Phi$, the set of positive integ
     $\left( 1, \  -1, \  0, \  0, \  0\right)$ & $\left( 1, \  1, \  0, \  0, \  0\right)$ & $(1,1)$ \\
     \hline
 \end{tabular}
-\end{center}
 
 
+\newpage
 \section{Root spaces}
 
-\begin{center}
-\begin{tabular}{|l|c|}
-\hline
-Root & Dimension \\
-\hline
-$\left( -2, \  0, \  0, \  0, \  0\right)$ & $1$ \\
-\hline
-$\left( -1, \  -1, \  0, \  0, \  0\right)$ & $2$ \\
-\hline
-$\left( -1, \  0, \  0, \  0, \  0\right)$ & $2$ \\
-\hline
-$\left( -1, \  1, \  0, \  0, \  0\right)$ & $2$ \\
-\hline
-$\left( 0, \  -2, \  0, \  0, \  0\right)$ & $1$ \\
-\hline
-$\left( 0, \  -1, \  0, \  0, \  0\right)$ & $2$ \\
-\hline
-$\left( 0, \  1, \  0, \  0, \  0\right)$ & $2$ \\
-\hline
-$\left( 0, \  2, \  0, \  0, \  0\right)$ & $1$ \\
-\hline
-$\left( 1, \  -1, \  0, \  0, \  0\right)$ & $2$ \\
-\hline
-$\left( 1, \  0, \  0, \  0, \  0\right)$ & $2$ \\
-\hline
-$\left( 1, \  1, \  0, \  0, \  0\right)$ & $2$ \\
-\hline
-$\left( 2, \  0, \  0, \  0, \  0\right)$ & $1$ \\
-\hline
-\end{tabular}\end{center}
+\subsection{Dimensions}
+
+The table below lists each root along with the dimension of the associated root space (and root subgroup).
+
+RootSpaceDimensionPlaceholder
+
+\subsection{Root space table}
+
+\noi The table below lists each root along with a generic element of the associated root space (inside the Lie algebra). Include a definition here? INCOMPLETE
 
 RootSpaceTablePlaceholder
 
+\newpage
 \section{Root subgroups}
+
+\subsection{Root subgroup table}
+
+\noi The table below lists each root along with a generic element of the associated root subgroup.
 
 RootSubgroupTablePlaceholder
 
+\subsection{Homomorphism property}
+
+\noi Background theoretical info on homomorphism/pseudo-homomorphism property INCOMPLETE
+
 HomomorphismDefectTablePlaceholder
+
+\noi Below is an explicit formulation of the homomorphism/pseudo-homomorphism identities.
 
 HomomorphismDefectIdentitiesPlaceholder
 
+\newpage
 \section{Commutators}
+
+\noi Background theoretical info on commutator relation INCOMPLETE
+
+\noi Because of its relevance to commutators, we repeat here the table of linear combinations of roots.
+
+\begin{tabular}{|l|l|c|}
+    \hline
+    $\alpha$ & $\beta$ & Pairs $(i,j)$ \\
+    \hline
+    $\left( -2, \  0, \  0, \  0, \  0\right)$ & $\left( 1, \  -1, \  0, \  0, \  0\right)$ & $(1,1), (1,2)$ \\
+    \hline
+    $\left( -2, \  0, \  0, \  0, \  0\right)$ & $\left( 1, \  0, \  0, \  0, \  0\right)$ & $(1,1)$ \\
+    \hline
+    $\left( -2, \  0, \  0, \  0, \  0\right)$ & $\left( 1, \  1, \  0, \  0, \  0\right)$ & $(1,1), (1,2)$ \\
+    \hline
+    $\left( -1, \  -1, \  0, \  0, \  0\right)$ & $\left( -1, \  1, \  0, \  0, \  0\right)$ & $(1,1)$ \\
+    \hline
+    $\left( -1, \  -1, \  0, \  0, \  0\right)$ & $\left( 0, \  1, \  0, \  0, \  0\right)$ & $(1,1), (1,2), (2,2)$ \\
+    \hline
+    $\left( -1, \  -1, \  0, \  0, \  0\right)$ & $\left( 0, \  2, \  0, \  0, \  0\right)$ & $(1,1), (2,1)$ \\
+    \hline
+    $\left( -1, \  -1, \  0, \  0, \  0\right)$ & $\left( 1, \  -1, \  0, \  0, \  0\right)$ & $(1,1)$ \\
+    \hline
+    $\left( -1, \  -1, \  0, \  0, \  0\right)$ & $\left( 1, \  0, \  0, \  0, \  0\right)$ & $(1,1), (1,2), (2,2)$ \\
+    \hline
+    $\left( -1, \  -1, \  0, \  0, \  0\right)$ & $\left( 2, \  0, \  0, \  0, \  0\right)$ & $(1,1), (2,1)$ \\
+    \hline
+    $\left( -1, \  0, \  0, \  0, \  0\right)$ & $\left( 0, \  -1, \  0, \  0, \  0\right)$ & $(1,1)$ \\
+    \hline
+    $\left( -1, \  0, \  0, \  0, \  0\right)$ & $\left( 0, \  1, \  0, \  0, \  0\right)$ & $(1,1)$ \\
+    \hline
+    $\left( -1, \  0, \  0, \  0, \  0\right)$ & $\left( 1, \  -1, \  0, \  0, \  0\right)$ & $(1,1), (2,1), (2,2)$ \\
+    \hline
+    $\left( -1, \  0, \  0, \  0, \  0\right)$ & $\left( 1, \  1, \  0, \  0, \  0\right)$ & $(1,1), (2,1), (2,2)$ \\
+    \hline
+    $\left( -1, \  0, \  0, \  0, \  0\right)$ & $\left( 2, \  0, \  0, \  0, \  0\right)$ & $(1,1)$ \\
+    \hline
+    $\left( -1, \  1, \  0, \  0, \  0\right)$ & $\left( 0, \  -2, \  0, \  0, \  0\right)$ & $(1,1), (2,1)$ \\
+    \hline
+    $\left( -1, \  1, \  0, \  0, \  0\right)$ & $\left( 0, \  -1, \  0, \  0, \  0\right)$ & $(1,1), (1,2), (2,2)$ \\
+    \hline
+    $\left( -1, \  1, \  0, \  0, \  0\right)$ & $\left( 1, \  0, \  0, \  0, \  0\right)$ & $(1,1), (1,2), (2,2)$ \\
+    \hline
+    $\left( -1, \  1, \  0, \  0, \  0\right)$ & $\left( 1, \  1, \  0, \  0, \  0\right)$ & $(1,1)$ \\
+    \hline
+    $\left( -1, \  1, \  0, \  0, \  0\right)$ & $\left( 2, \  0, \  0, \  0, \  0\right)$ & $(1,1), (2,1)$ \\
+    \hline
+    $\left( 0, \  -2, \  0, \  0, \  0\right)$ & $\left( 0, \  1, \  0, \  0, \  0\right)$ & $(1,1)$ \\
+    \hline
+    $\left( 0, \  -2, \  0, \  0, \  0\right)$ & $\left( 1, \  1, \  0, \  0, \  0\right)$ & $(1,1), (1,2)$ \\
+    \hline
+    $\left( 0, \  -1, \  0, \  0, \  0\right)$ & $\left( 0, \  2, \  0, \  0, \  0\right)$ & $(1,1)$ \\
+    \hline
+    $\left( 0, \  -1, \  0, \  0, \  0\right)$ & $\left( 1, \  0, \  0, \  0, \  0\right)$ & $(1,1)$ \\
+    \hline
+    $\left( 0, \  -1, \  0, \  0, \  0\right)$ & $\left( 1, \  1, \  0, \  0, \  0\right)$ & $(1,1), (2,1), (2,2)$ \\
+    \hline
+    $\left( 0, \  1, \  0, \  0, \  0\right)$ & $\left( 1, \  -1, \  0, \  0, \  0\right)$ & $(1,1), (2,1), (2,2)$ \\
+    \hline
+    $\left( 0, \  1, \  0, \  0, \  0\right)$ & $\left( 1, \  0, \  0, \  0, \  0\right)$ & $(1,1)$ \\
+    \hline
+    $\left( 0, \  2, \  0, \  0, \  0\right)$ & $\left( 1, \  -1, \  0, \  0, \  0\right)$ & $(1,1), (1,2)$ \\
+    \hline
+    $\left( 1, \  -1, \  0, \  0, \  0\right)$ & $\left( 1, \  1, \  0, \  0, \  0\right)$ & $(1,1)$ \\
+    \hline
+\end{tabular}
+
+
+\subsection{Commutator coefficient table}
+
+\noi The table below gives the coefficients $N_{ij}^{\alpha\beta}$.
 
 CommutatorCoefficientTablePlaceholder
 
+\subsection{Commutator identities}
+
+\noi Below is an explicit formulation of the commutator formula identities.
+
 CommutatorIdentitiesPlaceholder
 
+\newpage
 \section{Weyl group}
+
+\noi Background theoretical info on Weyl group, especially as realized inside the group, including info on conjugation between root subgroups INCOMPLETE
+
+\subsection{Weyl group elements}
+
+\noi The table below lists roots along with an associated Weyl group element.
 
 WeylGroupPlaceholder
 
+\subsection{Weyl group conjugation coefficients}
+
+\noi The table below lists roots along with the coefficients obtain in performing conjugation by an associated Weyl element.
+
 WeylConjugationCoefficientPlaceholder
 
+\subsection{Weyl group conjugation identities}
+
+\noi Below is an explicit formulation of the Weyl group conjugation identities.
+
 WeylConjugationIdentitiesPlaceholder
-
-\section{Coroot torus elements ($h_\alpha$)}
-
-CorootTorusElementPlaceholder
 
 \end{document}
