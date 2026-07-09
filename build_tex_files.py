@@ -30,7 +30,7 @@ def main():
     
     end_time = time.perf_counter()
     execution_time = end_time - start_time
-    print(f"\nAll tests complete, total time: {round(execution_time/60, 1)} minutes")
+    print(f"\nAll tex operations complete, total time: {round(execution_time/60, 1)} minutes")
 
 def build_tex_SL(n_min, n_max, overwrite, compile_PDF):
     print("\nBuilding .tex files for special linear groups")

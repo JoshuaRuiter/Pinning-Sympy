@@ -5,6 +5,7 @@
 \usepackage{booktabs}
 \usepackage{tikz}
 \usepackage{hyperref}
+\usepackage{makecell}
 
 \newcommand{\noi}{\noindent}
 
@@ -228,13 +229,59 @@ For two roots $\alpha, \beta$ in a root system $\Phi$, the set of positive integ
 
 The table below lists each root along with the dimension of the associated root space (and root subgroup).
 
-RootSpaceDimensionPlaceholder
+\bigskip
+
+\noindent \begin{tabular}{|l|c|}
+    \hline
+    \textbf{Root ($\alpha$)} & \textbf{Dimension of root space ($d_{\alpha}$)} \\
+    \hline
+    $\left( -2, \  0, \  0, \  0\right)$ & 1 \\
+    \hline
+    $\left( -1, \  -1, \  0, \  0\right)$ & 2 \\
+    \hline
+    $\left( -1, \  1, \  0, \  0\right)$ & 2 \\
+    \hline
+    $\left( 0, \  -2, \  0, \  0\right)$ & 1 \\
+    \hline
+    $\left( 0, \  2, \  0, \  0\right)$ & 1 \\
+    \hline
+    $\left( 1, \  -1, \  0, \  0\right)$ & 2 \\
+    \hline
+    $\left( 1, \  1, \  0, \  0\right)$ & 2 \\
+    \hline
+    $\left( 2, \  0, \  0, \  0\right)$ & 1 \\
+    \hline
+\end{tabular}
+
 
 \subsection{Root space table}
 
 \noi The table below lists each root along with a generic element of the associated root space (inside the Lie algebra). Include a definition here? INCOMPLETE
 
-RootSpaceTablePlaceholder
+\bigskip
+
+\noindent \begin{tabular}{|l|c|}
+    \hline
+    \textbf{Root ($\alpha$)} & \textbf{Generic element of root space} \\
+    \hline
+    $\left( -2, \  0, \  0, \  0\right)$ & $\left[\begin{matrix}0 & 0 & 0 & 0\\0 & 0 & 0 & 0\\- u_{0} & 0 & 0 & 0\\0 & 0 & 0 & 0\end{matrix}\right]$ \\
+    \hline
+    $\left( -1, \  -1, \  0, \  0\right)$ & $\left[\begin{matrix}0 & 0 & 0 & 0\\0 & 0 & 0 & 0\\0 & - \sqrt{d} u_{0} + u_{1} & 0 & 0\\\sqrt{d} u_{0} + u_{1} & 0 & 0 & 0\end{matrix}\right]$ \\
+    \hline
+    $\left( -1, \  1, \  0, \  0\right)$ & $\left[\begin{matrix}0 & 0 & 0 & 0\\\sqrt{d} u_{1} + u_{0} & 0 & 0 & 0\\0 & 0 & 0 & \sqrt{d} u_{1} - u_{0}\\0 & 0 & 0 & 0\end{matrix}\right]$ \\
+    \hline
+    $\left( 0, \  -2, \  0, \  0\right)$ & $\left[\begin{matrix}0 & 0 & 0 & 0\\0 & 0 & 0 & 0\\0 & 0 & 0 & 0\\0 & - u_{0} & 0 & 0\end{matrix}\right]$ \\
+    \hline
+    $\left( 0, \  2, \  0, \  0\right)$ & $\left[\begin{matrix}0 & 0 & 0 & 0\\0 & 0 & 0 & - u_{0}\\0 & 0 & 0 & 0\\0 & 0 & 0 & 0\end{matrix}\right]$ \\
+    \hline
+    $\left( 1, \  -1, \  0, \  0\right)$ & $\left[\begin{matrix}0 & \sqrt{d} u_{0} + u_{1} & 0 & 0\\0 & 0 & 0 & 0\\0 & 0 & 0 & 0\\0 & 0 & \sqrt{d} u_{0} - u_{1} & 0\end{matrix}\right]$ \\
+    \hline
+    $\left( 1, \  1, \  0, \  0\right)$ & $\left[\begin{matrix}0 & 0 & 0 & - \sqrt{d} u_{1} + u_{0}\\0 & 0 & \sqrt{d} u_{1} + u_{0} & 0\\0 & 0 & 0 & 0\\0 & 0 & 0 & 0\end{matrix}\right]$ \\
+    \hline
+    $\left( 2, \  0, \  0, \  0\right)$ & $\left[\begin{matrix}0 & 0 & - u_{0} & 0\\0 & 0 & 0 & 0\\0 & 0 & 0 & 0\\0 & 0 & 0 & 0\end{matrix}\right]$ \\
+    \hline
+\end{tabular}
+
 
 \newpage
 \section{Root subgroups}
@@ -243,15 +290,42 @@ RootSpaceTablePlaceholder
 
 \noi The table below lists each root along with a generic element of the associated root subgroup.
 
-RootSubgroupTablePlaceholder
+\bigskip
+
+\noindent \begin{tabular}{|l|c|}
+    \hline
+    \textbf{Root ($\alpha$)} & \textbf{Generic element of root space} \\
+    \hline
+    $\left( -2, \  0, \  0, \  0\right)$ & $\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\- u_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]$ \\
+    \hline
+    $\left( -1, \  -1, \  0, \  0\right)$ & $\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{0} + u_{1} & 1 & 0\\\sqrt{d} u_{0} + u_{1} & 0 & 0 & 1\end{matrix}\right]$ \\
+    \hline
+    $\left( -1, \  1, \  0, \  0\right)$ & $\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} u_{1} + u_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} u_{1} - u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]$ \\
+    \hline
+    $\left( 0, \  -2, \  0, \  0\right)$ & $\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & - u_{0} & 0 & 1\end{matrix}\right]$ \\
+    \hline
+    $\left( 0, \  2, \  0, \  0\right)$ & $\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & - u_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]$ \\
+    \hline
+    $\left( 1, \  -1, \  0, \  0\right)$ & $\left[\begin{matrix}1 & \sqrt{d} u_{0} + u_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{0} - u_{1} & 1\end{matrix}\right]$ \\
+    \hline
+    $\left( 1, \  1, \  0, \  0\right)$ & $\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{1} + u_{0}\\0 & 1 & \sqrt{d} u_{1} + u_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]$ \\
+    \hline
+    $\left( 2, \  0, \  0, \  0\right)$ & $\left[\begin{matrix}1 & 0 & - u_{0} & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]$ \\
+    \hline
+\end{tabular}
+
 
 \subsection{Homomorphism property}
 
 \noi Background theoretical info on homomorphism/pseudo-homomorphism property INCOMPLETE
 
+\bigskip
+
 HomomorphismDefectTablePlaceholder
 
 \noi Below is an explicit formulation of the homomorphism/pseudo-homomorphism identities.
+
+\bigskip
 
 HomomorphismDefectIdentitiesPlaceholder
 

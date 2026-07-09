@@ -3,6 +3,7 @@
 from pathlib import Path
 import sympy as sp
 from root_system import build_directed_dynkin_graph
+from utility_general import vector_variable
 
 groups_tex_path = Path("./groups_tex")
 template_file = groups_tex_path / "template.tex"
@@ -25,14 +26,14 @@ def pinned_group_to_tex(pinned_group):
     #       e. (COMPLETE) List of root, coroot pairs
     #       f. (TO DO: SORT BY NUMBER OF PAIRS) Table of linear combinations of roots
     # 3. Root spaces
-    #       a. Table with root, root space dimension
-    #       b. Table with root, generic root space element
+    #       a. (COMPLETE) Table with root, root space dimension
+    #       b. (COMPLETE) Table with root, generic root space element
     # 4. Root subgroups
-    #       a. Table with root, generic root subgroup element
+    #       a. (TO DO: FIGURE OUT WHY THIS ISN'T SHOWING UP) Table with root, generic root subgroup element
     #       b. Table with root, homomorphism defect coefficient
     #       c. Explicit equations for homomorphism/pseudo-homomorphism property
     # 5. Commutators
-    #       a. Table of linear combinations of roots
+    #       a. (COMPLETE) Table of linear combinations of roots
     #       b. Table with root1, root2, commutator coefficient
     #       c. Explicit equations for commutator relation
     # 6. Weyl group
@@ -94,6 +95,13 @@ def pinned_group_to_tex(pinned_group):
         replacements['CartanMatrixPlaceholder'] = cartan_tex
         replacements['DynkinDiagramPlaceholder'] = dynkin_diagram_tex
     
+    # Root spaces and subgroups
+    replacements.update({
+        "RootSpaceDimensionPlaceholder": build_dimension_table(G),
+        "RootSpaceTablePlaceholder" : build_root_space_table(G),
+         "RootSubgroupTablePlaceholder": build_root_subgroup_table(G)
+    })
+    
     # Make substitutions
     for placeholder, value in replacements.items():
         if value is None:
@@ -102,18 +110,6 @@ def pinned_group_to_tex(pinned_group):
         content = content.replace(placeholder, str(value))
     
     return content
-
-def root_system_to_tex(root_system):
-    # Build .tex document section on root system
-    
-    # Table with basic summary: Dynkin type, irreducible?, reduced?, simply laced?, number of roots
-    # Dynkin diagram
-    # Cartan matrix
-    # Table of roots with info on simple, positive/negative, multipliable
-    # List of root, coroot pairs
-    # Table on linear combinations of roots
-    
-    return ""
 
 def nondegenerate_isotropic_form_to_tex(form):
     # Build .tex document section on the form
@@ -149,7 +145,6 @@ def nondegenerate_isotropic_form_to_tex(form):
     tex += f"\\noindent Matrix: \\(\n{sp.latex(form.matrix)}\n\\)\n\n"
     
     return tex
-
 
 def build_dynkin_tex(Phi):
     """
@@ -354,3 +349,50 @@ def build_root_linear_combos_table(Phi):
         combo_table += "\\noindent No pairs of roots generate positive integer linear combinations.\n"
 
     return combo_table
+
+def build_dimension_table(group):
+    Phi = group.root_system
+    tex = r"\noindent \begin{tabular}{|l|c|}" + "\n"
+    tex += r"    \hline" + "\n"
+    tex += r"    \textbf{Root ($\alpha$)} & \textbf{Dimension of root space ($d_{\alpha}$)} \\" + "\n"
+    tex += r"    \hline" + "\n"
+    for alpha in Phi.root_list:
+        alpha_latex = f"${sp.latex(alpha)}$"
+        tex += f"    {alpha_latex} & {group.root_space_dimension(alpha)} \\\\\n"
+        tex += r"    \hline" + "\n"
+    tex += "\\end{tabular}\n"
+    return tex
+
+def build_root_space_table(group):
+    Phi = group.root_system
+    tex = r"\noindent \begin{tabular}{|l|c|}" + "\n"
+    tex += r"    \hline" + "\n"
+    tex += "    \\textbf{Root ($\\alpha$)} & \\textbf{Generic element of root space} \\\\\n"
+    tex += r"    \hline" + "\n"
+    for alpha in Phi.root_list:
+        d_alpha = group.root_space_dimension(alpha)
+        u = vector_variable(letter = 'u', length = d_alpha)
+        X_alpha_u = group.root_space_map(alpha, u)
+        alpha_latex = f"${sp.latex(alpha)}$"
+        X_alpha_u_latex = f"${sp.latex(X_alpha_u)}$"
+        tex += f"    {alpha_latex} & {X_alpha_u_latex} \\\\\n"
+        tex += r"    \hline" + "\n"
+    tex += "\\end{tabular}\n"
+    return tex
+
+def build_root_subgroup_table(group):
+    Phi = group.root_system
+    tex = r"\noindent \begin{tabular}{|l|c|}" + "\n"
+    tex += r"    \hline" + "\n"
+    tex += "    \\textbf{Root ($\\alpha$)} & \\textbf{Generic element of root space} \\\\\n"
+    tex += r"    \hline" + "\n"
+    for alpha in Phi.root_list:
+        d_alpha = group.root_space_dimension(alpha)
+        u = vector_variable(letter = 'u', length = d_alpha)
+        x_alpha_u = group.root_subgroup_map(alpha, u)
+        alpha_latex = f"${sp.latex(alpha)}$"
+        x_alpha_u_latex = f"${sp.latex(x_alpha_u)}$"
+        tex += f"    {alpha_latex} & {x_alpha_u_latex} \\\\\n"
+        tex += r"    \hline" + "\n"
+    tex += "\\end{tabular}\n"
+    return tex
