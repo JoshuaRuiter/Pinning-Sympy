@@ -16,36 +16,42 @@ from nondegenerate_isotropic_form import nondegenerate_isotropic_form
 from split_torus import split_torus
 from utility_general import vector_variable
 from utility_SL import (group_constraints_SL,
+                        group_constraints_SL_string,
                         is_torus_element_SL,
                         generic_torus_element_SL,
                         trivial_characters_SL,
                         character_entries_SL,
                         lie_algebra_constraints_SL,
+                        lie_algebra_constraints_SL_string,
                         generic_lie_algebra_element_SL)
 from utility_SO import (group_constraints_SO,
+                        group_constraints_SO_string,
                         is_torus_element_SO,
                         generic_torus_element_SO,
                         trivial_characters_SO,
                         character_entries_SO,
                         lie_algebra_constraints_SO,
+                        lie_algebra_constraints_SO_string,
                         generic_lie_algebra_element_SO)
 from utility_SU import (group_constraints_SU,
+                        group_constraints_SU_string,
                         is_torus_element_SU,
                         generic_torus_element_SU, 
                         trivial_characters_SU,
                         character_entries_SU,
                         lie_algebra_constraints_SU,
+                        lie_algebra_constraints_SU_string,
                         generic_lie_algebra_element_SU)
 
 def main():
     
     ##################
-    overwrite = False 
+    overwrite = True 
     ##################
     
     ########################
     n_min = 1
-    n_max = 6
+    n_max = 5
     q_min = 1
     q_max = 3
     eps_values = [-1,1]
@@ -68,7 +74,6 @@ def main():
     print(f"\nAll constructions complete, total time: {round(execution_time/60, 1)} minutes")
 
 def write_group(G, overwrite):
-    print()
     if G.file_exists():
         print(f"File already exists for {G.name_string}")
         if not overwrite:
@@ -92,12 +97,14 @@ def build_and_store_SL(n_min, n_max, overwrite):
                         generic_element = generic_torus_element_SL,
                         trivial_character_matrix = trivial_characters_SL(n),
                         nontrivial_character_entries = character_entries_SL(n))
-        SL_n = pinned_group(name_string = f"SL(n={n})",
+        SL_n = pinned_group(name_string = f"SL-n{n}",
                             matrix_size = n,
                             form = None,
                             group_constraints = group_constraints_SL,
+                            group_constraints_string = group_constraints_SL_string,
                             maximal_split_torus = T,
                             lie_algebra_constraints = lie_algebra_constraints_SL,
+                            lie_algebra_constraints_string = lie_algebra_constraints_SL_string,
                             generic_lie_algebra_element = generic_lie_algebra_element_SL,
                             non_variables = None)
         write_group(SL_n, overwrite)
@@ -123,12 +130,14 @@ def build_and_store_SO_split(n_min, n_max, q_min, q_max, overwrite):
                             generic_element = generic_torus_element_SO,
                             trivial_character_matrix = trivial_characters_SO(n,q),
                             nontrivial_character_entries = character_entries_SO(n,q))
-            SO_n_q = pinned_group(name_string = f"SO(n={n}, q={q})",
+            SO_n_q = pinned_group(name_string = f"SO-n{n}-q{q}",
                                 matrix_size = n,
                                 form = NIF, 
                                 group_constraints = group_constraints_SO,
+                                group_constraints_string = group_constraints_SO_string,
                                 maximal_split_torus = T,
                                 lie_algebra_constraints = lie_algebra_constraints_SO,
+                                lie_algebra_constraints_string = lie_algebra_constraints_SO_string,
                                 generic_lie_algebra_element = generic_lie_algebra_element_SO,
                                 non_variables = None)
             write_group(SO_n_q, overwrite)
@@ -136,9 +145,9 @@ def build_and_store_SO_split(n_min, n_max, q_min, q_max, overwrite):
 def build_and_store_SO_nonsplit(n_min, n_max, q_min, q_max, overwrite):
     #############################################################################
     ## NON-SPLIT SPECIAL ORTHOGONAL GROUPS 
-        ## SO_n_q is quasi-split if n=2q+2, and
-        ## neither split nor quasi-split if n>2+2q, 
-        ## but the behavior seems to be basically the same in these two cases
+    ## SO_n_q is quasi-split if n=2q+2, and
+    ## neither split nor quasi-split if n>2+2q, 
+    ## but the behavior seems to be basically the same in these two cases
     #############################################################################
     print("\nNon-split special orthogonal groups")
     for q in range(q_min, q_max + 1):
@@ -156,12 +165,14 @@ def build_and_store_SO_nonsplit(n_min, n_max, q_min, q_max, overwrite):
                             generic_element = generic_torus_element_SO,
                             trivial_character_matrix = trivial_characters_SO(n,q),
                             nontrivial_character_entries = character_entries_SO(n,q))            
-            SO_n_q = pinned_group(name_string = f"SO(n={n}, q={q})",
+            SO_n_q = pinned_group(name_string = f"SO-n{n}-q{q}",
                                 matrix_size = n,
                                 form = NIF, 
                                 group_constraints = group_constraints_SO,
+                                group_constraints_string = group_constraints_SO_string,
                                 maximal_split_torus = T,
                                 lie_algebra_constraints = lie_algebra_constraints_SO,
+                                lie_algebra_constraints_string = lie_algebra_constraints_SO_string,
                                 generic_lie_algebra_element = generic_lie_algebra_element_SO,
                                 non_variables = None)
             write_group(SO_n_q, overwrite)
@@ -192,12 +203,15 @@ def build_and_store_SU_quasisplit(n_min, n_max, q_min, q_max, eps_values, overwr
                                 generic_element = generic_torus_element_SU,
                                 trivial_character_matrix = trivial_characters_SU(n,q),
                                 nontrivial_character_entries = character_entries_SU(n,q))     
-                SU_n_q = pinned_group(name_string = f"SU(n={n}, q={q}, eps={eps})",
+                eps_str = "1" if eps > 0 else "minus1"
+                SU_n_q = pinned_group(name_string = f"SU-n{n}-q{q}-eps-{eps_str}",
                                       matrix_size = n,
                                       form = NIF, 
                                       group_constraints = group_constraints_SU,
+                                      group_constraints_string = group_constraints_SU_string,
                                       maximal_split_torus = T,
                                       lie_algebra_constraints = lie_algebra_constraints_SU,
+                                      lie_algebra_constraints_string = lie_algebra_constraints_SU_string,
                                       generic_lie_algebra_element = generic_lie_algebra_element_SU,
                                       non_variables = {d})
                 write_group(SU_n_q, overwrite)
@@ -229,12 +243,15 @@ def build_and_store_SU_nonquasisplit(n_min, n_max, q_min, q_max, eps_values, ove
                                 generic_element = generic_torus_element_SU,
                                 trivial_character_matrix = trivial_characters_SU(n,q),
                                 nontrivial_character_entries = character_entries_SU(n,q))     
-                SU_n_q = pinned_group(name_string = f"SU(n={n}, q={q}, eps={eps})",
+                eps_str = "1" if eps > 0 else "minus1"
+                SU_n_q = pinned_group(name_string = f"SU-n{n}-q{q}-eps-{eps_str}",
                                       matrix_size = n,
                                       form = NIF, 
                                       group_constraints = group_constraints_SU,
+                                      group_constraints_string = group_constraints_SU_string,
                                       maximal_split_torus = T,
                                       lie_algebra_constraints = lie_algebra_constraints_SU,
+                                      lie_algebra_constraints_string = lie_algebra_constraints_SU_string,
                                       generic_lie_algebra_element = generic_lie_algebra_element_SU,
                                       non_variables = {d})
                 write_group(SU_n_q, overwrite)

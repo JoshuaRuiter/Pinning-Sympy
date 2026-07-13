@@ -37,6 +37,9 @@ from utility_general import is_diagonal
 import sympy as sp
 import numpy as np
 
+group_constraints_SU_string = "$X^*HX=H$ and $\operatorname{det}(X)=1$"
+lie_algebra_constraints_SU_string = "$X^*H + HX=0$ and $\operatorname{tr}(X)=0$"
+
 def custom_conjugate(my_expression, primitive_element):
     # Conjugate an expression with entries in the quadratic field extension k(sqrt(d))
     # by replacing sqrt(d) with -sqrt(d)
@@ -115,7 +118,7 @@ def group_constraints_SU(matrix_to_test, form):
 def lie_algebra_constraints_SU(matrix_to_test, form):
     # The requirements for a matrix X to be an element of the special unitary Lie algebra with form matrix H are
     # 1) (X conjugate transpose) * H + H * X = 0
-    # 2) tr(X) = 1
+    # 2) tr(X) = 0
     # The pinned_group class expects this information in the form of vanishing conditions,
     # so this method effectively returns the equations "X*H + HX=0" and "tr(X)=0"
     # However, the equations are split up matrix-entry-wise for various reasons

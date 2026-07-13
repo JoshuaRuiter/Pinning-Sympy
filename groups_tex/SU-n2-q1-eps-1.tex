@@ -26,7 +26,7 @@
 \newif\ifsummablepairs
 \summablepairstrue
 
-\title{Pinned group summary: GroupNamePlaceholder}
+\title{Pinned group summary: SU-n2-q1-eps-1}
 \author{Pinning-Sympy automated output}
 \date{\today}
 
@@ -42,37 +42,55 @@
 \def\arraystretch{1.2}
 \begin{tabular}{|l|l|}
 	\hline
-    Group & GroupNamePlaceholder \\
+    Group & SU-n2-q1-eps-1 \\
 	\hline
-    Matrix size & $MatrixSizePlaceholder \times MatrixSizePlaceholder$ \\
+    Matrix size & $2 \times 2$ \\
 	\hline
-    Rank & $RankPlaceholder$ \\
+    Rank & $1$ \\
 	\hline
-	Defining equations & DefiningEquationPlaceholder \\
+	Defining equations & $X^*HX=H$ and $\operatorname{det}(X)=1$ \\
 	\hline
 \end{tabular}
 \def\arraystretch{1}
 
-BilinearFormPlaceholder
+\subsection{Hermitian form}
+\begin{tabular}{|l|l|}
+    \hline
+    Dimension & 2 \\
+    \hline
+    Witt index & 1 \\
+    \hline
+    Primitive element & $\sqrt{d}$ \\
+    \hline
+    Epsilon & $1$ \\
+    \hline
+\end{tabular}
+
+\bigskip
+\noindent Matrix: \(
+\left[\begin{matrix}0 & 1\\1 & 0\end{matrix}\right]
+\)
+
+
 
 \subsection{Lie algebra}
 
-The defining equations for the Lie algebra are: LieAlgebraEquationPlaceholder
+The defining equations for the Lie algebra are: $X^*H + HX=0$ and $\operatorname{tr}(X)=0$
 
 \noi A generic element of the Lie algebra is:
 \[
-GenericLieAlgebraElementPlaceholder
+\left[\begin{matrix}x_{r 0 0} & \sqrt{d} x_{i 0 1}\\\sqrt{d} x_{i 1 0} & - x_{r 0 0}\end{matrix}\right]
 \]
 
 \subsection{Torus}
 
-The torus has rank $RankPlaceholder$. A generic element of the torus is
+The torus has rank $1$. A generic element of the torus is
 \[
-GenericTorusElementPlaceholder
+\left[\begin{matrix}t_{0} & 0\\0 & \frac{1}{t_{0}}\end{matrix}\right]
 \]
 The rows of the matrix below are trivial characters:
 \[
-TrivialCharactersPlaceholder
+\left[\begin{matrix}1 & 1\end{matrix}\right]
 \]
 
 \newpage
@@ -80,15 +98,15 @@ TrivialCharactersPlaceholder
 
 \begin{tabular}{|l|l|}
 	\hline
-    Dynkin type & DynkinTypePlaceholder \\
+    Dynkin type & $A_1$ \\
 	\hline
-    Irreducible & IrreduciblePlaceholder \\
+    Irreducible & True \\
 	\hline
-    Reduced & ReducedPlaceholder \\
+    Reduced & True \\
 	\hline
-	Simply laced & SimplyLacedPlaceholder \\
+	Simply laced & True \\
 	\hline
-	Number of roots & $NumberOfRootsPlaceholder$ \\
+	Number of roots & $2$ \\
 	\hline
 \end{tabular}
 
@@ -100,7 +118,14 @@ The root system is irreducible and has Dynkin diagram:
 The root system is reducible with RootSystemComponentsPlaceholder components. The Dynkin diagrams of the respective components are:
 \fi
 
-DynkinDiagramPlaceholder
+\begin{center}
+\begin{tikzpicture}[scale=1, baseline=(current bounding box.center),
+    node/.style={circle, draw, minimum size=0.24cm, inner sep=0pt, thick, fill=white},
+    filled/.style={circle, draw, minimum size=0.24cm, inner sep=0pt, thick, fill=black}
+]
+  \node[node] (v1) at (0.0, 0) {};
+\end{tikzpicture}
+\end{center}
 
 \subsection{Cartan matrix}
 
@@ -111,7 +136,7 @@ The root system is reducible with RootSystemComponentsPlaceholder components. Th
 \fi
 
 \[
-CartanMatrixPlaceholder
+\left[\begin{matrix}2\end{matrix}\right]
 \]
 
 \subsection{Roots}
@@ -120,11 +145,29 @@ CartanMatrixPlaceholder
 A root $\alpha \in \Phi$ is \tbf{multipliable} if $2\alpha \in \Phi$.
 \end{definition}
 
-\noi RootTablePlaceholder
+\noi \begin{tabular}{|l|c|c|c|}
+    \hline
+    \textbf{Root} & \textbf{Simple} & \textbf{Sign} & \textbf{Multipliable} \\
+    \hline
+    $\left( -2, \  0\right)$ & No & $-$ & No \\
+    \hline
+    $\left( 2, \  0\right)$ & Yes & $+$ & No \\
+    \hline
+\end{tabular}
+
 
 \subsection{Coroots}
 
-CorootTablePlaceholder
+\begin{tabular}{|l|l|}
+    \hline
+    \textbf{Root} & \textbf{Coroot} \\
+    \hline
+    $\left( -2, \  0\right)$ & $\left( -1, \  1\right)$ \\
+    \hline
+    $\left( 2, \  0\right)$ & $\left( 1, \  -1\right)$ \\
+    \hline
+\end{tabular}
+
 
 \ifsummablepairs
 \subsection{Linear combinations of roots}
@@ -136,7 +179,7 @@ For two roots $\alpha, \beta$ in a root system $\Phi$, the set of positive integ
 \).
 \end{definition}
 
-\noi LinearCombinationsPlaceholder
+\noi 
 \fi
 
 \newpage
@@ -148,7 +191,16 @@ The table below lists each root along with the dimension of the associated root 
 
 \bigskip
 
-RootSpaceDimensionPlaceholder
+\noindent \begin{tabular}{|l|c|}
+    \hline
+    \textbf{Root ($\alpha$)} & \textbf{Dimension of root space ($d_{\alpha}$)} \\
+    \hline
+    $\left( -2, \  0\right)$ & 1 \\
+    \hline
+    $\left( 2, \  0\right)$ & 1 \\
+    \hline
+\end{tabular}
+
 
 \subsection{Root space table}
 
@@ -156,7 +208,17 @@ RootSpaceDimensionPlaceholder
 
 \bigskip
 
-RootSpaceTablePlaceholder
+\noindent \begin{longtable}{|l|c|}
+    \hline
+    \textbf{Root} & \textbf{Generic element of root space} \\
+    \hline
+    \endhead
+    $\left( -2, \  0\right)$ & ${\left[\begin{matrix}0 & 0\\\sqrt{d} u_{0} & 0\end{matrix}\right]}$ \\
+    \hline
+    $\left( 2, \  0\right)$ & ${\left[\begin{matrix}0 & \sqrt{d} u_{0}\\0 & 0\end{matrix}\right]}$ \\
+    \hline
+\end{longtable}
+
 
 \newpage
 \section{Root subgroups}
@@ -167,7 +229,17 @@ RootSpaceTablePlaceholder
 
 \bigskip
 
-RootSubgroupTablePlaceholder
+\noindent \begin{longtable}{|l|c|}
+    \hline
+    \textbf{Root} & \textbf{Generic element of root subgroup} \\
+    \hline
+    \endhead
+    $\left( -2, \  0\right)$ & ${\left[\begin{matrix}1 & 0\\\sqrt{d} u_{0} & 1\end{matrix}\right]}$ \\
+    \hline
+    $\left( 2, \  0\right)$ & ${\left[\begin{matrix}1 & \sqrt{d} u_{0}\\0 & 1\end{matrix}\right]}$ \\
+    \hline
+\end{longtable}
+
 
 \subsection{Homomorphism property}
 
@@ -216,7 +288,7 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
 
 \bigskip
 
-\noi CommutatorCoefficientTablePlaceholder
+\noi 
 
 \subsection{Commutator identities}
 
@@ -238,7 +310,16 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
 
 \bigskip
 
-\noi WeylGroupPlaceholder
+\noi \noindent \begin{tabular}{|l|c|}
+    \hline
+    \textbf{Root} & \textbf{Weyl group element} \\
+    \hline
+    $\left( -2, \  0\right)$ & ${\left[\begin{matrix}0 & \sqrt{d}\\- \frac{1}{\sqrt{d}} & 0\end{matrix}\right]}$ \\
+    \hline
+    $\left( 2, \  0\right)$ & ${\left[\begin{matrix}0 & \sqrt{d}\\- \frac{1}{\sqrt{d}} & 0\end{matrix}\right]}$ \\
+    \hline
+\end{tabular}
+
 
 \subsection{Weyl group conjugation coefficients}
 
@@ -246,7 +327,20 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
 
 \bigskip
 
-\noi WeylConjugationCoefficientPlaceholder
+\noi \noindent \begin{tabular}{|l|l|l|c|}
+    \hline
+    \textbf{Root ($\alpha$)} & \textbf{Root ($\beta$)} & \textbf{$\gamma = \sigma_{\alpha}(\beta)$} & \textbf{Weyl conjugation coefficient} \\
+    \hline
+    $\left( -2, \  0\right)$ & $\left( -2, \  0\right)$ & $\left( 2, \  0\right)$ & $- d u_{0}$ \\
+    \hline
+    $\left( -2, \  0\right)$ & $\left( 2, \  0\right)$ & $\left( -2, \  0\right)$ & $- \frac{u_{0}}{d}$ \\
+    \hline
+    $\left( 2, \  0\right)$ & $\left( -2, \  0\right)$ & $\left( 2, \  0\right)$ & $- d u_{0}$ \\
+    \hline
+    $\left( 2, \  0\right)$ & $\left( 2, \  0\right)$ & $\left( -2, \  0\right)$ & $- \frac{u_{0}}{d}$ \\
+    \hline
+\end{tabular}
+
 
 \subsection{Weyl group conjugation identities}
 

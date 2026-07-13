@@ -31,6 +31,9 @@ import sympy as sp
 import numpy as np
 from utility_general import is_diagonal
 
+group_constraints_SO_string = "$X^T B X = B$ and $\operatorname{det}(X)=1$"
+lie_algebra_constraints_SO_string = "$X^T B + BX = 0$ and $\operatorname{tr}(X)=0$"
+
 def group_constraints_SO(matrix_to_test, form):
     # The requirements for a matrix X to be an element of the special orthogonal group with form matrix B are
     # 1) (X^T) * B * X = B
@@ -48,7 +51,7 @@ def group_constraints_SO(matrix_to_test, form):
 def lie_algebra_constraints_SO(matrix_to_test, form):
     # The requirements for a matrix X to be an element of the special orthogonal Lie algebra with form matrix B are
     # 1) (X^T) * B + B * X = 0
-    # 2) tr(X) = 1
+    # 2) tr(X) = 0
     # The pinned_group class expects this information in the form of vanishing conditions,
     # so this method effectively returns the equations "X^T*B + BX=0" and "tr(X)=0"
     # However, the equations are split up matrix-entry-wise for various reasons
@@ -57,7 +60,7 @@ def lie_algebra_constraints_SO(matrix_to_test, form):
     eqs = [e for e in M if not e.is_zero]
     t = X.trace()
     return eqs + ([] if t.is_zero else [t])
-
+    
 def is_torus_element_SO(matrix_to_test, rank):
     # The requirements for a matrix X to be an element of the diagonal torus subgroup of SO_n,q are
     # 1) X is diagonal

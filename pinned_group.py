@@ -51,8 +51,10 @@ class pinned_group:
                  matrix_size,
                  form,
                  group_constraints,
+                 group_constraints_string,
                  maximal_split_torus,
                  lie_algebra_constraints,
+                 lie_algebra_constraints_string,
                  generic_lie_algebra_element,
                  non_variables = None):
         
@@ -61,7 +63,9 @@ class pinned_group:
         self.matrix_size = matrix_size
         self.form = form
         self.group_constraints = group_constraints
+        self.group_constraints_string = group_constraints_string
         self.lie_algebra_constraints = lie_algebra_constraints
+        self.lie_algebra_constraints_string = lie_algebra_constraints_string
         self.non_variables = non_variables
         self.torus = maximal_split_torus
         self.rank = self.torus.rank
@@ -169,30 +173,51 @@ class pinned_group:
             
         print(f"Successfully generated: {output_file}")
         
-        # 4. Compile the PDF if requested
         if compile_pdf:
             print(f"Compiling {output_file.name}...")
             try:
-                # Removed check=True so Python doesn't automatically throw an exception
-                result = subprocess.run(
-                    ["pdflatex", "-interaction=nonstopmode", f"-output-directory={groups_tex_path}", str(output_file)],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    text=True
-                )
+                # Compile twice so the .toc file generated on pass 1 is fully rendered on pass 2
+                for pass_num in range(1, 3):
+                    result = subprocess.run(
+                        [
+                            "pdflatex", 
+                            "-interaction=nonstopmode", 
+                            output_file.name
+                        ],
+                        cwd=groups_tex_path,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        text=True
+                    )
+                    
+                    # If it completely crashes on pass 1, don't bother running pass 2
+                    if result.returncode not in [0, 1]:
+                        break
                 
-                # Check if the PDF file was successfully created despite any minor errors
                 pdf_file = output_file.with_suffix('.pdf')
                 if pdf_file.exists() and result.returncode in [0, 1]: 
-                    # returncode 1 often just means LaTeX had warnings/minor errors but completed
                     print(f"Successfully compiled PDF: {pdf_file}")
                 else:
-                    print(f"Compilation failed for {output_file.name} (Exit code: {result.returncode}).")
-                    print("LaTeX Compiler Output (last 10 lines):")
-                    print("\n".join(result.stdout.splitlines()[-10:]))
+                    print(f"--- COMPILATION FAILED: {output_file.name} ---")
+                    print(f"Exit Code: {result.returncode}")
+                    
+                    # Read the actual log file to extract only the actual failure details
+                    log_file = output_file.with_suffix('.log')
+                    if log_file.exists():
+                        print("\n=== DETECTED LOG FILE ERRORS ===")
+                        with open(log_file, 'r', encoding='utf-8', errors='ignore') as log:
+                            for line in log:
+                                if line.startswith('!'):
+                                    print(line.strip())
+                    else:
+                        # Fallback if no .log file was generated at all
+                        print("\nNo log file found. Last stderr block:")
+                        print(result.stderr if result.stderr else "No stderr recorded.")
+                        
+                    print("----------------------------------------")
                     
             except FileNotFoundError:
-                print("Error: 'pdflatex' executable not found. Please ensure a LaTeX distribution is installed.")
+                print("Error: 'pdflatex' executable not found.")
                 
     @classmethod
     def load_from_file(cls, name_string, filepath=groups_path):

@@ -24,6 +24,9 @@ import sympy as sp
 import numpy as np
 from utility_general import is_diagonal
 
+group_constraints_SL_string = "$\operatorname{det}(X)=1$"
+lie_algebra_constraints_SL_string = "$\operatorname{tr}(X)=0$"
+
 def group_constraints_SL(matrix_to_test, form = None):
     # The requirement for a matrix X to be an element of a special linear group is det(X) = 1    
     # The pinned_group class expects this information in the form of a vanishing condition,
@@ -35,7 +38,7 @@ def lie_algebra_constraints_SL(matrix_to_test, form = None):
     # The pinned_group class expects this information in the form of a vanishing condition,
     # so this method effectively returns the equation "tr(X)=0"
     return [matrix_to_test.trace()]
-    
+
 def is_torus_element_SL(matrix_to_test, rank = None):
     # The requirement for a matrix to be an element of the usual torus subgroup of SL_n 
     # is just that the matrix is diagonal (and the determinant is 1)
