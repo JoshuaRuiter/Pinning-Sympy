@@ -37,6 +37,7 @@ python pinned_group_cli.py so-split --n-max 5 --q-max 2
 python pinned_group_cli.py sl --n-max 3 --weyl-method root-subgroups
 python pinned_group_cli.py sl --n-max 3 --weyl-method auto
 python pinned_group_cli.py sl --n-max 3 --weyl-method factored-brute
+python pinned_group_cli.py sl --n-max 3 --weyl-method factored-brute --weyl-enumeration brute
 python pinned_group_cli.py sl --n-max 3 --output latex --out output.tex
 ```
 
@@ -45,7 +46,9 @@ direct rank-one formula. The `auto` method tries that demo method first and
 falls back to the default brute-force Weyl search when the direct formula does
 not apply or fails validation. The `factored-brute` method runs an external
 factored copy of the original brute-force Weyl solver without modifying
-`pinned_group.py`.
+`pinned_group.py`. With `factored-brute`, `--weyl-enumeration monomial`
+uses the experimental monomial-support search, while `--weyl-enumeration brute`
+uses the original variable-support enumeration.
 
 There is also an experimental file-based TeX pipeline for larger batches:
 
