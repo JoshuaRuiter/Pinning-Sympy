@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.5.20)  13 JUL 2026 14:38
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.5.20)  14 JUL 2026 09:02
 entering extended mode
 **./SL-n3.tex
 (SL-n3.tex
@@ -775,24 +775,28 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 \tf@toc=\write5
 \openout5 = `SL-n3.toc'.
 
- [2] [3] [4] [5] [6] [7] [8] [9]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 495.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 495.
+ [2] [3]
+Overfull \vbox (4.16794pt too high) has occurred while \output is active []
+
+
+[4] [5] [6] [7] [8] [9]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 499.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 499.
  (SL-n3.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 495.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 495.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 499.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 499.
 Package rerunfilecheck Info: File `SL-n3.out' has not changed.
 (rerunfilecheck)             Checksum: 5ABB4D0F68C045E60A75A36DE251EBCF;1314.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 495.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 499.
  ) 
 Here is how much of TeX's memory you used:
- 16732 strings out of 493305
- 314119 string characters out of 3138871
- 392260 words of memory out of 3000000
- 19908 multiletter control sequences out of 15000+200000
+ 16740 strings out of 493305
+ 314167 string characters out of 3138871
+ 401510 words of memory out of 3000000
+ 19912 multiletter control sequences out of 15000+200000
  12257 words of font info for 46 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 55i,14n,60p,418b,626s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 55i,12n,60p,418b,626s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/Users/Joshua/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm
 /cmbx10.pfb><C:/Users/Joshua/AppData/Local/Programs/MiKTeX/fonts/type1/public/a
 msfonts/cm/cmbx12.pfb><C:/Users/Joshua/AppData/Local/Programs/MiKTeX/fonts/type
@@ -809,9 +813,9 @@ c/amsfonts/cm/cmss10.pfb><C:/Users/Joshua/AppData/Local/Programs/MiKTeX/fonts/t
 ype1/public/amsfonts/cm/cmsy10.pfb><C:/Users/Joshua/AppData/Local/Programs/MiKT
 eX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/Joshua/AppData/Local/Prog
 rams/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on SL-n3.pdf (9 pages, 189150 bytes).
+Output written on SL-n3.pdf (9 pages, 190519 bytes).
 PDF statistics:
- 225 PDF objects out of 1000 (max. 8388607)
- 37 named destinations out of 1000 (max. 500000)
+ 229 PDF objects out of 1000 (max. 8388607)
+ 41 named destinations out of 1000 (max. 500000)
  181 words of extra memory for PDF output out of 10000 (max. 10000000)
 

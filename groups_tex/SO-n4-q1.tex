@@ -145,13 +145,13 @@ The root system is reducible with RootSystemComponentsPlaceholder components. Th
 A root $\alpha \in \Phi$ is \tbf{multipliable} if $2\alpha \in \Phi$.
 \end{definition}
 
-\noi \begin{tabular}{|l|c|c|c|}
+\noi \begin{tabular}{|l|c|c|c|c|}
     \hline
-    \textbf{Root} & \textbf{Simple} & \textbf{Sign} & \textbf{Multipliable} \\
+    \textbf{Root} & \textbf{Squared norm} & \textbf{Simple} & \textbf{Sign} & \textbf{Multipliable} \\
     \hline
-    $\left( -1, \  0, \  0, \  0\right)$ & No & $-$ & No \\
+    $\left( 1, \  0, \  0, \  0\right)$ & $1$ & Yes & $+$ & No \\
     \hline
-    $\left( 1, \  0, \  0, \  0\right)$ & Yes & $+$ & No \\
+    $\left( -1, \  0, \  0, \  0\right)$ & $1$ & No & $-$ & No \\
     \hline
 \end{tabular}
 
@@ -213,7 +213,7 @@ The table below lists each root along with the dimension of the associated root 
     \textbf{Root} & \textbf{Generic element of root space} \\
     \hline
     \endhead
-    $\left( -1, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & 0 & 0\\0 & 0 & - c_{0} u_{1} & - c_{1} u_{0}\\u_{1} & 0 & 0 & 0\\u_{0} & 0 & 0 & 0\end{matrix}\right]}$ \\
+    $\left( -1, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & 0 & 0\\0 & 0 & - c_{0} u_{0} & - c_{1} u_{1}\\u_{0} & 0 & 0 & 0\\u_{1} & 0 & 0 & 0\end{matrix}\right]}$ \\
     \hline
     $\left( 1, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & - c_{0} u_{1} & - c_{1} u_{0}\\0 & 0 & 0 & 0\\0 & u_{1} & 0 & 0\\0 & u_{0} & 0 & 0\end{matrix}\right]}$ \\
     \hline
@@ -234,7 +234,7 @@ The table below lists each root along with the dimension of the associated root 
     \textbf{Root} & \textbf{Generic element of root subgroup} \\
     \hline
     \endhead
-    $\left( -1, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}1 & 0 & 0 & 0\\- \frac{c_{0} u_{1}^{2}}{2} - \frac{c_{1} u_{0}^{2}}{2} & 1 & - c_{0} u_{1} & - c_{1} u_{0}\\u_{1} & 0 & 1 & 0\\u_{0} & 0 & 0 & 1\end{matrix}\right]}$ \\
+    $\left( -1, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}1 & 0 & 0 & 0\\- \frac{c_{0} u_{0}^{2}}{2} - \frac{c_{1} u_{1}^{2}}{2} & 1 & - c_{0} u_{0} & - c_{1} u_{1}\\u_{0} & 0 & 1 & 0\\u_{1} & 0 & 0 & 1\end{matrix}\right]}$ \\
     \hline
     $\left( 1, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}1 & - \frac{c_{0} u_{1}^{2}}{2} - \frac{c_{1} u_{0}^{2}}{2} & - c_{0} u_{1} & - c_{1} u_{0}\\0 & 1 & 0 & 0\\0 & u_{1} & 1 & 0\\0 & u_{0} & 0 & 1\end{matrix}\right]}$ \\
     \hline
@@ -310,15 +310,16 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
 
 \bigskip
 
-\noi \noindent \begin{tabular}{|l|c|}
+\noi \noindent \begin{longtable}{|l|c|}
     \hline
     \textbf{Root} & \textbf{Weyl group element} \\
     \hline
+    \endhead
     $\left( -1, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & -1\end{matrix}\right]}$ \\
     \hline
     $\left( 1, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & -1\end{matrix}\right]}$ \\
     \hline
-\end{tabular}
+\end{longtable}
 
 
 \subsection{Weyl group conjugation coefficients}
@@ -327,10 +328,11 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
 
 \bigskip
 
-\noi \noindent \begin{tabular}{|l|l|l|c|}
+\noi \noindent \begin{longtable}{|l|l|l|c|}
     \hline
     \textbf{Root ($\alpha$)} & \textbf{Root ($\beta$)} & \textbf{$\gamma = \sigma_{\alpha}(\beta)$} & \textbf{Weyl conjugation coefficient} \\
     \hline
+    \endhead
     $\left( -1, \  0, \  0, \  0\right)$ & $\left( -1, \  0, \  0, \  0\right)$ & $\left( 1, \  0, \  0, \  0\right)$ & $\left[\begin{matrix}- u_{0} & u_{1}\end{matrix}\right]$ \\
     \hline
     $\left( -1, \  0, \  0, \  0\right)$ & $\left( 1, \  0, \  0, \  0\right)$ & $\left( -1, \  0, \  0, \  0\right)$ & $\left[\begin{matrix}- u_{0} & u_{1}\end{matrix}\right]$ \\
@@ -339,7 +341,7 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
     \hline
     $\left( 1, \  0, \  0, \  0\right)$ & $\left( 1, \  0, \  0, \  0\right)$ & $\left( -1, \  0, \  0, \  0\right)$ & $\left[\begin{matrix}- u_{0} & u_{1}\end{matrix}\right]$ \\
     \hline
-\end{tabular}
+\end{longtable}
 
 
 \subsection{Weyl group conjugation identities}

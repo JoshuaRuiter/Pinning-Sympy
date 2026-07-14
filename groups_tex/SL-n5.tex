@@ -133,49 +133,49 @@ The root system is reducible with RootSystemComponentsPlaceholder components. Th
 A root $\alpha \in \Phi$ is \tbf{multipliable} if $2\alpha \in \Phi$.
 \end{definition}
 
-\noi \begin{tabular}{|l|c|c|c|}
+\noi \begin{tabular}{|l|c|c|c|c|}
     \hline
-    \textbf{Root} & \textbf{Simple} & \textbf{Sign} & \textbf{Multipliable} \\
+    \textbf{Root} & \textbf{Squared norm} & \textbf{Simple} & \textbf{Sign} & \textbf{Multipliable} \\
     \hline
-    $\left( -1, \  0, \  0, \  0, \  1\right)$ & Yes & $+$ & No \\
+    $\left( -1, \  0, \  0, \  0, \  1\right)$ & $2$ & Yes & $+$ & No \\
     \hline
-    $\left( -1, \  0, \  0, \  1, \  0\right)$ & No & $-$ & No \\
+    $\left( 0, \  0, \  1, \  -1, \  0\right)$ & $2$ & Yes & $+$ & No \\
     \hline
-    $\left( -1, \  0, \  1, \  0, \  0\right)$ & No & $-$ & No \\
+    $\left( 0, \  1, \  -1, \  0, \  0\right)$ & $2$ & Yes & $+$ & No \\
     \hline
-    $\left( -1, \  1, \  0, \  0, \  0\right)$ & No & $-$ & No \\
+    $\left( 1, \  -1, \  0, \  0, \  0\right)$ & $2$ & Yes & $+$ & No \\
     \hline
-    $\left( 0, \  -1, \  0, \  0, \  1\right)$ & No & $+$ & No \\
+    $\left( 0, \  -1, \  0, \  0, \  1\right)$ & $2$ & No & $+$ & No \\
     \hline
-    $\left( 0, \  -1, \  0, \  1, \  0\right)$ & No & $-$ & No \\
+    $\left( 0, \  0, \  -1, \  0, \  1\right)$ & $2$ & No & $+$ & No \\
     \hline
-    $\left( 0, \  -1, \  1, \  0, \  0\right)$ & No & $-$ & No \\
+    $\left( 0, \  0, \  0, \  -1, \  1\right)$ & $2$ & No & $+$ & No \\
     \hline
-    $\left( 0, \  0, \  -1, \  0, \  1\right)$ & No & $+$ & No \\
+    $\left( 0, \  1, \  0, \  -1, \  0\right)$ & $2$ & No & $+$ & No \\
     \hline
-    $\left( 0, \  0, \  -1, \  1, \  0\right)$ & No & $-$ & No \\
+    $\left( 1, \  0, \  -1, \  0, \  0\right)$ & $2$ & No & $+$ & No \\
     \hline
-    $\left( 0, \  0, \  0, \  -1, \  1\right)$ & No & $+$ & No \\
+    $\left( 1, \  0, \  0, \  -1, \  0\right)$ & $2$ & No & $+$ & No \\
     \hline
-    $\left( 0, \  0, \  0, \  1, \  -1\right)$ & No & $-$ & No \\
+    $\left( -1, \  0, \  0, \  1, \  0\right)$ & $2$ & No & $-$ & No \\
     \hline
-    $\left( 0, \  0, \  1, \  -1, \  0\right)$ & Yes & $+$ & No \\
+    $\left( -1, \  0, \  1, \  0, \  0\right)$ & $2$ & No & $-$ & No \\
     \hline
-    $\left( 0, \  0, \  1, \  0, \  -1\right)$ & No & $-$ & No \\
+    $\left( -1, \  1, \  0, \  0, \  0\right)$ & $2$ & No & $-$ & No \\
     \hline
-    $\left( 0, \  1, \  -1, \  0, \  0\right)$ & Yes & $+$ & No \\
+    $\left( 0, \  -1, \  0, \  1, \  0\right)$ & $2$ & No & $-$ & No \\
     \hline
-    $\left( 0, \  1, \  0, \  -1, \  0\right)$ & No & $+$ & No \\
+    $\left( 0, \  -1, \  1, \  0, \  0\right)$ & $2$ & No & $-$ & No \\
     \hline
-    $\left( 0, \  1, \  0, \  0, \  -1\right)$ & No & $-$ & No \\
+    $\left( 0, \  0, \  -1, \  1, \  0\right)$ & $2$ & No & $-$ & No \\
     \hline
-    $\left( 1, \  -1, \  0, \  0, \  0\right)$ & Yes & $+$ & No \\
+    $\left( 0, \  0, \  0, \  1, \  -1\right)$ & $2$ & No & $-$ & No \\
     \hline
-    $\left( 1, \  0, \  -1, \  0, \  0\right)$ & No & $+$ & No \\
+    $\left( 0, \  0, \  1, \  0, \  -1\right)$ & $2$ & No & $-$ & No \\
     \hline
-    $\left( 1, \  0, \  0, \  -1, \  0\right)$ & No & $+$ & No \\
+    $\left( 0, \  1, \  0, \  0, \  -1\right)$ & $2$ & No & $-$ & No \\
     \hline
-    $\left( 1, \  0, \  0, \  0, \  -1\right)$ & No & $-$ & No \\
+    $\left( 1, \  0, \  0, \  0, \  -1\right)$ & $2$ & No & $-$ & No \\
     \hline
 \end{tabular}
 
@@ -239,10 +239,11 @@ For two roots $\alpha, \beta$ in a root system $\Phi$, the set of positive integ
 \).
 \end{definition}
 
-\noi \begin{tabular}{|l|l|c|}
+\noi \noindent \begin{longtable}{|l|l|c|}
     \hline
     $\alpha$ & $\beta$ & Pairs $(i,j)$ \\
     \hline
+    \endhead
     $\left( -1, \  0, \  0, \  0, \  1\right)$ & $\left( 0, \  0, \  0, \  1, \  -1\right)$ & $(1,1)$ \\
     \hline
     $\left( -1, \  0, \  0, \  0, \  1\right)$ & $\left( 0, \  0, \  1, \  0, \  -1\right)$ & $(1,1)$ \\
@@ -363,7 +364,7 @@ For two roots $\alpha, \beta$ in a root system $\Phi$, the set of positive integ
     \hline
     $\left( 0, \  1, \  0, \  0, \  -1\right)$ & $\left( 1, \  -1, \  0, \  0, \  0\right)$ & $(1,1)$ \\
     \hline
-\end{tabular}
+\end{longtable}
 
 \fi
 
@@ -581,10 +582,11 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
 
 \bigskip
 
-\noi \begin{tabular}{|l|l|c|c|l|c|}
+\noi \noindent \begin{longtable}{|l|l|c|c|l|c|}
     \hline
     $\alpha$ & $\beta$ & $i$ & $j$ &  $i\alpha + j\beta$ & $N_{ij}^{\alpha\beta}(u,v)$ \\
     \hline
+    \endhead
     $\left( -1, \  0, \  0, \  0, \  1\right)$ & $\left( 0, \  0, \  0, \  1, \  -1\right)$ & 1 & 1 & $\left( -1, \  0, \  0, \  1, \  0\right)$ & $- u_{0} v_{0}$ \\
     \hline
     $\left( -1, \  0, \  0, \  0, \  1\right)$ & $\left( 0, \  0, \  1, \  0, \  -1\right)$ & 1 & 1 & $\left( -1, \  0, \  1, \  0, \  0\right)$ & $- u_{0} v_{0}$ \\
@@ -825,7 +827,7 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
     \hline
     $\left( 1, \  0, \  0, \  0, \  -1\right)$ & $\left( 0, \  0, \  0, \  -1, \  1\right)$ & 1 & 1 & $\left( 1, \  0, \  0, \  -1, \  0\right)$ & $u_{0} v_{0}$ \\
     \hline
-\end{tabular}
+\end{longtable}
 
 
 \subsection{Commutator identities}
@@ -848,10 +850,11 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
 
 \bigskip
 
-\noi \noindent \begin{tabular}{|l|c|}
+\noi \noindent \begin{longtable}{|l|c|}
     \hline
     \textbf{Root} & \textbf{Weyl group element} \\
     \hline
+    \endhead
     $\left( -1, \  0, \  0, \  0, \  1\right)$ & ${\left[\begin{matrix}0 & 0 & 0 & 0 & -1\\0 & 1 & 0 & 0 & 0\\0 & 0 & 1 & 0 & 0\\0 & 0 & 0 & 1 & 0\\1 & 0 & 0 & 0 & 0\end{matrix}\right]}$ \\
     \hline
     $\left( -1, \  0, \  0, \  1, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & 0 & 1 & 0\\0 & 1 & 0 & 0 & 0\\0 & 0 & 1 & 0 & 0\\-1 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 1\end{matrix}\right]}$ \\
@@ -892,7 +895,7 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
     \hline
     $\left( 1, \  0, \  0, \  0, \  -1\right)$ & ${\left[\begin{matrix}0 & 0 & 0 & 0 & -1\\0 & 1 & 0 & 0 & 0\\0 & 0 & 1 & 0 & 0\\0 & 0 & 0 & 1 & 0\\1 & 0 & 0 & 0 & 0\end{matrix}\right]}$ \\
     \hline
-\end{tabular}
+\end{longtable}
 
 
 \subsection{Weyl group conjugation coefficients}
@@ -901,10 +904,11 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
 
 \bigskip
 
-\noi \noindent \begin{tabular}{|l|l|l|c|}
+\noi \noindent \begin{longtable}{|l|l|l|c|}
     \hline
     \textbf{Root ($\alpha$)} & \textbf{Root ($\beta$)} & \textbf{$\gamma = \sigma_{\alpha}(\beta)$} & \textbf{Weyl conjugation coefficient} \\
     \hline
+    \endhead
     $\left( -1, \  0, \  0, \  0, \  1\right)$ & $\left( -1, \  0, \  0, \  0, \  1\right)$ & $\left( 1, \  0, \  0, \  0, \  -1\right)$ & $- u_{0}$ \\
     \hline
     $\left( -1, \  0, \  0, \  0, \  1\right)$ & $\left( -1, \  0, \  0, \  1, \  0\right)$ & $\left( 0, \  0, \  0, \  1, \  -1\right)$ & $u_{0}$ \\
@@ -1705,7 +1709,7 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
     \hline
     $\left( 1, \  0, \  0, \  0, \  -1\right)$ & $\left( 1, \  0, \  0, \  0, \  -1\right)$ & $\left( -1, \  0, \  0, \  0, \  1\right)$ & $- u_{0}$ \\
     \hline
-\end{tabular}
+\end{longtable}
 
 
 \subsection{Weyl group conjugation identities}

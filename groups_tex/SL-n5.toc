@@ -18,4 +18,4 @@
 \contentsline {section}{\numberline {6}Weyl group}{16}{section.6}
 \contentsline {subsection}{\numberline {6.1}Weyl group elements}{16}{subsection.6.1}
 \contentsline {subsection}{\numberline {6.2}Weyl group conjugation coefficients}{18}{subsection.6.2}
-\contentsline {subsection}{\numberline {6.3}Weyl group conjugation identities}{20}{subsection.6.3}
+\contentsline {subsection}{\numberline {6.3}Weyl group conjugation identities}{26}{subsection.6.3}

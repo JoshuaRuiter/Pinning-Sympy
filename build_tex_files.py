@@ -10,7 +10,7 @@ def main():
     overwrite = True
     compile_PDF = True
     n_min = 1
-    n_max = 5
+    n_max = 6
     q_min = 1
     q_max = 3
     eps_values = [-1, 1]
@@ -25,13 +25,13 @@ def main():
     start_time = time.perf_counter()
     sp.init_printing(wrap_line=False)
     
-    #####################################################################
+    ###############################################################################################
     build_tex_SL(n_min, n_max, overwrite, compile_PDF)
     build_tex_SO_split(n_min, n_max, q_min, q_max, overwrite, compile_PDF)
     build_tex_SO_nonsplit(n_min, n_max, q_min, q_max, overwrite, compile_PDF)
     build_tex_SU_quasisplit(n_min, n_max, q_min, q_max, eps_values, overwrite, compile_PDF)
     build_tex_SU_non_quasisplit(n_min, n_max, q_min, q_max, eps_values, overwrite, compile_PDF)
-    #####################################################################
+    ###############################################################################################
     
     end_time = time.perf_counter()
     execution_time = end_time - start_time

@@ -144,33 +144,33 @@ The root system is reducible with RootSystemComponentsPlaceholder components. Th
 A root $\alpha \in \Phi$ is \tbf{multipliable} if $2\alpha \in \Phi$.
 \end{definition}
 
-\noi \begin{tabular}{|l|c|c|c|}
+\noi \begin{tabular}{|l|c|c|c|c|}
     \hline
-    \textbf{Root} & \textbf{Simple} & \textbf{Sign} & \textbf{Multipliable} \\
+    \textbf{Root} & \textbf{Squared norm} & \textbf{Simple} & \textbf{Sign} & \textbf{Multipliable} \\
     \hline
-    $\left( -2, \  0, \  0, \  0, \  0\right)$ & No & $-$ & No \\
+    $\left( 0, \  1, \  0, \  0, \  0\right)$ & $1$ & Yes & $+$ & Yes \\
     \hline
-    $\left( -1, \  -1, \  0, \  0, \  0\right)$ & No & $-$ & No \\
+    $\left( 1, \  0, \  0, \  0, \  0\right)$ & $1$ & No & $+$ & Yes \\
     \hline
-    $\left( -1, \  0, \  0, \  0, \  0\right)$ & No & $-$ & Yes \\
+    $\left( -1, \  0, \  0, \  0, \  0\right)$ & $1$ & No & $-$ & Yes \\
     \hline
-    $\left( -1, \  1, \  0, \  0, \  0\right)$ & No & $-$ & No \\
+    $\left( 0, \  -1, \  0, \  0, \  0\right)$ & $1$ & No & $-$ & Yes \\
     \hline
-    $\left( 0, \  -2, \  0, \  0, \  0\right)$ & No & $-$ & No \\
+    $\left( 1, \  -1, \  0, \  0, \  0\right)$ & $2$ & Yes & $+$ & No \\
     \hline
-    $\left( 0, \  -1, \  0, \  0, \  0\right)$ & No & $-$ & Yes \\
+    $\left( 1, \  1, \  0, \  0, \  0\right)$ & $2$ & No & $+$ & No \\
     \hline
-    $\left( 0, \  1, \  0, \  0, \  0\right)$ & Yes & $+$ & Yes \\
+    $\left( -1, \  -1, \  0, \  0, \  0\right)$ & $2$ & No & $-$ & No \\
     \hline
-    $\left( 0, \  2, \  0, \  0, \  0\right)$ & No & $+$ & No \\
+    $\left( -1, \  1, \  0, \  0, \  0\right)$ & $2$ & No & $-$ & No \\
     \hline
-    $\left( 1, \  -1, \  0, \  0, \  0\right)$ & Yes & $+$ & No \\
+    $\left( 0, \  2, \  0, \  0, \  0\right)$ & $4$ & No & $+$ & No \\
     \hline
-    $\left( 1, \  0, \  0, \  0, \  0\right)$ & No & $+$ & Yes \\
+    $\left( 2, \  0, \  0, \  0, \  0\right)$ & $4$ & No & $+$ & No \\
     \hline
-    $\left( 1, \  1, \  0, \  0, \  0\right)$ & No & $+$ & No \\
+    $\left( -2, \  0, \  0, \  0, \  0\right)$ & $4$ & No & $-$ & No \\
     \hline
-    $\left( 2, \  0, \  0, \  0, \  0\right)$ & No & $+$ & No \\
+    $\left( 0, \  -2, \  0, \  0, \  0\right)$ & $4$ & No & $-$ & No \\
     \hline
 \end{tabular}
 
@@ -218,10 +218,11 @@ For two roots $\alpha, \beta$ in a root system $\Phi$, the set of positive integ
 \).
 \end{definition}
 
-\noi \begin{tabular}{|l|l|c|}
+\noi \noindent \begin{longtable}{|l|l|c|}
     \hline
     $\alpha$ & $\beta$ & Pairs $(i,j)$ \\
     \hline
+    \endhead
     $\left( -1, \  -1, \  0, \  0, \  0\right)$ & $\left( -1, \  1, \  0, \  0, \  0\right)$ & $(1,1)$ \\
     \hline
     $\left( -1, \  -1, \  0, \  0, \  0\right)$ & $\left( 1, \  -1, \  0, \  0, \  0\right)$ & $(1,1)$ \\
@@ -270,7 +271,7 @@ For two roots $\alpha, \beta$ in a root system $\Phi$, the set of positive integ
     \hline
     $\left( 0, \  1, \  0, \  0, \  0\right)$ & $\left( 1, \  -1, \  0, \  0, \  0\right)$ & $(1,1), (2,1), (2,2)$ \\
     \hline
-\end{tabular}
+\end{longtable}
 
 \fi
 
@@ -335,9 +336,9 @@ The table below lists each root along with the dimension of the associated root 
     \hline
     $\left( 0, \  -2, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0\\0 & - u_{0} & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0\end{matrix}\right]}$ \\
     \hline
-    $\left( 0, \  -1, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & c_{0} \left(- \sqrt{d} u_{0} + d u_{1}\right)\\0 & \sqrt{d} u_{1} + u_{0} & 0 & 0 & 0\end{matrix}\right]}$ \\
+    $\left( 0, \  -1, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & c_{0} \left(- \sqrt{d} u_{1} + d u_{0}\right)\\0 & \sqrt{d} u_{0} + u_{1} & 0 & 0 & 0\end{matrix}\right]}$ \\
     \hline
-    $\left( 0, \  1, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & c_{0} \left(\sqrt{d} u_{1} - d u_{0}\right)\\0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & \sqrt{d} u_{0} + u_{1} & 0\end{matrix}\right]}$ \\
+    $\left( 0, \  1, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & c_{0} \left(\sqrt{d} u_{0} - d u_{1}\right)\\0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & \sqrt{d} u_{1} + u_{0} & 0\end{matrix}\right]}$ \\
     \hline
     $\left( 0, \  2, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & - u_{0} & 0\\0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0\end{matrix}\right]}$ \\
     \hline
@@ -376,9 +377,9 @@ The table below lists each root along with the dimension of the associated root 
     \hline
     $\left( 0, \  -2, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}1 & 0 & 0 & 0 & 0\\0 & 1 & 0 & 0 & 0\\0 & 0 & 1 & 0 & 0\\0 & - u_{0} & 0 & 1 & 0\\0 & 0 & 0 & 0 & 1\end{matrix}\right]}$ \\
     \hline
-    $\left( 0, \  -1, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}1 & 0 & 0 & 0 & 0\\0 & 1 & 0 & 0 & 0\\0 & 0 & 1 & 0 & 0\\0 & \frac{c_{0} \sqrt{d} \left(d u_{1}^{2} - u_{0}^{2}\right)}{2} & 0 & 1 & c_{0} \left(- \sqrt{d} u_{0} + d u_{1}\right)\\0 & \sqrt{d} u_{1} + u_{0} & 0 & 0 & 1\end{matrix}\right]}$ \\
+    $\left( 0, \  -1, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}1 & 0 & 0 & 0 & 0\\0 & 1 & 0 & 0 & 0\\0 & 0 & 1 & 0 & 0\\0 & \frac{c_{0} \sqrt{d} \left(d u_{0}^{2} - u_{1}^{2}\right)}{2} & 0 & 1 & c_{0} \left(- \sqrt{d} u_{1} + d u_{0}\right)\\0 & \sqrt{d} u_{0} + u_{1} & 0 & 0 & 1\end{matrix}\right]}$ \\
     \hline
-    $\left( 0, \  1, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}1 & 0 & 0 & 0 & 0\\0 & 1 & 0 & \frac{c_{0} \sqrt{d} \left(- d u_{0}^{2} + u_{1}^{2}\right)}{2} & c_{0} \left(\sqrt{d} u_{1} - d u_{0}\right)\\0 & 0 & 1 & 0 & 0\\0 & 0 & 0 & 1 & 0\\0 & 0 & 0 & \sqrt{d} u_{0} + u_{1} & 1\end{matrix}\right]}$ \\
+    $\left( 0, \  1, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}1 & 0 & 0 & 0 & 0\\0 & 1 & 0 & \frac{c_{0} \sqrt{d} \left(- d u_{1}^{2} + u_{0}^{2}\right)}{2} & c_{0} \left(\sqrt{d} u_{0} - d u_{1}\right)\\0 & 0 & 1 & 0 & 0\\0 & 0 & 0 & 1 & 0\\0 & 0 & 0 & \sqrt{d} u_{1} + u_{0} & 1\end{matrix}\right]}$ \\
     \hline
     $\left( 0, \  2, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}1 & 0 & 0 & 0 & 0\\0 & 1 & 0 & - u_{0} & 0\\0 & 0 & 1 & 0 & 0\\0 & 0 & 0 & 1 & 0\\0 & 0 & 0 & 0 & 1\end{matrix}\right]}$ \\
     \hline
@@ -453,10 +454,11 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
 
 \bigskip
 
-\noi \begin{tabular}{|l|l|c|c|l|c|}
+\noi \noindent \begin{longtable}{|l|l|c|c|l|c|}
     \hline
     $\alpha$ & $\beta$ & $i$ & $j$ &  $i\alpha + j\beta$ & $N_{ij}^{\alpha\beta}(u,v)$ \\
     \hline
+    \endhead
     $\left( -1, \  -1, \  0, \  0, \  0\right)$ & $\left( -1, \  1, \  0, \  0, \  0\right)$ & 1 & 1 & $\left( -2, \  0, \  0, \  0, \  0\right)$ & $2 d u_{0} v_{1} - 2 u_{1} v_{0}$ \\
     \hline
     $\left( -1, \  -1, \  0, \  0, \  0\right)$ & $\left( 1, \  -1, \  0, \  0, \  0\right)$ & 1 & 1 & $\left( 0, \  -2, \  0, \  0, \  0\right)$ & $- 2 d u_{0} v_{1} - 2 u_{1} v_{0}$ \\
@@ -649,7 +651,7 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
     \hline
     $\left( 1, \  1, \  0, \  0, \  0\right)$ & $\left( 0, \  -1, \  0, \  0, \  0\right)$ & 2 & 2 & $\left( 2, \  0, \  0, \  0, \  0\right)$ & $0$ \\
     \hline
-\end{tabular}
+\end{longtable}
 
 
 \subsection{Commutator identities}
@@ -672,10 +674,11 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
 
 \bigskip
 
-\noi \noindent \begin{tabular}{|l|c|}
+\noi \noindent \begin{longtable}{|l|c|}
     \hline
     \textbf{Root} & \textbf{Weyl group element} \\
     \hline
+    \endhead
     $\left( -2, \  0, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & 1 & 0 & 0\\0 & 1 & 0 & 0 & 0\\-1 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 1 & 0\\0 & 0 & 0 & 0 & 1\end{matrix}\right]}$ \\
     \hline
     $\left( -1, \  -1, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & 0 & 1 & 0\\0 & 0 & 1 & 0 & 0\\0 & -1 & 0 & 0 & 0\\-1 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 1\end{matrix}\right]}$ \\
@@ -700,7 +703,7 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
     \hline
     $\left( 2, \  0, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & 1 & 0 & 0\\0 & 1 & 0 & 0 & 0\\-1 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 1 & 0\\0 & 0 & 0 & 0 & 1\end{matrix}\right]}$ \\
     \hline
-\end{tabular}
+\end{longtable}
 
 
 \subsection{Weyl group conjugation coefficients}
@@ -709,10 +712,11 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
 
 \bigskip
 
-\noi \noindent \begin{tabular}{|l|l|l|c|}
+\noi \noindent \begin{longtable}{|l|l|l|c|}
     \hline
     \textbf{Root ($\alpha$)} & \textbf{Root ($\beta$)} & \textbf{$\gamma = \sigma_{\alpha}(\beta)$} & \textbf{Weyl conjugation coefficient} \\
     \hline
+    \endhead
     $\left( -2, \  0, \  0, \  0, \  0\right)$ & $\left( -2, \  0, \  0, \  0, \  0\right)$ & $\left( 2, \  0, \  0, \  0, \  0\right)$ & $- u_{0}$ \\
     \hline
     $\left( -2, \  0, \  0, \  0, \  0\right)$ & $\left( -1, \  -1, \  0, \  0, \  0\right)$ & $\left( 1, \  -1, \  0, \  0, \  0\right)$ & $\left[\begin{matrix}u_{1} & - u_{0}\end{matrix}\right]$ \\
@@ -1001,7 +1005,7 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
     \hline
     $\left( 2, \  0, \  0, \  0, \  0\right)$ & $\left( 2, \  0, \  0, \  0, \  0\right)$ & $\left( -2, \  0, \  0, \  0, \  0\right)$ & $- u_{0}$ \\
     \hline
-\end{tabular}
+\end{longtable}
 
 
 \subsection{Weyl group conjugation identities}

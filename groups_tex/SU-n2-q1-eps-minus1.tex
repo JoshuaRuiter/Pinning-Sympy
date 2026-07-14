@@ -145,13 +145,13 @@ The root system is reducible with RootSystemComponentsPlaceholder components. Th
 A root $\alpha \in \Phi$ is \tbf{multipliable} if $2\alpha \in \Phi$.
 \end{definition}
 
-\noi \begin{tabular}{|l|c|c|c|}
+\noi \begin{tabular}{|l|c|c|c|c|}
     \hline
-    \textbf{Root} & \textbf{Simple} & \textbf{Sign} & \textbf{Multipliable} \\
+    \textbf{Root} & \textbf{Squared norm} & \textbf{Simple} & \textbf{Sign} & \textbf{Multipliable} \\
     \hline
-    $\left( -2, \  0\right)$ & No & $-$ & No \\
+    $\left( 2, \  0\right)$ & $4$ & Yes & $+$ & No \\
     \hline
-    $\left( 2, \  0\right)$ & Yes & $+$ & No \\
+    $\left( -2, \  0\right)$ & $4$ & No & $-$ & No \\
     \hline
 \end{tabular}
 
@@ -310,15 +310,16 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
 
 \bigskip
 
-\noi \noindent \begin{tabular}{|l|c|}
+\noi \noindent \begin{longtable}{|l|c|}
     \hline
     \textbf{Root} & \textbf{Weyl group element} \\
     \hline
+    \endhead
     $\left( -2, \  0\right)$ & ${\left[\begin{matrix}0 & 1\\-1 & 0\end{matrix}\right]}$ \\
     \hline
     $\left( 2, \  0\right)$ & ${\left[\begin{matrix}0 & 1\\-1 & 0\end{matrix}\right]}$ \\
     \hline
-\end{tabular}
+\end{longtable}
 
 
 \subsection{Weyl group conjugation coefficients}
@@ -327,10 +328,11 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
 
 \bigskip
 
-\noi \noindent \begin{tabular}{|l|l|l|c|}
+\noi \noindent \begin{longtable}{|l|l|l|c|}
     \hline
     \textbf{Root ($\alpha$)} & \textbf{Root ($\beta$)} & \textbf{$\gamma = \sigma_{\alpha}(\beta)$} & \textbf{Weyl conjugation coefficient} \\
     \hline
+    \endhead
     $\left( -2, \  0\right)$ & $\left( -2, \  0\right)$ & $\left( 2, \  0\right)$ & $- u_{0}$ \\
     \hline
     $\left( -2, \  0\right)$ & $\left( 2, \  0\right)$ & $\left( -2, \  0\right)$ & $- u_{0}$ \\
@@ -339,7 +341,7 @@ for some homogeneous polynomial functions $N_{ij}^{\alpha \beta}:V_{\alpha} \tim
     \hline
     $\left( 2, \  0\right)$ & $\left( 2, \  0\right)$ & $\left( -2, \  0\right)$ & $- u_{0}$ \\
     \hline
-\end{tabular}
+\end{longtable}
 
 
 \subsection{Weyl group conjugation identities}

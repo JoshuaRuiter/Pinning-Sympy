@@ -46,12 +46,12 @@ from utility_SU import (group_constraints_SU,
 def main():
     
     ##################
-    overwrite = True 
+    overwrite = False 
     ##################
     
     ########################
     n_min = 1
-    n_max = 5
+    n_max = 6
     q_min = 1
     q_max = 3
     eps_values = [-1,1]

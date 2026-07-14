@@ -49,7 +49,7 @@ class root_system:
         first_vec_length = len(self.root_list[0])
         for alpha in self.root_list: 
             assert len(alpha) == first_vec_length, \
-                "Root system can't have vectors of different lengths"
+                "Root system can't have vectors with different numbers of components"
         self.vector_length = first_vec_length
         
         if lattice_matrix is None:
@@ -101,7 +101,6 @@ class root_system:
         
     def determine_properties(self):
         # Determine and populate various internal variables of the root system, including:
-        #   -sorted list of root lengths
         #   -simply laced or not
         #   -reduced vs nonreduced
         #   -choose a set of positive roots

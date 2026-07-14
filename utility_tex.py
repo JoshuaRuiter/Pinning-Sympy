@@ -37,7 +37,7 @@ def pinned_group_to_tex(pinned_group):
     #       c. Explicit equations for commutator relation
     # 6. Weyl group
     #       a. (COMPLETE) Table of root, Weyl group element
-    #       b. (TO DO: FIX WHEN IT DOESN'T FIT ON ONE PAGE) Table of root1, root2, Weyl group conjugation coefficient
+    #       b. (COMPLETE) Table of root1, root2, Weyl group conjugation coefficient
     #       c. Explicit equations for Weyl group conjugation relation
     
     # Read the template
@@ -278,11 +278,7 @@ def build_dynkin_tex(Phi):
     return "\n".join(tikz_lines)
 
 def build_root_table(Phi):
-    tex = ""
-    tex += r"\begin{tabular}{|l|c|c|c|}" + "\n"
-    tex += r"    \hline" + "\n"
-    tex += "    \\textbf{Root} & \\textbf{Simple} & \\textbf{Sign} & \\textbf{Multipliable} \\\\\n"
-    tex += r"    \hline" + "\n"
+    row_data = []
     
     for alpha in Phi.root_list:
         alpha_latex = f"${sp.latex(alpha)}$"
@@ -299,15 +295,40 @@ def build_root_table(Phi):
         is_positive = any(alpha.equals(p) for p in target_positive)
         is_multipliable = Phi.is_multipliable_root(alpha)
         
+        sq_norm = alpha.dot(alpha)
+        sq_norm_latex = f"${sp.latex(sq_norm)}$"
+        
         simple_str = "Yes" if is_simple else "No"
         sign_str = "$+$" if is_positive else "$-$"
         multipliable_str = "Yes" if is_multipliable else "No"
         
-        tex += f"    {alpha_latex} & {simple_str} & {sign_str} & {multipliable_str} \\\\\n"
-        tex += r"    \hline" + "\n"
+        row_text = f"    {alpha_latex} & {sq_norm_latex} & {simple_str} & {sign_str} & {multipliable_str} \\\\\n"
         
-    tex += "\\end{tabular}\n"
-    return tex
+        # Sort key logic:
+        # 1. sq_norm ascending
+        # 2. is_simple descending (True/0 before False/1)
+        # 3. is_positive descending (True/0 before False/1)
+        sort_key = (sq_norm, 0 if is_simple else 1, 0 if is_positive else 1)
+        row_data.append((sort_key, row_text))
+
+    # Sort based on the multi-level key
+    row_data.sort(key=lambda x: x[0])
+
+    # Construct the LaTeX table
+    table_lines = [
+        r"\begin{tabular}{|l|c|c|c|c|}",
+        r"    \hline",
+        r"    \textbf{Root} & \textbf{Squared norm} & \textbf{Simple} & \textbf{Sign} & \textbf{Multipliable} \\",
+        r"    \hline"
+    ]
+    
+    for _, row in row_data:
+        table_lines.append(row.rstrip())
+        table_lines.append(r"    \hline")
+        
+    table_lines.append(r"\end{tabular}" + "\n")
+    
+    return "\n".join(table_lines)
 
 def build_coroot_table(Phi):
     tex = ""
@@ -344,26 +365,27 @@ def build_root_linear_combos_table(Phi):
             beta_lat = sp.latex(beta)
             sorted_pairs = sorted(combos.keys())
             pairs_str = ", ".join(f"({i},{j})" for (i, j) in sorted_pairs)
-            row_text = f"    ${alpha_lat}$ & ${beta_lat}$ & ${pairs_str}$ \\\\\n"
+            row_text = f"    ${alpha_lat}$ & ${beta_lat}$ & ${pairs_str}$ \\\\"
             
             pair_rows.append((len(sorted_pairs), row_text))
 
     # Sort rows by the number of linear combinations
     pair_rows.sort(key=lambda x: x[0])
 
-    # Construct the LaTeX table
+    # Construct the LaTeX table using longtable
     table_lines = [
-        r"\begin{tabular}{|l|l|c|}",
+        r"\noindent \begin{longtable}{|l|l|c|}",
         r"    \hline",
         r"    $\alpha$ & $\beta$ & Pairs $(i,j)$ \\",
-        r"    \hline"
+        r"    \hline",
+        r"    \endhead"
     ]
     
     for _, row in pair_rows:
         table_lines.append(row.rstrip())
         table_lines.append(r"    \hline")
         
-    table_lines.append(r"\end{tabular}" + "\n")
+    table_lines.append(r"\end{longtable}" + "\n")
     
     return "\n".join(table_lines)
 
@@ -415,14 +437,15 @@ def build_commutator_coefficient_table(group):
 
     combo_table = ""
     if table_blocks:
-        # 6 columns matching the elements extracted per row
-        combo_table += r"\begin{tabular}{|l|l|c|c|l|c|}" + "\n"
+        # 6 columns matching the elements extracted per row, using longtable
+        combo_table += r"\noindent \begin{longtable}{|l|l|c|c|l|c|}" + "\n"
         combo_table += r"    \hline" + "\n"
         combo_table += (
             "    $\\alpha$ & $\\beta$ & $i$ & $j$ & "
             " $i\\alpha + j\\beta$ & $N_{ij}^{\\alpha\\beta}(u,v)$ \\\\\n"
         )
         combo_table += r"    \hline" + "\n"
+        combo_table += r"    \endhead" + "\n"
         
         # Unpack the sorted blocks and write rows sequentially
         for _, rows in table_blocks:
@@ -430,12 +453,11 @@ def build_commutator_coefficient_table(group):
                 combo_table += row
                 combo_table += r"    \hline" + "\n"
                 
-        combo_table += "\\end{tabular}\n"
+        combo_table += "\\end{longtable}\n"
     else:
         combo_table += "\\noindent No pairs of roots generate positive integer linear combinations.\n"
         
     return combo_table
-
 def build_dimension_table(group):
     Phi = group.root_system
     tex = r"\noindent \begin{tabular}{|l|c|}" + "\n"
@@ -515,27 +537,29 @@ def build_hom_defect_table(group):
 
 def build_weyl_element_table(group):
     Phi = group.root_system
-    tex = r"\noindent \begin{tabular}{|l|c|}" + "\n"
+    tex = r"\noindent \begin{longtable}{|l|c|}" + "\n"
     tex += r"    \hline" + "\n"
     tex += "    \\textbf{Root} & \\textbf{Weyl group element} \\\\\n"
     tex += r"    \hline" + "\n"
+    tex += r"    \endhead" + "\n"
     for alpha in Phi.root_list:
         w_alpha = group.weyl_element_map(alpha)
         alpha_latex = f"{sp.latex(alpha)}"
         w_alpha_latex = f"{{{sp.latex(w_alpha)}}}"
         tex += f"    ${alpha_latex}$ & ${w_alpha_latex}$ \\\\\n"
         tex += r"    \hline" + "\n"
-    tex += "\\end{tabular}\n"
+    tex += "\\end{longtable}\n"
     return tex
 
 def build_weyl_conjugation_table(self):
     Phi = self.root_system
     
-    # 1. Setup the LaTeX table alignment and headers
-    tex = r"\noindent \begin{tabular}{|l|l|l|c|}" + "\n"
+    # 1. Setup the LaTeX table alignment and headers with longtable
+    tex = r"\noindent \begin{longtable}{|l|l|l|c|}" + "\n"
     tex += r"    \hline" + "\n"
     tex += r"    \textbf{Root ($\alpha$)} & \textbf{Root ($\beta$)} & \textbf{$\gamma = \sigma_{\alpha}(\beta)$} & \textbf{Weyl conjugation coefficient} \\" + "\n"
     tex += r"    \hline" + "\n"
+    tex += r"    \endhead" + "\n"
     
     # 2. Iterate through every possible pair of roots
     for alpha in Phi.root_list:
@@ -564,5 +588,5 @@ def build_weyl_conjugation_table(self):
             tex += f"    {alpha_latex} & {beta_latex} & {gamma_latex} & {expr_latex} \\\\\n"
             tex += r"    \hline" + "\n"
             
-    tex += "\\end{tabular}\n"
+    tex += "\\end{longtable}\n"
     return tex
