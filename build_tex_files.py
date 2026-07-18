@@ -10,16 +10,16 @@ def main():
     overwrite = True
     compile_PDF = True
     n_min = 1
-    n_max = 6
+    n_max = 5
     q_min = 1
     q_max = 3
     eps_values = [-1, 1]
     ########################
     
     if compile_PDF:
-        start_message = f"\nBuilding and compiling LaTeX files for groups with overwrite = {overwrite}"
+        start_message = f"\nBuilding and compiling LaTeX files for groups with overwrite={overwrite}"
     else:
-        start_message = f"\nBuilding LaTeX files for groups with overwrite = {overwrite}"
+        start_message = f"\nBuilding LaTeX files for groups with overwrite={overwrite}"
     print(start_message)
     
     start_time = time.perf_counter()

@@ -371,8 +371,7 @@ def determine_roots(generic_torus_element,
             continue 
         
         RHS = alpha_of_t*x
-        my_equation = sp.simplify(LHS-RHS) # trying to save time by skipping this simplify step
-        # my_equation = LHS - RHS
+        my_equation = sp.simplify(LHS-RHS)
         
         solutions_list = sp.solve(my_equation, vars_to_solve_for, dict=True)
         assert(len(solutions_list) == 1)
@@ -380,7 +379,6 @@ def determine_roots(generic_torus_element,
         solutions_list = sp.solve(my_equation,vars_to_solve_for,dict=True)
         assert(len(solutions_list) == 1)
         solutions_dict = solutions_list[0]
-        
         
         if solutions_dict:
             all_zero = all(var in solutions_dict and solutions_dict[var] == 0 for var in vars_to_solve_for)

@@ -31,8 +31,8 @@ import sympy as sp
 import numpy as np
 from utility_general import is_diagonal
 
-group_constraints_SO_string = "$X^T B X = B$ and $\operatorname{det}(X)=1$"
-lie_algebra_constraints_SO_string = "$X^T B + BX = 0$ and $\operatorname{tr}(X)=0$"
+group_constraints_SO_string = "$X^TBX = B$ and $\operatorname{det}(X)=1$"
+lie_algebra_constraints_SO_string = "$X^TB + BX = 0$ and $\operatorname{tr}(X)=0$"
 
 def group_constraints_SO(matrix_to_test, form):
     # The requirements for a matrix X to be an element of the special orthogonal group with form matrix B are

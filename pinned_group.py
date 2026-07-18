@@ -153,7 +153,7 @@ class pinned_group:
         # Open the file path and write it
         with open(self.file_path, 'wb') as f:
             dill.dump(self, f)
-        print(f"Successfully saved object data to: {self.file_path}")  
+        print(f"Saved object data to: {self.file_path}")  
 
     def write_to_tex(self, overwrite = False, compile_pdf = False):
         # Generate a .tex file summarizing the group, utilizing a template file
@@ -171,10 +171,10 @@ class pinned_group:
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(output_file_contents)
             
-        print(f"Successfully generated: {output_file}")
+        print(f"Generated file: {output_file}")
         
         if compile_pdf:
-            print(f"Compiling {output_file.name}...")
+            #print(f"Compiling {output_file.name}...")
             try:
                 # Compile twice so the .toc file generated on pass 1 is fully rendered on pass 2
                 for pass_num in range(1, 3):
@@ -196,7 +196,7 @@ class pinned_group:
                 
                 pdf_file = output_file.with_suffix('.pdf')
                 if pdf_file.exists() and result.returncode in [0, 1]: 
-                    print(f"Successfully compiled PDF: {pdf_file}")
+                    print(f"Compiled PDF: {pdf_file}")
                 else:
                     print(f"--- COMPILATION FAILED: {output_file.name} ---")
                     print(f"Exit Code: {result.returncode}")

@@ -61,6 +61,22 @@ class root_system:
         assert self.vector_length == self.lattice_matrix.shape[0], \
             "Lattice matrix has wrong number of rows"
 
+        # Create short_form_roots dictionary
+        # Find the maximum index containing a non-zero entry across all roots
+        max_nonzero_index = -1
+        for r in self.root_list:
+            for idx in range(self.vector_length - 1, -1, -1):
+                if r[idx] != 0:
+                    if idx > max_nonzero_index:
+                        max_nonzero_index = idx
+                    break
+        # The truncation length is at least 1 (even for the zero vector if it exists)
+        truncation_length = max(1, max_nonzero_index + 1)
+        # Map each full root to its shortened vector representation
+        self.short_form_roots = {
+            r: vector(r[:truncation_length]) for r in self.root_list
+        }
+
         # Determine the irreducible components
         component_root_lists = determine_irreducible_components(self.root_list)
         self.is_irreducible = (len(component_root_lists) == 1)
