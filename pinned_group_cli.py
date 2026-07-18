@@ -13,22 +13,28 @@ from utility_SL import (character_entries_SL,
                         generic_lie_algebra_element_SL,
                         generic_torus_element_SL,
                         group_constraints_SL,
+                        group_constraints_SL_string,
                         is_torus_element_SL,
                         lie_algebra_constraints_SL,
+                        lie_algebra_constraints_SL_string,
                         trivial_characters_SL)
 from utility_SO import (character_entries_SO,
                         generic_lie_algebra_element_SO,
                         generic_torus_element_SO,
                         group_constraints_SO,
+                        group_constraints_SO_string,
                         is_torus_element_SO,
                         lie_algebra_constraints_SO,
+                        lie_algebra_constraints_SO_string,
                         trivial_characters_SO)
 from utility_SU import (character_entries_SU,
                         generic_lie_algebra_element_SU,
                         generic_torus_element_SU,
                         group_constraints_SU,
+                        group_constraints_SU_string,
                         is_torus_element_SU,
                         lie_algebra_constraints_SU,
+                        lie_algebra_constraints_SU_string,
                         trivial_characters_SU)
 from test_demo import (
     fit_weyl_group_elements_from_root_subgroups,
@@ -70,6 +76,17 @@ def parse_args():
             "experimental/demo mode; auto tries root-subgroups first and "
             "falls back to brute. factored-brute uses the external factored "
             "copy of the original brute-force solver. Default: brute."
+        ),
+    )
+    parser.add_argument(
+        "--weyl-enumeration",
+        choices=["monomial", "brute"],
+        default="monomial",
+        help=(
+            "Enumeration strategy used only with --weyl-method factored-brute. "
+            "monomial enumerates one nonzero matrix entry in each row/column "
+            "before trying candidate values; brute uses the original variable "
+            "support enumeration. Default: monomial."
         ),
     )
     parser.add_argument("--quiet", action="store_true")
@@ -240,7 +257,12 @@ def latex_document(groups):
     ])
 
 
-def fit_group_with_demo_weyl_method(G, display=True, weyl_method="root-subgroups"):
+def fit_group_with_demo_weyl_method(
+    G,
+    display=True,
+    weyl_method="root-subgroups",
+    weyl_enumeration="monomial",
+):
     if display:
         print("\n" + "-" * 100 + "\n")
         print(f"Fitting a pinning for {G.name_string}")
@@ -264,7 +286,11 @@ def fit_group_with_demo_weyl_method(G, display=True, weyl_method="root-subgroups
             if display:
                 print(f"Brute-force Weyl fallback time: {brute_force_elapsed:.4f} seconds")
     elif weyl_method == "factored-brute":
-        fit_weyl_group_elements_factored(G, display)
+        fit_weyl_group_elements_factored(
+            G,
+            display,
+            enumeration_method=weyl_enumeration,
+        )
     else:
         raise ValueError(f"Unknown demo Weyl method: {weyl_method}")
 
@@ -276,13 +302,19 @@ def fit_group_with_demo_weyl_method(G, display=True, weyl_method="root-subgroups
         print("\n" + "-" * 100 + "\n")
 
 
-def fit_group(G, display=True, validate=True, weyl_method="brute"):
+def fit_group(
+    G,
+    display=True,
+    validate=True,
+    weyl_method="brute",
+    weyl_enumeration="monomial",
+):
     if weyl_method == "brute":
         G.fit_pinning(display=display)
     elif weyl_method in ("root-subgroups", "auto", "factored-brute"):
         if display:
             print(f"Using demo Weyl method: {weyl_method}")
-        fit_group_with_demo_weyl_method(G, display, weyl_method)
+        fit_group_with_demo_weyl_method(G, display, weyl_method, weyl_enumeration)
     else:
         raise ValueError(f"Unknown Weyl method: {weyl_method}")
 
@@ -292,7 +324,14 @@ def fit_group(G, display=True, validate=True, weyl_method="brute"):
     return G
 
 
-def run_SL_tests(n_min, n_max, display=True, validate=True, weyl_method="brute"):
+def run_SL_tests(
+    n_min,
+    n_max,
+    display=True,
+    validate=True,
+    weyl_method="brute",
+    weyl_enumeration="monomial",
+):
     groups = []
     if display:
         print("\n" + "=" * 100 + "\n")
@@ -309,11 +348,13 @@ def run_SL_tests(n_min, n_max, display=True, validate=True, weyl_method="brute")
                             matrix_size=n,
                             form=None,
                             group_constraints=group_constraints_SL,
+                            group_constraints_string=group_constraints_SL_string,
                             maximal_split_torus=T,
                             lie_algebra_constraints=lie_algebra_constraints_SL,
+                            lie_algebra_constraints_string=lie_algebra_constraints_SL_string,
                             generic_lie_algebra_element=generic_lie_algebra_element_SL,
                             non_variables=None)
-        groups.append(fit_group(SL_n, display, validate, weyl_method))
+        groups.append(fit_group(SL_n, display, validate, weyl_method, weyl_enumeration))
         assert SL_n.root_system.dynkin_type == "A", \
             f"SL(n={n}) should have type A but computations gave type {SL_n.root_system.dynkin_type}"
     if display:
@@ -322,7 +363,16 @@ def run_SL_tests(n_min, n_max, display=True, validate=True, weyl_method="brute")
     return groups
 
 
-def run_SO_split_tests(n_min, n_max, q_min, q_max, display=True, validate=True, weyl_method="brute"):
+def run_SO_split_tests(
+    n_min,
+    n_max,
+    q_min,
+    q_max,
+    display=True,
+    validate=True,
+    weyl_method="brute",
+    weyl_enumeration="monomial",
+):
     groups = []
     if display:
         print("\n" + "=" * 100 + "\n")
@@ -347,18 +397,29 @@ def run_SO_split_tests(n_min, n_max, q_min, q_max, display=True, validate=True, 
                                   matrix_size=n,
                                   form=NIF,
                                   group_constraints=group_constraints_SO,
+                                  group_constraints_string=group_constraints_SO_string,
                                   maximal_split_torus=T,
                                   lie_algebra_constraints=lie_algebra_constraints_SO,
+                                  lie_algebra_constraints_string=lie_algebra_constraints_SO_string,
                                   generic_lie_algebra_element=generic_lie_algebra_element_SO,
                                   non_variables=None)
-            groups.append(fit_group(SO_n_q, display, validate, weyl_method))
+            groups.append(fit_group(SO_n_q, display, validate, weyl_method, weyl_enumeration))
     if display:
         print("\nDone with split special orthogonal groups")
         print("\n" + "=" * 100 + "\n")
     return groups
 
 
-def run_SO_nonsplit_tests(n_min, n_max, q_min, q_max, display=True, validate=True, weyl_method="brute"):
+def run_SO_nonsplit_tests(
+    n_min,
+    n_max,
+    q_min,
+    q_max,
+    display=True,
+    validate=True,
+    weyl_method="brute",
+    weyl_enumeration="monomial",
+):
     groups = []
     if display:
         print("\n" + "=" * 100 + "\n")
@@ -382,18 +443,30 @@ def run_SO_nonsplit_tests(n_min, n_max, q_min, q_max, display=True, validate=Tru
                                   matrix_size=n,
                                   form=NIF,
                                   group_constraints=group_constraints_SO,
+                                  group_constraints_string=group_constraints_SO_string,
                                   maximal_split_torus=T,
                                   lie_algebra_constraints=lie_algebra_constraints_SO,
+                                  lie_algebra_constraints_string=lie_algebra_constraints_SO_string,
                                   generic_lie_algebra_element=generic_lie_algebra_element_SO,
                                   non_variables=None)
-            groups.append(fit_group(SO_n_q, display, validate, weyl_method))
+            groups.append(fit_group(SO_n_q, display, validate, weyl_method, weyl_enumeration))
     if display:
         print("\nDone with non-split special orthogonal groups")
         print("\n" + "=" * 100 + "\n")
     return groups
 
 
-def run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values, display=True, validate=True, weyl_method="brute"):
+def run_SU_quasisplit_tests(
+    n_min,
+    n_max,
+    q_min,
+    q_max,
+    eps_values,
+    display=True,
+    validate=True,
+    weyl_method="brute",
+    weyl_enumeration="monomial",
+):
     groups = []
     if display:
         print("\n" + "=" * 100 + "\n")
@@ -422,18 +495,30 @@ def run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values, display=True
                                       matrix_size=n,
                                       form=NIF,
                                       group_constraints=group_constraints_SU,
+                                      group_constraints_string=group_constraints_SU_string,
                                       maximal_split_torus=T,
                                       lie_algebra_constraints=lie_algebra_constraints_SU,
+                                      lie_algebra_constraints_string=lie_algebra_constraints_SU_string,
                                       generic_lie_algebra_element=generic_lie_algebra_element_SU,
                                       non_variables={d})
-                groups.append(fit_group(SU_n_q, display, validate, weyl_method))
+                groups.append(fit_group(SU_n_q, display, validate, weyl_method, weyl_enumeration))
     if display:
         print("\nDone with quasi-split special unitary groups")
         print("\n" + "=" * 100 + "\n")
     return groups
 
 
-def run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values, display=True, validate=True, weyl_method="brute"):
+def run_SU_nonquasisplit_tests(
+    n_min,
+    n_max,
+    q_min,
+    q_max,
+    eps_values,
+    display=True,
+    validate=True,
+    weyl_method="brute",
+    weyl_enumeration="monomial",
+):
     groups = []
     if display:
         print("\n" + "=" * 100 + "\n")
@@ -463,11 +548,13 @@ def run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values, display=T
                                       matrix_size=n,
                                       form=NIF,
                                       group_constraints=group_constraints_SU,
+                                      group_constraints_string=group_constraints_SU_string,
                                       maximal_split_torus=T,
                                       lie_algebra_constraints=lie_algebra_constraints_SU,
+                                      lie_algebra_constraints_string=lie_algebra_constraints_SU_string,
                                       generic_lie_algebra_element=generic_lie_algebra_element_SU,
                                       non_variables={d})
-                groups.append(fit_group(SU_n_q, display, validate, weyl_method))
+                groups.append(fit_group(SU_n_q, display, validate, weyl_method, weyl_enumeration))
     if display:
         print("\nDone with non-(quasi-split) special unitary groups")
         print("\n" + "=" * 100 + "\n")
@@ -483,15 +570,15 @@ def main():
     groups = []
 
     if args.suite in ("sl", "all"):
-        groups.extend(run_SL_tests(args.n_min, args.n_max, display, validate, args.weyl_method))
+        groups.extend(run_SL_tests(args.n_min, args.n_max, display, validate, args.weyl_method, args.weyl_enumeration))
     if args.suite in ("so-split", "all"):
-        groups.extend(run_SO_split_tests(args.n_min, args.n_max, args.q_min, args.q_max, display, validate, args.weyl_method))
+        groups.extend(run_SO_split_tests(args.n_min, args.n_max, args.q_min, args.q_max, display, validate, args.weyl_method, args.weyl_enumeration))
     if args.suite in ("so-nonsplit", "all"):
-        groups.extend(run_SO_nonsplit_tests(args.n_min, args.n_max, args.q_min, args.q_max, display, validate, args.weyl_method))
+        groups.extend(run_SO_nonsplit_tests(args.n_min, args.n_max, args.q_min, args.q_max, display, validate, args.weyl_method, args.weyl_enumeration))
     if args.suite in ("su-quasisplit", "all"):
-        groups.extend(run_SU_quasisplit_tests(args.n_min, args.n_max, args.q_min, args.q_max, args.eps, display, validate, args.weyl_method))
+        groups.extend(run_SU_quasisplit_tests(args.n_min, args.n_max, args.q_min, args.q_max, args.eps, display, validate, args.weyl_method, args.weyl_enumeration))
     if args.suite in ("su-nonquasisplit", "all"):
-        groups.extend(run_SU_nonquasisplit_tests(args.n_min, args.n_max, args.q_min, args.q_max, args.eps, display, validate, args.weyl_method))
+        groups.extend(run_SU_nonquasisplit_tests(args.n_min, args.n_max, args.q_min, args.q_max, args.eps, display, validate, args.weyl_method, args.weyl_enumeration))
 
     if args.output == "latex":
         output = latex_document(groups)
