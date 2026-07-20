@@ -37,6 +37,7 @@ from utility_general import is_diagonal
 import sympy as sp
 import numpy as np
 
+# These name strings are only used for making LaTeX document summaries
 group_constraints_SU_string = "$X^*HX=H$ and $\operatorname{det}(X)=1$"
 lie_algebra_constraints_SU_string = "$X^*H + HX=0$ and $\operatorname{tr}(X)=0$"
 

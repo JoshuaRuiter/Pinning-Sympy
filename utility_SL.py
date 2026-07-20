@@ -24,6 +24,7 @@ import sympy as sp
 import numpy as np
 from utility_general import is_diagonal
 
+# These name strings are only used for making LaTeX document summaries
 group_constraints_SL_string = "$\operatorname{det}(X)=1$"
 lie_algebra_constraints_SL_string = "$\operatorname{tr}(X)=0$"
 

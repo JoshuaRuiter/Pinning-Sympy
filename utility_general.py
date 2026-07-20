@@ -6,7 +6,6 @@ from copy import deepcopy
 # import multiprocessing as mp
 # import random
 
-
 def is_diagonal(my_matrix):
     # Return true if matrix is diagonal
     rows, cols = my_matrix.shape

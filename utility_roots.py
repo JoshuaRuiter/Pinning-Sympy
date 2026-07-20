@@ -390,6 +390,8 @@ def determine_roots(generic_torus_element,
     return root_space_dict
 
 def visualize_graph(graph):
+    # Build an ASCII string representation of a Dynkin diagram graph
+    
     if not graph:
         return ""
 

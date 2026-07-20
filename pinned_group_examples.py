@@ -42,15 +42,6 @@ from utility_SU import (group_constraints_SU,
                         generic_lie_algebra_element_SU)
 
 def main():
-    to_do_list = ("TO DO LIST:" + "\n\t" + 
-                  "Implement a Latex output file instead of console output" + "\n\t" +
-                  "Make some tools or tables for visualizing equations/identites" + "\n\t" +
-                  "Improve speed/optimization in a number of places. Top candidates:" + "\n\t\t" + 
-                      "fit_weyl_elements, weyl group nonzero pattern matching" + "\n\t" +
-                  "Find a way to implement belongs_to_generated_subgroup in a" + "\n\t\t" +
-                      "computationally feasible way, even if with random numerical stuff" +
-                  "Implement some kind of quadratic field extension class")
-    print(to_do_list)
     
     print("\nDemonstrating usage of pinned group class")
     start_time = time.perf_counter()
@@ -62,13 +53,13 @@ def main():
     ### A "full test" is 2<=n<=6 and 1<=q<=3
     ### Full test takes over an hour to run
     n_min = 1
-    n_max = 6
+    n_max = 4
     q_min = 1
     q_max = 3
     #############################################
     
     #####################################################################
-    ### Comment these out temporarily to shorten tests
+    ### Comment out some lines below for shorter tests
     n_max_SL = 3 # SL_4 and beyond take a long time to compute roots
     run_SL_tests(n_min, min(n_max, n_max_SL))
     run_SO_split_tests(n_min, n_max, q_min, q_max)
@@ -81,8 +72,6 @@ def main():
     end_time = time.perf_counter()
     execution_time = end_time - start_time
     print(f"Time to run tests: {round(execution_time/60, 1)} minutes")
-    
-    print("\n" + to_do_list)
 
 def run_SL_tests(n_min, n_max):
     print("\n" + '=' * 100 + "\n")

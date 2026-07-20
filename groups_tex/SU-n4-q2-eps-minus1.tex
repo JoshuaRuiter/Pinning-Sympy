@@ -311,7 +311,7 @@ for $X$. If there is a nonzero solution space, add $\alpha$ to the set of roots.
     \endhead
     $\left( -2, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & 0 & 0\\0 & 0 & 0 & 0\\- u_{0} & 0 & 0 & 0\\0 & 0 & 0 & 0\end{matrix}\right]}$ \\
     \hline
-    $\left( -1, \  -1, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & 0 & 0\\0 & 0 & 0 & 0\\0 & - \sqrt{d} u_{0} + u_{1} & 0 & 0\\\sqrt{d} u_{0} + u_{1} & 0 & 0 & 0\end{matrix}\right]}$ \\
+    $\left( -1, \  -1, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & 0 & 0\\0 & 0 & 0 & 0\\0 & - \sqrt{d} u_{1} + u_{0} & 0 & 0\\\sqrt{d} u_{1} + u_{0} & 0 & 0 & 0\end{matrix}\right]}$ \\
     \hline
     $\left( -1, \  1, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & 0 & 0\\\sqrt{d} u_{1} + u_{0} & 0 & 0 & 0\\0 & 0 & 0 & \sqrt{d} u_{1} - u_{0}\\0 & 0 & 0 & 0\end{matrix}\right]}$ \\
     \hline
@@ -319,9 +319,9 @@ for $X$. If there is a nonzero solution space, add $\alpha$ to the set of roots.
     \hline
     $\left( 0, \  2, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & 0 & 0\\0 & 0 & 0 & - u_{0}\\0 & 0 & 0 & 0\\0 & 0 & 0 & 0\end{matrix}\right]}$ \\
     \hline
-    $\left( 1, \  -1, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & \sqrt{d} u_{0} + u_{1} & 0 & 0\\0 & 0 & 0 & 0\\0 & 0 & 0 & 0\\0 & 0 & \sqrt{d} u_{0} - u_{1} & 0\end{matrix}\right]}$ \\
+    $\left( 1, \  -1, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & \sqrt{d} u_{1} + u_{0} & 0 & 0\\0 & 0 & 0 & 0\\0 & 0 & 0 & 0\\0 & 0 & \sqrt{d} u_{1} - u_{0} & 0\end{matrix}\right]}$ \\
     \hline
-    $\left( 1, \  1, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & 0 & - \sqrt{d} u_{1} + u_{0}\\0 & 0 & \sqrt{d} u_{1} + u_{0} & 0\\0 & 0 & 0 & 0\\0 & 0 & 0 & 0\end{matrix}\right]}$ \\
+    $\left( 1, \  1, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & 0 & - \sqrt{d} u_{0} + u_{1}\\0 & 0 & \sqrt{d} u_{0} + u_{1} & 0\\0 & 0 & 0 & 0\\0 & 0 & 0 & 0\end{matrix}\right]}$ \\
     \hline
     $\left( 2, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}0 & 0 & - u_{0} & 0\\0 & 0 & 0 & 0\\0 & 0 & 0 & 0\\0 & 0 & 0 & 0\end{matrix}\right]}$ \\
     \hline
@@ -354,7 +354,7 @@ The table below lists each root along with a generic element of the associated r
     \endhead
     $\left( -2, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\- u_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}$ \\
     \hline
-    $\left( -1, \  -1, \  0, \  0\right)$ & ${\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{0} + u_{1} & 1 & 0\\\sqrt{d} u_{0} + u_{1} & 0 & 0 & 1\end{matrix}\right]}$ \\
+    $\left( -1, \  -1, \  0, \  0\right)$ & ${\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{1} + u_{0} & 1 & 0\\\sqrt{d} u_{1} + u_{0} & 0 & 0 & 1\end{matrix}\right]}$ \\
     \hline
     $\left( -1, \  1, \  0, \  0\right)$ & ${\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} u_{1} + u_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} u_{1} - u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]}$ \\
     \hline
@@ -362,9 +362,9 @@ The table below lists each root along with a generic element of the associated r
     \hline
     $\left( 0, \  2, \  0, \  0\right)$ & ${\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & - u_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}$ \\
     \hline
-    $\left( 1, \  -1, \  0, \  0\right)$ & ${\left[\begin{matrix}1 & \sqrt{d} u_{0} + u_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{0} - u_{1} & 1\end{matrix}\right]}$ \\
+    $\left( 1, \  -1, \  0, \  0\right)$ & ${\left[\begin{matrix}1 & \sqrt{d} u_{1} + u_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{1} - u_{0} & 1\end{matrix}\right]}$ \\
     \hline
-    $\left( 1, \  1, \  0, \  0\right)$ & ${\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{1} + u_{0}\\0 & 1 & \sqrt{d} u_{1} + u_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}$ \\
+    $\left( 1, \  1, \  0, \  0\right)$ & ${\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{0} + u_{1}\\0 & 1 & \sqrt{d} u_{0} + u_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}$ \\
     \hline
     $\left( 2, \  0, \  0, \  0\right)$ & ${\left[\begin{matrix}1 & 0 & - u_{0} & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}$ \\
     \hline
@@ -424,83 +424,83 @@ We repeat here the table of linear combinations of roots. The quantity $N_{ij}^{
     $\alpha$ & $\beta$ & $i$ & $j$ &  $i\alpha + j\beta$ & $N_{ij}^{\alpha\beta}(u,v)$ \\
     \hline
     \endhead
-    $\left( -1, \  -1\right)$ & $\left( -1, \  1\right)$ & 1 & 1 & $\left( -2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$2 d u_{0} v_{1} - 2 u_{1} v_{0}$} \\
+    $\left( -1, \  -1\right)$ & $\left( -1, \  1\right)$ & 1 & 1 & $\left( -2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$2 d u_{1} v_{1} - 2 u_{0} v_{0}$} \\
     \hline
-    $\left( -1, \  -1\right)$ & $\left( 1, \  -1\right)$ & 1 & 1 & $\left( 0, \  -2\right)$ & \adjustbox{max width=0.5\textwidth}{$- 2 d u_{0} v_{0} - 2 u_{1} v_{1}$} \\
+    $\left( -1, \  -1\right)$ & $\left( 1, \  -1\right)$ & 1 & 1 & $\left( 0, \  -2\right)$ & \adjustbox{max width=0.5\textwidth}{$- 2 d u_{1} v_{1} - 2 u_{0} v_{0}$} \\
     \hline
-    $\left( -1, \  1\right)$ & $\left( -1, \  -1\right)$ & 1 & 1 & $\left( -2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$- 2 d u_{1} v_{0} + 2 u_{0} v_{1}$} \\
+    $\left( -1, \  1\right)$ & $\left( -1, \  -1\right)$ & 1 & 1 & $\left( -2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$- 2 d u_{1} v_{1} + 2 u_{0} v_{0}$} \\
     \hline
-    $\left( -1, \  1\right)$ & $\left( 1, \  1\right)$ & 1 & 1 & $\left( 0, \  2\right)$ & \adjustbox{max width=0.5\textwidth}{$2 d u_{1} v_{1} - 2 u_{0} v_{0}$} \\
+    $\left( -1, \  1\right)$ & $\left( 1, \  1\right)$ & 1 & 1 & $\left( 0, \  2\right)$ & \adjustbox{max width=0.5\textwidth}{$2 d u_{1} v_{0} - 2 u_{0} v_{1}$} \\
     \hline
-    $\left( 1, \  -1\right)$ & $\left( -1, \  -1\right)$ & 1 & 1 & $\left( 0, \  -2\right)$ & \adjustbox{max width=0.5\textwidth}{$2 d u_{0} v_{0} + 2 u_{1} v_{1}$} \\
+    $\left( 1, \  -1\right)$ & $\left( -1, \  -1\right)$ & 1 & 1 & $\left( 0, \  -2\right)$ & \adjustbox{max width=0.5\textwidth}{$2 d u_{1} v_{1} + 2 u_{0} v_{0}$} \\
     \hline
-    $\left( 1, \  -1\right)$ & $\left( 1, \  1\right)$ & 1 & 1 & $\left( 2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$- 2 d u_{0} v_{1} - 2 u_{1} v_{0}$} \\
+    $\left( 1, \  -1\right)$ & $\left( 1, \  1\right)$ & 1 & 1 & $\left( 2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$- 2 d u_{1} v_{0} - 2 u_{0} v_{1}$} \\
     \hline
-    $\left( 1, \  1\right)$ & $\left( -1, \  1\right)$ & 1 & 1 & $\left( 0, \  2\right)$ & \adjustbox{max width=0.5\textwidth}{$- 2 d u_{1} v_{1} + 2 u_{0} v_{0}$} \\
+    $\left( 1, \  1\right)$ & $\left( -1, \  1\right)$ & 1 & 1 & $\left( 0, \  2\right)$ & \adjustbox{max width=0.5\textwidth}{$- 2 d u_{0} v_{1} + 2 u_{1} v_{0}$} \\
     \hline
-    $\left( 1, \  1\right)$ & $\left( 1, \  -1\right)$ & 1 & 1 & $\left( 2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$2 d u_{1} v_{0} + 2 u_{0} v_{1}$} \\
+    $\left( 1, \  1\right)$ & $\left( 1, \  -1\right)$ & 1 & 1 & $\left( 2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$2 d u_{0} v_{1} + 2 u_{1} v_{0}$} \\
     \hline
-    $\left( -2, \  0\right)$ & $\left( 1, \  -1\right)$ & 1 & 1 & $\left( -1, \  -1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}u_{0} v_{0} & - u_{0} v_{1}\end{matrix}\right]$} \\
+    $\left( -2, \  0\right)$ & $\left( 1, \  -1\right)$ & 1 & 1 & $\left( -1, \  -1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}- u_{0} v_{0} & u_{0} v_{1}\end{matrix}\right]$} \\
     \hline
-    $\left( -2, \  0\right)$ & $\left( 1, \  -1\right)$ & 1 & 2 & $\left( 0, \  -2\right)$ & \adjustbox{max width=0.5\textwidth}{$u_{0} \left(d v_{0}^{2} - v_{1}^{2}\right)$} \\
+    $\left( -2, \  0\right)$ & $\left( 1, \  -1\right)$ & 1 & 2 & $\left( 0, \  -2\right)$ & \adjustbox{max width=0.5\textwidth}{$u_{0} \left(d v_{1}^{2} - v_{0}^{2}\right)$} \\
     \hline
-    $\left( -2, \  0\right)$ & $\left( 1, \  1\right)$ & 1 & 1 & $\left( -1, \  1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}u_{0} v_{0} & u_{0} v_{1}\end{matrix}\right]$} \\
+    $\left( -2, \  0\right)$ & $\left( 1, \  1\right)$ & 1 & 1 & $\left( -1, \  1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}u_{0} v_{1} & u_{0} v_{0}\end{matrix}\right]$} \\
     \hline
-    $\left( -2, \  0\right)$ & $\left( 1, \  1\right)$ & 1 & 2 & $\left( 0, \  2\right)$ & \adjustbox{max width=0.5\textwidth}{$u_{0} \left(- d v_{1}^{2} + v_{0}^{2}\right)$} \\
+    $\left( -2, \  0\right)$ & $\left( 1, \  1\right)$ & 1 & 2 & $\left( 0, \  2\right)$ & \adjustbox{max width=0.5\textwidth}{$u_{0} \left(- d v_{0}^{2} + v_{1}^{2}\right)$} \\
     \hline
-    $\left( -1, \  -1\right)$ & $\left( 0, \  2\right)$ & 1 & 1 & $\left( -1, \  1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}u_{1} v_{0} & u_{0} v_{0}\end{matrix}\right]$} \\
+    $\left( -1, \  -1\right)$ & $\left( 0, \  2\right)$ & 1 & 1 & $\left( -1, \  1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}u_{0} v_{0} & u_{1} v_{0}\end{matrix}\right]$} \\
     \hline
-    $\left( -1, \  -1\right)$ & $\left( 0, \  2\right)$ & 2 & 1 & $\left( -2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$v_{0} \left(d u_{0}^{2} - u_{1}^{2}\right)$} \\
+    $\left( -1, \  -1\right)$ & $\left( 0, \  2\right)$ & 2 & 1 & $\left( -2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$v_{0} \left(d u_{1}^{2} - u_{0}^{2}\right)$} \\
     \hline
-    $\left( -1, \  -1\right)$ & $\left( 2, \  0\right)$ & 1 & 1 & $\left( 1, \  -1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}- u_{0} v_{0} & u_{1} v_{0}\end{matrix}\right]$} \\
+    $\left( -1, \  -1\right)$ & $\left( 2, \  0\right)$ & 1 & 1 & $\left( 1, \  -1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}u_{0} v_{0} & - u_{1} v_{0}\end{matrix}\right]$} \\
     \hline
-    $\left( -1, \  -1\right)$ & $\left( 2, \  0\right)$ & 2 & 1 & $\left( 0, \  -2\right)$ & \adjustbox{max width=0.5\textwidth}{$v_{0} \left(d u_{0}^{2} - u_{1}^{2}\right)$} \\
+    $\left( -1, \  -1\right)$ & $\left( 2, \  0\right)$ & 2 & 1 & $\left( 0, \  -2\right)$ & \adjustbox{max width=0.5\textwidth}{$v_{0} \left(d u_{1}^{2} - u_{0}^{2}\right)$} \\
     \hline
-    $\left( -1, \  1\right)$ & $\left( 0, \  -2\right)$ & 1 & 1 & $\left( -1, \  -1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}u_{1} v_{0} & u_{0} v_{0}\end{matrix}\right]$} \\
+    $\left( -1, \  1\right)$ & $\left( 0, \  -2\right)$ & 1 & 1 & $\left( -1, \  -1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}u_{0} v_{0} & u_{1} v_{0}\end{matrix}\right]$} \\
     \hline
     $\left( -1, \  1\right)$ & $\left( 0, \  -2\right)$ & 2 & 1 & $\left( -2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$v_{0} \left(- d u_{1}^{2} + u_{0}^{2}\right)$} \\
     \hline
-    $\left( -1, \  1\right)$ & $\left( 2, \  0\right)$ & 1 & 1 & $\left( 1, \  1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}- u_{0} v_{0} & - u_{1} v_{0}\end{matrix}\right]$} \\
+    $\left( -1, \  1\right)$ & $\left( 2, \  0\right)$ & 1 & 1 & $\left( 1, \  1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}- u_{1} v_{0} & - u_{0} v_{0}\end{matrix}\right]$} \\
     \hline
     $\left( -1, \  1\right)$ & $\left( 2, \  0\right)$ & 2 & 1 & $\left( 0, \  2\right)$ & \adjustbox{max width=0.5\textwidth}{$v_{0} \left(- d u_{1}^{2} + u_{0}^{2}\right)$} \\
     \hline
-    $\left( 0, \  -2\right)$ & $\left( -1, \  1\right)$ & 1 & 1 & $\left( -1, \  -1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}- u_{0} v_{1} & - u_{0} v_{0}\end{matrix}\right]$} \\
+    $\left( 0, \  -2\right)$ & $\left( -1, \  1\right)$ & 1 & 1 & $\left( -1, \  -1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}- u_{0} v_{0} & - u_{0} v_{1}\end{matrix}\right]$} \\
     \hline
     $\left( 0, \  -2\right)$ & $\left( -1, \  1\right)$ & 1 & 2 & $\left( -2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$u_{0} \left(d v_{1}^{2} - v_{0}^{2}\right)$} \\
     \hline
-    $\left( 0, \  -2\right)$ & $\left( 1, \  1\right)$ & 1 & 1 & $\left( 1, \  -1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}- u_{0} v_{1} & u_{0} v_{0}\end{matrix}\right]$} \\
+    $\left( 0, \  -2\right)$ & $\left( 1, \  1\right)$ & 1 & 1 & $\left( 1, \  -1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}u_{0} v_{1} & - u_{0} v_{0}\end{matrix}\right]$} \\
     \hline
-    $\left( 0, \  -2\right)$ & $\left( 1, \  1\right)$ & 1 & 2 & $\left( 2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$u_{0} \left(- d v_{1}^{2} + v_{0}^{2}\right)$} \\
+    $\left( 0, \  -2\right)$ & $\left( 1, \  1\right)$ & 1 & 2 & $\left( 2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$u_{0} \left(- d v_{0}^{2} + v_{1}^{2}\right)$} \\
     \hline
-    $\left( 0, \  2\right)$ & $\left( -1, \  -1\right)$ & 1 & 1 & $\left( -1, \  1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}- u_{0} v_{1} & - u_{0} v_{0}\end{matrix}\right]$} \\
+    $\left( 0, \  2\right)$ & $\left( -1, \  -1\right)$ & 1 & 1 & $\left( -1, \  1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}- u_{0} v_{0} & - u_{0} v_{1}\end{matrix}\right]$} \\
     \hline
-    $\left( 0, \  2\right)$ & $\left( -1, \  -1\right)$ & 1 & 2 & $\left( -2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$u_{0} \left(- d v_{0}^{2} + v_{1}^{2}\right)$} \\
+    $\left( 0, \  2\right)$ & $\left( -1, \  -1\right)$ & 1 & 2 & $\left( -2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$u_{0} \left(- d v_{1}^{2} + v_{0}^{2}\right)$} \\
     \hline
-    $\left( 0, \  2\right)$ & $\left( 1, \  -1\right)$ & 1 & 1 & $\left( 1, \  1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}u_{0} v_{1} & - u_{0} v_{0}\end{matrix}\right]$} \\
+    $\left( 0, \  2\right)$ & $\left( 1, \  -1\right)$ & 1 & 1 & $\left( 1, \  1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}- u_{0} v_{1} & u_{0} v_{0}\end{matrix}\right]$} \\
     \hline
-    $\left( 0, \  2\right)$ & $\left( 1, \  -1\right)$ & 1 & 2 & $\left( 2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$u_{0} \left(d v_{0}^{2} - v_{1}^{2}\right)$} \\
+    $\left( 0, \  2\right)$ & $\left( 1, \  -1\right)$ & 1 & 2 & $\left( 2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$u_{0} \left(d v_{1}^{2} - v_{0}^{2}\right)$} \\
     \hline
-    $\left( 1, \  -1\right)$ & $\left( -2, \  0\right)$ & 1 & 1 & $\left( -1, \  -1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}- u_{0} v_{0} & u_{1} v_{0}\end{matrix}\right]$} \\
+    $\left( 1, \  -1\right)$ & $\left( -2, \  0\right)$ & 1 & 1 & $\left( -1, \  -1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}u_{0} v_{0} & - u_{1} v_{0}\end{matrix}\right]$} \\
     \hline
-    $\left( 1, \  -1\right)$ & $\left( -2, \  0\right)$ & 2 & 1 & $\left( 0, \  -2\right)$ & \adjustbox{max width=0.5\textwidth}{$v_{0} \left(- d u_{0}^{2} + u_{1}^{2}\right)$} \\
+    $\left( 1, \  -1\right)$ & $\left( -2, \  0\right)$ & 2 & 1 & $\left( 0, \  -2\right)$ & \adjustbox{max width=0.5\textwidth}{$v_{0} \left(- d u_{1}^{2} + u_{0}^{2}\right)$} \\
     \hline
-    $\left( 1, \  -1\right)$ & $\left( 0, \  2\right)$ & 1 & 1 & $\left( 1, \  1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}- u_{1} v_{0} & u_{0} v_{0}\end{matrix}\right]$} \\
+    $\left( 1, \  -1\right)$ & $\left( 0, \  2\right)$ & 1 & 1 & $\left( 1, \  1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}u_{1} v_{0} & - u_{0} v_{0}\end{matrix}\right]$} \\
     \hline
-    $\left( 1, \  -1\right)$ & $\left( 0, \  2\right)$ & 2 & 1 & $\left( 2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$v_{0} \left(- d u_{0}^{2} + u_{1}^{2}\right)$} \\
+    $\left( 1, \  -1\right)$ & $\left( 0, \  2\right)$ & 2 & 1 & $\left( 2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$v_{0} \left(- d u_{1}^{2} + u_{0}^{2}\right)$} \\
     \hline
-    $\left( 1, \  1\right)$ & $\left( -2, \  0\right)$ & 1 & 1 & $\left( -1, \  1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}- u_{0} v_{0} & - u_{1} v_{0}\end{matrix}\right]$} \\
+    $\left( 1, \  1\right)$ & $\left( -2, \  0\right)$ & 1 & 1 & $\left( -1, \  1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}- u_{1} v_{0} & - u_{0} v_{0}\end{matrix}\right]$} \\
     \hline
-    $\left( 1, \  1\right)$ & $\left( -2, \  0\right)$ & 2 & 1 & $\left( 0, \  2\right)$ & \adjustbox{max width=0.5\textwidth}{$v_{0} \left(d u_{1}^{2} - u_{0}^{2}\right)$} \\
+    $\left( 1, \  1\right)$ & $\left( -2, \  0\right)$ & 2 & 1 & $\left( 0, \  2\right)$ & \adjustbox{max width=0.5\textwidth}{$v_{0} \left(d u_{0}^{2} - u_{1}^{2}\right)$} \\
     \hline
-    $\left( 1, \  1\right)$ & $\left( 0, \  -2\right)$ & 1 & 1 & $\left( 1, \  -1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}u_{1} v_{0} & - u_{0} v_{0}\end{matrix}\right]$} \\
+    $\left( 1, \  1\right)$ & $\left( 0, \  -2\right)$ & 1 & 1 & $\left( 1, \  -1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}- u_{1} v_{0} & u_{0} v_{0}\end{matrix}\right]$} \\
     \hline
-    $\left( 1, \  1\right)$ & $\left( 0, \  -2\right)$ & 2 & 1 & $\left( 2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$v_{0} \left(d u_{1}^{2} - u_{0}^{2}\right)$} \\
+    $\left( 1, \  1\right)$ & $\left( 0, \  -2\right)$ & 2 & 1 & $\left( 2, \  0\right)$ & \adjustbox{max width=0.5\textwidth}{$v_{0} \left(d u_{0}^{2} - u_{1}^{2}\right)$} \\
     \hline
-    $\left( 2, \  0\right)$ & $\left( -1, \  -1\right)$ & 1 & 1 & $\left( 1, \  -1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}u_{0} v_{0} & - u_{0} v_{1}\end{matrix}\right]$} \\
+    $\left( 2, \  0\right)$ & $\left( -1, \  -1\right)$ & 1 & 1 & $\left( 1, \  -1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}- u_{0} v_{0} & u_{0} v_{1}\end{matrix}\right]$} \\
     \hline
-    $\left( 2, \  0\right)$ & $\left( -1, \  -1\right)$ & 1 & 2 & $\left( 0, \  -2\right)$ & \adjustbox{max width=0.5\textwidth}{$u_{0} \left(- d v_{0}^{2} + v_{1}^{2}\right)$} \\
+    $\left( 2, \  0\right)$ & $\left( -1, \  -1\right)$ & 1 & 2 & $\left( 0, \  -2\right)$ & \adjustbox{max width=0.5\textwidth}{$u_{0} \left(- d v_{1}^{2} + v_{0}^{2}\right)$} \\
     \hline
-    $\left( 2, \  0\right)$ & $\left( -1, \  1\right)$ & 1 & 1 & $\left( 1, \  1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}u_{0} v_{0} & u_{0} v_{1}\end{matrix}\right]$} \\
+    $\left( 2, \  0\right)$ & $\left( -1, \  1\right)$ & 1 & 1 & $\left( 1, \  1\right)$ & \adjustbox{max width=0.5\textwidth}{$\left[\begin{matrix}u_{0} v_{1} & u_{0} v_{0}\end{matrix}\right]$} \\
     \hline
     $\left( 2, \  0\right)$ & $\left( -1, \  1\right)$ & 1 & 2 & $\left( 0, \  2\right)$ & \adjustbox{max width=0.5\textwidth}{$u_{0} \left(d v_{1}^{2} - v_{0}^{2}\right)$} \\
     \hline
@@ -522,70 +522,70 @@ We repeat here the table of linear combinations of roots. The quantity $N_{ij}^{
 \alpha = \left( -2, \  0, \  0, \  0\right), \quad \beta = \left( 1, \  -1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(u_{0}\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}u_{0} v_{0}\\- u_{0} v_{1}\end{matrix}\right]\right) X_{\alpha + 2\beta}\left(u_{0} \left(d v_{0}^{2} - v_{1}^{2}\right)\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(u_{0}\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}- u_{0} v_{0}\\u_{0} v_{1}\end{matrix}\right]\right) X_{\alpha + 2\beta}\left(u_{0} \left(d v_{1}^{2} - v_{0}^{2}\right)\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\- u_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & \sqrt{d} v_{0} + v_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} v_{0} - v_{1} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\u_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & - \sqrt{d} v_{0} - v_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} v_{0} + v_{1} & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - u_{0} \left(\sqrt{d} v_{0} + v_{1}\right) & 1 & 0\\u_{0} \left(\sqrt{d} v_{0} - v_{1}\right) & u_{0} \left(- d v_{0}^{2} + v_{1}^{2}\right) & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\- u_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & \sqrt{d} v_{1} + v_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} v_{1} - v_{0} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\u_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & - \sqrt{d} v_{1} - v_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} v_{1} + v_{0} & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - u_{0} \left(\sqrt{d} v_{1} + v_{0}\right) & 1 & 0\\u_{0} \left(\sqrt{d} v_{1} - v_{0}\right) & u_{0} \left(- d v_{1}^{2} + v_{0}^{2}\right) & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( -2, \  0, \  0, \  0\right), \quad \beta = \left( 1, \  1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(u_{0}\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}u_{0} v_{0}\\u_{0} v_{1}\end{matrix}\right]\right) X_{\alpha + 2\beta}\left(u_{0} \left(- d v_{1}^{2} + v_{0}^{2}\right)\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(u_{0}\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}u_{0} v_{1}\\u_{0} v_{0}\end{matrix}\right]\right) X_{\alpha + 2\beta}\left(u_{0} \left(- d v_{0}^{2} + v_{1}^{2}\right)\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\- u_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} v_{1} + v_{0}\\0 & 1 & \sqrt{d} v_{1} + v_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\u_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & \sqrt{d} v_{1} - v_{0}\\0 & 1 & - \sqrt{d} v_{1} - v_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\u_{0} \left(\sqrt{d} v_{1} + v_{0}\right) & 1 & 0 & u_{0} \left(d v_{1}^{2} - v_{0}^{2}\right)\\0 & 0 & 1 & u_{0} \left(\sqrt{d} v_{1} - v_{0}\right)\\0 & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\- u_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} v_{0} + v_{1}\\0 & 1 & \sqrt{d} v_{0} + v_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\u_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & \sqrt{d} v_{0} - v_{1}\\0 & 1 & - \sqrt{d} v_{0} - v_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\u_{0} \left(\sqrt{d} v_{0} + v_{1}\right) & 1 & 0 & u_{0} \left(d v_{0}^{2} - v_{1}^{2}\right)\\0 & 0 & 1 & u_{0} \left(\sqrt{d} v_{0} - v_{1}\right)\\0 & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( -1, \  -1, \  0, \  0\right), \quad \beta = \left( -1, \  1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(2 d u_{0} v_{1} - 2 u_{1} v_{0}\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(2 d u_{1} v_{1} - 2 u_{0} v_{0}\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{0} + u_{1} & 1 & 0\\\sqrt{d} u_{0} + u_{1} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} v_{1} + v_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} v_{1} - v_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & \sqrt{d} u_{0} - u_{1} & 1 & 0\\- \sqrt{d} u_{0} - u_{1} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\- \sqrt{d} v_{1} - v_{0} & 1 & 0 & 0\\0 & 0 & 1 & - \sqrt{d} v_{1} + v_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\- 2 d u_{0} v_{1} + 2 u_{1} v_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{1} + u_{0} & 1 & 0\\\sqrt{d} u_{1} + u_{0} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} v_{1} + v_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} v_{1} - v_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & \sqrt{d} u_{1} - u_{0} & 1 & 0\\- \sqrt{d} u_{1} - u_{0} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\- \sqrt{d} v_{1} - v_{0} & 1 & 0 & 0\\0 & 0 & 1 & - \sqrt{d} v_{1} + v_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\- 2 d u_{1} v_{1} + 2 u_{0} v_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( -1, \  -1, \  0, \  0\right), \quad \beta = \left( 0, \  2, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(v_{0}\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}u_{1} v_{0}\\u_{0} v_{0}\end{matrix}\right]\right) X_{2\alpha + \beta}\left(v_{0} \left(d u_{0}^{2} - u_{1}^{2}\right)\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(v_{0}\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}u_{0} v_{0}\\u_{1} v_{0}\end{matrix}\right]\right) X_{2\alpha + \beta}\left(v_{0} \left(d u_{1}^{2} - u_{0}^{2}\right)\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{0} + u_{1} & 1 & 0\\\sqrt{d} u_{0} + u_{1} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & - v_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & \sqrt{d} u_{0} - u_{1} & 1 & 0\\- \sqrt{d} u_{0} - u_{1} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & v_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\v_{0} \left(\sqrt{d} u_{0} + u_{1}\right) & 1 & 0 & 0\\v_{0} \left(- d u_{0}^{2} + u_{1}^{2}\right) & 0 & 1 & v_{0} \left(\sqrt{d} u_{0} - u_{1}\right)\\0 & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{1} + u_{0} & 1 & 0\\\sqrt{d} u_{1} + u_{0} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & - v_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & \sqrt{d} u_{1} - u_{0} & 1 & 0\\- \sqrt{d} u_{1} - u_{0} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & v_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\v_{0} \left(\sqrt{d} u_{1} + u_{0}\right) & 1 & 0 & 0\\v_{0} \left(- d u_{1}^{2} + u_{0}^{2}\right) & 0 & 1 & v_{0} \left(\sqrt{d} u_{1} - u_{0}\right)\\0 & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( -1, \  -1, \  0, \  0\right), \quad \beta = \left( 1, \  -1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(- 2 d u_{0} v_{0} - 2 u_{1} v_{1}\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(- 2 d u_{1} v_{1} - 2 u_{0} v_{0}\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{0} + u_{1} & 1 & 0\\\sqrt{d} u_{0} + u_{1} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & \sqrt{d} v_{0} + v_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} v_{0} - v_{1} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & \sqrt{d} u_{0} - u_{1} & 1 & 0\\- \sqrt{d} u_{0} - u_{1} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & - \sqrt{d} v_{0} - v_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} v_{0} + v_{1} & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 2 d u_{0} v_{0} + 2 u_{1} v_{1} & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{1} + u_{0} & 1 & 0\\\sqrt{d} u_{1} + u_{0} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & \sqrt{d} v_{1} + v_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} v_{1} - v_{0} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & \sqrt{d} u_{1} - u_{0} & 1 & 0\\- \sqrt{d} u_{1} - u_{0} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & - \sqrt{d} v_{1} - v_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} v_{1} + v_{0} & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 2 d u_{1} v_{1} + 2 u_{0} v_{0} & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( -1, \  -1, \  0, \  0\right), \quad \beta = \left( 2, \  0, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(v_{0}\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}- u_{0} v_{0}\\u_{1} v_{0}\end{matrix}\right]\right) X_{2\alpha + \beta}\left(v_{0} \left(d u_{0}^{2} - u_{1}^{2}\right)\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(v_{0}\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}u_{0} v_{0}\\- u_{1} v_{0}\end{matrix}\right]\right) X_{2\alpha + \beta}\left(v_{0} \left(d u_{1}^{2} - u_{0}^{2}\right)\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{0} + u_{1} & 1 & 0\\\sqrt{d} u_{0} + u_{1} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & - v_{0} & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & \sqrt{d} u_{0} - u_{1} & 1 & 0\\- \sqrt{d} u_{0} - u_{1} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & v_{0} & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & v_{0} \left(- \sqrt{d} u_{0} + u_{1}\right) & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & v_{0} \left(- d u_{0}^{2} + u_{1}^{2}\right) & - v_{0} \left(\sqrt{d} u_{0} + u_{1}\right) & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{1} + u_{0} & 1 & 0\\\sqrt{d} u_{1} + u_{0} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & - v_{0} & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & \sqrt{d} u_{1} - u_{0} & 1 & 0\\- \sqrt{d} u_{1} - u_{0} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & v_{0} & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & v_{0} \left(- \sqrt{d} u_{1} + u_{0}\right) & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & v_{0} \left(- d u_{1}^{2} + u_{0}^{2}\right) & - v_{0} \left(\sqrt{d} u_{1} + u_{0}\right) & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( -1, \  1, \  0, \  0\right), \quad \beta = \left( -1, \  -1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(- 2 d u_{1} v_{0} + 2 u_{0} v_{1}\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(- 2 d u_{1} v_{1} + 2 u_{0} v_{0}\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} u_{1} + u_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} u_{1} - u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} v_{0} + v_{1} & 1 & 0\\\sqrt{d} v_{0} + v_{1} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\- \sqrt{d} u_{1} - u_{0} & 1 & 0 & 0\\0 & 0 & 1 & - \sqrt{d} u_{1} + u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & \sqrt{d} v_{0} - v_{1} & 1 & 0\\- \sqrt{d} v_{0} - v_{1} & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\2 d u_{1} v_{0} - 2 u_{0} v_{1} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} u_{1} + u_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} u_{1} - u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} v_{1} + v_{0} & 1 & 0\\\sqrt{d} v_{1} + v_{0} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\- \sqrt{d} u_{1} - u_{0} & 1 & 0 & 0\\0 & 0 & 1 & - \sqrt{d} u_{1} + u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & \sqrt{d} v_{1} - v_{0} & 1 & 0\\- \sqrt{d} v_{1} - v_{0} & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\2 d u_{1} v_{1} - 2 u_{0} v_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( -1, \  1, \  0, \  0\right), \quad \beta = \left( 0, \  -2, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(v_{0}\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}u_{1} v_{0}\\u_{0} v_{0}\end{matrix}\right]\right) X_{2\alpha + \beta}\left(v_{0} \left(- d u_{1}^{2} + u_{0}^{2}\right)\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(v_{0}\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}u_{0} v_{0}\\u_{1} v_{0}\end{matrix}\right]\right) X_{2\alpha + \beta}\left(v_{0} \left(- d u_{1}^{2} + u_{0}^{2}\right)\right)}
 \]
 \[
 \scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} u_{1} + u_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} u_{1} - u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & - v_{0} & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\- \sqrt{d} u_{1} - u_{0} & 1 & 0 & 0\\0 & 0 & 1 & - \sqrt{d} u_{1} + u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & v_{0} & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\v_{0} \left(d u_{1}^{2} - u_{0}^{2}\right) & v_{0} \left(- \sqrt{d} u_{1} + u_{0}\right) & 1 & 0\\v_{0} \left(\sqrt{d} u_{1} + u_{0}\right) & 0 & 0 & 1\end{matrix}\right]}}
@@ -594,16 +594,16 @@ We repeat here the table of linear combinations of roots. The quantity $N_{ij}^{
 \alpha = \left( -1, \  1, \  0, \  0\right), \quad \beta = \left( 1, \  1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(2 d u_{1} v_{1} - 2 u_{0} v_{0}\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(2 d u_{1} v_{0} - 2 u_{0} v_{1}\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} u_{1} + u_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} u_{1} - u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} v_{1} + v_{0}\\0 & 1 & \sqrt{d} v_{1} + v_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\- \sqrt{d} u_{1} - u_{0} & 1 & 0 & 0\\0 & 0 & 1 & - \sqrt{d} u_{1} + u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & \sqrt{d} v_{1} - v_{0}\\0 & 1 & - \sqrt{d} v_{1} - v_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & - 2 d u_{1} v_{1} + 2 u_{0} v_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} u_{1} + u_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} u_{1} - u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} v_{0} + v_{1}\\0 & 1 & \sqrt{d} v_{0} + v_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\- \sqrt{d} u_{1} - u_{0} & 1 & 0 & 0\\0 & 0 & 1 & - \sqrt{d} u_{1} + u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & \sqrt{d} v_{0} - v_{1}\\0 & 1 & - \sqrt{d} v_{0} - v_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & - 2 d u_{1} v_{0} + 2 u_{0} v_{1}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( -1, \  1, \  0, \  0\right), \quad \beta = \left( 2, \  0, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(v_{0}\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}- u_{0} v_{0}\\- u_{1} v_{0}\end{matrix}\right]\right) X_{2\alpha + \beta}\left(v_{0} \left(- d u_{1}^{2} + u_{0}^{2}\right)\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(v_{0}\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}- u_{1} v_{0}\\- u_{0} v_{0}\end{matrix}\right]\right) X_{2\alpha + \beta}\left(v_{0} \left(- d u_{1}^{2} + u_{0}^{2}\right)\right)}
 \]
 \[
 \scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} u_{1} + u_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} u_{1} - u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & - v_{0} & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\- \sqrt{d} u_{1} - u_{0} & 1 & 0 & 0\\0 & 0 & 1 & - \sqrt{d} u_{1} + u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & v_{0} & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & v_{0} \left(\sqrt{d} u_{1} - u_{0}\right)\\0 & 1 & - v_{0} \left(\sqrt{d} u_{1} + u_{0}\right) & v_{0} \left(d u_{1}^{2} - u_{0}^{2}\right)\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
@@ -612,7 +612,7 @@ We repeat here the table of linear combinations of roots. The quantity $N_{ij}^{
 \alpha = \left( 0, \  -2, \  0, \  0\right), \quad \beta = \left( -1, \  1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(u_{0}\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}- u_{0} v_{1}\\- u_{0} v_{0}\end{matrix}\right]\right) X_{\alpha + 2\beta}\left(u_{0} \left(d v_{1}^{2} - v_{0}^{2}\right)\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(u_{0}\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}- u_{0} v_{0}\\- u_{0} v_{1}\end{matrix}\right]\right) X_{\alpha + 2\beta}\left(u_{0} \left(d v_{1}^{2} - v_{0}^{2}\right)\right)}
 \]
 \[
 \scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & - u_{0} & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} v_{1} + v_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} v_{1} - v_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & u_{0} & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\- \sqrt{d} v_{1} - v_{0} & 1 & 0 & 0\\0 & 0 & 1 & - \sqrt{d} v_{1} + v_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\u_{0} \left(- d v_{1}^{2} + v_{0}^{2}\right) & u_{0} \left(\sqrt{d} v_{1} - v_{0}\right) & 1 & 0\\- u_{0} \left(\sqrt{d} v_{1} + v_{0}\right) & 0 & 0 & 1\end{matrix}\right]}}
@@ -621,115 +621,115 @@ We repeat here the table of linear combinations of roots. The quantity $N_{ij}^{
 \alpha = \left( 0, \  -2, \  0, \  0\right), \quad \beta = \left( 1, \  1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(u_{0}\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}- u_{0} v_{1}\\u_{0} v_{0}\end{matrix}\right]\right) X_{\alpha + 2\beta}\left(u_{0} \left(- d v_{1}^{2} + v_{0}^{2}\right)\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(u_{0}\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}u_{0} v_{1}\\- u_{0} v_{0}\end{matrix}\right]\right) X_{\alpha + 2\beta}\left(u_{0} \left(- d v_{0}^{2} + v_{1}^{2}\right)\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & - u_{0} & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} v_{1} + v_{0}\\0 & 1 & \sqrt{d} v_{1} + v_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & u_{0} & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & \sqrt{d} v_{1} - v_{0}\\0 & 1 & - \sqrt{d} v_{1} - v_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & u_{0} \left(- \sqrt{d} v_{1} + v_{0}\right) & u_{0} \left(d v_{1}^{2} - v_{0}^{2}\right) & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - u_{0} \left(\sqrt{d} v_{1} + v_{0}\right) & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & - u_{0} & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} v_{0} + v_{1}\\0 & 1 & \sqrt{d} v_{0} + v_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & u_{0} & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & \sqrt{d} v_{0} - v_{1}\\0 & 1 & - \sqrt{d} v_{0} - v_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & u_{0} \left(- \sqrt{d} v_{0} + v_{1}\right) & u_{0} \left(d v_{0}^{2} - v_{1}^{2}\right) & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - u_{0} \left(\sqrt{d} v_{0} + v_{1}\right) & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( 0, \  2, \  0, \  0\right), \quad \beta = \left( -1, \  -1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(u_{0}\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}- u_{0} v_{1}\\- u_{0} v_{0}\end{matrix}\right]\right) X_{\alpha + 2\beta}\left(u_{0} \left(- d v_{0}^{2} + v_{1}^{2}\right)\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(u_{0}\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}- u_{0} v_{0}\\- u_{0} v_{1}\end{matrix}\right]\right) X_{\alpha + 2\beta}\left(u_{0} \left(- d v_{1}^{2} + v_{0}^{2}\right)\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & - u_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} v_{0} + v_{1} & 1 & 0\\\sqrt{d} v_{0} + v_{1} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & u_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & \sqrt{d} v_{0} - v_{1} & 1 & 0\\- \sqrt{d} v_{0} - v_{1} & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\- u_{0} \left(\sqrt{d} v_{0} + v_{1}\right) & 1 & 0 & 0\\u_{0} \left(d v_{0}^{2} - v_{1}^{2}\right) & 0 & 1 & u_{0} \left(- \sqrt{d} v_{0} + v_{1}\right)\\0 & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & - u_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} v_{1} + v_{0} & 1 & 0\\\sqrt{d} v_{1} + v_{0} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & u_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & \sqrt{d} v_{1} - v_{0} & 1 & 0\\- \sqrt{d} v_{1} - v_{0} & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\- u_{0} \left(\sqrt{d} v_{1} + v_{0}\right) & 1 & 0 & 0\\u_{0} \left(d v_{1}^{2} - v_{0}^{2}\right) & 0 & 1 & u_{0} \left(- \sqrt{d} v_{1} + v_{0}\right)\\0 & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( 0, \  2, \  0, \  0\right), \quad \beta = \left( 1, \  -1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(u_{0}\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}u_{0} v_{1}\\- u_{0} v_{0}\end{matrix}\right]\right) X_{\alpha + 2\beta}\left(u_{0} \left(d v_{0}^{2} - v_{1}^{2}\right)\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(u_{0}\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}- u_{0} v_{1}\\u_{0} v_{0}\end{matrix}\right]\right) X_{\alpha + 2\beta}\left(u_{0} \left(d v_{1}^{2} - v_{0}^{2}\right)\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & - u_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & \sqrt{d} v_{0} + v_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} v_{0} - v_{1} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & u_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & - \sqrt{d} v_{0} - v_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} v_{0} + v_{1} & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & u_{0} \left(- d v_{0}^{2} + v_{1}^{2}\right) & u_{0} \left(\sqrt{d} v_{0} + v_{1}\right)\\0 & 1 & u_{0} \left(- \sqrt{d} v_{0} + v_{1}\right) & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & - u_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & \sqrt{d} v_{1} + v_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} v_{1} - v_{0} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & u_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & - \sqrt{d} v_{1} - v_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} v_{1} + v_{0} & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & u_{0} \left(- d v_{1}^{2} + v_{0}^{2}\right) & u_{0} \left(\sqrt{d} v_{1} + v_{0}\right)\\0 & 1 & u_{0} \left(- \sqrt{d} v_{1} + v_{0}\right) & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( 1, \  -1, \  0, \  0\right), \quad \beta = \left( -2, \  0, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(v_{0}\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}- u_{0} v_{0}\\u_{1} v_{0}\end{matrix}\right]\right) X_{2\alpha + \beta}\left(v_{0} \left(- d u_{0}^{2} + u_{1}^{2}\right)\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(v_{0}\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}u_{0} v_{0}\\- u_{1} v_{0}\end{matrix}\right]\right) X_{2\alpha + \beta}\left(v_{0} \left(- d u_{1}^{2} + u_{0}^{2}\right)\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & \sqrt{d} u_{0} + u_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{0} - u_{1} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\- v_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & - \sqrt{d} u_{0} - u_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} u_{0} + u_{1} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\v_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & v_{0} \left(\sqrt{d} u_{0} + u_{1}\right) & 1 & 0\\v_{0} \left(- \sqrt{d} u_{0} + u_{1}\right) & v_{0} \left(d u_{0}^{2} - u_{1}^{2}\right) & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & \sqrt{d} u_{1} + u_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{1} - u_{0} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\- v_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & - \sqrt{d} u_{1} - u_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} u_{1} + u_{0} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\v_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & v_{0} \left(\sqrt{d} u_{1} + u_{0}\right) & 1 & 0\\v_{0} \left(- \sqrt{d} u_{1} + u_{0}\right) & v_{0} \left(d u_{1}^{2} - u_{0}^{2}\right) & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( 1, \  -1, \  0, \  0\right), \quad \beta = \left( -1, \  -1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(2 d u_{0} v_{0} + 2 u_{1} v_{1}\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(2 d u_{1} v_{1} + 2 u_{0} v_{0}\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & \sqrt{d} u_{0} + u_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{0} - u_{1} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} v_{0} + v_{1} & 1 & 0\\\sqrt{d} v_{0} + v_{1} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & - \sqrt{d} u_{0} - u_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} u_{0} + u_{1} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & \sqrt{d} v_{0} - v_{1} & 1 & 0\\- \sqrt{d} v_{0} - v_{1} & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & - 2 d u_{0} v_{0} - 2 u_{1} v_{1} & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & \sqrt{d} u_{1} + u_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{1} - u_{0} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} v_{1} + v_{0} & 1 & 0\\\sqrt{d} v_{1} + v_{0} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & - \sqrt{d} u_{1} - u_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} u_{1} + u_{0} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & \sqrt{d} v_{1} - v_{0} & 1 & 0\\- \sqrt{d} v_{1} - v_{0} & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & - 2 d u_{1} v_{1} - 2 u_{0} v_{0} & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( 1, \  -1, \  0, \  0\right), \quad \beta = \left( 0, \  2, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(v_{0}\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}- u_{1} v_{0}\\u_{0} v_{0}\end{matrix}\right]\right) X_{2\alpha + \beta}\left(v_{0} \left(- d u_{0}^{2} + u_{1}^{2}\right)\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(v_{0}\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}u_{1} v_{0}\\- u_{0} v_{0}\end{matrix}\right]\right) X_{2\alpha + \beta}\left(v_{0} \left(- d u_{1}^{2} + u_{0}^{2}\right)\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & \sqrt{d} u_{0} + u_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{0} - u_{1} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & - v_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & - \sqrt{d} u_{0} - u_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} u_{0} + u_{1} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & v_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & v_{0} \left(d u_{0}^{2} - u_{1}^{2}\right) & - v_{0} \left(\sqrt{d} u_{0} + u_{1}\right)\\0 & 1 & v_{0} \left(\sqrt{d} u_{0} - u_{1}\right) & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & \sqrt{d} u_{1} + u_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{1} - u_{0} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & - v_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & - \sqrt{d} u_{1} - u_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} u_{1} + u_{0} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & v_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & v_{0} \left(d u_{1}^{2} - u_{0}^{2}\right) & - v_{0} \left(\sqrt{d} u_{1} + u_{0}\right)\\0 & 1 & v_{0} \left(\sqrt{d} u_{1} - u_{0}\right) & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( 1, \  -1, \  0, \  0\right), \quad \beta = \left( 1, \  1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(- 2 d u_{0} v_{1} - 2 u_{1} v_{0}\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(- 2 d u_{1} v_{0} - 2 u_{0} v_{1}\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & \sqrt{d} u_{0} + u_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{0} - u_{1} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} v_{1} + v_{0}\\0 & 1 & \sqrt{d} v_{1} + v_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & - \sqrt{d} u_{0} - u_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} u_{0} + u_{1} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & \sqrt{d} v_{1} - v_{0}\\0 & 1 & - \sqrt{d} v_{1} - v_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 2 d u_{0} v_{1} + 2 u_{1} v_{0} & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & \sqrt{d} u_{1} + u_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{1} - u_{0} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} v_{0} + v_{1}\\0 & 1 & \sqrt{d} v_{0} + v_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & - \sqrt{d} u_{1} - u_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} u_{1} + u_{0} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & \sqrt{d} v_{0} - v_{1}\\0 & 1 & - \sqrt{d} v_{0} - v_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 2 d u_{1} v_{0} + 2 u_{0} v_{1} & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( 1, \  1, \  0, \  0\right), \quad \beta = \left( -2, \  0, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(v_{0}\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}- u_{0} v_{0}\\- u_{1} v_{0}\end{matrix}\right]\right) X_{2\alpha + \beta}\left(v_{0} \left(d u_{1}^{2} - u_{0}^{2}\right)\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(v_{0}\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}- u_{1} v_{0}\\- u_{0} v_{0}\end{matrix}\right]\right) X_{2\alpha + \beta}\left(v_{0} \left(d u_{0}^{2} - u_{1}^{2}\right)\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{1} + u_{0}\\0 & 1 & \sqrt{d} u_{1} + u_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\- v_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & \sqrt{d} u_{1} - u_{0}\\0 & 1 & - \sqrt{d} u_{1} - u_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\v_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\- v_{0} \left(\sqrt{d} u_{1} + u_{0}\right) & 1 & 0 & v_{0} \left(- d u_{1}^{2} + u_{0}^{2}\right)\\0 & 0 & 1 & v_{0} \left(- \sqrt{d} u_{1} + u_{0}\right)\\0 & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{0} + u_{1}\\0 & 1 & \sqrt{d} u_{0} + u_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\- v_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & \sqrt{d} u_{0} - u_{1}\\0 & 1 & - \sqrt{d} u_{0} - u_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\v_{0} & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\- v_{0} \left(\sqrt{d} u_{0} + u_{1}\right) & 1 & 0 & v_{0} \left(- d u_{0}^{2} + u_{1}^{2}\right)\\0 & 0 & 1 & v_{0} \left(- \sqrt{d} u_{0} + u_{1}\right)\\0 & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( 1, \  1, \  0, \  0\right), \quad \beta = \left( -1, \  1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(- 2 d u_{1} v_{1} + 2 u_{0} v_{0}\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(- 2 d u_{0} v_{1} + 2 u_{1} v_{0}\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{1} + u_{0}\\0 & 1 & \sqrt{d} u_{1} + u_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} v_{1} + v_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} v_{1} - v_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & \sqrt{d} u_{1} - u_{0}\\0 & 1 & - \sqrt{d} u_{1} - u_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\- \sqrt{d} v_{1} - v_{0} & 1 & 0 & 0\\0 & 0 & 1 & - \sqrt{d} v_{1} + v_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 2 d u_{1} v_{1} - 2 u_{0} v_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{0} + u_{1}\\0 & 1 & \sqrt{d} u_{0} + u_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} v_{1} + v_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} v_{1} - v_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & \sqrt{d} u_{0} - u_{1}\\0 & 1 & - \sqrt{d} u_{0} - u_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\- \sqrt{d} v_{1} - v_{0} & 1 & 0 & 0\\0 & 0 & 1 & - \sqrt{d} v_{1} + v_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 2 d u_{0} v_{1} - 2 u_{1} v_{0}\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( 1, \  1, \  0, \  0\right), \quad \beta = \left( 0, \  -2, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(v_{0}\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}u_{1} v_{0}\\- u_{0} v_{0}\end{matrix}\right]\right) X_{2\alpha + \beta}\left(v_{0} \left(d u_{1}^{2} - u_{0}^{2}\right)\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(v_{0}\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}- u_{1} v_{0}\\u_{0} v_{0}\end{matrix}\right]\right) X_{2\alpha + \beta}\left(v_{0} \left(d u_{0}^{2} - u_{1}^{2}\right)\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{1} + u_{0}\\0 & 1 & \sqrt{d} u_{1} + u_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & - v_{0} & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & \sqrt{d} u_{1} - u_{0}\\0 & 1 & - \sqrt{d} u_{1} - u_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & v_{0} & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & v_{0} \left(\sqrt{d} u_{1} - u_{0}\right) & v_{0} \left(- d u_{1}^{2} + u_{0}^{2}\right) & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & v_{0} \left(\sqrt{d} u_{1} + u_{0}\right) & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{0} + u_{1}\\0 & 1 & \sqrt{d} u_{0} + u_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & - v_{0} & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & \sqrt{d} u_{0} - u_{1}\\0 & 1 & - \sqrt{d} u_{0} - u_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & v_{0} & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & v_{0} \left(\sqrt{d} u_{0} - u_{1}\right) & v_{0} \left(- d u_{0}^{2} + u_{1}^{2}\right) & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & v_{0} \left(\sqrt{d} u_{0} + u_{1}\right) & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( 1, \  1, \  0, \  0\right), \quad \beta = \left( 1, \  -1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(2 d u_{1} v_{0} + 2 u_{0} v_{1}\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(2 d u_{0} v_{1} + 2 u_{1} v_{0}\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{1} + u_{0}\\0 & 1 & \sqrt{d} u_{1} + u_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & \sqrt{d} v_{0} + v_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} v_{0} - v_{1} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & \sqrt{d} u_{1} - u_{0}\\0 & 1 & - \sqrt{d} u_{1} - u_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & - \sqrt{d} v_{0} - v_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} v_{0} + v_{1} & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & - 2 d u_{1} v_{0} - 2 u_{0} v_{1} & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{0} + u_{1}\\0 & 1 & \sqrt{d} u_{0} + u_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & \sqrt{d} v_{1} + v_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} v_{1} - v_{0} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & \sqrt{d} u_{0} - u_{1}\\0 & 1 & - \sqrt{d} u_{0} - u_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & - \sqrt{d} v_{1} - v_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} v_{1} + v_{0} & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & - 2 d u_{0} v_{1} - 2 u_{1} v_{0} & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( 2, \  0, \  0, \  0\right), \quad \beta = \left( -1, \  -1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(u_{0}\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}u_{0} v_{0}\\- u_{0} v_{1}\end{matrix}\right]\right) X_{\alpha + 2\beta}\left(u_{0} \left(- d v_{0}^{2} + v_{1}^{2}\right)\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(u_{0}\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}- u_{0} v_{0}\\u_{0} v_{1}\end{matrix}\right]\right) X_{\alpha + 2\beta}\left(u_{0} \left(- d v_{1}^{2} + v_{0}^{2}\right)\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & - u_{0} & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} v_{0} + v_{1} & 1 & 0\\\sqrt{d} v_{0} + v_{1} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & u_{0} & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & \sqrt{d} v_{0} - v_{1} & 1 & 0\\- \sqrt{d} v_{0} - v_{1} & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & u_{0} \left(\sqrt{d} v_{0} - v_{1}\right) & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & u_{0} \left(d v_{0}^{2} - v_{1}^{2}\right) & u_{0} \left(\sqrt{d} v_{0} + v_{1}\right) & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & - u_{0} & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} v_{1} + v_{0} & 1 & 0\\\sqrt{d} v_{1} + v_{0} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & u_{0} & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & \sqrt{d} v_{1} - v_{0} & 1 & 0\\- \sqrt{d} v_{1} - v_{0} & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & u_{0} \left(\sqrt{d} v_{1} - v_{0}\right) & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & u_{0} \left(d v_{1}^{2} - v_{0}^{2}\right) & u_{0} \left(\sqrt{d} v_{1} + v_{0}\right) & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( 2, \  0, \  0, \  0\right), \quad \beta = \left( -1, \  1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(u_{0}\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}u_{0} v_{0}\\u_{0} v_{1}\end{matrix}\right]\right) X_{\alpha + 2\beta}\left(u_{0} \left(d v_{1}^{2} - v_{0}^{2}\right)\right)}
+\scaletoalign{\textwidth}{\left[ X_{\alpha}\left(u_{0}\right), X_{\beta}\left(\left[\begin{matrix}v_{0}\\v_{1}\end{matrix}\right]\right) \right] = X_{\alpha + \beta}\left(\left[\begin{matrix}u_{0} v_{1}\\u_{0} v_{0}\end{matrix}\right]\right) X_{\alpha + 2\beta}\left(u_{0} \left(d v_{1}^{2} - v_{0}^{2}\right)\right)}
 \]
 \[
 \scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & - u_{0} & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} v_{1} + v_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} v_{1} - v_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & u_{0} & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\- \sqrt{d} v_{1} - v_{0} & 1 & 0 & 0\\0 & 0 & 1 & - \sqrt{d} v_{1} + v_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & u_{0} \left(- \sqrt{d} v_{1} + v_{0}\right)\\0 & 1 & u_{0} \left(\sqrt{d} v_{1} + v_{0}\right) & u_{0} \left(- d v_{1}^{2} + v_{0}^{2}\right)\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
@@ -802,23 +802,23 @@ The table below lists roots along with the coefficients obtain in performing con
     \endhead
     $\left( -2, \  0\right)$ & $\left( -2, \  0\right)$ & $\left( 2, \  0\right)$ & $- u_{0}$ \\
     \hline
-    $\left( -2, \  0\right)$ & $\left( -1, \  -1\right)$ & $\left( 1, \  -1\right)$ & $\left[\begin{matrix}- u_{0} & u_{1}\end{matrix}\right]$ \\
+    $\left( -2, \  0\right)$ & $\left( -1, \  -1\right)$ & $\left( 1, \  -1\right)$ & $\left[\begin{matrix}u_{0} & - u_{1}\end{matrix}\right]$ \\
     \hline
-    $\left( -2, \  0\right)$ & $\left( -1, \  1\right)$ & $\left( 1, \  1\right)$ & $\left[\begin{matrix}- u_{0} & - u_{1}\end{matrix}\right]$ \\
+    $\left( -2, \  0\right)$ & $\left( -1, \  1\right)$ & $\left( 1, \  1\right)$ & $\left[\begin{matrix}- u_{1} & - u_{0}\end{matrix}\right]$ \\
     \hline
     $\left( -2, \  0\right)$ & $\left( 0, \  -2\right)$ & $\left( 0, \  -2\right)$ & $u_{0}$ \\
     \hline
     $\left( -2, \  0\right)$ & $\left( 0, \  2\right)$ & $\left( 0, \  2\right)$ & $u_{0}$ \\
     \hline
-    $\left( -2, \  0\right)$ & $\left( 1, \  -1\right)$ & $\left( -1, \  -1\right)$ & $\left[\begin{matrix}u_{0} & - u_{1}\end{matrix}\right]$ \\
+    $\left( -2, \  0\right)$ & $\left( 1, \  -1\right)$ & $\left( -1, \  -1\right)$ & $\left[\begin{matrix}- u_{0} & u_{1}\end{matrix}\right]$ \\
     \hline
-    $\left( -2, \  0\right)$ & $\left( 1, \  1\right)$ & $\left( -1, \  1\right)$ & $\left[\begin{matrix}u_{0} & u_{1}\end{matrix}\right]$ \\
+    $\left( -2, \  0\right)$ & $\left( 1, \  1\right)$ & $\left( -1, \  1\right)$ & $\left[\begin{matrix}u_{1} & u_{0}\end{matrix}\right]$ \\
     \hline
     $\left( -2, \  0\right)$ & $\left( 2, \  0\right)$ & $\left( -2, \  0\right)$ & $- u_{0}$ \\
     \hline
     $\left( -1, \  -1\right)$ & $\left( -2, \  0\right)$ & $\left( 0, \  2\right)$ & $- u_{0}$ \\
     \hline
-    $\left( -1, \  -1\right)$ & $\left( -1, \  -1\right)$ & $\left( 1, \  1\right)$ & $\left[\begin{matrix}- u_{1} & u_{0}\end{matrix}\right]$ \\
+    $\left( -1, \  -1\right)$ & $\left( -1, \  -1\right)$ & $\left( 1, \  1\right)$ & $\left[\begin{matrix}u_{1} & - u_{0}\end{matrix}\right]$ \\
     \hline
     $\left( -1, \  -1\right)$ & $\left( -1, \  1\right)$ & $\left( -1, \  1\right)$ & $\left[\begin{matrix}- u_{0} & u_{1}\end{matrix}\right]$ \\
     \hline
@@ -826,79 +826,79 @@ The table below lists roots along with the coefficients obtain in performing con
     \hline
     $\left( -1, \  -1\right)$ & $\left( 0, \  2\right)$ & $\left( -2, \  0\right)$ & $- u_{0}$ \\
     \hline
-    $\left( -1, \  -1\right)$ & $\left( 1, \  -1\right)$ & $\left( 1, \  -1\right)$ & $\left[\begin{matrix}u_{0} & - u_{1}\end{matrix}\right]$ \\
+    $\left( -1, \  -1\right)$ & $\left( 1, \  -1\right)$ & $\left( 1, \  -1\right)$ & $\left[\begin{matrix}- u_{0} & u_{1}\end{matrix}\right]$ \\
     \hline
-    $\left( -1, \  -1\right)$ & $\left( 1, \  1\right)$ & $\left( -1, \  -1\right)$ & $\left[\begin{matrix}u_{1} & - u_{0}\end{matrix}\right]$ \\
+    $\left( -1, \  -1\right)$ & $\left( 1, \  1\right)$ & $\left( -1, \  -1\right)$ & $\left[\begin{matrix}- u_{1} & u_{0}\end{matrix}\right]$ \\
     \hline
     $\left( -1, \  -1\right)$ & $\left( 2, \  0\right)$ & $\left( 0, \  -2\right)$ & $- u_{0}$ \\
     \hline
     $\left( -1, \  1\right)$ & $\left( -2, \  0\right)$ & $\left( 0, \  -2\right)$ & $u_{0}$ \\
     \hline
-    $\left( -1, \  1\right)$ & $\left( -1, \  -1\right)$ & $\left( -1, \  -1\right)$ & $\left[\begin{matrix}- u_{0} & u_{1}\end{matrix}\right]$ \\
+    $\left( -1, \  1\right)$ & $\left( -1, \  -1\right)$ & $\left( -1, \  -1\right)$ & $\left[\begin{matrix}u_{0} & - u_{1}\end{matrix}\right]$ \\
     \hline
-    $\left( -1, \  1\right)$ & $\left( -1, \  1\right)$ & $\left( 1, \  -1\right)$ & $\left[\begin{matrix}u_{1} & u_{0}\end{matrix}\right]$ \\
+    $\left( -1, \  1\right)$ & $\left( -1, \  1\right)$ & $\left( 1, \  -1\right)$ & $\left[\begin{matrix}u_{0} & u_{1}\end{matrix}\right]$ \\
     \hline
     $\left( -1, \  1\right)$ & $\left( 0, \  -2\right)$ & $\left( -2, \  0\right)$ & $u_{0}$ \\
     \hline
     $\left( -1, \  1\right)$ & $\left( 0, \  2\right)$ & $\left( 2, \  0\right)$ & $u_{0}$ \\
     \hline
-    $\left( -1, \  1\right)$ & $\left( 1, \  -1\right)$ & $\left( -1, \  1\right)$ & $\left[\begin{matrix}u_{1} & u_{0}\end{matrix}\right]$ \\
+    $\left( -1, \  1\right)$ & $\left( 1, \  -1\right)$ & $\left( -1, \  1\right)$ & $\left[\begin{matrix}u_{0} & u_{1}\end{matrix}\right]$ \\
     \hline
-    $\left( -1, \  1\right)$ & $\left( 1, \  1\right)$ & $\left( 1, \  1\right)$ & $\left[\begin{matrix}u_{0} & - u_{1}\end{matrix}\right]$ \\
+    $\left( -1, \  1\right)$ & $\left( 1, \  1\right)$ & $\left( 1, \  1\right)$ & $\left[\begin{matrix}- u_{0} & u_{1}\end{matrix}\right]$ \\
     \hline
     $\left( -1, \  1\right)$ & $\left( 2, \  0\right)$ & $\left( 0, \  2\right)$ & $u_{0}$ \\
     \hline
     $\left( 0, \  -2\right)$ & $\left( -2, \  0\right)$ & $\left( -2, \  0\right)$ & $u_{0}$ \\
     \hline
-    $\left( 0, \  -2\right)$ & $\left( -1, \  -1\right)$ & $\left( -1, \  1\right)$ & $\left[\begin{matrix}u_{1} & u_{0}\end{matrix}\right]$ \\
+    $\left( 0, \  -2\right)$ & $\left( -1, \  -1\right)$ & $\left( -1, \  1\right)$ & $\left[\begin{matrix}u_{0} & u_{1}\end{matrix}\right]$ \\
     \hline
-    $\left( 0, \  -2\right)$ & $\left( -1, \  1\right)$ & $\left( -1, \  -1\right)$ & $\left[\begin{matrix}- u_{1} & - u_{0}\end{matrix}\right]$ \\
+    $\left( 0, \  -2\right)$ & $\left( -1, \  1\right)$ & $\left( -1, \  -1\right)$ & $\left[\begin{matrix}- u_{0} & - u_{1}\end{matrix}\right]$ \\
     \hline
     $\left( 0, \  -2\right)$ & $\left( 0, \  -2\right)$ & $\left( 0, \  2\right)$ & $- u_{0}$ \\
     \hline
     $\left( 0, \  -2\right)$ & $\left( 0, \  2\right)$ & $\left( 0, \  -2\right)$ & $- u_{0}$ \\
     \hline
-    $\left( 0, \  -2\right)$ & $\left( 1, \  -1\right)$ & $\left( 1, \  1\right)$ & $\left[\begin{matrix}- u_{1} & u_{0}\end{matrix}\right]$ \\
+    $\left( 0, \  -2\right)$ & $\left( 1, \  -1\right)$ & $\left( 1, \  1\right)$ & $\left[\begin{matrix}u_{1} & - u_{0}\end{matrix}\right]$ \\
     \hline
-    $\left( 0, \  -2\right)$ & $\left( 1, \  1\right)$ & $\left( 1, \  -1\right)$ & $\left[\begin{matrix}- u_{1} & u_{0}\end{matrix}\right]$ \\
+    $\left( 0, \  -2\right)$ & $\left( 1, \  1\right)$ & $\left( 1, \  -1\right)$ & $\left[\begin{matrix}u_{1} & - u_{0}\end{matrix}\right]$ \\
     \hline
     $\left( 0, \  -2\right)$ & $\left( 2, \  0\right)$ & $\left( 2, \  0\right)$ & $u_{0}$ \\
     \hline
     $\left( 0, \  2\right)$ & $\left( -2, \  0\right)$ & $\left( -2, \  0\right)$ & $u_{0}$ \\
     \hline
-    $\left( 0, \  2\right)$ & $\left( -1, \  -1\right)$ & $\left( -1, \  1\right)$ & $\left[\begin{matrix}u_{1} & u_{0}\end{matrix}\right]$ \\
+    $\left( 0, \  2\right)$ & $\left( -1, \  -1\right)$ & $\left( -1, \  1\right)$ & $\left[\begin{matrix}u_{0} & u_{1}\end{matrix}\right]$ \\
     \hline
-    $\left( 0, \  2\right)$ & $\left( -1, \  1\right)$ & $\left( -1, \  -1\right)$ & $\left[\begin{matrix}- u_{1} & - u_{0}\end{matrix}\right]$ \\
+    $\left( 0, \  2\right)$ & $\left( -1, \  1\right)$ & $\left( -1, \  -1\right)$ & $\left[\begin{matrix}- u_{0} & - u_{1}\end{matrix}\right]$ \\
     \hline
     $\left( 0, \  2\right)$ & $\left( 0, \  -2\right)$ & $\left( 0, \  2\right)$ & $- u_{0}$ \\
     \hline
     $\left( 0, \  2\right)$ & $\left( 0, \  2\right)$ & $\left( 0, \  -2\right)$ & $- u_{0}$ \\
     \hline
-    $\left( 0, \  2\right)$ & $\left( 1, \  -1\right)$ & $\left( 1, \  1\right)$ & $\left[\begin{matrix}- u_{1} & u_{0}\end{matrix}\right]$ \\
+    $\left( 0, \  2\right)$ & $\left( 1, \  -1\right)$ & $\left( 1, \  1\right)$ & $\left[\begin{matrix}u_{1} & - u_{0}\end{matrix}\right]$ \\
     \hline
-    $\left( 0, \  2\right)$ & $\left( 1, \  1\right)$ & $\left( 1, \  -1\right)$ & $\left[\begin{matrix}- u_{1} & u_{0}\end{matrix}\right]$ \\
+    $\left( 0, \  2\right)$ & $\left( 1, \  1\right)$ & $\left( 1, \  -1\right)$ & $\left[\begin{matrix}u_{1} & - u_{0}\end{matrix}\right]$ \\
     \hline
     $\left( 0, \  2\right)$ & $\left( 2, \  0\right)$ & $\left( 2, \  0\right)$ & $u_{0}$ \\
     \hline
     $\left( 1, \  -1\right)$ & $\left( -2, \  0\right)$ & $\left( 0, \  -2\right)$ & $u_{0}$ \\
     \hline
-    $\left( 1, \  -1\right)$ & $\left( -1, \  -1\right)$ & $\left( -1, \  -1\right)$ & $\left[\begin{matrix}- u_{0} & u_{1}\end{matrix}\right]$ \\
+    $\left( 1, \  -1\right)$ & $\left( -1, \  -1\right)$ & $\left( -1, \  -1\right)$ & $\left[\begin{matrix}u_{0} & - u_{1}\end{matrix}\right]$ \\
     \hline
-    $\left( 1, \  -1\right)$ & $\left( -1, \  1\right)$ & $\left( 1, \  -1\right)$ & $\left[\begin{matrix}u_{1} & u_{0}\end{matrix}\right]$ \\
+    $\left( 1, \  -1\right)$ & $\left( -1, \  1\right)$ & $\left( 1, \  -1\right)$ & $\left[\begin{matrix}u_{0} & u_{1}\end{matrix}\right]$ \\
     \hline
     $\left( 1, \  -1\right)$ & $\left( 0, \  -2\right)$ & $\left( -2, \  0\right)$ & $u_{0}$ \\
     \hline
     $\left( 1, \  -1\right)$ & $\left( 0, \  2\right)$ & $\left( 2, \  0\right)$ & $u_{0}$ \\
     \hline
-    $\left( 1, \  -1\right)$ & $\left( 1, \  -1\right)$ & $\left( -1, \  1\right)$ & $\left[\begin{matrix}u_{1} & u_{0}\end{matrix}\right]$ \\
+    $\left( 1, \  -1\right)$ & $\left( 1, \  -1\right)$ & $\left( -1, \  1\right)$ & $\left[\begin{matrix}u_{0} & u_{1}\end{matrix}\right]$ \\
     \hline
-    $\left( 1, \  -1\right)$ & $\left( 1, \  1\right)$ & $\left( 1, \  1\right)$ & $\left[\begin{matrix}u_{0} & - u_{1}\end{matrix}\right]$ \\
+    $\left( 1, \  -1\right)$ & $\left( 1, \  1\right)$ & $\left( 1, \  1\right)$ & $\left[\begin{matrix}- u_{0} & u_{1}\end{matrix}\right]$ \\
     \hline
     $\left( 1, \  -1\right)$ & $\left( 2, \  0\right)$ & $\left( 0, \  2\right)$ & $u_{0}$ \\
     \hline
     $\left( 1, \  1\right)$ & $\left( -2, \  0\right)$ & $\left( 0, \  2\right)$ & $- u_{0}$ \\
     \hline
-    $\left( 1, \  1\right)$ & $\left( -1, \  -1\right)$ & $\left( 1, \  1\right)$ & $\left[\begin{matrix}- u_{1} & u_{0}\end{matrix}\right]$ \\
+    $\left( 1, \  1\right)$ & $\left( -1, \  -1\right)$ & $\left( 1, \  1\right)$ & $\left[\begin{matrix}u_{1} & - u_{0}\end{matrix}\right]$ \\
     \hline
     $\left( 1, \  1\right)$ & $\left( -1, \  1\right)$ & $\left( -1, \  1\right)$ & $\left[\begin{matrix}- u_{0} & u_{1}\end{matrix}\right]$ \\
     \hline
@@ -906,25 +906,25 @@ The table below lists roots along with the coefficients obtain in performing con
     \hline
     $\left( 1, \  1\right)$ & $\left( 0, \  2\right)$ & $\left( -2, \  0\right)$ & $- u_{0}$ \\
     \hline
-    $\left( 1, \  1\right)$ & $\left( 1, \  -1\right)$ & $\left( 1, \  -1\right)$ & $\left[\begin{matrix}u_{0} & - u_{1}\end{matrix}\right]$ \\
+    $\left( 1, \  1\right)$ & $\left( 1, \  -1\right)$ & $\left( 1, \  -1\right)$ & $\left[\begin{matrix}- u_{0} & u_{1}\end{matrix}\right]$ \\
     \hline
-    $\left( 1, \  1\right)$ & $\left( 1, \  1\right)$ & $\left( -1, \  -1\right)$ & $\left[\begin{matrix}u_{1} & - u_{0}\end{matrix}\right]$ \\
+    $\left( 1, \  1\right)$ & $\left( 1, \  1\right)$ & $\left( -1, \  -1\right)$ & $\left[\begin{matrix}- u_{1} & u_{0}\end{matrix}\right]$ \\
     \hline
     $\left( 1, \  1\right)$ & $\left( 2, \  0\right)$ & $\left( 0, \  -2\right)$ & $- u_{0}$ \\
     \hline
     $\left( 2, \  0\right)$ & $\left( -2, \  0\right)$ & $\left( 2, \  0\right)$ & $- u_{0}$ \\
     \hline
-    $\left( 2, \  0\right)$ & $\left( -1, \  -1\right)$ & $\left( 1, \  -1\right)$ & $\left[\begin{matrix}- u_{0} & u_{1}\end{matrix}\right]$ \\
+    $\left( 2, \  0\right)$ & $\left( -1, \  -1\right)$ & $\left( 1, \  -1\right)$ & $\left[\begin{matrix}u_{0} & - u_{1}\end{matrix}\right]$ \\
     \hline
-    $\left( 2, \  0\right)$ & $\left( -1, \  1\right)$ & $\left( 1, \  1\right)$ & $\left[\begin{matrix}- u_{0} & - u_{1}\end{matrix}\right]$ \\
+    $\left( 2, \  0\right)$ & $\left( -1, \  1\right)$ & $\left( 1, \  1\right)$ & $\left[\begin{matrix}- u_{1} & - u_{0}\end{matrix}\right]$ \\
     \hline
     $\left( 2, \  0\right)$ & $\left( 0, \  -2\right)$ & $\left( 0, \  -2\right)$ & $u_{0}$ \\
     \hline
     $\left( 2, \  0\right)$ & $\left( 0, \  2\right)$ & $\left( 0, \  2\right)$ & $u_{0}$ \\
     \hline
-    $\left( 2, \  0\right)$ & $\left( 1, \  -1\right)$ & $\left( -1, \  -1\right)$ & $\left[\begin{matrix}u_{0} & - u_{1}\end{matrix}\right]$ \\
+    $\left( 2, \  0\right)$ & $\left( 1, \  -1\right)$ & $\left( -1, \  -1\right)$ & $\left[\begin{matrix}- u_{0} & u_{1}\end{matrix}\right]$ \\
     \hline
-    $\left( 2, \  0\right)$ & $\left( 1, \  1\right)$ & $\left( -1, \  1\right)$ & $\left[\begin{matrix}u_{0} & u_{1}\end{matrix}\right]$ \\
+    $\left( 2, \  0\right)$ & $\left( 1, \  1\right)$ & $\left( -1, \  1\right)$ & $\left[\begin{matrix}u_{1} & u_{0}\end{matrix}\right]$ \\
     \hline
     $\left( 2, \  0\right)$ & $\left( 2, \  0\right)$ & $\left( -2, \  0\right)$ & $- u_{0}$ \\
     \hline
@@ -954,16 +954,16 @@ The table below lists roots along with the coefficients obtain in performing con
 \alpha = \left( -2, \  0, \  0, \  0\right), \beta = \left( -1, \  -1, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( 1, \  -1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}- u_{0}\\u_{1}\end{matrix}\right]\right)}
+\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}u_{0}\\- u_{1}\end{matrix}\right]\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 0 & 1 & 0\\0 & 1 & 0 & 0\\-1 & 0 & 0 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{0} + u_{1} & 1 & 0\\\sqrt{d} u_{0} + u_{1} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 0 & -1 & 0\\0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & - \sqrt{d} u_{0} + u_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} u_{0} - u_{1} & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 0 & 1 & 0\\0 & 1 & 0 & 0\\-1 & 0 & 0 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{1} + u_{0} & 1 & 0\\\sqrt{d} u_{1} + u_{0} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 0 & -1 & 0\\0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & - \sqrt{d} u_{1} + u_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} u_{1} - u_{0} & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( -2, \  0, \  0, \  0\right), \beta = \left( -1, \  1, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( 1, \  1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}- u_{0}\\- u_{1}\end{matrix}\right]\right)}
+\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}- u_{1}\\- u_{0}\end{matrix}\right]\right)}
 \]
 \[
 \scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 0 & 1 & 0\\0 & 1 & 0 & 0\\-1 & 0 & 0 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} u_{1} + u_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} u_{1} - u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 0 & -1 & 0\\0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & \sqrt{d} u_{1} - u_{0}\\0 & 1 & - \sqrt{d} u_{1} - u_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
@@ -990,19 +990,19 @@ The table below lists roots along with the coefficients obtain in performing con
 \alpha = \left( -2, \  0, \  0, \  0\right), \beta = \left( 1, \  -1, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( -1, \  -1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}u_{0}\\- u_{1}\end{matrix}\right]\right)}
+\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}- u_{0}\\u_{1}\end{matrix}\right]\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 0 & 1 & 0\\0 & 1 & 0 & 0\\-1 & 0 & 0 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & \sqrt{d} u_{0} + u_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{0} - u_{1} & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 0 & -1 & 0\\0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{0} - u_{1} & 1 & 0\\\sqrt{d} u_{0} - u_{1} & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 0 & 1 & 0\\0 & 1 & 0 & 0\\-1 & 0 & 0 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & \sqrt{d} u_{1} + u_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{1} - u_{0} & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 0 & -1 & 0\\0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{1} - u_{0} & 1 & 0\\\sqrt{d} u_{1} - u_{0} & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( -2, \  0, \  0, \  0\right), \beta = \left( 1, \  1, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( -1, \  1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right)}
+\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}u_{1}\\u_{0}\end{matrix}\right]\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 0 & 1 & 0\\0 & 1 & 0 & 0\\-1 & 0 & 0 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{1} + u_{0}\\0 & 1 & \sqrt{d} u_{1} + u_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 0 & -1 & 0\\0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} u_{1} + u_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} u_{1} - u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 0 & 1 & 0\\0 & 1 & 0 & 0\\-1 & 0 & 0 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{0} + u_{1}\\0 & 1 & \sqrt{d} u_{0} + u_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 0 & -1 & 0\\0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} u_{0} + u_{1} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} u_{0} - u_{1}\\0 & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( -2, \  0, \  0, \  0\right), \beta = \left( 2, \  0, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( -2, \  0, \  0, \  0\right)
@@ -1026,10 +1026,10 @@ The table below lists roots along with the coefficients obtain in performing con
 \alpha = \left( -1, \  -1, \  0, \  0\right), \beta = \left( -1, \  -1, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( 1, \  1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}- u_{1}\\u_{0}\end{matrix}\right]\right)}
+\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}u_{1}\\- u_{0}\end{matrix}\right]\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 0 & 0 & 1\\0 & 0 & 1 & 0\\0 & -1 & 0 & 0\\-1 & 0 & 0 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{0} + u_{1} & 1 & 0\\\sqrt{d} u_{0} + u_{1} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 0 & 0 & -1\\0 & 0 & -1 & 0\\0 & 1 & 0 & 0\\1 & 0 & 0 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{0} - u_{1}\\0 & 1 & \sqrt{d} u_{0} - u_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 0 & 0 & 1\\0 & 0 & 1 & 0\\0 & -1 & 0 & 0\\-1 & 0 & 0 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{1} + u_{0} & 1 & 0\\\sqrt{d} u_{1} + u_{0} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 0 & 0 & -1\\0 & 0 & -1 & 0\\0 & 1 & 0 & 0\\1 & 0 & 0 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{1} - u_{0}\\0 & 1 & \sqrt{d} u_{1} - u_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( -1, \  -1, \  0, \  0\right), \beta = \left( -1, \  1, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( -1, \  1, \  0, \  0\right)
@@ -1062,19 +1062,19 @@ The table below lists roots along with the coefficients obtain in performing con
 \alpha = \left( -1, \  -1, \  0, \  0\right), \beta = \left( 1, \  -1, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( 1, \  -1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}u_{0}\\- u_{1}\end{matrix}\right]\right)}
+\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}- u_{0}\\u_{1}\end{matrix}\right]\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 0 & 0 & 1\\0 & 0 & 1 & 0\\0 & -1 & 0 & 0\\-1 & 0 & 0 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & \sqrt{d} u_{0} + u_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{0} - u_{1} & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 0 & 0 & -1\\0 & 0 & -1 & 0\\0 & 1 & 0 & 0\\1 & 0 & 0 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & \sqrt{d} u_{0} - u_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{0} + u_{1} & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 0 & 0 & 1\\0 & 0 & 1 & 0\\0 & -1 & 0 & 0\\-1 & 0 & 0 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & \sqrt{d} u_{1} + u_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{1} - u_{0} & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 0 & 0 & -1\\0 & 0 & -1 & 0\\0 & 1 & 0 & 0\\1 & 0 & 0 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & \sqrt{d} u_{1} - u_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{1} + u_{0} & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( -1, \  -1, \  0, \  0\right), \beta = \left( 1, \  1, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( -1, \  -1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}u_{1}\\- u_{0}\end{matrix}\right]\right)}
+\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}- u_{1}\\u_{0}\end{matrix}\right]\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 0 & 0 & 1\\0 & 0 & 1 & 0\\0 & -1 & 0 & 0\\-1 & 0 & 0 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{1} + u_{0}\\0 & 1 & \sqrt{d} u_{1} + u_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 0 & 0 & -1\\0 & 0 & -1 & 0\\0 & 1 & 0 & 0\\1 & 0 & 0 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{1} - u_{0} & 1 & 0\\\sqrt{d} u_{1} - u_{0} & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 0 & 0 & 1\\0 & 0 & 1 & 0\\0 & -1 & 0 & 0\\-1 & 0 & 0 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{0} + u_{1}\\0 & 1 & \sqrt{d} u_{0} + u_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 0 & 0 & -1\\0 & 0 & -1 & 0\\0 & 1 & 0 & 0\\1 & 0 & 0 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{0} - u_{1} & 1 & 0\\\sqrt{d} u_{0} - u_{1} & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( -1, \  -1, \  0, \  0\right), \beta = \left( 2, \  0, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( 0, \  -2, \  0, \  0\right)
@@ -1098,16 +1098,16 @@ The table below lists roots along with the coefficients obtain in performing con
 \alpha = \left( -1, \  1, \  0, \  0\right), \beta = \left( -1, \  -1, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( -1, \  -1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}- u_{0}\\u_{1}\end{matrix}\right]\right)}
+\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}u_{0}\\- u_{1}\end{matrix}\right]\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{0} + u_{1} & 1 & 0\\\sqrt{d} u_{0} + u_{1} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & \sqrt{d} u_{0} + u_{1} & 1 & 0\\- \sqrt{d} u_{0} + u_{1} & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{1} + u_{0} & 1 & 0\\\sqrt{d} u_{1} + u_{0} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & \sqrt{d} u_{1} + u_{0} & 1 & 0\\- \sqrt{d} u_{1} + u_{0} & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( -1, \  1, \  0, \  0\right), \beta = \left( -1, \  1, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( 1, \  -1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}u_{1}\\u_{0}\end{matrix}\right]\right)}
+\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right)}
 \]
 \[
 \scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} u_{1} + u_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} u_{1} - u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & \sqrt{d} u_{1} + u_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{1} - u_{0} & 1\end{matrix}\right]}}
@@ -1134,19 +1134,19 @@ The table below lists roots along with the coefficients obtain in performing con
 \alpha = \left( -1, \  1, \  0, \  0\right), \beta = \left( 1, \  -1, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( -1, \  1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}u_{1}\\u_{0}\end{matrix}\right]\right)}
+\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & \sqrt{d} u_{0} + u_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{0} - u_{1} & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} u_{0} + u_{1} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} u_{0} - u_{1}\\0 & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & \sqrt{d} u_{1} + u_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{1} - u_{0} & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} u_{1} + u_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} u_{1} - u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( -1, \  1, \  0, \  0\right), \beta = \left( 1, \  1, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( 1, \  1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}u_{0}\\- u_{1}\end{matrix}\right]\right)}
+\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}- u_{0}\\u_{1}\end{matrix}\right]\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{1} + u_{0}\\0 & 1 & \sqrt{d} u_{1} + u_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & \sqrt{d} u_{1} + u_{0}\\0 & 1 & - \sqrt{d} u_{1} + u_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{0} + u_{1}\\0 & 1 & \sqrt{d} u_{0} + u_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}0 & 1 & 0 & 0\\1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & \sqrt{d} u_{0} + u_{1}\\0 & 1 & - \sqrt{d} u_{0} + u_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( -1, \  1, \  0, \  0\right), \beta = \left( 2, \  0, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( 0, \  2, \  0, \  0\right)
@@ -1170,16 +1170,16 @@ The table below lists roots along with the coefficients obtain in performing con
 \alpha = \left( 0, \  -2, \  0, \  0\right), \beta = \left( -1, \  -1, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( -1, \  1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}u_{1}\\u_{0}\end{matrix}\right]\right)}
+\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\\0 & -1 & 0 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{0} + u_{1} & 1 & 0\\\sqrt{d} u_{0} + u_{1} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 0 & 0 & -1\\0 & 0 & 1 & 0\\0 & 1 & 0 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} u_{0} + u_{1} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} u_{0} - u_{1}\\0 & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\\0 & -1 & 0 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & - \sqrt{d} u_{1} + u_{0} & 1 & 0\\\sqrt{d} u_{1} + u_{0} & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 0 & 0 & -1\\0 & 0 & 1 & 0\\0 & 1 & 0 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} u_{1} + u_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} u_{1} - u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( 0, \  -2, \  0, \  0\right), \beta = \left( -1, \  1, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( -1, \  -1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}- u_{1}\\- u_{0}\end{matrix}\right]\right)}
+\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}- u_{0}\\- u_{1}\end{matrix}\right]\right)}
 \]
 \[
 \scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\\0 & -1 & 0 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\\sqrt{d} u_{1} + u_{0} & 1 & 0 & 0\\0 & 0 & 1 & \sqrt{d} u_{1} - u_{0}\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 0 & 0 & -1\\0 & 0 & 1 & 0\\0 & 1 & 0 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & \sqrt{d} u_{1} - u_{0} & 1 & 0\\- \sqrt{d} u_{1} - u_{0} & 0 & 0 & 1\end{matrix}\right]}}
@@ -1206,19 +1206,19 @@ The table below lists roots along with the coefficients obtain in performing con
 \alpha = \left( 0, \  -2, \  0, \  0\right), \beta = \left( 1, \  -1, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( 1, \  1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}- u_{1}\\u_{0}\end{matrix}\right]\right)}
+\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}u_{1}\\- u_{0}\end{matrix}\right]\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\\0 & -1 & 0 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & \sqrt{d} u_{0} + u_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{0} - u_{1} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 0 & 0 & -1\\0 & 0 & 1 & 0\\0 & 1 & 0 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{0} - u_{1}\\0 & 1 & \sqrt{d} u_{0} - u_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\\0 & -1 & 0 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & \sqrt{d} u_{1} + u_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & \sqrt{d} u_{1} - u_{0} & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 0 & 0 & -1\\0 & 0 & 1 & 0\\0 & 1 & 0 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{1} - u_{0}\\0 & 1 & \sqrt{d} u_{1} - u_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( 0, \  -2, \  0, \  0\right), \beta = \left( 1, \  1, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( 1, \  -1, \  0, \  0\right)
 \]
 \[
-\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}- u_{1}\\u_{0}\end{matrix}\right]\right)}
+\scaletoalign{\textwidth}{w_{\alpha} X_{\beta}\left(\left[\begin{matrix}u_{0}\\u_{1}\end{matrix}\right]\right) w_{\alpha}^{-1} = X_{\sigma_{\alpha}\left(\beta\right)}\left(\left[\begin{matrix}u_{1}\\- u_{0}\end{matrix}\right]\right)}
 \]
 \[
-\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\\0 & -1 & 0 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{1} + u_{0}\\0 & 1 & \sqrt{d} u_{1} + u_{0} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 0 & 0 & -1\\0 & 0 & 1 & 0\\0 & 1 & 0 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & - \sqrt{d} u_{1} + u_{0} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} u_{1} - u_{0} & 1\end{matrix}\right]}}
+\scaletoalign{\textwidth}{{\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\\0 & -1 & 0 & 0\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & - \sqrt{d} u_{0} + u_{1}\\0 & 1 & \sqrt{d} u_{0} + u_{1} & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & 1\end{matrix}\right]} {\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 0 & 0 & -1\\0 & 0 & 1 & 0\\0 & 1 & 0 & 0\end{matrix}\right]} = {\left[\begin{matrix}1 & - \sqrt{d} u_{0} + u_{1} & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 1 & 0\\0 & 0 & - \sqrt{d} u_{0} - u_{1} & 1\end{matrix}\right]}}
 \]
 \[
 \alpha = \left( 0, \  -2, \  0, \  0\right), \beta = \left( 2, \  0, \  0, \  0\right), \sigma_{\alpha}(\beta) = \left( 2, \  0, \  0, \  0\right)

@@ -71,5 +71,6 @@ class split_torus:
         self.nontrivial_character_entries = nontrivial_character_entries
         
     def __repr__(self):
+        # Return a string representation of the torus object
         element = self.generic_element(self.matrix_size, self.rank, letter = 't')
         return f"Split torus with \n\tMatrix size: {self.matrix_size} \n\tRank: {self.rank} \n\tGeneric element:\n" + sp.pretty(element)

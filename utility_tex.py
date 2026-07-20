@@ -13,33 +13,33 @@ def pinned_group_to_tex(pinned_group):
     import re
     
     # 1. Basic group attributes
-    #       a. (COMPLETE) Summary table - name string, matrix size, rank, defining equations
-    #       b. (COMPLETE) Bilinear form info (if there is one) - 
+    #       a. Summary table - name string, matrix size, rank, defining equations
+    #       b. Bilinear form info (if there is one) - 
     #                       summary table (dimension, Witt index, primitive elemtn, epsilon), matrix
-    #       c. (COMPLETE) Lie algebra info - defining equations, generic Lie algebra element
-    #       d. (COMPLETE) Torus info - generic torus element, trivial characters
+    #       c. Lie algebra info - defining equations, generic Lie algebra element
+    #       d. Torus info - generic torus element, trivial characters
     # 2. Root system
-    #       a. (COMPLETE) Summary table - Dynkin type, irreducible?, reduced?, simply laced?, number of roots
-    #       b. (COMPLETE) Dynkin diagram
-    #       c. (COMPLETE) Cartan matrix
-    #       d. (COMPLETE) Table of roots with info on simple, norm^2, positive/negative, multipliable
-    #       e. (COMPLETE) List of root, coroot pairs
-    #       f. (COMPLETE) Table of linear combinations of roots
+    #       a. Summary table - Dynkin type, irreducible?, reduced?, simply laced?, number of roots
+    #       b. Dynkin diagram
+    #       c. Cartan matrix
+    #       d. Table of roots with info on simple, norm^2, positive/negative, multipliable
+    #       e. List of root, coroot pairs
+    #       f. Table of linear combinations of roots
     # 3. Root spaces
-    #       a. (COMPLETE) Table with root, root space dimension
-    #       b. (COMPLETE) Table with root, generic root space element
+    #       a. Table with root, root space dimension
+    #       b. Table with root, generic root space element
     # 4. Root subgroups
-    #       a. (COMPLETE) Table with root, generic root subgroup element
-    #       b. (COMPLETE) Table with root, homomorphism defect coefficient
-    #       c. (COMPLETE) Symbolic and matrix pseudo-homomorphism equations
+    #       a. Table with root, generic root subgroup element
+    #       b. Table with root, homomorphism defect coefficient
+    #       c. Symbolic and matrix pseudo-homomorphism equations
     # 5. Commutators
-    #       a. (COMPLETE) Table of linear combinations of roots
-    #       b. (COMPLETE) Table with root1, root2, commutator coefficient
-    #       c. (COMPLETE) Symbolic and matrix commutator equations
+    #       a. Table of linear combinations of roots
+    #       b. Table with root1, root2, commutator coefficient
+    #       c. Symbolic and matrix commutator equations
     # 6. Weyl group
-    #       a. (COMPLETE) Table of root, Weyl group element
-    #       b. (COMPLETE) Table of root1, root2, Weyl group conjugation coefficient
-    #       c. (COMPLETE) Symbolic and matrix Weyl conjugation equations
+    #       a. Table of root, Weyl group element
+    #       b. Table of root1, root2, Weyl group conjugation coefficient
+    #       c. Symbolic and matrix Weyl conjugation equations
     
     # Read the template
     if not template_file.exists():
@@ -177,10 +177,7 @@ def nondegenerate_isotropic_form_to_tex(form):
     return tex
 
 def build_dynkin_tex(Phi):
-    """
-    Builds a pure TikZ-based LaTeX diagram for a single irreducible root system component,
-    completely eliminating any dependency on external diagram packages.
-    """
+    # Build a TikZ-based LaTeX diagram for a single irreducible root system component
     assert Phi.is_irreducible
     
     family = Phi.dynkin_type
@@ -295,12 +292,10 @@ def build_dynkin_tex(Phi):
     return "\n".join(tikz_lines)
 
 def build_root_table(Phi):
+    # Buidl a table with list of roots and basic info (squared norm, simple, positive/negative, multipliable)
     row_data = []
-    
     for alpha in Phi.root_list:
         alpha_latex = f"${sp.latex(alpha)}$"
-        
-        # Retrieve the shortened version from our newly created view dictionary
         short_alpha = Phi.short_form_roots[alpha]
         short_alpha_latex = f"${sp.latex(short_alpha)}$"
         
@@ -326,7 +321,7 @@ def build_root_table(Phi):
         # Included the short_alpha_latex as the second column
         row_text = f"    {alpha_latex} & {short_alpha_latex} & {sq_norm_latex} & {simple_str} & {sign_str} & {multipliable_str} \\\\\n"
         
-        # Sort key logic:
+        # Sort key:
         # 1. sq_norm ascending
         # 2. is_simple descending (True/0 before False/1)
         # 3. is_positive descending (True/0 before False/1)
@@ -336,7 +331,7 @@ def build_root_table(Phi):
     # Sort based on the multi-level key
     row_data.sort(key=lambda x: x[0])
 
-    # Construct the LaTeX table (updated format string to reflect 6 columns)
+    # Construct the LaTeX table
     table_lines = [
         r"\begin{tabular}{|l|l|c|c|c|c|}",
         r"    \hline",
@@ -349,10 +344,10 @@ def build_root_table(Phi):
         table_lines.append(r"    \hline")
         
     table_lines.append(r"\end{tabular}" + "\n")
-    
     return "\n".join(table_lines)
 
 def build_coroot_table(Phi):
+    # Build a Latex table with root, coroot pairs
     tex = ""
     tex += r"\begin{tabular}{|l|l|}" + "\n"
     tex += r"    \hline" + "\n"
@@ -368,6 +363,9 @@ def build_coroot_table(Phi):
     return tex
 
 def build_root_linear_combos_table(Phi):
+    # Build a table which stores all information about valid pairs of positive integer
+    # linear combinations of roots that are also roots
+    
     # Fail immediately if no non-proportional pairs exist
     assert len(Phi.summable_non_proportional_pairs) > 0, "Root system has no summable non-proportional pairs."
     
@@ -413,14 +411,15 @@ def build_root_linear_combos_table(Phi):
         table_lines.append(r"    \hline")
         
     table_lines.append(r"\end{longtable}" + "\n")
-    
     return "\n".join(table_lines)
 
 def build_commutator_table(group):
+    # Builde a table of all commutator coefficients
+    
     Phi = group.root_system
     assert len(group.commutator_coefficient_dict) > 0
 
-    # We will gather blocks of rows grouped by (alpha, beta) so we can sort by total number of combinations
+    # Gather blocks of rows grouped by (alpha, beta) so we can sort by total number of combinations
     table_blocks = []
 
     for (alpha, beta) in Phi.summable_non_proportional_pairs:
@@ -433,7 +432,7 @@ def build_commutator_table(group):
         if not linear_combos:
             continue
             
-        # Retrieve the shortened "view" representations for formatting
+        # Retrieve the shortened forms of roots for formatting
         short_alpha = Phi.short_form_roots[alpha]
         short_beta = Phi.short_form_roots[beta]
         
@@ -494,10 +493,9 @@ def build_commutator_table(group):
     return combo_table
 
 def _unwrap_scalar(val):
-    """
-    Safely extracts the scalar value from any 1-dimensional 
-    wrapper (SymPy Matrix, list, tuple, etc.).
-    """
+    # Helper function to extract a scalar value from a 1-dimensional wrapper like a
+    # Sympy matrix, list, tuple, etc.
+    
     if val is None:
         return val
 
@@ -515,16 +513,15 @@ def _unwrap_scalar(val):
     return val
 
 def build_commutator_equations(group):
-    """
-    Generates a LaTeX string containing interleaved commutator equations.
-    For each summable, non-proportional root pair, it outputs:
-      1. The root parameter prefix (\alpha, \beta) on its own line.
-      2. The symbolic commutator relation on its own line (scaled if necessary).
-      3. The concrete matrix counterpart equation on its own line (scaled if necessary).
+    # Build a LaTeX string containing interleaved commutator equations.
+    # For each summable, non-proportional root pair, it outputs:
+    #  1. The root parameter prefix (\alpha, \beta) on its own line.
+    #  2. The symbolic commutator relation on its own line (scaled if necessary).
+    #  3. The concrete matrix counterpart equation on its own line (scaled if necessary).
     
-    Each equation is typeset in its own display block to prevent TeX memory exhaustion,
-    and scaled down if it exceeds \\textwidth using \\scaletoalign.
-    """
+    # Each equation is typeset in its own display block to prevent TeX memory exhaustion,
+    # and scaled down if it exceeds \\textwidth using \\scaletoalign.
+    
     equations = []
     
     for (alpha, beta) in group.root_system.summable_non_proportional_pairs:
@@ -646,6 +643,8 @@ def build_commutator_equations(group):
     return tex
 
 def build_dimension_table(group):
+    # Build a table of root, root space dimension
+    
     Phi = group.root_system
     tex = r"\noindent \begin{tabular}{|l|c|}" + "\n"
     tex += r"    \hline" + "\n"
@@ -670,6 +669,7 @@ def build_dimension_table(group):
     return tex
 
 def build_root_space_table(group):
+    # Build a table of root spaces
     Phi = group.root_system
     tex = r"\noindent \begin{longtable}{|l|c|}" + "\n"
     tex += r"    \hline" + "\n"
@@ -688,6 +688,7 @@ def build_root_space_table(group):
     return tex
 
 def build_root_subgroup_table(group):
+    # Build a table of root subgroups
     Phi = group.root_system
     tex = r"\noindent \begin{longtable}{|l|c|}" + "\n"
     tex += r"    \hline" + "\n"
@@ -705,7 +706,9 @@ def build_root_subgroup_table(group):
     tex += "\\end{longtable}\n"
     return tex
 
-def build_hom_defect_table(group):    
+def build_hom_defect_table(group):
+    # Build a table of homomorphism defect coefficients for multipliable roots
+    # (these do not exist for non-multipliable roots)
     Phi = group.root_system
     assert(not Phi.is_reduced)
     tex = r"\noindent \begin{tabular}{|l|c|}" + "\n"
@@ -727,13 +730,12 @@ def build_hom_defect_table(group):
     return tex
 
 def build_hom_defect_equations(group):
-    """
-    Generates a LaTeX string containing interleaved homomorphism defect equations.
-    For each multipliable root alpha, it outputs:
-      1. The root prefix parameters on their own line.
-      2. The symbolic defect equation on its own line.
-      3. The concrete matrix equation counterpart on its own line.
-    """
+    # Generate a LaTeX string containing interleaved homomorphism defect equations.
+    # For each multipliable root alpha, it outputs:
+    #  1. The root prefix parameters on their own line.
+    #  2. The symbolic defect equation on its own line.
+    #  3. The concrete matrix equation counterpart on its own line.
+    
     Phi = group.root_system
     assert not Phi.is_reduced, "Root system must be non-reduced to have multipliable roots"
     
@@ -808,6 +810,8 @@ def build_hom_defect_equations(group):
     return tex
 
 def build_weyl_element_table(group):
+    # Generate a table of Weyl elemnets
+    
     Phi = group.root_system
     tex = r"\noindent \begin{longtable}{|l|c|}" + "\n"
     tex += r"    \hline" + "\n"
@@ -829,6 +833,8 @@ def build_weyl_element_table(group):
     return tex
 
 def build_weyl_conjugation_table(group):
+    # Generate a table of Weyl conjugation coefficients
+    
     Phi = group.root_system
     
     # 1. Setup the LaTeX table alignment and headers with longtable
@@ -874,17 +880,16 @@ def build_weyl_conjugation_table(group):
     return tex
 
 def build_weyl_conjugation_equations(group):
-    """
-    Generates a LaTeX string containing interleaved Weyl conjugation equations.
-    For each unique Weyl element representative, each pair of roots alpha and beta 
-    will output:
-      1. The root prefix parameters on their own line.
-      2. The symbolic equation on its own line.
-      3. The matrix equation on its own line.
+    # Generate a LaTeX string containing interleaved Weyl conjugation equations.
+    # For each unique Weyl element representative, each pair of roots alpha and beta 
+    # will output:
+    #  1. The root prefix parameters on their own line.
+    #  2. The symbolic equation on its own line.
+    #  3. The matrix equation on its own line.
     
-    If multiple roots alpha yield the exact same Weyl matrix w_alpha, only the 
-    first encountered representative is processed to eliminate redundancy.
-    """
+    # If multiple roots alpha yield the exact same Weyl matrix w_alpha, only the 
+    # first encountered representative is processed to eliminate redundancy.
+    
     equations = []
     seen_weyl_matrices = []  # Tracks unique w_alpha matrices we've processed
     

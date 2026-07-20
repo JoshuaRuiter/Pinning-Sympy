@@ -6,8 +6,10 @@ A Python project for symbolic computation with pinned algebraic groups, root sys
 
 `Pinning-Sympy` provides:
 - a `pinned_group` class for storing and computing pinned group data,
+- supporting classes for root system, split torus, and bilinear form objects
 - symbolic construction of root systems, Lie algebras, root spaces, and Weyl group elements,
 - computation and verification of commutator coefficients and conjugation formulas,
+- automatic generation of LaTeX summary output files,
 - support for classical groups: special linear, special orthogonal, and special unitary
 
 ## Installation
@@ -26,7 +28,7 @@ Run the example driver to exercise the library and see how pinned groups are bui
 python pinned_group_examples.py
 ```
 
-By default, the example script runs tests for special linear groups. There are additional commented examples for orthogonal and unitary groups.
+By default, pinned_group_examples constructs small examples (up to 4x4 matrices) of special linear, special orthogonal, and special unitary groups. 
 
 There is also an experimental command-line runner that lets you choose examples without editing `pinned_group_examples.py`:
 
@@ -50,18 +52,18 @@ factored copy of the original brute-force Weyl solver without modifying
 uses the experimental monomial-support search, while `--weyl-enumeration brute`
 uses the original variable-support enumeration.
 
-There is also an experimental file-based TeX pipeline for larger batches:
+There is also a file-based TeX pipeline for larger batches:
 
 ```bash
 python compute_and_store.py
+python load_and_test.py
 python build_tex_files.py
 ```
 
 `compute_and_store.py` computes fitted pinned groups and stores them under
-`groups/`. `build_tex_files.py` loads those stored groups and writes generated
-LaTeX/PDF output under `groups_tex/`. This pipeline is useful for inspecting
-many examples at once, but the generated TeX summaries are still incomplete in
-some sections.
+`groups/`. 'load_and_test.py' loads group objects stored in this directory and runs
+the same unit tests as in 'pinned_group_examples.py.' 
+`build_tex_files.py` loads stored groups and generates LaTeX/PDF output under `groups_tex/`. 
 
 For quick interactive experiments, `examples_for_chat.py` loads the saved
 `SL_3.pkl` pinned group when available, or computes and saves it if the file is

@@ -1039,6 +1039,9 @@ class pinned_group:
                     if v in new_list: new_list.remove(v)
         return new_list
 
+    #####################################################################################
+    ### Tried to get this to work, but couldn't. Just too computationally expensive.
+    #####################################################################################
     # def belongs_to_generated_subgroup(self,
     #                                   matrix_to_test,
     #                                   generating_roots,
@@ -1103,6 +1106,7 @@ class pinned_group:
     #     if display:
     #         print("\tAll word pattern checks failed, no structural match found.")
     #     return False
+    #####################################################################################
 
     def compare_subgroup_pattern(self,
                                  matrix_to_test,
@@ -1172,8 +1176,7 @@ class pinned_group:
 
     def validate_pinning(self, display = True):
         # Run tests to verify the pinning
-        # Run this only after fitting
-        
+        # Run this only after fit_pinning
         if display:
             print("\n" + '-' * 100 + "\n")
             print(f"Running tests to validate pinning of {self.name_string}")
@@ -1391,6 +1394,9 @@ class pinned_group:
                                                  display = False)
         if display: print("done.")
         
+        ####################################################################################
+        ### Couldn't get belongs_to_generated_subgroup to work
+        ####################################################################################
         # if display: print("\tChecking belongs_to_generated_subgroup works... ", end="")
         # for alpha in self.root_system.root_list:
         #     d_alpha = self.root_space_dimension(alpha)
@@ -1425,6 +1431,7 @@ class pinned_group:
         #                                               max_word_length = 4,
         #                                               display = False)
         # if display: print("done.")
+        ####################################################################################
         
         if display: print("Root subgroup map verifications complete.")
     
@@ -1570,6 +1577,9 @@ class pinned_group:
                                                 display = False)
         if display: print("done.")
         
+        ####################################################################################
+        ### Couldn't get belongs_to_generated_subgroup to work
+        ####################################################################################
         # if display: print("\tChecking Weyl elements belong to appropriately generated subgroup... ", end="")
         # for alpha in self.root_system.root_list:
         #     w_alpha = self.weyl_element_map(alpha)
@@ -1582,6 +1592,7 @@ class pinned_group:
         #                                                  display = False)
         #     assert belongs
         # if display: print("done.")
+        ####################################################################################
         
         if display: print("\tChecking Weyl element conjugation formula...", end="")
         # orders = {}
@@ -1602,6 +1613,10 @@ class pinned_group:
                 RHS = x_gamma_phi_a
                 assert LHS.equals(RHS), "Weyl conjugation coefficient is incorrect"
 
+                ##########################################################################################
+                ### At some point, I thought the order of phi should always be 2
+                ### but experimentally this is just not the case, so this section is deprecated/incomplete
+                ##########################################################################################
                 # Find the order of phi
                 # Usually it seems to be 2, but I think it can be higher
                 # It seems like sometimes the order is not even finite?
@@ -1634,6 +1649,7 @@ class pinned_group:
                 # sp.pprint(x_gamma_phi_a)
                 # print("\nphi(phi(a)) =",phi_phi_a)
         # if display: print("done. \n\t\tOrders found: ", orders)
+        ##########################################################################################
         
         if display: print("\nWeyl group verifications complete.")
                 

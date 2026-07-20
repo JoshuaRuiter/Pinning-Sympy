@@ -1,5 +1,5 @@
-# Load pinned_groups from stored files,
-# and run validation tests on each.
+# Load pinned_groups from stored files, and run validation tests on each.
+# Only run after constructing store pinned_group objects using compute_and_store.
 
 from pinned_group import pinned_group
 import time
@@ -14,7 +14,7 @@ def main():
     ########################
     display = True
     n_min = 1
-    n_max = 4
+    n_max = 6
     q_min = 1
     q_max = 3
     eps_values = [-1,1]
@@ -36,7 +36,7 @@ def run_SL_tests(n_min, n_max, display):
     print("Running tests for special linear groups")
     n_min = max(n_min, 2) # n=1 doesn't make sense, SL_1 is just the trivial group
     for n in range(n_min, n_max + 1):
-        name_string = f"SL(n={n})"
+        name_string = f"SL-n{n}"
         SL_n = pinned_group.load_from_file(name_string)
         assert SL_n.root_system.dynkin_type == 'A', \
             f"SL(n={n}) should have type A but " + \
@@ -52,7 +52,7 @@ def run_SO_split_tests(n_min, n_max, q_min, q_max, display):
     for q in range(q_min, q_max + 1):
         n_range = [n for n in (2*q, 2*q+1) if n_min <= n and n <= n_max]
         for n in n_range:
-            name_string = f"SO(n={n}, q={q})"
+            name_string = f"SO-n{n}-q{q}"
             SO_n_q = pinned_group.load_from_file(name_string)
             if n==2*q:
                 if q==2:
@@ -79,7 +79,7 @@ def run_SO_nonsplit_tests(n_min, n_max, q_min, q_max, display):
     for q in range(q_min, q_max + 1):
         n_min = max(2*q+2, n_min) # only non-split if n >= 2q+2
         for n in range(n_min, n_max + 1):
-            name_string = f"SO(n={n}, q={q})"
+            name_string = f"SO-n{n}-q{q}"
             SO_n_q = pinned_group.load_from_file(name_string)
             if q == 1:
                 expected_type = 'A'
@@ -100,7 +100,8 @@ def run_SU_quasisplit_tests(n_min, n_max, q_min, q_max, eps_values, display):
         n=2*q
         if n_min <= n and n <= n_max:
             for eps in eps_values:
-                name_string = f"SU(n={n}, q={q}, eps={eps})"
+                eps_str = "1" if eps > 0 else "minus1"
+                name_string = f"SU-n{n}-q{q}-eps-{eps_str}"
                 SU_n_q = pinned_group.load_from_file(name_string)
                 if q == 1:
                     expected_type = 'A'
@@ -124,7 +125,8 @@ def run_SU_nonquasisplit_tests(n_min, n_max, q_min, q_max, eps_values, display):
         n_min = max(2*q+1, n_min) # only non-quasi-split if n>=2*q+1
         for n in range(n_min, n_max + 1):
             for eps in eps_values:
-                name_string = f"SU(n={n}, q={q}, eps={eps})"
+                eps_str = "1" if eps > 0 else "minus1"
+                name_string = f"SU-n{n}-q{q}-eps-{eps_str}"
                 SU_n_q = pinned_group.load_from_file(name_string)
                 assert SU_n_q.root_system.dynkin_type == 'BC', \
                     f"SU(n={n}, q={q}, eps={eps}) is type BC but computations " + \

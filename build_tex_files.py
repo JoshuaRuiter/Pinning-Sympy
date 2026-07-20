@@ -1,4 +1,5 @@
 # Automated creation of .tex file from template for pinned_group objects stored in files
+# Only run this file after creating files for groups using compute_and_store
 
 from pinned_group import pinned_group
 import time
@@ -10,7 +11,7 @@ def main():
     overwrite = True
     compile_PDF = True
     n_min = 1
-    n_max = 5
+    n_max = 6
     q_min = 1
     q_max = 3
     eps_values = [-1, 1]

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.5.20)  17 JUL 2026 17:56
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.5.20)  18 JUL 2026 08:04
 entering extended mode
 **./SL-n5.tex
 (SL-n5.tex
@@ -895,7 +895,7 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 4667.
 Here is how much of TeX's memory you used:
  17835 strings out of 493305
  332117 string characters out of 3138871
- 468472 words of memory out of 3000000
+ 468471 words of memory out of 3000000
  20896 multiletter control sequences out of 15000+200000
  12965 words of font info for 49 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -919,7 +919,7 @@ rams/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/Joshua/AppData/L
 ocal/Programs/MiKTeX/fonts/type1/public/amsfonts/euler/eufm10.pfb><C:/Users/Jos
 hua/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pf
 b>
-Output written on SL-n5.pdf (78 pages, 393235 bytes).
+Output written on SL-n5.pdf (78 pages, 393733 bytes).
 PDF statistics:
  544 PDF objects out of 1000 (max. 8388607)
  113 named destinations out of 1000 (max. 500000)

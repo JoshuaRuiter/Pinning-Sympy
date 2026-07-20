@@ -44,20 +44,18 @@ class root_system:
             "Root system can only be constructed using vectors"
         self.root_list = root_list
         
-        # check that all roots are vectors have same length/dimension, 
+        # check that all roots are vectors have same number of components, 
         # which must also match the number of rows in the lattice matrix
         first_vec_length = len(self.root_list[0])
         for alpha in self.root_list: 
             assert len(alpha) == first_vec_length, \
                 "Root system can't have vectors with different numbers of components"
         self.vector_length = first_vec_length
-        
         if lattice_matrix is None:
             # make the lattice_matrix a single column of zeros if there isn't one
             self.lattice_matrix = sp.zeros(self.vector_length, 1)
         else:
             self.lattice_matrix = lattice_matrix
-        
         assert self.vector_length == self.lattice_matrix.shape[0], \
             "Lattice matrix has wrong number of rows"
 
@@ -73,9 +71,7 @@ class root_system:
         # The truncation length is at least 1 (even for the zero vector if it exists)
         truncation_length = max(1, max_nonzero_index + 1)
         # Map each full root to its shortened vector representation
-        self.short_form_roots = {
-            r: vector(r[:truncation_length]) for r in self.root_list
-        }
+        self.short_form_roots = {r: vector(r[:truncation_length]) for r in self.root_list}
 
         # Determine the irreducible components
         component_root_lists = determine_irreducible_components(self.root_list)
@@ -90,6 +86,9 @@ class root_system:
         if self.is_irreducible:
             self.determine_properties()
         else:
+            # For reducible root system, some attributes don't make sense
+            # for the full system, so each irreducible component has
+            # its separate properties computed
             self.components = [root_system(c, self.lattice_matrix) for c in component_root_lists]
             self.is_reduced = all([c.is_reduced for c in self.components])
             self.dynkin_type = [c.dynkin_type for c in self.components]
@@ -424,6 +423,8 @@ class root_system:
         return combos
 
     def __repr__(self):
+        # Return a string representation/summary of the root system
+        
         s = f"Root system of type {self.name_string}"
         if self.is_irreducible:
             s += f"\nDynkin diagram: {visualize_graph(self.dynkin_graph)}"
