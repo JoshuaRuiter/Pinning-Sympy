@@ -6,9 +6,9 @@ A Python project for symbolic computation with pinned algebraic groups, root sys
 
 `Pinning-Sympy` provides:
 - a `pinned_group` class for storing and computing pinned group data,
-- supporting classes for root system, split torus, and bilinear form objects
+- supporting classes for 'root_system', 'split_torus', and bilinear form ('nondegenerate_isotropic_form') objects
 - symbolic construction of root systems, Lie algebras, root spaces, and Weyl group elements,
-- computation and verification of commutator coefficients and conjugation formulas,
+- computation and verification of commutator and conjugation formulas,
 - automatic generation of LaTeX summary output files,
 - support for classical groups: special linear, special orthogonal, and special unitary
 
@@ -65,14 +65,6 @@ python build_tex_files.py
 the same unit tests as in 'pinned_group_examples.py.' 
 `build_tex_files.py` loads stored groups and generates LaTeX/PDF output under `groups_tex/`. 
 
-For quick interactive experiments, `examples_for_chat.py` loads the saved
-`SL_3.pkl` pinned group when available, or computes and saves it if the file is
-missing:
-
-```bash
-python examples_for_chat.py
-```
-
 ## Project layout
 
 - `pinned_group.py` - core class and algorithms for pinned algebraic groups.
@@ -83,7 +75,6 @@ python examples_for_chat.py
 - `load_and_test.py` - validation script for pinned groups loaded from stored files.
 - `test_demo.py` - experimental direct root-subgroup Weyl fast path kept outside the core class.
 - `weyl_element_factored.py` - external factored copy of the brute-force Weyl solver for experimentation.
-- `examples_for_chat.py` - small interactive example that loads or builds a cached `SL_3` pinned group.
 - `root_system.py` - root system and reflection utilities.
 - `split_torus.py` - split torus construction and helpers.
 - `nondegenerate_isotropic_form.py` - anisotropic form and quadratic extension utilities.
@@ -93,9 +84,6 @@ python examples_for_chat.py
 - `groups/` - cached fitted pinned-group objects used by the batch TeX pipeline.
 - `groups_tex/` - generated LaTeX/PDF output and the `template.tex` file used by `write_to_tex()`.
 - `Notes document/` - longer mathematical notes and bibliography used during development.
-- `temp_workspace.py` - scratch workspace for ad hoc calculations.
-- `SL_3.pkl` - saved pinned group data used by `examples_for_chat.py`.
-- `SU_5_2_1.pkl` - saved exploratory data for a unitary example.
 
 ## Dependencies
 
@@ -119,11 +107,10 @@ installation with `pdflatex`.
 
 ## Current development notes
 
-The project is still in experimental development. Current focus areas include:
+The project is still in experimental development. Potential future work includes:
 - update the notes document,
 - improving performance and reducing brute-force search in the Weyl element solver,
 - keeping experimental Weyl construction and validation helpers outside the core class while they are being tested,
-- completing and polishing the automated TeX output pipeline,
 - implement a belongs_to_generated_subgroup method for pinned_group in a computational feasible way,
 - extending support to more group types and non-split torus structures,
 - moving `root_system` toward a `root_datum` design.
