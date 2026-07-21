@@ -155,7 +155,6 @@ To emphasize the rigidity of $\sig$, the diagram above uses squiggly arrows for 
 
 \subsection{What is a pinning?}
 
-
 Algebraic groups have a lot of structure. We can ``pin" them to understand and see the structure better. The word ``pinning" here comes from the metaphor of pinning the wings of a butterfly specimen, as you might see in a museum. A pinning of an algebraic group $G(k)$ is a collection of group homomorphisms
 \[
 	X_\alpha:V_\alpha(k) \to G(k)
@@ -2280,666 +2279,666 @@ At this point, there is a bit of technical work to show that the two operations 
 \]
 It's a few steps more from there to proving something about rigidity, but that's beyond our current scope.
 
-\newpage
-\section{Pinnings in Matlab}
-
-Matlab code is primarily built up through ``scripts." A script is a single file in the file directory. In a script, you can define as many functions as you want. However, each script has a ``main" function, which is by definition the function whose name is the same as the name of the file. \tbf{Only the main function in a script is visible to the ``outside world."} In other words, only the main function in a script is callable outside of that script. So if you write a function, and want that function to be usable by other scripts or usable in command line, then you need that function to be the main function of its own file. Put another way, you should only define a function within a script that isn't the main function if you only ever need that function within that script.
-
-As much as possible, we will build our code using test-driven development. That is, before even writing functions, we should write automated tests which we expect our functions to pass. This way, we can build up code and be confident at every stage that the code we are writing meets our goals and specifications (or at least meets the ones we have been able to get to pass so far).
-
-\subsection{The symbolic toolbox}
-
-The symbolic toolbox is an add-in for Matlab which allows us to do caculations with symbolic variables. For example, try out the sample code below in Matlab's command line environment, or copy and paste it into a script and run the script.
-
-\begin{framed}
-\noi syms u \\
-syms v \\
-X = [[1,u];[0,1]] \\
-Y = [[1,v];[0,1]] \\
-X*Y
-\end{framed}
-
-\noi The code above is the Matlab version of doing the following calculation by hand.
-\[
-	\begin{pmatrix}
-		1 & u \\
-		0 & 1
-	\end{pmatrix}
-	\begin{pmatrix}
-		1 & v \\
-		0 & 1
-	\end{pmatrix}
-	=
-	\begin{pmatrix}
-		1 & uv \\
-		0 & 1
-	\end{pmatrix}
-\]
-
-\noi You can also create a whole matrix of symbolic variables at once. For example, ``sym('x',[3,3])" creates a $3 \times 3$ matrix with entries x1\_1, x1\_2, \ldots x3\_3.
-
-\subsection{Overall coding goals}
-
-Let $k$ be a field of characteristic $\neq 2$, and let $G$ be a special linear, special unitary, or special orthogonal group over $k$. Let $S$ be a maximal $k$-split torus subgroup in $G$, and let $\Phi = \Phi(G, S)$ be the root system of $G$ with respect to $S$. 
-
-For each $\Phi$ and $G$ as above, we want to encode $\Phi$ as an instance of the RootSystem class, and encode $G$ as an instance of the PinnedGroup class, and then use the PinnedGroup.RunTests() method to verify all of the properties of a pinning. The main building blocks required to build a PinnedGroup are
-\begin{itemize}
-	\item Root space maps, and accompanying the root space dimension map
-	\item Root subgroup maps (just the exponentiated version of root space maps)
-	\item Weyl group maps
-	\item Commutator coefficient maps
-	\item Weyl group conjugation coefficient maps
-\end{itemize}
-
-\subsection{Coding specifications}
-
-Here we describe what Matlab tools we have built or want to build to analyze and verify pinnings of algebraic groups.
-
-\subsubsection{General purpose functions}
-
-Functions which we will be able to reuse for different groups.
-
-\begin{framed}
-\noi \tbf{Name:} SymbolicIsEqual \\
-\noi \tbf{Inputs:} Two matrices $A$ and $B$ \\
-\noi \tbf{Outputs:} Boolean \\
-\noi \tbf{Description:} Return true if $A$ and $B$ are equal (as symbolic matrices). The built-in Matlab function isequal(A,B) will say that A and B are not equal if the correspending entries of $A$ and $B$ are the same but different ``types," for example according to isequal the numerical (floating point) value 1 is different from 1 as a ``symbolic expression."
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} SymbolicIsDiag \\
-\noi \tbf{Inputs:} Matrix $A$ \\
-\noi \tbf{Outputs:} Boolean \\
-\noi \tbf{Description:} Return true if $A$ is a diagonal matrix, false otherwise. There is a built-in Matlab function isdiag which also does this, but sometimes (I can't figure out exactly why) the built-in function doesn't behave as expected when given matrices with symbolic variable entries.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} Commutator \\
-\noi \tbf{Inputs:} Two invertible matrices $A,B$ \\
-\noi \tbf{Outputs:} The commutator matrix $[A,B] = ABA \inv B \inv$ \\
-\noi \tbf{Description:} Should maybe validate that $A$ and $B$ are invertible.
-\end{framed}
-
-%%%%%% DEPRECATED
+%\newpage
+%\section{Pinnings in Matlab}
+%
+%Matlab code is primarily built up through ``scripts." A script is a single file in the file directory. In a script, you can define as many functions as you want. However, each script has a ``main" function, which is by definition the function whose name is the same as the name of the file. \tbf{Only the main function in a script is visible to the ``outside world."} In other words, only the main function in a script is callable outside of that script. So if you write a function, and want that function to be usable by other scripts or usable in command line, then you need that function to be the main function of its own file. Put another way, you should only define a function within a script that isn't the main function if you only ever need that function within that script.
+%
+%As much as possible, we will build our code using test-driven development. That is, before even writing functions, we should write automated tests which we expect our functions to pass. This way, we can build up code and be confident at every stage that the code we are writing meets our goals and specifications (or at least meets the ones we have been able to get to pass so far).
+%
+%\subsection{The symbolic toolbox}
+%
+%The symbolic toolbox is an add-in for Matlab which allows us to do caculations with symbolic variables. For example, try out the sample code below in Matlab's command line environment, or copy and paste it into a script and run the script.
+%
 %\begin{framed}
-%\noi \tbf{Name:} SymbolicZeros \\
-%\noi \tbf{Inputs:} A positive integer $n$ \\
-%\noi \tbf{Outputs:} The $n \times n$ zero matrix, but ``symbolic" typing in Matlab \\
-%\noi \tbf{Description:} Similar to the built-in Matlab function "zeros" but I think this behaves better in terms of ``building" a symbolic matrix by taking a matrix of zeros and setting some entries to be symbolic variables. This may be unecessary.
+%\noi syms u \\
+%syms v \\
+%X = [[1,u];[0,1]] \\
+%Y = [[1,v];[0,1]] \\
+%X*Y
 %\end{framed}
-
-%%%%%% DEPRECATED
+%
+%\noi The code above is the Matlab version of doing the following calculation by hand.
+%\[
+%	\begin{pmatrix}
+%		1 & u \\
+%		0 & 1
+%	\end{pmatrix}
+%	\begin{pmatrix}
+%		1 & v \\
+%		0 & 1
+%	\end{pmatrix}
+%	=
+%	\begin{pmatrix}
+%		1 & uv \\
+%		0 & 1
+%	\end{pmatrix}
+%\]
+%
+%\noi You can also create a whole matrix of symbolic variables at once. For example, ``sym('x',[3,3])" creates a $3 \times 3$ matrix with entries x1\_1, x1\_2, \ldots x3\_3.
+%
+%\subsection{Overall coding goals}
+%
+%Let $k$ be a field of characteristic $\neq 2$, and let $G$ be a special linear, special unitary, or special orthogonal group over $k$. Let $S$ be a maximal $k$-split torus subgroup in $G$, and let $\Phi = \Phi(G, S)$ be the root system of $G$ with respect to $S$. 
+%
+%For each $\Phi$ and $G$ as above, we want to encode $\Phi$ as an instance of the RootSystem class, and encode $G$ as an instance of the PinnedGroup class, and then use the PinnedGroup.RunTests() method to verify all of the properties of a pinning. The main building blocks required to build a PinnedGroup are
+%\begin{itemize}
+%	\item Root space maps, and accompanying the root space dimension map
+%	\item Root subgroup maps (just the exponentiated version of root space maps)
+%	\item Weyl group maps
+%	\item Commutator coefficient maps
+%	\item Weyl group conjugation coefficient maps
+%\end{itemize}
+%
+%\subsection{Coding specifications}
+%
+%Here we describe what Matlab tools we have built or want to build to analyze and verify pinnings of algebraic groups.
+%
+%\subsubsection{General purpose functions}
+%
+%Functions which we will be able to reuse for different groups.
+%
 %\begin{framed}
-%\noi \tbf{Name:} SymbolicEye \\
-%\noi \tbf{Inputs:} A positive integer $n$ \\
-%\noi \tbf{Outputs:} The $n \times n$ identity matrix, but ``symbolic" typing in Matlab \\
-%\noi \tbf{Description:} Similar to the built-in Matlab function ``eye" but I think this behaves better in terms of ``building" a symbolic matrix by taking the identity matrix and setting some entries to be symbolic variables. This may be unnecessary.
+%\noi \tbf{Name:} SymbolicIsEqual \\
+%\noi \tbf{Inputs:} Two matrices $A$ and $B$ \\
+%\noi \tbf{Outputs:} Boolean \\
+%\noi \tbf{Description:} Return true if $A$ and $B$ are equal (as symbolic matrices). The built-in Matlab function isequal(A,B) will say that A and B are not equal if the correspending entries of $A$ and $B$ are the same but different ``types," for example according to isequal the numerical (floating point) value 1 is different from 1 as a ``symbolic expression."
 %\end{framed}
-
-\subsubsection{NIForm class}
-
-NIForm is short for nondegenerate isotropic form. This class is a data structure which encodes a nondegenerate isotropic form, which may be either symmetric bilinear, hermitian, or skew-hermitian.
-
-\begin{center}
-\tbf{Properties}
-\end{center}
-
-\begin{center}
-	\begin{tabular}{l|l}
-		Name & What it is \\
-		\hline
-		Dimension & Dimension of the underlying vector space \\
-		Index & Witt index \\
-		NameString & String describing the type \\
-		Epsilon & 1 for hermitian or symmetric bilinear, $-1$ for skew-hermitian \\
-		Matrix & Matrix of the bilinear form in the standard basis \\
-		AnisotropicPartVector & Vector encoding the diagonal entries of the matrix of the \\
-		& \qquad anisotropic part of the form in the Witt decomposition \\
-		AnisotropicMatrix & Matrix of the anisotropic part from the Witt decomposition \\
-		PrimitiveElement & Primitive element of the associated quadratic field extension, \\
-		& \qquad only relevant for (skew-)hermitian forms
-	\end{tabular}
-\end{center}
-
-\begin{center}
-\tbf{Methods}
-\end{center}
-
-\begin{framed}
-\noi \tbf{Name:} NIForm (constructor) \\
-\noi \tbf{Inputs:} Integer $n$, integer $q$, sign $\eps$, vector vec\_C, symbolic variable PrimitiveElement, string NameString \\
-\noi \tbf{Outputs:} NIForm object \\
-\noi \tbf{Description:} Constructs an NIForm object with the prescribed parameters. More abstractly, the output NIForm object is the form with matrix
-\[
-	\begin{pmatrix}
-		& I_q \\
-		\eps I_q \\
-		&& C
-	\end{pmatrix}
-\]
-where $C = \diag(\text{vec}_C)$. This is a nondegenerate isotropic form with Witt index $q$. If $\eps = 1$, it is symmetric bilinear or hermitian depending on $C$, and if $\eps = -1$ it is skew-hermitian (provided $C$ meets a certain condition).
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} IsSymmetric \\
-\noi \tbf{Inputs:} NIForm object \\
-\noi \tbf{Outputs:} Boolean \\
-\noi \tbf{Description:} Returns true if the form is symmetric.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} IsHermitian \\
-\noi \tbf{Inputs:}  NIForm object \\
-\noi \tbf{Outputs:}  Boolean \\
-\noi \tbf{Description:}  Returns true if the form is hermitian.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} IsSkewHermitian \\
-\noi \tbf{Inputs:}  NIForm object \\
-\noi \tbf{Outputs:}  Boolean \\
-\noi \tbf{Description:}  Returns true if the form is skew-hermitian.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} evaluate \\
-\noi \tbf{Inputs:} NIForm object \\
-\noi \tbf{Outputs:} Scalar \\
-\noi \tbf{Description:} Evaluate the form on two vectors. That is, if the form has matrix $M$ and the input vectors are $u$ and $v$, output $uMv^T$.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} evaluateAnisotropicPart \\
-\noi \tbf{Inputs:} NIForm object \\
-\noi \tbf{Outputs:} Scalar \\
-\noi \tbf{Description:} Evaluate the anisotropic form on two vectors. That is, if the anisotropic part is $C$ and the input vectors are $u$ and $v$, output $uCv^T$.
-\end{framed}
-
-
-\subsubsection{RootSystem class}
-
-The RootSystem class is a data structure which encodes an abstract root system. The main substructure is the cell array RootList, which lists all the roots as vectors of the same length. The key useful methods are RootLinearCombos to compute the set of all positive integral linear combinations of two given roots, and the static method ReflectRoot for computing the reflection of one root across the hyperplane perpendicular to a second root.
-
-\begin{center}
-\tbf{Properties}
-\end{center}
-
-\begin{center}
-	\begin{tabular}{l|l}
-		Name & What it is \\
-		\hline
-		Type & String encoding root system type: A, B, C, BC, D, E, F, or G \\
-		Rank & Positive integer (dimension of the span of roots) \\
-		VectorLength & Length of vectors in RootList \\
-		RootList & Cell array containing vectors represnting individual roots
-	\end{tabular}
-\end{center}
-
-\begin{center}
-\tbf{Methods}
-\end{center}
-
-\begin{framed}
-\noi \tbf{Name:} RootSystem (constructor) \\
-\noi \tbf{Inputs:}  Type (string), Rank (positive integer), VectorLength (positive integer, optional) \\
-\noi \tbf{Outputs:} An instance of the RootSystem class \\
-\noi \tbf{Description:} Given type, rank, and vector length, the constructor builds a root system of that type and rank, using vectors of the specified length. Depending on the type, the vector length needs to be at least a certain value relative to the rank. If no VectorLength is provided, then a default minimum value is used.
-\[
-	\begin{array}{l|cccccccccc}
-		\text{Type} & 
-		\mathsf{A}_q & 
-		\mathsf{B}_q & 
-		\mathsf{C}_q &	
-		\mathsf{BC}_q &
-		\mathsf{D}_q &
-		\mathsf{E}_q &
-		\mathsf{F}_4 &
-		\mathsf{G}_2 \\
-		\hline
-		\text{Default vector length} 
-		& q+1
-		& q 
-		& q
-		& q 
-		& q 
-		& 8 
-		& 4
-		& 3
-	\end{array}
-%	\begin{array}{c|c}
-%		\text{Type} & \text{Default vector length} \\
+%
+%\begin{framed}
+%\noi \tbf{Name:} SymbolicIsDiag \\
+%\noi \tbf{Inputs:} Matrix $A$ \\
+%\noi \tbf{Outputs:} Boolean \\
+%\noi \tbf{Description:} Return true if $A$ is a diagonal matrix, false otherwise. There is a built-in Matlab function isdiag which also does this, but sometimes (I can't figure out exactly why) the built-in function doesn't behave as expected when given matrices with symbolic variable entries.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} Commutator \\
+%\noi \tbf{Inputs:} Two invertible matrices $A,B$ \\
+%\noi \tbf{Outputs:} The commutator matrix $[A,B] = ABA \inv B \inv$ \\
+%\noi \tbf{Description:} Should maybe validate that $A$ and $B$ are invertible.
+%\end{framed}
+%
+%%%%%%% DEPRECATED
+%%\begin{framed}
+%%\noi \tbf{Name:} SymbolicZeros \\
+%%\noi \tbf{Inputs:} A positive integer $n$ \\
+%%\noi \tbf{Outputs:} The $n \times n$ zero matrix, but ``symbolic" typing in Matlab \\
+%%\noi \tbf{Description:} Similar to the built-in Matlab function "zeros" but I think this behaves better in terms of ``building" a symbolic matrix by taking a matrix of zeros and setting some entries to be symbolic variables. This may be unecessary.
+%%\end{framed}
+%
+%%%%%%% DEPRECATED
+%%\begin{framed}
+%%\noi \tbf{Name:} SymbolicEye \\
+%%\noi \tbf{Inputs:} A positive integer $n$ \\
+%%\noi \tbf{Outputs:} The $n \times n$ identity matrix, but ``symbolic" typing in Matlab \\
+%%\noi \tbf{Description:} Similar to the built-in Matlab function ``eye" but I think this behaves better in terms of ``building" a symbolic matrix by taking the identity matrix and setting some entries to be symbolic variables. This may be unnecessary.
+%%\end{framed}
+%
+%\subsubsection{NIForm class}
+%
+%NIForm is short for nondegenerate isotropic form. This class is a data structure which encodes a nondegenerate isotropic form, which may be either symmetric bilinear, hermitian, or skew-hermitian.
+%
+%\begin{center}
+%\tbf{Properties}
+%\end{center}
+%
+%\begin{center}
+%	\begin{tabular}{l|l}
+%		Name & What it is \\
 %		\hline
-%		\mathsf{A}_q & q+1 \\
-%		\mathsf{B}_q & q \\
-%		\mathsf{C}_q & q\\
-%		\mathsf{BC}_q & q \\
-%		\mathsf{D}_q & q \\
-%		\mathsf{E}_q & 8 \\
-%		\mathsf{F}_4 & 4\\
-%		\mathsf{G}_2 & 3
+%		Dimension & Dimension of the underlying vector space \\
+%		Index & Witt index \\
+%		NameString & String describing the type \\
+%		Epsilon & 1 for hermitian or symmetric bilinear, $-1$ for skew-hermitian \\
+%		Matrix & Matrix of the bilinear form in the standard basis \\
+%		AnisotropicPartVector & Vector encoding the diagonal entries of the matrix of the \\
+%		& \qquad anisotropic part of the form in the Witt decomposition \\
+%		AnisotropicMatrix & Matrix of the anisotropic part from the Witt decomposition \\
+%		PrimitiveElement & Primitive element of the associated quadratic field extension, \\
+%		& \qquad only relevant for (skew-)hermitian forms
+%	\end{tabular}
+%\end{center}
+%
+%\begin{center}
+%\tbf{Methods}
+%\end{center}
+%
+%\begin{framed}
+%\noi \tbf{Name:} NIForm (constructor) \\
+%\noi \tbf{Inputs:} Integer $n$, integer $q$, sign $\eps$, vector vec\_C, symbolic variable PrimitiveElement, string NameString \\
+%\noi \tbf{Outputs:} NIForm object \\
+%\noi \tbf{Description:} Constructs an NIForm object with the prescribed parameters. More abstractly, the output NIForm object is the form with matrix
+%\[
+%	\begin{pmatrix}
+%		& I_q \\
+%		\eps I_q \\
+%		&& C
+%	\end{pmatrix}
+%\]
+%where $C = \diag(\text{vec}_C)$. This is a nondegenerate isotropic form with Witt index $q$. If $\eps = 1$, it is symmetric bilinear or hermitian depending on $C$, and if $\eps = -1$ it is skew-hermitian (provided $C$ meets a certain condition).
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} IsSymmetric \\
+%\noi \tbf{Inputs:} NIForm object \\
+%\noi \tbf{Outputs:} Boolean \\
+%\noi \tbf{Description:} Returns true if the form is symmetric.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} IsHermitian \\
+%\noi \tbf{Inputs:}  NIForm object \\
+%\noi \tbf{Outputs:}  Boolean \\
+%\noi \tbf{Description:}  Returns true if the form is hermitian.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} IsSkewHermitian \\
+%\noi \tbf{Inputs:}  NIForm object \\
+%\noi \tbf{Outputs:}  Boolean \\
+%\noi \tbf{Description:}  Returns true if the form is skew-hermitian.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} evaluate \\
+%\noi \tbf{Inputs:} NIForm object \\
+%\noi \tbf{Outputs:} Scalar \\
+%\noi \tbf{Description:} Evaluate the form on two vectors. That is, if the form has matrix $M$ and the input vectors are $u$ and $v$, output $uMv^T$.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} evaluateAnisotropicPart \\
+%\noi \tbf{Inputs:} NIForm object \\
+%\noi \tbf{Outputs:} Scalar \\
+%\noi \tbf{Description:} Evaluate the anisotropic form on two vectors. That is, if the anisotropic part is $C$ and the input vectors are $u$ and $v$, output $uCv^T$.
+%\end{framed}
+%
+%
+%\subsubsection{RootSystem class}
+%
+%The RootSystem class is a data structure which encodes an abstract root system. The main substructure is the cell array RootList, which lists all the roots as vectors of the same length. The key useful methods are RootLinearCombos to compute the set of all positive integral linear combinations of two given roots, and the static method ReflectRoot for computing the reflection of one root across the hyperplane perpendicular to a second root.
+%
+%\begin{center}
+%\tbf{Properties}
+%\end{center}
+%
+%\begin{center}
+%	\begin{tabular}{l|l}
+%		Name & What it is \\
+%		\hline
+%		Type & String encoding root system type: A, B, C, BC, D, E, F, or G \\
+%		Rank & Positive integer (dimension of the span of roots) \\
+%		VectorLength & Length of vectors in RootList \\
+%		RootList & Cell array containing vectors represnting individual roots
+%	\end{tabular}
+%\end{center}
+%
+%\begin{center}
+%\tbf{Methods}
+%\end{center}
+%
+%\begin{framed}
+%\noi \tbf{Name:} RootSystem (constructor) \\
+%\noi \tbf{Inputs:}  Type (string), Rank (positive integer), VectorLength (positive integer, optional) \\
+%\noi \tbf{Outputs:} An instance of the RootSystem class \\
+%\noi \tbf{Description:} Given type, rank, and vector length, the constructor builds a root system of that type and rank, using vectors of the specified length. Depending on the type, the vector length needs to be at least a certain value relative to the rank. If no VectorLength is provided, then a default minimum value is used.
+%\[
+%	\begin{array}{l|cccccccccc}
+%		\text{Type} & 
+%		\mathsf{A}_q & 
+%		\mathsf{B}_q & 
+%		\mathsf{C}_q &	
+%		\mathsf{BC}_q &
+%		\mathsf{D}_q &
+%		\mathsf{E}_q &
+%		\mathsf{F}_4 &
+%		\mathsf{G}_2 \\
+%		\hline
+%		\text{Default vector length} 
+%		& q+1
+%		& q 
+%		& q
+%		& q 
+%		& q 
+%		& 8 
+%		& 4
+%		& 3
 %	\end{array}
-\]
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} IsRoot \\
-\noi \tbf{Inputs:} A vector $\alpha$ \\
-\noi \tbf{Outputs:} Boolean \\
-\noi \tbf{Description:} Return true if $\alpha$ is in RootList
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} LinearCombos \\
-\noi \tbf{Inputs:} Two roots $\alpha, \beta$ \\
-\noi \tbf{Outputs:} Cell array containing a list of triples $\lb i \alpha + j \beta, i, j \rb$ (in Matlab this is ordered, not an unorderd set). \\
-\noi \tbf{Description:} Compute the set of positive integral linear combinations of $\alpha, \beta$ that are roots.
-\[
-	(\alpha, \beta) = \lb i\alpha + j\beta \in \Phi : i,j \in \Z_{\ge 1} \rb
-\]
-Since it can be important for other computations which use this method to know what $i$ and $j$ are used, the output is not just a list of roots. Rather, the output is a list of triples of the form $\lb i\alpha + j\beta, i,j \rb$ where $i\alpha + j\beta$ is one of the integral linear combinations and $i$ and $j$ are the integer coefficients used to obtain that new root. For example, if $\alpha = [2, 0, 0, 0]$ and $\beta = [-1, 1, 0, 0]$ then
-\[
-	\text{LinearCombos}(\alpha, \beta) = \Big\{ \big\{ [1, 1, 0, 0],1,1 \big\}, \big\{ [0,2,0,0],1,2 \big\} \Big\}
-\]
-The output list is a cell array, and within it each triple is a cell array, so if you want to extract the first triple, you would use the syntax
-\[
-	\text{LinearCombos}(\alpha,\beta) \lb 1 \rb 
-\]
-which would output the triple $\lb [1,1,0,0], 1,1, \rb$ and then to extract the root from that first triple use
-\[
-	\text{LinearCombos}(\alpha,\beta) \lb 1 \rb \lb 1 \rb
-\]
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} VerifyProperties \\
-\noi \tbf{Inputs:} None \\
-\noi \tbf{Outputs:} Text log \\
-\noi \tbf{Description:} Run tests to verify root system axioms (R1)-(R4). Note that this does not check that the root system is reduced, because we wish to include systems of type $\mathsf{BC}$.
-\end{framed}
-
-\begin{center}
-\tbf{Static methods}
-\end{center}
-
-\begin{framed}
-\noi \tbf{Name:} ReflectRoot \\
-\noi \tbf{Inputs:} Two roots (vectors) $\alpha, \beta$ of the same length \\
-\noi \tbf{Outputs:} The reflection of $\beta$ across the hyperplane perpendicular to $\alpha$ \\
-\noi \tbf{Description:} The reflection is described by the formula
-\[
-	\sig_\alpha(\beta) = \beta - \frac{2( \alpha, \beta)}{(\alpha, \alpha)} \alpha
-\]
-where here $(\alpha, \beta)$ and $(\alpha, \alpha)$ refer to the standard dot product.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} IsProportionalRoot \\
-\noi \tbf{Inputs:} Two roots $\alpha, \beta$ \\
-\noi \tbf{Outputs:} Boolean \\
-\noi \tbf{Description:} Return true if $\alpha = c \beta$ for some scalar $c$.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} BuildTypeA \\
-\noi \tbf{Inputs:} Rank (positive integer), VectorLength (positive integer) \\
-\noi \tbf{Outputs:} Cell array \\
-\noi \tbf{Description:} Construct the type $\mathsf{A}_r$ root system with rank $r$, representing roots as vectors of specified length. Using the notation $\alpha_i = [0, \ldots, 1, \ldots, 0]$ with 1 in the $i$th position,
-\[
-	\mathsf{A}_r = \lb \alpha_i - \alpha_j : 1 \le i, j \le r \text{ and } i \neq j \rb
-\]
-If VectorLength exceeds $r + 1$, then we simply pad the end of every vector with enough zeros.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} BuildTypeB \\
-\noi \tbf{Inputs:} Rank (positive integer), VectorLength (positive integer) \\
-\noi \tbf{Outputs:} Cell array  \\
-\noi \tbf{Description:} Construct the type $\mathsf{B}_r$ root system with specified rank $r$, representing roots as vectors of specified length. Using the notation $\alpha_i = [0, \ldots, 1, \ldots, 0]$ with 1 in the $i$th position,
-\[
-	\mathsf{B}_r = \lb \pm \alpha_i : 1 \le i \le r \rb \cup \lb \pm \alpha_i \pm \alpha_j : 1 \le i, j \le r \text{ and } i \neq j \rb
-\]
-If VectorLength exceeds $r$, then we simply pad the end of every vector with enough zeros.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} BuildTypeC \\
-\noi \tbf{Inputs:} Rank (positive integer), VectorLength (positive integer) \\
-\noi \tbf{Outputs:} Cell array  \\
-\noi \tbf{Description:} Construct the type $\mathsf{C}_r$ root system with specified rank $r$, representing roots as vectors of specified length. Using the notation $\alpha_i = [0, \ldots, 1, \ldots, 0]$ with 1 in the $i$th position,
-\[
-	\mathsf{C}_r = \lb \pm 2 \alpha_i : 1 \le i \le r \rb \cup \lb \pm \alpha_i \pm \alpha_j : 1 \le i, j \le r \text{ and } i \neq j \rb
-\]
-If VectorLength exceeds $r$, then we simply pad the end of every vector with enough zeros.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} BuildTypeBC \\
-\noi \tbf{Inputs:} Rank (positive integer), VectorLength (positive integer) \\
-\noi \tbf{Outputs:} Cell array  \\
-\noi \tbf{Description:} Construct the type $\mathsf{BC}_r$ (non-reduced) root system with specified rank $r$, representing roots as vectors of specified length. This is the union of the type $\mathsf{B}_r$ and $\mathsf{C}_r$ systems. Using the notation $\alpha_i = [0, \ldots, 1, \ldots, 0]$ with 1 in the $i$th position,
-\[
-	\mathsf{BC}_r = \lb \pm \alpha_i, \pm 2 \alpha_i : 1 \le i \le r \rb \cup \lb \pm \alpha_i \pm \alpha_j : 1 \le i, j \le r \text{ and } i \neq j \rb
-\]
-If VectorLength exceeds $r$, then we simply pad the end of every vector with enough zeros.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} BuildTypeD \\
-\noi \tbf{Inputs:} Rank (positive integer), VectorLength (positive integer) \\
-\noi \tbf{Outputs:} Cell array  \\
-\noi \tbf{Description:} Construct the type $\mathsf{D}_r$ root system with specified rank $r$, represnting roots as vectors of specified length. Using the notation $\alpha_i = [0, \ldots, 1, \ldots, 0]$ with 1 in the $i$th position,
-\[
-	\mathsf{D}_r = \lb \pm \alpha_i \pm \alpha_j : 1 \le i, j \le r \text{ and } i \neq j \rb
-\]
-If VectorLength exceeds $r$, then we simply pad the end of every vector with enough zeros.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} BuildTypeE \\
-\noi \tbf{Inputs:} Rank (positive integer), VectorLength (positive integer) \\
-\noi \tbf{Outputs:} Cell array  \\
-\noi \tbf{Description:} Construct the type $\mathsf{E}_r$ root system, noting that we must have $6 \le r \le 8$. This is complicated to describe, so we do not describe it in detail here.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} BuildTypeF \\
-\noi \tbf{Inputs:} Rank (positive integer), VectorLength (positive integer) \\
-\noi \tbf{Outputs:} Cell array  \\
-\noi \tbf{Description:} Construct the type $\mathsf{F}_4$ root system. (The rank must be 4.) Using the notation $\alpha_i = [0, \ldots, 1, \ldots, 0]$ with 1 in the $i$th position, 
-\begin{align*}
-	\mathsf{F}_4 &=
-	 \lb \pm 2 \alpha_i : 1 \le i \le 4 \rb \\
-	 &\qquad \cup \lb \pm \alpha_i \pm \alpha_j : 1 \le i, j \le 4 \text{ and } i \neq j \rb  \\
-	 &\qquad \cup \lb \pm \alpha_i \pm \alpha_j \pm \alpha_k \pm \alpha_\ell : 1 \le i,j,k, \ell \le 4 \text{ and } i,j,k,\ell \text{ are all distinct} \rb
-\end{align*}
-If VectorLength exceeds $4$, then we simply pad the end of every vector with enough zeros.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} BuildTypeG \\
-\noi \tbf{Inputs:} Rank (positive integer), VectorLength (positive integer) \\
-\noi \tbf{Outputs:} Cell array  \\
-\noi \tbf{Description:} Construct the type $\mathsf{G}_2$ root system. (The rank must be 2.) Using the notation $\alpha_i = [0, \ldots, 1, \ldots, 0]$ with 1 in the $i$th position,
-\begin{align*}
-	\mathsf{G}_2 &= \lb \pm (\alpha_i - \alpha_j) : 1 \le i, j \le 3 \text{ and } i \neq j \rb \\
-	&\qquad \cup \lb \pm ( 2 \alpha_i - \alpha_j - \alpha_k)  : 1 \le i, j, k \le 3 \text{ and } i,j,k \text{ are all distinct} \rb
-\end{align*}
-If VectorLength exceeds $3$, then we simply pad the end of every vector with enough zeros.
-\end{framed}
-
-\subsubsection{PinnedGroup class}
-
-A class encoding all of the data of an algebraic group with a pinning. To run tests to verify a pinning, create an instance of PinnedGroup with all the required data, and use the RunTests() method.
-
-\begin{center}
-\tbf{Properties}
-\end{center}
-
-\begin{center}
-	\begin{tabular}{l|l}
-		Name & What it is \\
-		\hline
-		NameString & String describing the group, e.g. ``special linear group" \\
-		MatrixSize & Positive integer \\
-		Root\_System & An instance of the RootSystem class \\
-		RootList & Cell array, substructure of Root\_System \\
-		RootSystemRank & Positive integer, the rnak of Root\_System \\
-		FormMatrix & Matrix, only used for special orthogonal/unitary groups \\
-		RootSpaceDimension & Function handle \\
-		RootSpaceMap & Function handle for $\LieX_\alpha$ \\
-		RootSubgroupMap & Function handle for $X_\alpha$ \\
-		WeylGroupMap & Function handle for $W_\alpha$ \\
-		GenerictorusElementMap & Function handle \\
-		IsGroupElement & Function handle, tests if an input matrix is in $G(k)$ \\
-		IsTorusElement & Function handle, tests if an input matrix is in $S(k)$ \\
-		IsLieAlgebraElement & Function handle, tests if an input matrix is in $\frakg(k)$ \\
-		CommutatorCoefficientMap & Function handle, outputs $N_{ij}^{\alpha \beta}(u,v)$ \\
-		WeylGroupCoefficientMap & Function handle
-	\end{tabular}
-\end{center}
-
-All of the properties above starting with RootSpaceDimension are function handles. To get an idea of how this works, take a look at the RunSLTests script and see where this is used. Below we specify what the format of inputs for each of these functions needs to be in order for PinnedGroup.RunTests() to work properly.
-
-Below are specifications for the RunTests script, which we use to test all of our code. You don't need to know absolutely every detail of what's going on in this script, but you do need to be aware of what kinds of inputs it requires, and more importantly what formats and intputs the inputs require. 
-
-\newpage
-\begin{center}
-	\begin{tabular}{l|l|l}
-		Function & Inputs & Type \\
-		\hline
-		RootSpaceDimension & MatrixSize & Integer \\
-		& Root\_System & RootSystem \\
-		& Root $\alpha$ & Vector of length MatrixSize \\
-		\hline
-		RootSpaceMap & MatrixSize & Integer \\
-		& Root\_System & RootSystem \\
-		& FormMatrix & Matrix \\
-		& Root $\alpha$ & Vector of length MatrixSize \\
-		& Vector $u$ & Vector of length RootSpaceDimension$(\alpha$) \\
-		\hline
-		RootSubgroupMap & MatrixSize & Integer \\
-		& Root\_System & RootSystem \\
-		& FormMatrix & Matrix \\
-		& Root $\alpha$ & Vector of length MatrixSize \\
-		& Vector $u$ & Vector of length RootSpaceDimension$(\alpha$)  \\
-		\hline
-		WeylGroupMap &  MatrixSize & Integer \\
-		& Root\_System & RootSystem \\
-		& FormMatrix & Matrix \\
-		& Root $\alpha$ & Vector of length MatrixSize \\
-		& Vector $u$ & Vector of length RootSpaceDimension$(\alpha$)  \\
-		\hline
-		GenericTorus & MatrixSize & Integer \\
-		ElementMap  & RootSystemRank & Integer \\
-		& Diagonal values & Vector of length RootSystemRank \\
-		\hline
-		IsGroupElement & MatrixSize & Integer \\
-		& MatrixToTest & Matrix \\
-		& FormMatrix & Matrix \\
-		\hline
-		IsTorusElement & MatrixSize & Integer \\
-		& MatrixToTest & Matrix \\
-		& FormMatrix & Matrix \\
-		\hline
-		IsLieAlgebraElement &  MatrixSize & Integer \\
-		& MatrixToTest & Matrix \\
-		& FormMatrix & Matrix \\
-		\hline
-		Commutator & MatrixSize & Integer \\
-		CoefficientMap & Root\_System & RootSystem \\
-		& Root $\alpha$ & Vector of length MatrixSize \\
-		& Root $\beta$ & Vector of length MatrixSize \\
-		& $p$ & Integer \\
-		& $q$ & Integer \\
-		& $u$ & Vector of length RootSpaceDimension$(\alpha$) \\
-		& $v$ & Vector of length RootSpaceDimension$(\beta$) \\
-		\hline
-		WeylGroup & MatrixSize & Integer \\
-		CoefficientMap & Root\_System & RootSystem \\
-		& FormMatrix & Matrix \\
-		& Root $\alpha$ & Vector of length MatrixSize \\
-		& Root $\beta$ & Vector of length MatrixSize \\
-		& $u$ & Vector of length RootSpaceDimension$(\alpha$) \\
-	\end{tabular}
-\end{center}
-
-\newpage
-\begin{center}
-	\begin{tabular}{l|l}
-		Function & Output type \\
-		\hline
-		RootSpaceDimension & Integer \\
-		RootSpaceMap & Matrix of size MatrixSize \\
-		RootSubgroupMap & Matrix of size MatrixSize \\
-		WeylGroupMap &  Matrix of size MatrixSize \\
-		GenericTorusElementMap & Matrix of size MatrixSize \\
-		IsGroupElement & Boolean \\
-		IsTorusElement & Boolean \\
-		IsLieAlgebraElement & Boolean \\
-		CommutatorCoefficientMap & Vector \\
-		WeylGroupCoefficientMap & Vector
-	\end{tabular}
-\end{center}
-
-\begin{center}
-\tbf{Methods}
-\end{center}
-
-\begin{framed}
-\noi \tbf{Name:} PinnedGroup (constructor) \\
-\noi \tbf{Inputs:} NameString, MatrixSize, Root\_System, FormMatrix, RootSpaceDimension, RootSpaceMap, RootSubgroupMap, WeylGroupMap, GenericTorusElementMap, IsGroupElement, IsTorusElement, IsLieAlgebraElement, CommutatorCoefficientMap, WeylGroupCoefficientMap \\
-\noi \tbf{Outputs:} A new instance of the PinnedGroup class built from the input data \\
-\noi \tbf{Description:} The constructor doesn't do much of anything other than create a new instance of the class, and assign its properties to the various inputs.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} RunTests \\
-\noi \tbf{Inputs:} None  \\
-\noi \tbf{Outputs:} Text log \\
-\noi \tbf{Description:} Do symbolic matrix calculations to verify that the data above satisfies all of the properties of a pinning of an algebraic group. Each test is outsourced to another method.
-\begin{itemize}
-	\item (TestBasics) Check that $\LieX_\alpha$ always outputs something in $\frakg(k)$
-	\item (TestBasics) Check that $X_\alpha(u)$ always outputs something in $G(k)$
-	\item (TestRootSpaceMapsAreHomomorphisms) Check that for $\alpha \in \Phi$,
-	\[
-		\LieX_\alpha(u+v) = \LieX_\alpha(u) + \LieX_\alpha(v)
-	\]
-	\item (TestRootSubgroupMapsAreAlmostHomomorphisms) Check that for $\alpha \in \Phi$,
-	\[
-		X_\alpha(u) \cdot X_\alpha(v) = X_\alpha(u + v) \prod_{i \ge 2} X_{i\alpha} \Big( q_\alpha^i(u,v) \Big)
-	\]
-	Note that the product over $i \ge 2$ is trivial (the identity) for all root systems except for type $\mathsf{BC}$.
-	\item (TestTorusConjugationFormula) Check that for $s \in S(k)$ and $\alpha \in \Phi$,
-	\[
-		s \cdot X_\alpha(u) \cdot s \inv = X_\alpha \Big( \alpha(s) u \Big)
-	\]
-	\item (TestCommutatorFormula) Check the commutator formula: for $\alpha, \beta \in \Phi$ a pair of non-proportional roots,
-	\[
-		\Big[ X_\alpha(u), X_\beta(v) \Big] = \prod_{i,j \ge 1} X_{i\alpha + j \beta} \Big( N_{ij}^{\alpha \beta}(u,v) \Big)
-	\]
-	\item (TestWeylGroupElements) Check that for $\alpha \in \Phi$ and $s \in S(k)$,
-	\[
-		w_\alpha(u) \cdot s \cdot w_\alpha(u) \inv \in S(k)
-	\]
-	\item (TestWeylGroupConjugationFormula) Check the Weyl group conjugation formula: for $\alpha, \beta \in \Phi$, 
-	\[
-		w_\alpha(u) \cdot X_\beta(v) \cdot w_\alpha(u) \inv = X_{\sig_\alpha(\beta)} ( \varphi u)
-	\]
-	where $\varphi u$ is something like $\pm u$ or $\pm \ov u$.
-\end{itemize}
-\end{framed}
-
-\begin{center}
-\tbf{Static methods}
-\end{center}
-
-\begin{framed}
-\noi \tbf{Name:} CharacterEval \\
-\noi \tbf{Inputs:} An integer $n=$MatrixSize, and a character $\alpha$ ($n \times 1$ integer vector) and a diagonal matrix $t = \diag(t_1, \ldots, t_n)$ \\
-\noi \tbf{Outputs:} A scalar (possibly a number, or symbolic variable) \\
-\noi \tbf{Description:} Given a $n \times 1$ integer vector $\alpha = [v_1, \ldots, v_n]$, interpret it as the character $v_1 \alpha_1 + \cdots + v_n \alpha_n$, then evaluate that character at the diagonal matrix $t$.
-\[
-	(v_1 \alpha_1 + \cdots + v_n \alpha_n ) \diag(t_1, \ldots, t_n) = \prod_{i=1}^n t_i^{v_i} =  t_1^{v_1} \cdots t_n^{v_n}
-\]
-\end{framed}
-
-\subsection{Example -- $\SL_n$ as a PinnedGroup object}
-
-In this section we describe the functions behind creating an instance of the PinnedGroup class modeling the special linear group. Refer to the RunSLTests.m file for details on how exactly to create the PinnedGroup class instance and run tests.
-
-\begin{framed}
-\noi \tbf{Name:} LieX\_SL \\
-\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{A}_{n-1}$ root system using the RootSystem class, a placeholder input for FormMatrix (just input the identity or zero matrix, it does't matter), a root $\alpha$ from the $A_{n-1}$ root system ($n \times 1$ vector), and a symbolic variable $u$ \\
-\noi \tbf{Outputs:} An element of the root space associated with $\alpha$ (zeros everywhere except a $u$ in the $ij$th entry \\
-\noi \tbf{Description:} For example,
-\[
-	\LieX\_\text{SL}(3,\mathsf{A}_{2},\sim,\alpha_{12}, u) =
-	\begin{pmatrix}
-		0 & u \\
-		& 0 \\
-		&& 0
-	\end{pmatrix}
-\]
-More generally, $\LieX\_\text{SL}(n,\mathsf{A}_{n-1},\sim,\alpha_{ij}, u)$ is the $n \times n$ matrix with zeros everywhere except for $u$ in the $ij$th entry (this matrix is often denoted $E_{ij}(u)$).
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} X\_SL \\
-\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{A}_{n-1}$ root system using the RootSystem class, a placeholder input for FormMatrix (just input the identity or zero matrix, it does't matter), a root $\alpha$ from the $A_{n-1}$ root system ($n \times 1$ vector), and a symbolic variable $u$ \\
-\noi \tbf{Outputs:} An element of the root subgroup associated with $\alpha$ \\
-\noi \tbf{Description:} This is just the matrix exponential of $\LieX\_\text{SL}(n,\mathsf{A}_{n-1},\sim,\alpha_{ij}, u)$.
-\[
-	\text{X\_SL}(n,\mathsf{A}_{n-1},\sim,\alpha_{ij}, u) = \exp \Big(\LieX\_\text{SL}(n,\mathsf{A}_{n-1},\sim,\alpha_{ij}, u) \Big)
-\]
-In general, the matrix exponential is
-\[
-	\exp(A) = \sum_{n=0}^\infty \frac{A^n}{n!} = I + A + \frac 12 A^2 + \frac 16 A^3 + \cdots
-\]
-However, the matrices $\LieX\_\text{SL}(n,\mathsf{A}_{n-1},\sim,\alpha_{ij}, u)$ all satisfy $A^2 = 0$, so the matrix exponential is just $I+A$. Conveniently, this means we don't have to worry about convergence questions regarding the infinite sum above.
-\[
-	\text{X\_SL}(n,\mathsf{A}_{n-1},\sim,\alpha_{ij}, u) = I + \LieX\_\text{SL}(n,\mathsf{A}_{n-1},\sim,\alpha_{ij}, u)
-\]
-For example,
-\[
-	\text{X\_SL}(n,\mathsf{A}_{n-1},\sim,\alpha_{12}, u) =
-	\begin{pmatrix}
-		1 & u \\
-		& 1 \\
-		&& \ddots \\
-		&&& 1
-	\end{pmatrix}
-\]
-Another way to say this is that $\text{X\_SL}(n,\mathsf{A}_{n-1},\sim,\alpha_{ij}, u) = e_{ij}(u)$.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} W\_SL \\
-\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{A}_{n-1}$ root system using the RootSystem class, a placeholder input for FormMatrix (just input the identity or zero matrix, it does't matter), a root $\alpha$ from the $A_{n-1}$ root system ($n \times 1$ vector), and a symbolic variable $u$ \\
-\noi \tbf{Outputs:} The matrix $w_\alpha(u)$ \\
-\noi \tbf{Description:} The formula for $w_\alpha(u)$ is
-\[
-	w_\alpha(u) = X_\alpha(u) \cdot X_{-\alpha} \lp - u \inv \rp \cdot X_\alpha(u)
-\]
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} CommutatorCoefficientSL \\
-\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{A}_{n-1}$ root system using the RootSystem class, two roots $\alpha, \beta \in \Phi(\SL_n, T)$, two positive integers $p$ and $q$, and two scalars $u$ and $v$ \\
-\noi \tbf{Outputs:} A scalar (should always be $\pm uv$) \\
-\noi \tbf{Description:} Note that for $\SL_n$, we always have $p=q=1$. (We still need these as inputs to the function to comply with PinnedGroup.) 
-
-If $\alpha + \beta$ is not a root, then output zero. If $\alpha + \beta$ is a root, output the coefficient $N_{pq}^{\alpha \beta}(u,v)$ from the formula
-\[
-	\Big[ X_\alpha(u), X_\beta(v) \Big] = X_{\alpha+\beta} \Big( N_{11}^{\alpha \beta}(u,v) \Big)
-\]
-This coefficient $N(u,v)$ should always be $\pm uv$. Concretely, if $\alpha + \beta$ is a root, then they must be of the form $\alpha = \alpha_{ij}$ and $\beta = \alpha_{k \ell}$ where there are exactly three distinct indices in the set $\lb i,j,k, \ell \rb$, and
-\[
-	N_{11}^{\alpha_{ij}, \alpha_{k\ell}}(u,v) =
-	\begin{cases}
-		uv & i=k \text{ or } j = k \\
-		-uv & i = \ell \text{ or } j = \ell
-	\end{cases}
-\]
-\end{framed}
-
-
-\begin{framed}
-\noi \tbf{Name:} WeylGroupConjugationCoefficientSL \\
-\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{A}_{n-1}$ root system using the RootSystem class, two roots $\alpha,\beta$, and a scalar (often symbolic variable) $u$ \\
-\noi \tbf{Outputs:} A scalar (either $u$ or $-u$) \\
-\noi \tbf{Description:} This should output $\varphi_{\alpha \beta}( u ) = \pm u$ appearing on the right hand side of the equation
-\[
-	w_\alpha(1) \cdot X_\beta(u) \cdot w_\alpha(1) \inv = X_{\sig_\alpha(\beta)} \Big( \varphi_{\alpha \beta}( u ) \Big)
-\]
-More concretely, if $\alpha = \alpha_{ij}$ and $\beta = \alpha_{k \ell}$, then
-\begin{align*}
-	\varphi_{\alpha \beta}( u ) = 
-	\begin{cases}
-		-u & i = k \text{ or } i = \ell \\
-		u & \text{else}
-	\end{cases}
-\end{align*}
-\end{framed}
+%%	\begin{array}{c|c}
+%%		\text{Type} & \text{Default vector length} \\
+%%		\hline
+%%		\mathsf{A}_q & q+1 \\
+%%		\mathsf{B}_q & q \\
+%%		\mathsf{C}_q & q\\
+%%		\mathsf{BC}_q & q \\
+%%		\mathsf{D}_q & q \\
+%%		\mathsf{E}_q & 8 \\
+%%		\mathsf{F}_4 & 4\\
+%%		\mathsf{G}_2 & 3
+%%	\end{array}
+%\]
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} IsRoot \\
+%\noi \tbf{Inputs:} A vector $\alpha$ \\
+%\noi \tbf{Outputs:} Boolean \\
+%\noi \tbf{Description:} Return true if $\alpha$ is in RootList
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} LinearCombos \\
+%\noi \tbf{Inputs:} Two roots $\alpha, \beta$ \\
+%\noi \tbf{Outputs:} Cell array containing a list of triples $\lb i \alpha + j \beta, i, j \rb$ (in Matlab this is ordered, not an unorderd set). \\
+%\noi \tbf{Description:} Compute the set of positive integral linear combinations of $\alpha, \beta$ that are roots.
+%\[
+%	(\alpha, \beta) = \lb i\alpha + j\beta \in \Phi : i,j \in \Z_{\ge 1} \rb
+%\]
+%Since it can be important for other computations which use this method to know what $i$ and $j$ are used, the output is not just a list of roots. Rather, the output is a list of triples of the form $\lb i\alpha + j\beta, i,j \rb$ where $i\alpha + j\beta$ is one of the integral linear combinations and $i$ and $j$ are the integer coefficients used to obtain that new root. For example, if $\alpha = [2, 0, 0, 0]$ and $\beta = [-1, 1, 0, 0]$ then
+%\[
+%	\text{LinearCombos}(\alpha, \beta) = \Big\{ \big\{ [1, 1, 0, 0],1,1 \big\}, \big\{ [0,2,0,0],1,2 \big\} \Big\}
+%\]
+%The output list is a cell array, and within it each triple is a cell array, so if you want to extract the first triple, you would use the syntax
+%\[
+%	\text{LinearCombos}(\alpha,\beta) \lb 1 \rb 
+%\]
+%which would output the triple $\lb [1,1,0,0], 1,1, \rb$ and then to extract the root from that first triple use
+%\[
+%	\text{LinearCombos}(\alpha,\beta) \lb 1 \rb \lb 1 \rb
+%\]
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} VerifyProperties \\
+%\noi \tbf{Inputs:} None \\
+%\noi \tbf{Outputs:} Text log \\
+%\noi \tbf{Description:} Run tests to verify root system axioms (R1)-(R4). Note that this does not check that the root system is reduced, because we wish to include systems of type $\mathsf{BC}$.
+%\end{framed}
+%
+%\begin{center}
+%\tbf{Static methods}
+%\end{center}
+%
+%\begin{framed}
+%\noi \tbf{Name:} ReflectRoot \\
+%\noi \tbf{Inputs:} Two roots (vectors) $\alpha, \beta$ of the same length \\
+%\noi \tbf{Outputs:} The reflection of $\beta$ across the hyperplane perpendicular to $\alpha$ \\
+%\noi \tbf{Description:} The reflection is described by the formula
+%\[
+%	\sig_\alpha(\beta) = \beta - \frac{2( \alpha, \beta)}{(\alpha, \alpha)} \alpha
+%\]
+%where here $(\alpha, \beta)$ and $(\alpha, \alpha)$ refer to the standard dot product.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} IsProportionalRoot \\
+%\noi \tbf{Inputs:} Two roots $\alpha, \beta$ \\
+%\noi \tbf{Outputs:} Boolean \\
+%\noi \tbf{Description:} Return true if $\alpha = c \beta$ for some scalar $c$.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} BuildTypeA \\
+%\noi \tbf{Inputs:} Rank (positive integer), VectorLength (positive integer) \\
+%\noi \tbf{Outputs:} Cell array \\
+%\noi \tbf{Description:} Construct the type $\mathsf{A}_r$ root system with rank $r$, representing roots as vectors of specified length. Using the notation $\alpha_i = [0, \ldots, 1, \ldots, 0]$ with 1 in the $i$th position,
+%\[
+%	\mathsf{A}_r = \lb \alpha_i - \alpha_j : 1 \le i, j \le r \text{ and } i \neq j \rb
+%\]
+%If VectorLength exceeds $r + 1$, then we simply pad the end of every vector with enough zeros.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} BuildTypeB \\
+%\noi \tbf{Inputs:} Rank (positive integer), VectorLength (positive integer) \\
+%\noi \tbf{Outputs:} Cell array  \\
+%\noi \tbf{Description:} Construct the type $\mathsf{B}_r$ root system with specified rank $r$, representing roots as vectors of specified length. Using the notation $\alpha_i = [0, \ldots, 1, \ldots, 0]$ with 1 in the $i$th position,
+%\[
+%	\mathsf{B}_r = \lb \pm \alpha_i : 1 \le i \le r \rb \cup \lb \pm \alpha_i \pm \alpha_j : 1 \le i, j \le r \text{ and } i \neq j \rb
+%\]
+%If VectorLength exceeds $r$, then we simply pad the end of every vector with enough zeros.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} BuildTypeC \\
+%\noi \tbf{Inputs:} Rank (positive integer), VectorLength (positive integer) \\
+%\noi \tbf{Outputs:} Cell array  \\
+%\noi \tbf{Description:} Construct the type $\mathsf{C}_r$ root system with specified rank $r$, representing roots as vectors of specified length. Using the notation $\alpha_i = [0, \ldots, 1, \ldots, 0]$ with 1 in the $i$th position,
+%\[
+%	\mathsf{C}_r = \lb \pm 2 \alpha_i : 1 \le i \le r \rb \cup \lb \pm \alpha_i \pm \alpha_j : 1 \le i, j \le r \text{ and } i \neq j \rb
+%\]
+%If VectorLength exceeds $r$, then we simply pad the end of every vector with enough zeros.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} BuildTypeBC \\
+%\noi \tbf{Inputs:} Rank (positive integer), VectorLength (positive integer) \\
+%\noi \tbf{Outputs:} Cell array  \\
+%\noi \tbf{Description:} Construct the type $\mathsf{BC}_r$ (non-reduced) root system with specified rank $r$, representing roots as vectors of specified length. This is the union of the type $\mathsf{B}_r$ and $\mathsf{C}_r$ systems. Using the notation $\alpha_i = [0, \ldots, 1, \ldots, 0]$ with 1 in the $i$th position,
+%\[
+%	\mathsf{BC}_r = \lb \pm \alpha_i, \pm 2 \alpha_i : 1 \le i \le r \rb \cup \lb \pm \alpha_i \pm \alpha_j : 1 \le i, j \le r \text{ and } i \neq j \rb
+%\]
+%If VectorLength exceeds $r$, then we simply pad the end of every vector with enough zeros.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} BuildTypeD \\
+%\noi \tbf{Inputs:} Rank (positive integer), VectorLength (positive integer) \\
+%\noi \tbf{Outputs:} Cell array  \\
+%\noi \tbf{Description:} Construct the type $\mathsf{D}_r$ root system with specified rank $r$, represnting roots as vectors of specified length. Using the notation $\alpha_i = [0, \ldots, 1, \ldots, 0]$ with 1 in the $i$th position,
+%\[
+%	\mathsf{D}_r = \lb \pm \alpha_i \pm \alpha_j : 1 \le i, j \le r \text{ and } i \neq j \rb
+%\]
+%If VectorLength exceeds $r$, then we simply pad the end of every vector with enough zeros.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} BuildTypeE \\
+%\noi \tbf{Inputs:} Rank (positive integer), VectorLength (positive integer) \\
+%\noi \tbf{Outputs:} Cell array  \\
+%\noi \tbf{Description:} Construct the type $\mathsf{E}_r$ root system, noting that we must have $6 \le r \le 8$. This is complicated to describe, so we do not describe it in detail here.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} BuildTypeF \\
+%\noi \tbf{Inputs:} Rank (positive integer), VectorLength (positive integer) \\
+%\noi \tbf{Outputs:} Cell array  \\
+%\noi \tbf{Description:} Construct the type $\mathsf{F}_4$ root system. (The rank must be 4.) Using the notation $\alpha_i = [0, \ldots, 1, \ldots, 0]$ with 1 in the $i$th position, 
+%\begin{align*}
+%	\mathsf{F}_4 &=
+%	 \lb \pm 2 \alpha_i : 1 \le i \le 4 \rb \\
+%	 &\qquad \cup \lb \pm \alpha_i \pm \alpha_j : 1 \le i, j \le 4 \text{ and } i \neq j \rb  \\
+%	 &\qquad \cup \lb \pm \alpha_i \pm \alpha_j \pm \alpha_k \pm \alpha_\ell : 1 \le i,j,k, \ell \le 4 \text{ and } i,j,k,\ell \text{ are all distinct} \rb
+%\end{align*}
+%If VectorLength exceeds $4$, then we simply pad the end of every vector with enough zeros.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} BuildTypeG \\
+%\noi \tbf{Inputs:} Rank (positive integer), VectorLength (positive integer) \\
+%\noi \tbf{Outputs:} Cell array  \\
+%\noi \tbf{Description:} Construct the type $\mathsf{G}_2$ root system. (The rank must be 2.) Using the notation $\alpha_i = [0, \ldots, 1, \ldots, 0]$ with 1 in the $i$th position,
+%\begin{align*}
+%	\mathsf{G}_2 &= \lb \pm (\alpha_i - \alpha_j) : 1 \le i, j \le 3 \text{ and } i \neq j \rb \\
+%	&\qquad \cup \lb \pm ( 2 \alpha_i - \alpha_j - \alpha_k)  : 1 \le i, j, k \le 3 \text{ and } i,j,k \text{ are all distinct} \rb
+%\end{align*}
+%If VectorLength exceeds $3$, then we simply pad the end of every vector with enough zeros.
+%\end{framed}
+%
+%\subsubsection{PinnedGroup class}
+%
+%A class encoding all of the data of an algebraic group with a pinning. To run tests to verify a pinning, create an instance of PinnedGroup with all the required data, and use the RunTests() method.
+%
+%\begin{center}
+%\tbf{Properties}
+%\end{center}
+%
+%\begin{center}
+%	\begin{tabular}{l|l}
+%		Name & What it is \\
+%		\hline
+%		NameString & String describing the group, e.g. ``special linear group" \\
+%		MatrixSize & Positive integer \\
+%		Root\_System & An instance of the RootSystem class \\
+%		RootList & Cell array, substructure of Root\_System \\
+%		RootSystemRank & Positive integer, the rnak of Root\_System \\
+%		FormMatrix & Matrix, only used for special orthogonal/unitary groups \\
+%		RootSpaceDimension & Function handle \\
+%		RootSpaceMap & Function handle for $\LieX_\alpha$ \\
+%		RootSubgroupMap & Function handle for $X_\alpha$ \\
+%		WeylGroupMap & Function handle for $W_\alpha$ \\
+%		GenerictorusElementMap & Function handle \\
+%		IsGroupElement & Function handle, tests if an input matrix is in $G(k)$ \\
+%		IsTorusElement & Function handle, tests if an input matrix is in $S(k)$ \\
+%		IsLieAlgebraElement & Function handle, tests if an input matrix is in $\frakg(k)$ \\
+%		CommutatorCoefficientMap & Function handle, outputs $N_{ij}^{\alpha \beta}(u,v)$ \\
+%		WeylGroupCoefficientMap & Function handle
+%	\end{tabular}
+%\end{center}
+%
+%All of the properties above starting with RootSpaceDimension are function handles. To get an idea of how this works, take a look at the RunSLTests script and see where this is used. Below we specify what the format of inputs for each of these functions needs to be in order for PinnedGroup.RunTests() to work properly.
+%
+%Below are specifications for the RunTests script, which we use to test all of our code. You don't need to know absolutely every detail of what's going on in this script, but you do need to be aware of what kinds of inputs it requires, and more importantly what formats and intputs the inputs require. 
+%
+%\newpage
+%\begin{center}
+%	\begin{tabular}{l|l|l}
+%		Function & Inputs & Type \\
+%		\hline
+%		RootSpaceDimension & MatrixSize & Integer \\
+%		& Root\_System & RootSystem \\
+%		& Root $\alpha$ & Vector of length MatrixSize \\
+%		\hline
+%		RootSpaceMap & MatrixSize & Integer \\
+%		& Root\_System & RootSystem \\
+%		& FormMatrix & Matrix \\
+%		& Root $\alpha$ & Vector of length MatrixSize \\
+%		& Vector $u$ & Vector of length RootSpaceDimension$(\alpha$) \\
+%		\hline
+%		RootSubgroupMap & MatrixSize & Integer \\
+%		& Root\_System & RootSystem \\
+%		& FormMatrix & Matrix \\
+%		& Root $\alpha$ & Vector of length MatrixSize \\
+%		& Vector $u$ & Vector of length RootSpaceDimension$(\alpha$)  \\
+%		\hline
+%		WeylGroupMap &  MatrixSize & Integer \\
+%		& Root\_System & RootSystem \\
+%		& FormMatrix & Matrix \\
+%		& Root $\alpha$ & Vector of length MatrixSize \\
+%		& Vector $u$ & Vector of length RootSpaceDimension$(\alpha$)  \\
+%		\hline
+%		GenericTorus & MatrixSize & Integer \\
+%		ElementMap  & RootSystemRank & Integer \\
+%		& Diagonal values & Vector of length RootSystemRank \\
+%		\hline
+%		IsGroupElement & MatrixSize & Integer \\
+%		& MatrixToTest & Matrix \\
+%		& FormMatrix & Matrix \\
+%		\hline
+%		IsTorusElement & MatrixSize & Integer \\
+%		& MatrixToTest & Matrix \\
+%		& FormMatrix & Matrix \\
+%		\hline
+%		IsLieAlgebraElement &  MatrixSize & Integer \\
+%		& MatrixToTest & Matrix \\
+%		& FormMatrix & Matrix \\
+%		\hline
+%		Commutator & MatrixSize & Integer \\
+%		CoefficientMap & Root\_System & RootSystem \\
+%		& Root $\alpha$ & Vector of length MatrixSize \\
+%		& Root $\beta$ & Vector of length MatrixSize \\
+%		& $p$ & Integer \\
+%		& $q$ & Integer \\
+%		& $u$ & Vector of length RootSpaceDimension$(\alpha$) \\
+%		& $v$ & Vector of length RootSpaceDimension$(\beta$) \\
+%		\hline
+%		WeylGroup & MatrixSize & Integer \\
+%		CoefficientMap & Root\_System & RootSystem \\
+%		& FormMatrix & Matrix \\
+%		& Root $\alpha$ & Vector of length MatrixSize \\
+%		& Root $\beta$ & Vector of length MatrixSize \\
+%		& $u$ & Vector of length RootSpaceDimension$(\alpha$) \\
+%	\end{tabular}
+%\end{center}
+%
+%\newpage
+%\begin{center}
+%	\begin{tabular}{l|l}
+%		Function & Output type \\
+%		\hline
+%		RootSpaceDimension & Integer \\
+%		RootSpaceMap & Matrix of size MatrixSize \\
+%		RootSubgroupMap & Matrix of size MatrixSize \\
+%		WeylGroupMap &  Matrix of size MatrixSize \\
+%		GenericTorusElementMap & Matrix of size MatrixSize \\
+%		IsGroupElement & Boolean \\
+%		IsTorusElement & Boolean \\
+%		IsLieAlgebraElement & Boolean \\
+%		CommutatorCoefficientMap & Vector \\
+%		WeylGroupCoefficientMap & Vector
+%	\end{tabular}
+%\end{center}
+%
+%\begin{center}
+%\tbf{Methods}
+%\end{center}
+%
+%\begin{framed}
+%\noi \tbf{Name:} PinnedGroup (constructor) \\
+%\noi \tbf{Inputs:} NameString, MatrixSize, Root\_System, FormMatrix, RootSpaceDimension, RootSpaceMap, RootSubgroupMap, WeylGroupMap, GenericTorusElementMap, IsGroupElement, IsTorusElement, IsLieAlgebraElement, CommutatorCoefficientMap, WeylGroupCoefficientMap \\
+%\noi \tbf{Outputs:} A new instance of the PinnedGroup class built from the input data \\
+%\noi \tbf{Description:} The constructor doesn't do much of anything other than create a new instance of the class, and assign its properties to the various inputs.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} RunTests \\
+%\noi \tbf{Inputs:} None  \\
+%\noi \tbf{Outputs:} Text log \\
+%\noi \tbf{Description:} Do symbolic matrix calculations to verify that the data above satisfies all of the properties of a pinning of an algebraic group. Each test is outsourced to another method.
+%\begin{itemize}
+%	\item (TestBasics) Check that $\LieX_\alpha$ always outputs something in $\frakg(k)$
+%	\item (TestBasics) Check that $X_\alpha(u)$ always outputs something in $G(k)$
+%	\item (TestRootSpaceMapsAreHomomorphisms) Check that for $\alpha \in \Phi$,
+%	\[
+%		\LieX_\alpha(u+v) = \LieX_\alpha(u) + \LieX_\alpha(v)
+%	\]
+%	\item (TestRootSubgroupMapsAreAlmostHomomorphisms) Check that for $\alpha \in \Phi$,
+%	\[
+%		X_\alpha(u) \cdot X_\alpha(v) = X_\alpha(u + v) \prod_{i \ge 2} X_{i\alpha} \Big( q_\alpha^i(u,v) \Big)
+%	\]
+%	Note that the product over $i \ge 2$ is trivial (the identity) for all root systems except for type $\mathsf{BC}$.
+%	\item (TestTorusConjugationFormula) Check that for $s \in S(k)$ and $\alpha \in \Phi$,
+%	\[
+%		s \cdot X_\alpha(u) \cdot s \inv = X_\alpha \Big( \alpha(s) u \Big)
+%	\]
+%	\item (TestCommutatorFormula) Check the commutator formula: for $\alpha, \beta \in \Phi$ a pair of non-proportional roots,
+%	\[
+%		\Big[ X_\alpha(u), X_\beta(v) \Big] = \prod_{i,j \ge 1} X_{i\alpha + j \beta} \Big( N_{ij}^{\alpha \beta}(u,v) \Big)
+%	\]
+%	\item (TestWeylGroupElements) Check that for $\alpha \in \Phi$ and $s \in S(k)$,
+%	\[
+%		w_\alpha(u) \cdot s \cdot w_\alpha(u) \inv \in S(k)
+%	\]
+%	\item (TestWeylGroupConjugationFormula) Check the Weyl group conjugation formula: for $\alpha, \beta \in \Phi$, 
+%	\[
+%		w_\alpha(u) \cdot X_\beta(v) \cdot w_\alpha(u) \inv = X_{\sig_\alpha(\beta)} ( \varphi u)
+%	\]
+%	where $\varphi u$ is something like $\pm u$ or $\pm \ov u$.
+%\end{itemize}
+%\end{framed}
+%
+%\begin{center}
+%\tbf{Static methods}
+%\end{center}
+%
+%\begin{framed}
+%\noi \tbf{Name:} CharacterEval \\
+%\noi \tbf{Inputs:} An integer $n=$MatrixSize, and a character $\alpha$ ($n \times 1$ integer vector) and a diagonal matrix $t = \diag(t_1, \ldots, t_n)$ \\
+%\noi \tbf{Outputs:} A scalar (possibly a number, or symbolic variable) \\
+%\noi \tbf{Description:} Given a $n \times 1$ integer vector $\alpha = [v_1, \ldots, v_n]$, interpret it as the character $v_1 \alpha_1 + \cdots + v_n \alpha_n$, then evaluate that character at the diagonal matrix $t$.
+%\[
+%	(v_1 \alpha_1 + \cdots + v_n \alpha_n ) \diag(t_1, \ldots, t_n) = \prod_{i=1}^n t_i^{v_i} =  t_1^{v_1} \cdots t_n^{v_n}
+%\]
+%\end{framed}
+%
+%\subsection{Example -- $\SL_n$ as a PinnedGroup object}
+%
+%In this section we describe the functions behind creating an instance of the PinnedGroup class modeling the special linear group. Refer to the RunSLTests.m file for details on how exactly to create the PinnedGroup class instance and run tests.
+%
+%\begin{framed}
+%\noi \tbf{Name:} LieX\_SL \\
+%\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{A}_{n-1}$ root system using the RootSystem class, a placeholder input for FormMatrix (just input the identity or zero matrix, it does't matter), a root $\alpha$ from the $A_{n-1}$ root system ($n \times 1$ vector), and a symbolic variable $u$ \\
+%\noi \tbf{Outputs:} An element of the root space associated with $\alpha$ (zeros everywhere except a $u$ in the $ij$th entry \\
+%\noi \tbf{Description:} For example,
+%\[
+%	\LieX\_\text{SL}(3,\mathsf{A}_{2},\sim,\alpha_{12}, u) =
+%	\begin{pmatrix}
+%		0 & u \\
+%		& 0 \\
+%		&& 0
+%	\end{pmatrix}
+%\]
+%More generally, $\LieX\_\text{SL}(n,\mathsf{A}_{n-1},\sim,\alpha_{ij}, u)$ is the $n \times n$ matrix with zeros everywhere except for $u$ in the $ij$th entry (this matrix is often denoted $E_{ij}(u)$).
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} X\_SL \\
+%\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{A}_{n-1}$ root system using the RootSystem class, a placeholder input for FormMatrix (just input the identity or zero matrix, it does't matter), a root $\alpha$ from the $A_{n-1}$ root system ($n \times 1$ vector), and a symbolic variable $u$ \\
+%\noi \tbf{Outputs:} An element of the root subgroup associated with $\alpha$ \\
+%\noi \tbf{Description:} This is just the matrix exponential of $\LieX\_\text{SL}(n,\mathsf{A}_{n-1},\sim,\alpha_{ij}, u)$.
+%\[
+%	\text{X\_SL}(n,\mathsf{A}_{n-1},\sim,\alpha_{ij}, u) = \exp \Big(\LieX\_\text{SL}(n,\mathsf{A}_{n-1},\sim,\alpha_{ij}, u) \Big)
+%\]
+%In general, the matrix exponential is
+%\[
+%	\exp(A) = \sum_{n=0}^\infty \frac{A^n}{n!} = I + A + \frac 12 A^2 + \frac 16 A^3 + \cdots
+%\]
+%However, the matrices $\LieX\_\text{SL}(n,\mathsf{A}_{n-1},\sim,\alpha_{ij}, u)$ all satisfy $A^2 = 0$, so the matrix exponential is just $I+A$. Conveniently, this means we don't have to worry about convergence questions regarding the infinite sum above.
+%\[
+%	\text{X\_SL}(n,\mathsf{A}_{n-1},\sim,\alpha_{ij}, u) = I + \LieX\_\text{SL}(n,\mathsf{A}_{n-1},\sim,\alpha_{ij}, u)
+%\]
+%For example,
+%\[
+%	\text{X\_SL}(n,\mathsf{A}_{n-1},\sim,\alpha_{12}, u) =
+%	\begin{pmatrix}
+%		1 & u \\
+%		& 1 \\
+%		&& \ddots \\
+%		&&& 1
+%	\end{pmatrix}
+%\]
+%Another way to say this is that $\text{X\_SL}(n,\mathsf{A}_{n-1},\sim,\alpha_{ij}, u) = e_{ij}(u)$.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} W\_SL \\
+%\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{A}_{n-1}$ root system using the RootSystem class, a placeholder input for FormMatrix (just input the identity or zero matrix, it does't matter), a root $\alpha$ from the $A_{n-1}$ root system ($n \times 1$ vector), and a symbolic variable $u$ \\
+%\noi \tbf{Outputs:} The matrix $w_\alpha(u)$ \\
+%\noi \tbf{Description:} The formula for $w_\alpha(u)$ is
+%\[
+%	w_\alpha(u) = X_\alpha(u) \cdot X_{-\alpha} \lp - u \inv \rp \cdot X_\alpha(u)
+%\]
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} CommutatorCoefficientSL \\
+%\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{A}_{n-1}$ root system using the RootSystem class, two roots $\alpha, \beta \in \Phi(\SL_n, T)$, two positive integers $p$ and $q$, and two scalars $u$ and $v$ \\
+%\noi \tbf{Outputs:} A scalar (should always be $\pm uv$) \\
+%\noi \tbf{Description:} Note that for $\SL_n$, we always have $p=q=1$. (We still need these as inputs to the function to comply with PinnedGroup.) 
+%
+%If $\alpha + \beta$ is not a root, then output zero. If $\alpha + \beta$ is a root, output the coefficient $N_{pq}^{\alpha \beta}(u,v)$ from the formula
+%\[
+%	\Big[ X_\alpha(u), X_\beta(v) \Big] = X_{\alpha+\beta} \Big( N_{11}^{\alpha \beta}(u,v) \Big)
+%\]
+%This coefficient $N(u,v)$ should always be $\pm uv$. Concretely, if $\alpha + \beta$ is a root, then they must be of the form $\alpha = \alpha_{ij}$ and $\beta = \alpha_{k \ell}$ where there are exactly three distinct indices in the set $\lb i,j,k, \ell \rb$, and
+%\[
+%	N_{11}^{\alpha_{ij}, \alpha_{k\ell}}(u,v) =
+%	\begin{cases}
+%		uv & i=k \text{ or } j = k \\
+%		-uv & i = \ell \text{ or } j = \ell
+%	\end{cases}
+%\]
+%\end{framed}
+%
+%
+%\begin{framed}
+%\noi \tbf{Name:} WeylGroupConjugationCoefficientSL \\
+%\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{A}_{n-1}$ root system using the RootSystem class, two roots $\alpha,\beta$, and a scalar (often symbolic variable) $u$ \\
+%\noi \tbf{Outputs:} A scalar (either $u$ or $-u$) \\
+%\noi \tbf{Description:} This should output $\varphi_{\alpha \beta}( u ) = \pm u$ appearing on the right hand side of the equation
+%\[
+%	w_\alpha(1) \cdot X_\beta(u) \cdot w_\alpha(1) \inv = X_{\sig_\alpha(\beta)} \Big( \varphi_{\alpha \beta}( u ) \Big)
+%\]
+%More concretely, if $\alpha = \alpha_{ij}$ and $\beta = \alpha_{k \ell}$, then
+%\begin{align*}
+%	\varphi_{\alpha \beta}( u ) = 
+%	\begin{cases}
+%		-u & i = k \text{ or } i = \ell \\
+%		u & \text{else}
+%	\end{cases}
+%\end{align*}
+%\end{framed}
 
 \newpage
 \section{Special orthogonal groups}
@@ -3930,122 +3929,122 @@ The next smallest quasisplit example is $(n,q) = (6,2)$, but this looks very sim
 		& v_3 &&&&& 0
 	\end{pmatrix} \\
 \end{align*}
-
-\subsection{Coding specifications}
-
-Matlab functions describing pinnings of special orthogonal groups. 
-
-% DEPRECATED
-%\begin{framed}
-%\noi \tbf{Name:} GetB \\
-%\noi \tbf{Inputs:} Positive integers $n,q$ and a vector vec\_C \\
-%\noi \tbf{Outputs:} $n \times n$ matrix $B$ \\
-%\noi \tbf{Description:} Output the $n \times n$ matrix
-%\[
-%	B = 	
+%
+%\subsection{Coding specifications}
+%
+%Matlab functions describing pinnings of special orthogonal groups. 
+%
+%% DEPRECATED
+%%\begin{framed}
+%%\noi \tbf{Name:} GetB \\
+%%\noi \tbf{Inputs:} Positive integers $n,q$ and a vector vec\_C \\
+%%\noi \tbf{Outputs:} $n \times n$ matrix $B$ \\
+%%\noi \tbf{Description:} Output the $n \times n$ matrix
+%%\[
+%%	B = 	
+%%%	\begin{pmatrix}
+%%%		&& I_q \\
+%%%		& C \\
+%%%		I_q
+%%%	\end{pmatrix}
 %%	\begin{pmatrix}
-%%		&& I_q \\
-%%		& C \\
-%%		I_q
+%%		& I_q \\
+%%		I_q \\
+%%		&& C
 %%	\end{pmatrix}
+%%\]
+%%where $I_q$ is the $q \times q$ identity matrix and $C$ is a diagonal matrix with entries given by the vector vec\_C. Note that vec\_C may contain symbolic variables, and vec\_C must have length $n-2q$.
+%%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} LieX\_SO \\
+%\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{B}_{q}$ root system using the RootSystem class, the matrix $B$, a root $\alpha$ from the $B_{q}$ root system ($n \times 1$ vector), and a symbolic vector $u$ \\
+%\noi \tbf{Outputs:} $n \times n$ matrix \\
+%\noi \tbf{Description:} Output an element of the $\frakg_{\alpha}$ root system using the vector $u$ as coefficients. For example, in the $(n,q) = (4,1)$ case with $\alpha = \alpha_1$, 
+%\[
+%	\LieX\_\text{SO}(4, \mathsf{B}_1, B, \alpha_1, v) =
 %	\begin{pmatrix}
-%		& I_q \\
-%		I_q \\
-%		&& C
+%		0 && - c_1 x_{32}  & - c_2 x_{42} \\
+%		& 0 &  \\
+%		& x_{32} & 0 &  \\
+%		& x_{42} && 0
 %	\end{pmatrix}
 %\]
-%where $I_q$ is the $q \times q$ identity matrix and $C$ is a diagonal matrix with entries given by the vector vec\_C. Note that vec\_C may contain symbolic variables, and vec\_C must have length $n-2q$.
 %\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} LieX\_SO \\
-\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{B}_{q}$ root system using the RootSystem class, the matrix $B$, a root $\alpha$ from the $B_{q}$ root system ($n \times 1$ vector), and a symbolic vector $u$ \\
-\noi \tbf{Outputs:} $n \times n$ matrix \\
-\noi \tbf{Description:} Output an element of the $\frakg_{\alpha}$ root system using the vector $u$ as coefficients. For example, in the $(n,q) = (4,1)$ case with $\alpha = \alpha_1$, 
-\[
-	\LieX\_\text{SO}(4, \mathsf{B}_1, B, \alpha_1, v) =
-	\begin{pmatrix}
-		0 && - c_1 x_{32}  & - c_2 x_{42} \\
-		& 0 &  \\
-		& x_{32} & 0 &  \\
-		& x_{42} && 0
-	\end{pmatrix}
-\]
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} X\_SO \\
-\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{B}_{q}$ root system using the RootSystem class, the matrix $B$, a root $\alpha$ from the $B_{q}$ root system ($n \times 1$ vector), and a symbolic vector $u$ \\
-\noi \tbf{Outputs:} $n \times n$ matrix \\
-\noi \tbf{Description:} Matrix exponential of LieX\_SO of same inputs.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} W\_SO \\
-\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{B}_{q}$ root system using the RootSystem class, the matrix $B$, a root $\alpha$ from the $B_{q}$ root system ($n \times 1$ vector), and a symbolic vector $u$ \\
-\noi \tbf{Outputs:} $n \times n$ matrix \\
-\noi \tbf{Description:}
-\begin{equation*}
-	w_\alpha(u) = 
-	\begin{cases}
-		X_{\alpha}(u) \cdot X_{-\alpha}(u) \cdot X_\alpha(u) & \alpha = \pm (\alpha_i + \alpha_j) \\
-		X_\alpha(u) \cdot X_{-\alpha} \lp -u \inv \rp \cdot X_\alpha(u) & \alpha = \pm (\alpha_i - \alpha_j ) \\
-		X_{\alpha}\lp u \rp \cdot X_{-\alpha} \lp \frac{2}{\tr(b)} u \rp \cdot X_{\alpha} \lp u \rp & \alpha = \pm \alpha_i
-	\end{cases}
-\end{equation*}
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} CommutatorCoefficientSO \\
-\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{B}_{q}$ root system using the RootSystem class, two roots $\alpha, \beta$ from the $B_{q}$ root system ($n \times 1$ vector), two positive integers $i,j$,  and two vectors $u, v$ \\
-\noi \tbf{Outputs:} The vector $N_{ij}^{\alpha \beta}(u,v)$ \\
-\noi \tbf{Description:} $N_{ij}^{\alpha \beta}(u,v)$ is determined by the formula
-\[
-	\Big[ X_\alpha(u), X_\beta(v) \Big] = \prod_{i \alpha + j \beta \in \mathsf{B}_q} X_{i\alpha + j \beta} \Big( N_{ij}^{\alpha \beta}(u,v) \Big) 
-\]
-where $\alpha \neq \pm \beta$. There are three cases: the sum of two long roots is a long root, the sum of two short roots is a long root, and the sum of two roots of different lengths results in two positive integer linear combinations.
-\begin{enumerate}
-	\item If $\alpha, \beta \in \Phi$ are long and $\alpha + \beta \in \Phi$ (which must also be long), then all relevant root subgroups have dimension one and $N_{11}^{\alpha}(u,v) = \pm uv$. 
-		\[
-		[X_\alpha(u), X_\beta(v)] = X_{\alpha + \beta}(\pm uv) \qquad u, v \in k
-	\]
-	\item If $\alpha, \beta \in \Phi$ are short and $\alpha + \beta \in \Phi$ (which must be long), then
-	\[
-		N_{11}^{\alpha \beta}(u,v) = \pm b_a(u,v) = \pm \sum_{i=1}^{n-2q} c_i u_i v_i \qquad u, v \in k^{n-2q}
-	\]
-	\[
-		[X_\alpha(u), X_\beta(v)] = X_{\alpha + \beta}\Big( \pm b_a(u,v) \Big)\qquad u, v \in k^{n-2q}
-	\]
-	\item If $\alpha, \beta \in \Phi$ are different lengths and $\alpha + \beta \in \Phi$, then $(\alpha, \beta)$ has two elements. Without loss of generality, assume $\alpha$ is short and $\beta$ is long; then $(\alpha , \beta) = \lb \alpha + \beta, 2\alpha+\beta \rb$ and $N_{11}^{\alpha \beta}(u,v) =  \pm uv$ and $N_{21}^{\alpha \beta}(u,v) = \pm \frac 12 v b_a(u,u)$.
-	\[
-		[X_\alpha(u), X_\beta(v)] = X_{\alpha + \beta}( \pm uv ) \cdot X_{2\alpha+\beta}\lp \pm \frac 12 v b_a(u,u) \rp \qquad u \in k^{n-2q}, v \in k
-	\]
-\end{enumerate}
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} WeylGroupCoefficientSO \\
-\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{B}_q$ root system using the RootSystem class, the matrix $B$, two roots $\alpha, \beta$, and a vector $v$  \\
-\noi \tbf{Outputs:} The vector $\varphi_{\alpha \beta}(v)$ \\
-\noi \tbf{Description:} $\varphi_{\alpha \beta}(v)$ is determined by the formula
-\begin{equation}
-\label{weyl conj}
-	w_\alpha(\vec 1) \cdot X_{\beta} (v) \cdot w_\alpha ( \vec 1) \inv = X_{\sig_\alpha(\beta)} \Big( \varphi_{\alpha \beta}(v) \Big)
-\end{equation}
-In the case $(n,q) = (4,1)$, these are described explicitly via
-%	\[
-%		\varphi_{\alpha \beta} (v) = 
-%		\begin{cases}
-%			\lp \frac{2(c_1 - c_2) v_1 + 4c_2 v_2}{(c_1 + c_2)^2}, \frac{4c_1 v_1 - 2(c_1 - c_2) v_2}{(c_1 + c_2)^2} \rp & \alpha = \beta \\
-%			\vspace{-10pt} \\
-%			\lp \frac{c_1 - c_2) v_1}{2} + c_2 v_2, c_1 v_1 - \frac{(c_1 - c_2)v_2}{2} \rp & \alpha \neq \beta
-%		\end{cases}
+%
+%\begin{framed}
+%\noi \tbf{Name:} X\_SO \\
+%\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{B}_{q}$ root system using the RootSystem class, the matrix $B$, a root $\alpha$ from the $B_{q}$ root system ($n \times 1$ vector), and a symbolic vector $u$ \\
+%\noi \tbf{Outputs:} $n \times n$ matrix \\
+%\noi \tbf{Description:} Matrix exponential of LieX\_SO of same inputs.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} W\_SO \\
+%\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{B}_{q}$ root system using the RootSystem class, the matrix $B$, a root $\alpha$ from the $B_{q}$ root system ($n \times 1$ vector), and a symbolic vector $u$ \\
+%\noi \tbf{Outputs:} $n \times n$ matrix \\
+%\noi \tbf{Description:}
+%\begin{equation*}
+%	w_\alpha(u) = 
+%	\begin{cases}
+%		X_{\alpha}(u) \cdot X_{-\alpha}(u) \cdot X_\alpha(u) & \alpha = \pm (\alpha_i + \alpha_j) \\
+%		X_\alpha(u) \cdot X_{-\alpha} \lp -u \inv \rp \cdot X_\alpha(u) & \alpha = \pm (\alpha_i - \alpha_j ) \\
+%		X_{\alpha}\lp u \rp \cdot X_{-\alpha} \lp \frac{2}{\tr(b)} u \rp \cdot X_{\alpha} \lp u \rp & \alpha = \pm \alpha_i
+%	\end{cases}
+%\end{equation*}
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} CommutatorCoefficientSO \\
+%\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{B}_{q}$ root system using the RootSystem class, two roots $\alpha, \beta$ from the $B_{q}$ root system ($n \times 1$ vector), two positive integers $i,j$,  and two vectors $u, v$ \\
+%\noi \tbf{Outputs:} The vector $N_{ij}^{\alpha \beta}(u,v)$ \\
+%\noi \tbf{Description:} $N_{ij}^{\alpha \beta}(u,v)$ is determined by the formula
+%\[
+%	\Big[ X_\alpha(u), X_\beta(v) \Big] = \prod_{i \alpha + j \beta \in \mathsf{B}_q} X_{i\alpha + j \beta} \Big( N_{ij}^{\alpha \beta}(u,v) \Big) 
+%\]
+%where $\alpha \neq \pm \beta$. There are three cases: the sum of two long roots is a long root, the sum of two short roots is a long root, and the sum of two roots of different lengths results in two positive integer linear combinations.
+%\begin{enumerate}
+%	\item If $\alpha, \beta \in \Phi$ are long and $\alpha + \beta \in \Phi$ (which must also be long), then all relevant root subgroups have dimension one and $N_{11}^{\alpha}(u,v) = \pm uv$. 
+%		\[
+%		[X_\alpha(u), X_\beta(v)] = X_{\alpha + \beta}(\pm uv) \qquad u, v \in k
 %	\]
-%Even for $(n,q) = (4,1)$, working these out was somewhat tricky, so I assume it will be similarly tricky for $(n,q) = (6,2)$ and beyond. The way I (Prof Ruiter) worked them out was using Matlab to compute the left hand side of the conjugation equation (\ref{weyl conj}), compute $X_{\sig_\alpha(\beta} ( y )$ with $y$ arbitrary, and use the Matlab built-in solve function. \incomplete
-\[
-	\varphi_{\alpha \beta} (v) =  \incomplete
-\]
-\end{framed}
+%	\item If $\alpha, \beta \in \Phi$ are short and $\alpha + \beta \in \Phi$ (which must be long), then
+%	\[
+%		N_{11}^{\alpha \beta}(u,v) = \pm b_a(u,v) = \pm \sum_{i=1}^{n-2q} c_i u_i v_i \qquad u, v \in k^{n-2q}
+%	\]
+%	\[
+%		[X_\alpha(u), X_\beta(v)] = X_{\alpha + \beta}\Big( \pm b_a(u,v) \Big)\qquad u, v \in k^{n-2q}
+%	\]
+%	\item If $\alpha, \beta \in \Phi$ are different lengths and $\alpha + \beta \in \Phi$, then $(\alpha, \beta)$ has two elements. Without loss of generality, assume $\alpha$ is short and $\beta$ is long; then $(\alpha , \beta) = \lb \alpha + \beta, 2\alpha+\beta \rb$ and $N_{11}^{\alpha \beta}(u,v) =  \pm uv$ and $N_{21}^{\alpha \beta}(u,v) = \pm \frac 12 v b_a(u,u)$.
+%	\[
+%		[X_\alpha(u), X_\beta(v)] = X_{\alpha + \beta}( \pm uv ) \cdot X_{2\alpha+\beta}\lp \pm \frac 12 v b_a(u,u) \rp \qquad u \in k^{n-2q}, v \in k
+%	\]
+%\end{enumerate}
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} WeylGroupCoefficientSO \\
+%\noi \tbf{Inputs:} An integer $n$, an instance of the $\mathsf{B}_q$ root system using the RootSystem class, the matrix $B$, two roots $\alpha, \beta$, and a vector $v$  \\
+%\noi \tbf{Outputs:} The vector $\varphi_{\alpha \beta}(v)$ \\
+%\noi \tbf{Description:} $\varphi_{\alpha \beta}(v)$ is determined by the formula
+%\begin{equation}
+%\label{weyl conj}
+%	w_\alpha(\vec 1) \cdot X_{\beta} (v) \cdot w_\alpha ( \vec 1) \inv = X_{\sig_\alpha(\beta)} \Big( \varphi_{\alpha \beta}(v) \Big)
+%\end{equation}
+%In the case $(n,q) = (4,1)$, these are described explicitly via
+%%	\[
+%%		\varphi_{\alpha \beta} (v) = 
+%%		\begin{cases}
+%%			\lp \frac{2(c_1 - c_2) v_1 + 4c_2 v_2}{(c_1 + c_2)^2}, \frac{4c_1 v_1 - 2(c_1 - c_2) v_2}{(c_1 + c_2)^2} \rp & \alpha = \beta \\
+%%			\vspace{-10pt} \\
+%%			\lp \frac{c_1 - c_2) v_1}{2} + c_2 v_2, c_1 v_1 - \frac{(c_1 - c_2)v_2}{2} \rp & \alpha \neq \beta
+%%		\end{cases}
+%%	\]
+%%Even for $(n,q) = (4,1)$, working these out was somewhat tricky, so I assume it will be similarly tricky for $(n,q) = (6,2)$ and beyond. The way I (Prof Ruiter) worked them out was using Matlab to compute the left hand side of the conjugation equation (\ref{weyl conj}), compute $X_{\sig_\alpha(\beta} ( y )$ with $y$ arbitrary, and use the Matlab built-in solve function. \incomplete
+%\[
+%	\varphi_{\alpha \beta} (v) =  \incomplete
+%\]
+%\end{framed}
 
 \newpage
 \section{Special unitary groups}
@@ -5081,103 +5080,103 @@ Determine the roots and root spaces for the group $\SU_{n,q}(L,h)$ where $h$ is 
 \]
 where $C$ is diagonal.
 \end{exercise}
-
-\subsection{Coding specifications}
-
-% DEPRECATED
+%
+%\subsection{Coding specifications}
+%
+%% DEPRECATED
+%%\begin{framed}
+%%\noi \tbf{Name:} GetH \\
+%%\noi \tbf{Inputs:} Positive integers $n$ and $q$, and a vector vec\_C of length $n-2q$. \\
+%%\noi \tbf{Outputs:} $n \times n$ matrix \\
+%%\noi \tbf{Description:} Output the matrix
+%%\[
+%%	H =
+%%	\begin{pmatrix}
+%%		& I_q\\
+%%		I_q \\
+%%		&& C
+%%	\end{pmatrix}
+%%\]
+%%where $C$ is a diagonal matrix with entries vec\_C.
+%%\end{framed}
+%
+%
 %\begin{framed}
-%\noi \tbf{Name:} GetH \\
-%\noi \tbf{Inputs:} Positive integers $n$ and $q$, and a vector vec\_C of length $n-2q$. \\
-%\noi \tbf{Outputs:} $n \times n$ matrix \\
-%\noi \tbf{Description:} Output the matrix
+%\noi \tbf{Name:} Tr \\
+%\noi \tbf{Inputs:} Number or symbolic variable $u$ \\
+%\noi \tbf{Outputs:} Number/symbolic variable \\
+%\noi \tbf{Description:} For a quadratic extension $L/k$ with conjugation operation $\sig(x) = \ov x$, the trace of $u \in L$ is
 %\[
-%	H =
-%	\begin{pmatrix}
-%		& I_q\\
-%		I_q \\
-%		&& C
-%	\end{pmatrix}
+%	\Tr(u) = u + \ov u
 %\]
-%where $C$ is a diagonal matrix with entries vec\_C.
+%This function is just allows us to write the formulas for things like $N_{ij}^{\alpha \beta}(u,v)$ slightly more compactly.
 %\end{framed}
-
-
-\begin{framed}
-\noi \tbf{Name:} Tr \\
-\noi \tbf{Inputs:} Number or symbolic variable $u$ \\
-\noi \tbf{Outputs:} Number/symbolic variable \\
-\noi \tbf{Description:} For a quadratic extension $L/k$ with conjugation operation $\sig(x) = \ov x$, the trace of $u \in L$ is
-\[
-	\Tr(u) = u + \ov u
-\]
-This function is just allows us to write the formulas for things like $N_{ij}^{\alpha \beta}(u,v)$ slightly more compactly.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} LieX\_SU \\
-\noi \tbf{Inputs:} Positive integer $n$, the root system $\mathsf{BC}_q$ as an instance of the RootSystem class, the form matrix $H$, a root $\alpha$, and a vector $u$ \\
-\noi \tbf{Outputs:} Symbolic matrix \\
-\noi \tbf{Description:} Given a vector $u$ of length equation the dimension of the root space $\frakg_\alpha$, output a matrix with $u$ coefficients in the $\frakg_\alpha$ root space. There are essentially three cases here: $\alpha$ is short, medium, or long. When $\alpha$ is long, the root space has dimension 1, so $u$ is just a scalar. 
-
-%This needs to be rewritten using the updated version of $H$. \incomplete
-
-%In this case, $\LieX_\alpha(u)$ has the form
+%
+%\begin{framed}
+%\noi \tbf{Name:} LieX\_SU \\
+%\noi \tbf{Inputs:} Positive integer $n$, the root system $\mathsf{BC}_q$ as an instance of the RootSystem class, the form matrix $H$, a root $\alpha$, and a vector $u$ \\
+%\noi \tbf{Outputs:} Symbolic matrix \\
+%\noi \tbf{Description:} Given a vector $u$ of length equation the dimension of the root space $\frakg_\alpha$, output a matrix with $u$ coefficients in the $\frakg_\alpha$ root space. There are essentially three cases here: $\alpha$ is short, medium, or long. When $\alpha$ is long, the root space has dimension 1, so $u$ is just a scalar. 
+%
+%%This needs to be rewritten using the updated version of $H$. \incomplete
+%
+%%In this case, $\LieX_\alpha(u)$ has the form
+%%\[
+%%	\LieX_{2\alpha_i}(u) = E_{i, q+i}(u)
+%%\]
+%%Next, if $\alpha$ is medium length, the root space has dimension 2 (as a $k$-vector space, so dimension 1 as an $L$-vector space). In this case, we take an input vector $u = (u_1, u_2)$ and view it as the complex number $u_1 + u_2 \sqrt{d} \in L$, and put $u$ and $\ov u$ into two entries of a matrix.
+%%\begin{align*}
+%%	\LieX_{\alpha_i + \alpha_j}(u) &= E_{i,q+j}(u) - E_{q+i,j}( \ov u) \\
+%%	\LieX_{\alpha_i - \alpha_j}(u) &= E_{ij}(u) - E_{q+j,q+i}(\ov u)
+%%\end{align*}
+%%Finally, for short roots $\pm \alpha_i$, the root space has dimension $2(n-2q)$, which is easiest to think of as $n-2q$ entries from $L$, and ends up going in a whole row and column of a certain block in the Lie algebra. If $v$ is a vector of length $n-2q$ with entries in $L$, then
+%%\[
+%%	\LieX_{\alpha_i}(v) = E_{2q+1 \le j \le n, q+i} ( v^T) + E_{i, 2q+1 \le j \le n}(v C)
+%%\]
+%%However, in Matlab we have to give our input as a vector of length $2(n-2q)$ with entries in $k$, in order to be consistent with the PinnedGroup class. So given $u = (u_1, u_2, \ldots, u_{2(n-2q)})$, transform it into 
+%%\[
+%%	v = \Big( u_1 + u_2 i, u_3 + u_4 i, \ldots, u_{2(n-2q)-1} + u_{2(n-2q)} i \Big)
+%%\]
+%%and then use the formula above.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} X\_SU \\
+%\noi \tbf{Inputs:} Positive integer $n$, the root system $\mathsf{BC}_q$ (or $\mathsf{C}_q$ in the quasisplit case), the form matrix $H$, a root $\alpha$, and a vector $u$ \\
+%\noi \tbf{Outputs:} Symbolic matrix \\
+%\noi \tbf{Description:} Matrix exponential of LieX\_SU of the same inputs.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} W\_SU \\
+%\noi \tbf{Inputs:} Positive integer $n$, the root system $\mathsf{BC}_q$ (or $\mathsf{C}_q$ in the quasisplit case), the form matrix $H$, a root $\alpha$, and a vector $u$  \\
+%\noi \tbf{Outputs:} Symbolic matrix \\
+%\noi \tbf{Description:} In the quasisplit case $n=2q$, $w_\alpha(u)$ is described by the formula
 %\[
-%	\LieX_{2\alpha_i}(u) = E_{i, q+i}(u)
+%	w_\alpha(u) = X_{\alpha}(u) \cdot X_{-\alpha} \lp - u \inv \rp \cdot X_{\alpha}(u)
 %\]
-%Next, if $\alpha$ is medium length, the root space has dimension 2 (as a $k$-vector space, so dimension 1 as an $L$-vector space). In this case, we take an input vector $u = (u_1, u_2)$ and view it as the complex number $u_1 + u_2 \sqrt{d} \in L$, and put $u$ and $\ov u$ into two entries of a matrix.
-%\begin{align*}
-%	\LieX_{\alpha_i + \alpha_j}(u) &= E_{i,q+j}(u) - E_{q+i,j}( \ov u) \\
-%	\LieX_{\alpha_i - \alpha_j}(u) &= E_{ij}(u) - E_{q+j,q+i}(\ov u)
-%\end{align*}
-%Finally, for short roots $\pm \alpha_i$, the root space has dimension $2(n-2q)$, which is easiest to think of as $n-2q$ entries from $L$, and ends up going in a whole row and column of a certain block in the Lie algebra. If $v$ is a vector of length $n-2q$ with entries in $L$, then
+%where $u$ can be either an element of $k$ or $L$. Note that because of the $u \inv$ appearing in the middle factor, $u$ must be nonzero in order for $w_\alpha(u)$ to be defined. 
+%
+%Hopefully (probably), $w_\alpha(u)$ is very similar to this in the general case, at least for medium and long roots. However, for short roots, the root space has potentially large dimension and so this is likely to be more complicated. That general case is not yet figured out/implemented in Matlab yet.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} CommutatorCoefficientSU \\
+%\noi \tbf{Inputs:} Positive integer $n$, the root system $\mathsf{BC}_q$ (or $\mathsf{C}_q$ in the quasisplit case), two roots $\alpha, \beta$, two positive integers $i,j$, and two symbolic variables/scalars $u,v$, \\
+%\noi \tbf{Outputs:} Vector \\
+%\noi \tbf{Description:} For the case $n=2q$, some of these are described in Lemma 2.2.4 of \url{https://users.math.msu.edu/users/ruiterj2/math/Documents/Publications/Thesis\%202022-05-09.pdf}. That was for $H$ in a slightly different form, but it should not be a big difference. The bigger issue is that Lemma 2.2.4 ignored the case of two short roots adding up to a third short root which occurs even in the quasisplit case $(n,q) = (6,3)$. Matlab code doing this is still in progress.
+%\end{framed}
+%
+%\begin{framed}
+%\noi \tbf{Name:} WeylGroupConjugationCoefficientSU \\
+%\noi \tbf{Inputs:} Positive integer $n$, the root system $\mathsf{BC}_q$ (or $\mathsf{C}_q$ in the quasisplit case), the form matrix $H$, two roots $\alpha, \beta$, and a vector $u$ \\
+%\noi \tbf{Outputs:} Vector  \\
+%\noi \tbf{Description:} This coefficient is $\varphi_{\alpha \beta}(v)$ appearing in the formula
 %\[
-%	\LieX_{\alpha_i}(v) = E_{2q+1 \le j \le n, q+i} ( v^T) + E_{i, 2q+1 \le j \le n}(v C)
+%	w_\alpha(u) \cdot X_\beta(v) \cdot w_\alpha(u) \inv = X_{\sig_\alpha(\beta)} \Big( \varphi_{\alpha \beta}(v) \Big)
 %\]
-%However, in Matlab we have to give our input as a vector of length $2(n-2q)$ with entries in $k$, in order to be consistent with the PinnedGroup class. So given $u = (u_1, u_2, \ldots, u_{2(n-2q)})$, transform it into 
-%\[
-%	v = \Big( u_1 + u_2 i, u_3 + u_4 i, \ldots, u_{2(n-2q)-1} + u_{2(n-2q)} i \Big)
-%\]
-%and then use the formula above.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} X\_SU \\
-\noi \tbf{Inputs:} Positive integer $n$, the root system $\mathsf{BC}_q$ (or $\mathsf{C}_q$ in the quasisplit case), the form matrix $H$, a root $\alpha$, and a vector $u$ \\
-\noi \tbf{Outputs:} Symbolic matrix \\
-\noi \tbf{Description:} Matrix exponential of LieX\_SU of the same inputs.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} W\_SU \\
-\noi \tbf{Inputs:} Positive integer $n$, the root system $\mathsf{BC}_q$ (or $\mathsf{C}_q$ in the quasisplit case), the form matrix $H$, a root $\alpha$, and a vector $u$  \\
-\noi \tbf{Outputs:} Symbolic matrix \\
-\noi \tbf{Description:} In the quasisplit case $n=2q$, $w_\alpha(u)$ is described by the formula
-\[
-	w_\alpha(u) = X_{\alpha}(u) \cdot X_{-\alpha} \lp - u \inv \rp \cdot X_{\alpha}(u)
-\]
-where $u$ can be either an element of $k$ or $L$. Note that because of the $u \inv$ appearing in the middle factor, $u$ must be nonzero in order for $w_\alpha(u)$ to be defined. 
-
-Hopefully (probably), $w_\alpha(u)$ is very similar to this in the general case, at least for medium and long roots. However, for short roots, the root space has potentially large dimension and so this is likely to be more complicated. That general case is not yet figured out/implemented in Matlab yet.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} CommutatorCoefficientSU \\
-\noi \tbf{Inputs:} Positive integer $n$, the root system $\mathsf{BC}_q$ (or $\mathsf{C}_q$ in the quasisplit case), two roots $\alpha, \beta$, two positive integers $i,j$, and two symbolic variables/scalars $u,v$, \\
-\noi \tbf{Outputs:} Vector \\
-\noi \tbf{Description:} For the case $n=2q$, some of these are described in Lemma 2.2.4 of \url{https://users.math.msu.edu/users/ruiterj2/math/Documents/Publications/Thesis\%202022-05-09.pdf}. That was for $H$ in a slightly different form, but it should not be a big difference. The bigger issue is that Lemma 2.2.4 ignored the case of two short roots adding up to a third short root which occurs even in the quasisplit case $(n,q) = (6,3)$. Matlab code doing this is still in progress.
-\end{framed}
-
-\begin{framed}
-\noi \tbf{Name:} WeylGroupConjugationCoefficientSU \\
-\noi \tbf{Inputs:} Positive integer $n$, the root system $\mathsf{BC}_q$ (or $\mathsf{C}_q$ in the quasisplit case), the form matrix $H$, two roots $\alpha, \beta$, and a vector $u$ \\
-\noi \tbf{Outputs:} Vector  \\
-\noi \tbf{Description:} This coefficient is $\varphi_{\alpha \beta}(v)$ appearing in the formula
-\[
-	w_\alpha(u) \cdot X_\beta(v) \cdot w_\alpha(u) \inv = X_{\sig_\alpha(\beta)} \Big( \varphi_{\alpha \beta}(v) \Big)
-\]
-In the quasisplit case, this always takes the form $\varphi_{\alpha \beta}(v) = \pm v_{\pm 1}$, but I don't know if that will carry over to the non-quasisplit case. This is not yet implemented in Matlab.
-\end{framed}
+%In the quasisplit case, this always takes the form $\varphi_{\alpha \beta}(v) = \pm v_{\pm 1}$, but I don't know if that will carry over to the non-quasisplit case. This is not yet implemented in Matlab.
+%\end{framed}
 
 \newpage
 % Bibliography
