@@ -2,9 +2,9 @@
 \pagestyle{plain}
 \topmargin=-0.5in
 \textheight=9in
-\evensidemargin=-0.25in
-\oddsidemargin=-0.25in
-\setlength{\textwidth}{7.0in}
+\evensidemargin=-0.35in
+\oddsidemargin=-0.35in
+\setlength{\textwidth}{7.2in}
 
 \usepackage{graphicx}
 \usepackage[shortlabels]{enumitem}
@@ -85,8 +85,8 @@
 \DeclareMathOperator{\Id}{Id}
 \DeclareMathOperator{\Tr}{Tr}
 \DeclareMathOperator{\tr}{tr}
-\DeclareMathOperator{\LieX}{LieX}
 \DeclareMathOperator{\Aut}{Aut}
+\DeclareMathOperator{\rad}{rad}
 
 \title{Pinning-Sympy: Theoretical Underpinnings}
 \author{Joshua Ruiter}
@@ -1055,10 +1055,10 @@ In this section, we build up the necessary background on bilinear forms, hermiti
 
 \subsection{Bilinear forms}
 
-Before discussing bilinear forms in general, we look at the classical example of a bilinear form: dot product on $\R^n$.
+Before discussing bilinear forms in general, we look at the classical example of a bilinear form: the dot product on $\R^n$.
 
 \begin{example}
-Let $n \ge 1$, and consider the vector space $V = \R^n$ (as a vector space of dimension $n$ over $\R$, viewed as column vectors). The usual dot product operation is a map
+Let $n \ge 1$, and consider the vector space $V = \R^n$ (as a vector space of dimension $n$ over $\R$, with elements thought of as column vectors). The usual dot product operation is a map
 \begin{align*}
 	b: V \times V &\to \R \\
 	 b(x, y) &= x \cdot y \\
@@ -1154,8 +1154,8 @@ The \tbf{Kronecker delta function} is defined by
 \[
 	\delta_{ij} =
 	\begin{cases}
-		1 & i = j \\
-		0 & i \neq j
+		1 & \text{if } i = j \\
+		0 & \text{if } i \neq j
 	\end{cases}
 \]
 \end{definition}
@@ -1181,7 +1181,7 @@ Let $[v]_\beta$ be the column vector $(v_1, \ldots, v_n) \in k^n$. In particular
 \[
 	b_{\beta, B}(v, w) = [v]_\beta^T B [w]_\beta
 \]
-Notice that taking $v = e_i$ and $w = e_j$, that $b_{\beta, B}(e_i, e_j)$ is the $ij$th entry of the matrix $B$.
+Notice that if $v = e_i$ and $w = e_j$ then $b_{\beta, B}(e_i, e_j)$ is the $ij$th entry of the matrix $B$.
 \[
 	b_{\beta, B}(e_i,e_j) = [e_i]_\beta^T B [e_j]_\beta = B_{ij}
 \]
@@ -1201,11 +1201,11 @@ Show that the matrix of a symmetric bilinear form is a symmetric matrix (satisfi
 \end{exercise}
 
 \begin{definition}
-A matrix $B \in \M_n(k)$ is \tbf{nondegenerate} if it has nonzero determinant (aka is an element of $\GL_n(k)$). A bilinear form $b$ is \tbf{nondegenerate} if the associated matrix is nondegenerate.
+A matrix $B \in \M_n(k)$ is \tbf{nondegenerate} if it has nonzero determinant (aka is an element of $\GL_n(k)$). A bilinear form $b$ is \tbf{nondegenerate} if the associated matrix is nondegenerate. (It is not immediately obvious from the definition, but it is true, that the associated matrix being nondegenerate does not depend on the choice of basis in which the matrix is written down.)
 \end{definition}
 
 \begin{definition}
-Let $b, b'$ be bilinear forms on a $k$-vector space $V$ with respective associated matrices $B$ and $B'$. Then $b,b'$ are \tbf{equivalent} if there exists an invertible matrix $P$ such that
+Let $b, b'$ be bilinear forms on a $k$-vector space $V$ with respective associated matrices $B$ and $B'$ (with respect to a fixed basis). Then $b,b'$ are \tbf{equivalent} if there exists an invertible matrix $P$ such that
 \[
 	B' = P^T B P
 \]
@@ -1233,7 +1233,7 @@ See \url{https://kconrad.math.uconn.edu/blurbs/linmultialg/bilinearform.pdf}.
 Let $n$ be a positive integer. We view $\C^n$ as a vector space over $\C$, thinking of elements as column vectors $(z_1, \ldots, z_n)$ with $z_i \in \C$. The \tbf{complex dot product} is the following operation.
 \begin{align*}
 	h&:\C^n \times \C^n \to \C  \\
-	h(w, z) &=  h(w_1, \ldots, w_n),  (z_1, \ldots, z_n) = w_1 \ov z_1 + \cdots + w_n \ov z_n = \sum_{i=1}^n w_i \ov z_i
+	h(w, z) &=  h\Big( (w_1, \ldots, w_n),  (z_1, \ldots, z_n) \Big) = w_1 \ov z_1 + \cdots + w_n \ov z_n = \sum_{i=1}^n w_i \ov z_i
 \end{align*}
 \end{example}
 
@@ -1254,7 +1254,7 @@ Let $V$ be a vector space over $\C$. A \tbf{hermitian form} or \tbf{sesquilinear
 \[
 	h:V \times V \to \C
 \]
-such that for any $u,v,w \in V$ and $\lam, \mu \in C$, 
+such that for any $u,v,w \in V$ and $\lam, \mu \in \C$, 
 \begin{align*}
 	h(u, v+w) &= h(u, v) + h(u,w) \\
 	h(u+v, w) &= h(u,w) + h(v,w) \\
@@ -1266,7 +1266,7 @@ The second-to-last equation is often phrased by saying that ``$h$ is conjugate-l
 \end{definition}
 
 \begin{example}
-Complex dot product is a $\sig$-hermitian form on $\C^n$, where $\sig$ is traditional complex conjugation.
+Complex dot product is a hermitian form on $\C^n$.
 \end{example}
 
 \begin{definition}
@@ -1318,7 +1318,7 @@ One way to think about $k \lp \sqrt{d} \rp$ is that we are taking $k$ and adding
 \end{example}
 
 \begin{example}
-For any integer $d$ which is not the square of another integer, we can construct the field $\Q \lp \sqrt{d} \rp$ and get a field which is strictly bigger than $\Q$. If $d > 0$, then we can think of $\Q\lp \sqrt{2} \rp$ as a subfield of $\R$, but if $d < 0$ then we can just think of $\Q \lp \sqrt{d} \rp$ as a subfield of $\C$.
+For any integer $d$ that is not the square of another integer, we can construct the field $\Q \lp \sqrt{d} \rp$ and get a field which is strictly bigger than $\Q$. If $d > 0$, then we can think of $\Q\lp \sqrt{d} \rp$ as a subfield of $\R$, but if $d < 0$ then we can just think of $\Q \lp \sqrt{d} \rp$ as a subfield of $\C$.
 \end{example}
 
 \begin{exercise}
@@ -1333,7 +1333,7 @@ The set $\lb 1, \sqrt{d} \rb$ is a basis, because every element of $k \lp \sqrt{
 \end{proof}
 
 \begin{definition}
-A \tbf{quadratic field extension} is a field extension of the form $k \lp \sqrt{d} \rp/k$ for some field $k$, where $d$ is some element of $k$ that is not already a square of an element in $k$.
+A \tbf{quadratic field extension} is a field extension of the form $k \lp \sqrt{d} \rp/k$ for some field $k$, where $d$ is some element of $k$ that is not already a square in $k$.
 \end{definition}
 
 \begin{lemma}
@@ -1385,11 +1385,11 @@ As in the complex case, a \tbf{skew-$\sig$-hermitian form} is the same as a $\si
 \end{definition}
 
 \begin{definition}
-Let $h$ be a hermitian or skew-hermitian form on an $n$-dimensional $L$-vector space $V$. Fix a basis $\beta = \lb v_1, \ldots, v_n \rb$ of $V$. The \tbf{matrix of $h$ with respect to the basis $\beta$} is a matrix $H = \Mat_\beta(b)$ whose $(i,j)$ entry is $h(v_i, v_j)$.
+Let $h$ be a hermitian or skew-hermitian form on an $n$-dimensional $L$-vector space $V$. Fix a basis $\beta = \lb v_1, \ldots, v_n \rb$ of $V$. The \tbf{matrix of $h$ with respect to the basis $\beta$} is a matrix $H = \Mat_\beta(h)$ whose $(i,j)$ entry is $h(v_i, v_j)$.
 \[
 	H = \big( h(v_i, v_j) \big)
 \]
-Conversely, given any hermitian matrix $H$ there is an associated hermitian form $h$ defined by
+Conversely, given any hermitian matrix $H$ there is an associated hermitian form $h$ defined on basis elements by
 \[
 	h(v_i, v_j) = H_{ij}
 \]
@@ -1411,7 +1411,7 @@ Let $V$ be an $n$-dimensional $k$-vector space. A \tbf{quadratic form} on $V$ is
 \[
 	q( x_1, \ldots, x_n) = \sum_{i,j} a_{ij} x_i x_j
 \]
-with $a_{ij} \in k$.
+with $a_{ij} \in k$ (where $(x_1, \ldots, x_n)$ are the coordinates in some chosen basis).
 \end{definition}
 
 \begin{example}
@@ -1422,11 +1422,11 @@ Let $k = \R$ and $V = \R^3$. Then the following are quadratic forms on $V$.
 \end{example}
 
 \begin{remark}
-A quadratic form $v$ always satisfies
+A quadratic form always satisfies
 \[
 	q( \lam v) = \lam^2 q(v)
 \]
-for all $\lam \in k$ and $v \in V$. Slightly more subtlely, given any quadratic form $v$, the map
+for all $\lam \in k$ and $v \in V$. Slightly more subtly, given any quadratic form $v$, the map
 \[
 	b_q:V \times V \to k \qquad b_q(u,v) = \frac 12 \Big( q(u+v) - q(u) - q(v) \Big)
 \]
@@ -1465,8 +1465,8 @@ Let $q \begin{pmatrix} x \\ y \end{pmatrix} = x^2+ y^2$ on $\R^2$. Then the asso
 		y_2
 	\end{pmatrix}
 	\rp \\
-	&= \frac 12 \Big( (x_1+x_2)^2 + (y_1 + y_2)^2 - (x_1^2 + y_1^2) - (x_2^2 - y_2^2) \Big) \\
-	&= \frac 12 \Big( 2x_1 x_2 + 2y_1 y_2) \Big) \\
+	&= \frac 12 \Big( (x_1+x_2)^2 + (y_1 + y_2)^2 - (x_1^2 + y_1^2) - (x_2^2 + y_2^2) \Big) \\
+	&= \frac 12 \Big( 2x_1 x_2 + 2y_1 y_2 \Big) \\
 	&= x_1 x_2 + y_1 y_2
 \end{align*}
 which is the usual dot product operation on $\R^2$. If we use the standard basis $\lb e_1, e_2 \rb$ on $\R^2$, the matrix of this bilinear form is the identity matrix.
@@ -1531,7 +1531,7 @@ If we use the standard basis $\lb e_1, e_2 \rb$ on $\R^2$, the matrix of this bi
 \end{example}
 
 \begin{lemma}
-When $\characteristic k \neq 2$, there is a one-to-one correspondence between symmtric bilinear forms and quadratic forms. Given a quadratic form $q$, the associated bilinear form is described by
+When $\characteristic k \neq 2$, there is a one-to-one correspondence between symmetric bilinear forms and quadratic forms. Given a quadratic form $q$, the associated bilinear form is described by
 \[
 	b_q(u,v) = \frac 12 \Big( q(u+v) - q(u) - q(v) \Big)
 \]
@@ -1546,7 +1546,7 @@ If you want to associate a matrix to a quadratic form, just turn it into the equ
 \end{remark}
 
 \begin{theorem}
-Any quadratic form on a $k$-vector space $V$ of dimension $n$ is equivalent to a quadratic form that looks like
+When $\characteristic k \neq 2$, any quadratic form on a $k$-vector space $V$ of dimension $n$ is equivalent to a quadratic form that looks like
 \[
 	q(x_1, \ldots, x_n) = a_1 x_1^2 + \cdots + a_n x_n^2
 \]
@@ -1570,7 +1570,7 @@ Let $(V,q)$ be a quadratic space. A \tbf{quadratic subspace} or just \tbf{subspa
 \begin{definition}
 Let $b$ be a symmetric bilinear form or hermitian form or skew-hermitian form on a vector space $V$. A vector $v \in V$ is \tbf{isotropic} (with respect to $b$) if $v \neq 0$ and $b(v,v) = 0$. The form $b$ is \tbf{isotropic} if there exists at least one isotropic vector. (Note that if $v$ is isotropic, then any nonzero scalar multiple of $v$ is also isotropic, so if there is any isotropic vector then there are many.) The form $b$ is \tbf{anisotropic} if there are no isotropic vectors.  The form $b$ is \tbf{totally isotropic} if all nonzero vectors are isotropic.
 
-Let $q$ be a quadratic form on a vector space $V$. A vector $v \in v$ is \tbf{isotropic} (with respect to $q$) if $v \neq 0$ and $q(v) = 0$. As with bilinear and hermitian forms, the form $q$ is called \tbf{isotropic} if there exists at least one isotropic vector, \tbf{anisotropic} if there are no isotropic vectors, and \tbf{totally isotropic} if all nonzero vectors are isotropic.
+Let $q$ be a quadratic form on a vector space $V$. A vector $v \in V$ is \tbf{isotropic} (with respect to $q$) if $v \neq 0$ and $q(v) = 0$. As with bilinear and hermitian forms, the form $q$ is called \tbf{isotropic} if there exists at least one isotropic vector, \tbf{anisotropic} if there are no isotropic vectors, and \tbf{totally isotropic} if all nonzero vectors are isotropic.
 \end{definition}
 
 \begin{example}
@@ -1578,7 +1578,7 @@ The traditional dot product on $\R^n$ is an anisotropic, nondegenerate, symmetri
 \end{example}
 
 \begin{example}
-The traditional complex dot product on $\C^n$ is an anistropic, nondegenerate, hermitian form.
+The traditional complex dot product on $\C^n$ is an anisotropic, nondegenerate, hermitian form.
 \end{example}
 
 \begin{example}
@@ -1590,10 +1590,10 @@ Let $h$ be the skew-hermitian form represented by the matrix
 \[
 	H = 
 	\begin{pmatrix}
-		& -1 \\
-		1 \\
-		&&& -1 \\
-		&& 1
+		0 & -1 \\
+		1 & 0 \\
+		&& 0 & -1 \\
+		&& 1 & 0
 	\end{pmatrix}
 \]
 Then $h$ is isotropic, but not totally isotropic.
@@ -1687,9 +1687,9 @@ Also, given this decomposition, the Witt index is $\frac 12 \dim V_h$, the numbe
 \end{theorem}
 
 \newpage
-\section{Pinnings in general}
+\section{Pinnings}
 
-One goal of this document is to describe similar pinning structures on special orthogonal groups and special unitary groups, as we have done for special linear groups above. This section includes various background material required to build up to that.
+One goal of this document is to describe similar pinning structures on special orthogonal groups and special unitary groups, as we have done for special linear groups above. This section includes background material required to build up to that.
 
 \subsection{Algebraic groups}
 \label{alg groups}
@@ -1700,7 +1700,7 @@ An \tbf{algebraic variety} is the set of solutions to a polynomial equation (or 
 \end{definition}
 
 \begin{example}
-A circle is an algebraic variety because it is the set of point $(x,y)$ which are solutions to $x^2 + y^2 = 1$. More precisely, the usual circle is a variety over the field $\R$. If we take a bigger field, such as $\C$, we might get more solutions like $(i, \sqrt{2})$, or if we take a smaller field like $\Q$ we will get fewer solutions (just the points on the circle with rational coordinates).
+A circle is an algebraic variety because it is the set of points $(x,y)$ which are solutions to $x^2 + y^2 = 1$. More precisely, the usual circle is a variety over the field $\R$. If we take a bigger field, such as $\C$, we might get more solutions like $(i, \sqrt{2})$, or if we take a smaller field like $\Q$ we will get fewer solutions (just the points on the circle with rational coordinates).
 \end{example}
 
 \begin{example}
@@ -1743,15 +1743,11 @@ Let $h$ be a nondegenerate hermitian or skew-hermitian form with Witt index $q$,
 \[
 	\SU_{n,q}(L,h) = \lb X \in \SL_n(L) : X^* H X = H \rb
 \]
-where $X^* = \ov X^T$. The special unitary group is a subgroup of $\SL_n(L)$, and is itself an algebraic group.
+where $X^* = \ov X^T$. The special unitary group is a subgroup of $\SL_n(L)$, and is itself an algebraic group. Note that for technical reasons, to view $\SU_{n,q}(L,h)$ as an algebraic variety, the base field needs to be $k$, not $L$.
 \end{example}
 
 \begin{definition}
-Let $G(k), G'(k)$ be algebraic groups over a field $k$. A \tbf{morphism of algebraic groups} is a group homomorphism $G(k) \to G'(k)$ which is also a regular map. 
-\end{definition}
-
-\begin{definition}
-Let $G(k), G'(k)$ be algebraic groups over a field $k$. An \tbf{abstract homomorphism} is a group homomorphism $G(k) \to G'(k)$ (but not necessarily regular).
+Let $G(k), G'(k)$ be algebraic groups. A \tbf{morphism of algebraic groups} is a group homomorphism $G(k) \to G'(k)$ which is also a regular map. An \tbf{abstract homomorphism} is a group homomorphism $G(k) \to G'(k)$ (but not necessarily regular).
 \end{definition}
 
 \subsection{Lie algebras}
@@ -1774,9 +1770,9 @@ for every $a,b \in A$. Also, $A$ has a scalar multiplication map.
 	\]
 	This scalar multiplication map distributes over addition, meaning
 	\[
-		\lam(a+b) = \lam a + \lam b
+		\lam(a+b) = \lam a + \lam b \qquad \text{and} \qquad (\lam + \mu)a = \lam a + \lam b
 	\]
-for all $\lam \in k$ and $a,b \in A$. $A$ also has a multiplication map, which distributes over addition.
+for all $\lam, \mu \in k$ and $a,b \in A$. $A$ also has a multiplication map, which distributes over addition.
 	\[
 		A \times A \to A \qquad (a,b) \mapsto ab
 	\]
@@ -1796,7 +1792,7 @@ Note that we do NOT assume that $A$ has a unity, or that multiplication is commu
 \begin{definition}
 A \tbf{Lie algebra} over $k$ is an algebra $L$ over $k$ with two additional properties. First, traditionally in a Lie algebra the operation is denoted with brackets, like so.
 \[
-	[,]:L \times L \to L
+	[-,-]:L \times L \to L
 \]
 so the multiplication of two elements $x,y$ is written $[x,y]$ instead of $xy$. The two additional equations that make $L$ into a Lie algebra are
 \[
@@ -1818,7 +1814,7 @@ Show that if $L$ is an algebra (not necessarily a Lie algebra) in which $[x,y] =
 \end{exercise}
 
 \begin{example}
-$\R^3$ with the cross product operation is Lie algebra. Verifying the Jacobi identity is tedious, I do not recommend.
+$\R^3$ with the cross product operation is a Lie algebra. Verifying the Jacobi identity is tedious, I do not recommend.
 \end{example}
 
 \begin{example}
@@ -1834,41 +1830,43 @@ This is the most important example of a Lie algebra. All of the Lie algebras stu
 Every algebraic group has an associated Lie algebra. This is somewhat complicated to describe, so rather than talk about the general definition, I will just describe the specific Lie algebra associated with each of the groups we are dealing with. All of these are matrix Lie algebras that are subalgebras of $\M_n(k)$, meaning they have the same bracket operation but are just a particular subset.
 
 \begin{definition}
-Let $n \ge 1$ and consider the special linear group $\SL_n(k)$. The associated Lie algebra to this is
+The Lie algebra associated to the special linear group $\SL_n(k)$ is
 \[
-	\mathfrak{sl}_n(k) = \lb x \in \M_n(k) : \tr(x) = 0 \rb
+	\mathfrak{sl}_n(k) = \lb X \in \M_n(k) : \tr(X) = 0 \rb
 \]
 The bracket operation is the same as on $\M_n(k)$. That is,
 \[
-	[x,y] = xy - yx
+	[X,Y] = XY - YX
 \]
-where $xy$ refers to usual matrix multiplication.
+where $XY$ refers to matrix multiplication.
 \end{definition}
 
 \begin{exercise}
-Show that if $\tr(x) = \tr(y) = 0$, then $\tr[x,y] = 0$. In other words, $\mathfrak{sl}_n(k)$ is actually closed under the bracket operation.
+Show that if $\tr(X) = \tr(Y) = 0$, then $\tr[X,Y] = 0$. In other words, $\mathfrak{sl}_n(k)$ is actually closed under the bracket operation.
 \end{exercise}
 
 \begin{definition}
-Let $b$ be a nondegenerate symmetric bilinear form with Witt index $q$ and matrix $B$, and let $\SO_{n}(k,B)$ be the associated special orthogonal group. The \tbf{special orthogonal Lie algebra} associated to $B$ is
+Let $b$ be a nondegenerate symmetric bilinear form with Witt index $q$ and matrix $B$, and let $\SO_{n,q}(k,B)$ be the associated special orthogonal group. The \tbf{special orthogonal Lie algebra} associated to $B$ is
 \[
-	\mathfrak{so}_{n,q}(k,b) = \lb X \in \M_n(k) : X^TB + BX = 0 \rb
+	\mathfrak{so}_{n,q}(k,B) = \lb X \in \M_n(k) : X^TB + BX = 0 \text{ and } \tr(X) = 0 \rb
 \]
 again with the usual matrix bracket on $\M_n(k)$.
 \end{definition}
 
 \begin{definition}
-Let $h$ be a nondegenerate hermitian or skew-hermitian form with Witt index $q$ and matrix $H$, and let $\SU_{n}(L,H)$ be the associated special unitary group. The \tbf{special unitary Lie algebra} associated to $H$ is
+Let $h$ be a nondegenerate hermitian or skew-hermitian form with Witt index $q$ and matrix $H$, and let $\SU_{n,q}(L,H)$ be the associated special unitary group. The \tbf{special unitary Lie algebra} associated to $H$ is
 \[
-	\mathfrak{su}_{n,q}(L,h) = \lb X \in \M_n(L) : X^* H + HX = 0 \rb
+	\mathfrak{su}_{n,q}(L,H) = \lb X \in \M_n(L) : X^* H + HX = 0 \text{ and } \tr(X) = 0 \rb
 \]
-with the usual matrix bracket on $\M_n(L)$.
+with the usual matrix bracket on $\M_n(L)$. Note that $\mathfrak{su}_{n,q}(L,H)$ is a $k$-vector space, but not an $L$-vector space.
 \end{definition}
 
 \subsection{Roots and root spaces}
 
+For some computations in this section, we need to assume that $k$ is a sufficiently large field. There are occasionally issues when $k$ is a field with only 2 or 3 elements.
+
 \begin{definition}
-Let $G(k)$ be an algebraic group that is one of $\SL_n(k), \SO_{n}(k,B)$, or $\SU_{n}(L,H)$, and let $\frakg(k)$ be the associated Lie algebra (either $\mathfrak{sl}_n(k), \mathfrak{so}_{n}(k,b)$, or $\mathfrak{su}_{n}(L,h)$). Let $S(k)$ be the torus subgroup of $G(k)$ (the full subgroup of $\SL_n(k)$, or the subgroup we previously specified for $\SO_{n,q}(k,b)$ or $\SU_{n,q}(L,h)$). Then $S(k)$ acts on $\frakg(k)$ by conjugation. That is, the map
+Let $G(k)$ be an algebraic group that is one of $\SL_n(k), \SO_{n,q}(k,B)$, or $\SU_{n,q}(L,H)$, and let $\frakg(k)$ be the associated Lie algebra (either $\mathfrak{sl}_n(k), \mathfrak{so}_{n,q}(k,B)$, or $\mathfrak{su}_{n,q}(L,H)$). Let $S(k)$ be the torus subgroup of $G(k)$ (the full subgroup of $\SL_n(k)$, or the subgroup we previously specified for $\SO_{n,q}(k,b)$ or $\SU_{n,q}(L,h)$). Then $S(k)$ acts on $\frakg(k)$ by conjugation. That is, the map
 \[
 	S(k) \times \frakg(k) \to \frakg(k) \qquad (s,x) \mapsto sxs \inv
 \]
@@ -1981,7 +1979,7 @@ Remember that for $x$ to be in $\frakg_{\alpha}$, this has to be true for every 
 \[
 	x_{11} = s_1 x_{11}
 \]
-If this is true for every $s_1$, then it must be that $x_{11} = 0$. Similarly, comparing the $(1,2)$ entries we get
+If this is true for every $s_1$, then it must be that $x_{11} = 0$. (This is precisely where we need to assume that $k$ is not too small of a set. If $k$ has only 2 or 3 elements, this deduction is not valid.) Similarly, comparing the $(1,2)$ entries we get
 \[
 	s_1^2 x_{12} = s_1 x_{12}
 \]
@@ -1997,7 +1995,7 @@ In contrast with the previous example, $\frakg_\alpha$ is not always zero. Take 
 		\end{pmatrix}
 		= s_1^2
 \]
-Then we repeat the calculation. Suppose $x \in \fraksl_n(k)$ belongs to $\frakg_{2\alpha_1}$. Then reusing the left-hand side of the calculation above, we conclude that
+Then we repeat the calculation. Suppose $x \in \fraksl_2(k)$ belongs to $\frakg_{2\alpha_1}$. Then reusing the left-hand side of the calculation above, we conclude that
 \begin{align*}
 	sxs \inv = \begin{pmatrix}
 		x_{11} & s_1^2 x_{12} \\
@@ -2046,11 +2044,11 @@ Show that $-2\alpha_1$ is also a root for $\fraksl_2(k)$ with root space
 \end{exercise}
 
 \begin{definition}
-Let $X$ be an $n \times n$ matrix. The \tbf{matrix exponential} of $X$ is
+Let $X$ be an $n \times n$ nilpotent matrix, i.e. some power of $X$ is the zero matrix. The \tbf{matrix exponential} of $X$ is
 \[
-	e^X = \exp(X) = \sum_{i=0}^\infty \frac{X^i}{i!} = 1 + X + \frac{X^2}{2!} + \frac{X^3}{3!} + \cdots
+	e^X = \exp(X) = \sum_{i=0}^\infty \frac{X^i}{i!} = I_n + X + \frac{X^2}{2!} + \frac{X^3}{3!} + \cdots
 \]
-In general, we might need to worry about whether this infinite series converges. However, for all of the matrices that we'll deal with, this series terminates after just 2-3 nonzero terms.
+If $X$ were not nilpotent, we would need to worry about convergence, but since $X$ is nilpotent only finitely many terms are nonzero. For all of the matrices we'll deal with in these notes, the series terminates after just two or three nonzero terms.
 \end{definition}
 
 \begin{example}
@@ -2063,7 +2061,7 @@ Let $X$ be an element of the root space $\frakg_{2\alpha_1}$ for $\fraksl_2(k)$,
 \]
 for some $u \in k$. Then $X^2 = 0$, so
 \[
-	\exp(X) = 1 + X =
+	\exp(X) = I_2 + X =
 	\begin{pmatrix}
 		1 & u \\
 		0 & 1 
@@ -2072,7 +2070,7 @@ for some $u \in k$. Then $X^2 = 0$, so
 \end{example}
 
 \begin{definition}
-Let $G(k)$ be a special linear, special orthgonal, or special unitary group, with Lie algebra $\frakg(k)$ and torus $S(k)$. Let $\alpha$ be a root, with nonzero root space $\frakg_\alpha$. The \tbf{root subgroup} associated to $\alpha$ is
+Let $G(k)$ be a special linear, special orthogonal, or special unitary group, with Lie algebra $\frakg(k)$ and torus $S(k)$. Let $\alpha$ be a root, with nonzero root space $\frakg_\alpha$. The \tbf{root subgroup} associated to $\alpha$ is
 \[
 	U_\alpha = \exp (\frakg_\alpha) = \lb \exp(x) : x \in \frakg_\alpha \rb
 \]
@@ -2154,7 +2152,7 @@ An element of a root system is called a \tbf{root}.
 \end{definition}
 
 \begin{remark}
-There is a complete classification of root systems via something called ``Dynkin diagrams." The details of the proof of this classification are not important for us, and really we only need to care about type $\mathsf{A}, \mathsf{B}, \mathsf{C}$, and $\mathsf{BC}$ root systems. There are also type $\mathsf{E}, \mathsf{F}, \mathsf{G}$ root systems.
+There is a complete classification of root systems via something called ``Dynkin diagrams." The details of the proof of this classification are not important for us, and really we only need to care about type $\mathsf{A}, \mathsf{B}, \mathsf{C}$, and $\mathsf{BC}$ root systems. There are also type $\mathsf{D}, \mathsf{E}, \mathsf{F}, \mathsf{G}$ root systems.
 \end{remark}
 
 \begin{example}
@@ -2170,20 +2168,20 @@ The \tbf{rank} of $\Phi$ is the dimension of the space spanned by $\Phi$.
 \end{definition}
 
 \begin{example}
-The rank of $\mathsf{A}_{n-1}$ is $n-1$. In general, for any root system the subscript denotes the rank, so for example $\mathsf{D}_4$ is the type $D$ root system of rank 4.
+The rank of $\mathsf{A}_{n-1}$ is $n-1$. In general, for any root system the subscript denotes the rank, so for example $\mathsf{D}_4$ is the type $\mathsf{D}$ root system of rank 4.
 \end{example}
 
 \begin{example}
 We describe the $\mathsf{B}_n, \mathsf{C}_n,$ and $\mathsf{BC}_n$ root systems. Let $E = \R^n$, and $\alpha_i = (0, \ldots, 1, \ldots, 0)$ as before. Then
 \begin{align*}
-	\mathsf{B}_n &= \lb \pm \alpha_i : 1 \le i \le n \rb \cup \lb \pm \alpha_i \pm \alpha_j : 1 \le i, j \le n, i \neq j \rb \\
-	\mathsf{C}_n &= \lb \pm 2\alpha_i : 1 \le i \le n \rb \cup \lb \pm \alpha_i \pm \alpha_j : 1 \le i,j \le n, i \neq j \rb
+	\mathsf{B}_n &= \lb \pm \alpha_i : 1 \le i \le n \rb \cup \lb \pm \alpha_i \pm \alpha_j : 1 \le i < j \le n \rb \\
+	\mathsf{C}_n &= \lb \pm 2\alpha_i : 1 \le i \le n \rb \cup \lb \pm \alpha_i \pm \alpha_j : 1 \le i < j \le n \rb
 \end{align*}
 Note that the second part is identical, the only difference is the 2 in the first set of roots. Both $\mathsf{B}_n$ and $\mathsf{C}_n$ are reduced root systems (in $E$). The $\mathsf{BC}_n$ root system is simply the union of the two.
 \[
 	\mathsf{BC}_n = \lb \pm \alpha_i, \pm 2\alpha_i : 1 \le i \le n \rb \cup \lb \pm \alpha_i \pm \alpha_j : 1 \le i,j \le n, i \neq j \rb
 \]
-$\mathsf{BC}_n$ is not reduced. In fact, the root systems $\mathsf{BC}_n$ are the only non-reduced root systems (we omit the proof).
+$\mathsf{BC}_n$ is not reduced. In fact, the root systems $\mathsf{BC}_n$ are the only non-reduced root systems (we omit the proof). The shortest roots $\pm \alpha_i$ in $\mathsf{BC}_n$ are called \tbf{multipliable} because their double is also a root.
 \end{example}
 
 \begin{definition}
@@ -2211,7 +2209,7 @@ Let $\Phi$ be a root system of rank $n$ in $E = \R^n$. For any $\alpha \in \Phi$
 \begin{remark}
 In general, there are elements of $W(\Phi)$ which are not $\sig_\alpha$ for any $\alpha$. 
 
-Despite the fact that $W(\Phi)$ is generated by elements of order 2, not every element of $W(\Phi)$ has to have order 2. However, since $\Phi$ is a finite set and $W(\Phi)$ is a subgroup of the permutation group of $\Phi$, $W(\Phi)$ is a finite group. Usually, $W(\Phi)$ is not the full permutation group of $\Phi$, since $\sig_\alpha(\beta)$ must have the same length as $\beta$. So $W(\Phi)$ must permute the set of roots of the same length. For example, in $\mathsf{C}_n$, this means that $W(\Phi)$ can only send roots of the form $\pm \alpha_i$ to other roots of this form, never to a root such as $\alpha_1 + \alpha_2$. 
+Despite the fact that $W(\Phi)$ is generated by elements of order 2, not every element of $W(\Phi)$ has to have order 2. However, since $\Phi$ is a finite set and $W(\Phi)$ is a subgroup of the permutation group of $\Phi$, $W(\Phi)$ is a finite group. Usually, $W(\Phi)$ is not the full permutation group of $\Phi$, since $\sig_\alpha(\beta)$ must have the same length as $\beta$. So $W(\Phi)$ must permute the set of roots of the same length. For example, in $\mathsf{B}_n$, this means that $W(\Phi)$ can only send roots of the form $\pm \alpha_i$ to other roots of this form, never to a root such as $\alpha_1 + \alpha_2$. 
 
 Also, if $\Phi$ is reducible, then $W(\Phi)$ must only send roots in one irreducible component within that irreducible component. However, within that restriction, $W(\Phi)$ ``acts transitively," meaning that for any two roots $\alpha, \beta$ of the same length in the same irreducible component, there exists a $w \in W(\Phi)$ such that $w(\alpha) = \beta$. Since most of the time we will deal with irreducible root systems, the main restriction here is that $\alpha, \beta$ have the same length.
 \end{remark}
@@ -2242,24 +2240,27 @@ for each $\alpha \in \Phi$, such that:
 	\]
 	\item (Commutator formula) For every $\alpha, \beta \in \Phi$ with $\alpha \neq c \beta$ for any scalar $c$, there are polynomial maps
 	\[
-		N_{ij}^{\alpha \beta}:V_\alpha(k) \times V_\beta(k) \to V_{\alpha+\beta}(k)
+		N_{ij}^{\alpha \beta}:V_\alpha(k) \times V_\beta(k) \to V_{i\alpha+j\beta}(k)
 	\]
 	such that for any $u \in V_\alpha(k)$ and $v \in V_\beta(k)$, we have
 	\[
 		\Big[ X_\alpha(u), X_\beta(v) \Big] = \prod_{\substack{i, j \ge 1 \\ i\alpha+j\beta \in \Phi}} X_{i \alpha+j\beta} \Big( N_{ij}^{\alpha \beta}(u,v) \Big)
 	\]
+	When we need to worry about the order of the product on the right, we order it first by $i+j$ in increasing order, then secondarily by $i$ in increasing order.
 \end{enumerate}
 \end{definition}
 
 \begin{definition}
-A \tbf{Weyl group element} is an element $w \in G$ which normalizes the torus $S$. In other words, $w \in N_G(S)$, which is to say,
+A \tbf{Weyl group representative} is an element $w \in G$ which normalizes the torus $S$. That is,
 \[
-	w S w \inv = S
+	w \cdot S \cdot w \inv = S
 \]
 or equivalently
 \[
-	w s w \inv \in S \qquad \forall s \in S
+	w \cdot s \cdot w \inv \in S \qquad \forall s \in S
 \]
+The true Weyl group is the quotient of the normalizer subgroup of $S$ by the centralizer subgroup of $S$, but it is often easier to work with elements of the group $G$, so rather than work in that quotient we work with representative lifts from that quotient, i.e. elements of the normalizer subgroup of $S$.
+
 A \tbf{pinning compatible with the Weyl group} is a pinning with an additional property:
 \begin{enumerate}
 	\item[5.] (Weyl group conjugation formula) For every $\alpha \in \Phi$, there is a Weyl group element $w_\alpha \in G(k)$ which belongs to the subgroup generated by $X_\alpha(V_\alpha(k))$ and $X_{-\alpha}(V_{-\alpha}(k))$ and such that for every $\beta \in \Phi$ and $v \in V_\beta(k)$, 
@@ -2271,9 +2272,7 @@ A \tbf{pinning compatible with the Weyl group} is a pinning with an additional p
 \end{definition}
 
 \begin{remark}
-By general theory that we are not going into, under appropriate assumptions about the group $G$, $G$ always contains a maximal $k$-split torus $S$, and there is always a root system $\Phi(G,S)$, and a pinning of $G$ always exists. 
-
-I'm not 100\% confident, but I believe that a pinning compatible with the Weyl group should always exist as well. For the purposes of this project, we will assume these exist at least for the groups we are working with, and try to find them, write them down as explicitly as possible, and set up a computer to check the various equations involved.
+By general theory that we are not going into, under appropriate assumptions about the group $G$, $G$ always contains a maximal $k$-split torus $S$, and there is always a root system $\Phi(G,S)$, and a pinning of $G$ that is compatible with the Weyl group always exists.
 \end{remark}
 
 \newpage
@@ -2286,19 +2285,19 @@ Let $b$ be a nondegenerate symmetric bilinear form on a $k$-vector space $V$ of 
 \[
 	\OO_n(k,b) = \lb X \in \GL_n(k) : X^T BX = B \rb
 \]
-The \tbf{special orthogonal group} of $B$ is the subgroup of $\OO_n(B,k)$ of matrices with determinant equal to one.
+The \tbf{special orthogonal group} of $B$ is the subgroup of $\OO_n(k, b)$ of matrices with determinant equal to one.
 \[
 	\SO_n(k,b) = \lb X \in \SL_n(k) : X^T BX = B \rb
 \]
-In the future, we will also want to specify the Witt index of $b$ in the notation, so let $q$ be the Witt index of $b$ (or $B$ equivalently). Then we denote the special orthogonal group by
+In the future, we will also want to specify the Witt index of $b$ in the notation, so let $q$ be the Witt index of $b$ (or $B$ equivalently). Then we denote these groups by
 \[
-	\SO_{n,q}(k,b)
+	\OO_{n,q}(k,b) \qquad \text{ and } \qquad \SO_{n,q}(k,b)
 \]
 When it is clear from context, we can also just write this as $\SO(k,b)$ or even just $\SO(k)$.
 \end{definition}
 
 \begin{exercise}
-Verify that $\OO_{n,q}(k,b)$ is a group under matrix multiplication and that $\SO_{n,q}(k,b)$ is a subgroup.
+Verify that $\OO_{n}(k,b)$ is a group under matrix multiplication and that $\SO_{n}(k,b)$ is a subgroup.
 \end{exercise}
 
 \begin{exercise}
@@ -2315,10 +2314,10 @@ Verify that the isomorphism you found in the previous exercise also gives an iso
 \end{exercise}
 
 \begin{remark}
-The main takeaway from the exercise is: changing a bilinear form to an equivalent bilinear form doesn't change the group (up to isomoprhism), so if we just want to study the group, then we are free to use whichever equivalent bilinear form we like. Because of Theorem \ref{nondegenerate symmetric form is diagonal}, we can always choose a basis so that our nondegenerate symmetric bilinear form is diagonal, which makes it have an associated diagonal matrix. Then because of Exercise \ref{equivalent forms give isomorphic groups}, changing our basis in this way doesn't affect the group. So any orthogonal or special orthogonal group can be described using an invertible diagonal matrix (every diagonal matrix is symmetric, so now symmetric becomes redundant). However, it is not always best to assume that $B$ is completely diagonalized.
+The main takeaway from the exercise is: changing a bilinear form to an equivalent bilinear form doesn't change the group (up to isomorphism), so if we just want to study the group, then we are free to use whichever equivalent bilinear form we like. Because of Theorem \ref{nondegenerate symmetric form is diagonal}, we can always choose a basis so that our nondegenerate symmetric bilinear form is diagonal, which makes it have an associated diagonal matrix. Then because of Exercise \ref{equivalent forms give isomorphic groups}, changing our basis in this way doesn't affect the group. So any orthogonal or special orthogonal group can be described using an invertible diagonal matrix (every diagonal matrix is symmetric, so now symmetric becomes redundant). However, it is not always best to assume that $B$ is completely diagonalized.
 \end{remark}
 
-\subsection{Form, Lie algebra, torus, characters, roots}
+\subsection{Split, quasi-split, and otherwise}
 
 Let $k$ be an arbitrary field of characteristic $\neq 2$. If it helps, you can usually pretend that $k = \R$ or $k = \Q$ without running into any problems. 
 
@@ -2326,23 +2325,23 @@ Let $V$ be a vector space over $k$ of dimension $n$, and let $b$ be a nondegener
 
 Let $Q$ be the quadratic form associated to $b$, and let $q$ be the Witt index of $Q$. Since $b$ is isotropic, $q \ge 1$. Note that $q \le \frac{n}{2}$. By the Witt decomposition theorem, we can write $V$ as 
 \[
-	V = V_t \oplus V_o \oplus V_h
+	V = V_t \perp V_o \perp V_h
 \]
-where $V_t$ is totally isotropic (meaning $b(v,w) = 0$ for all $v,w \in V_t$) and $V_o$ is anisotropic and $V_h$ is a direct sum of $q$ hyperbolic planes (so $\dim V_h = 2q$). Since $b$ is nondegenerate, the $V_t$ part must be zero, so actually
+where $V_t = \rad(V)$ is the totally isotropic radical, $V_o$ is anisotropic, and $V_h$ is a direct sum of $q$ hyperbolic planes (so $\dim V_h = 2q$). Since $b$ is nondegenerate, $V_t = \{0\}$, so
 \[
-	V = V_o \oplus V_h
+	V = V_o \perp V_h
 \]
-We can write out $V_h$ as a direct sum of 2-dimensional spaces, so that
+We can write out $V_h$ as an orthogonal direct sum of 2-dimensional hyperbolic planes, so that
 \[
-	V = V_o \oplus V_h = V_a \oplus H_1 \oplus H_2 \oplus \cdots \oplus H_q
+	V = V_o \perp V_h = V_o \perp H_1 \perp H_2 \perp \cdots \perp H_q
 \]
-where each $H_i$ has dimension 2. The value of $q$ determines the following: \footnote{See section 34.6 (page 222) of Humphrey's book on linear algebraic groups, or page 256 of Borel.}
+where each $H_i$ has dimension 2. The value of $q$ determines the following: \footnote{See section 34.6 (page 222) of Humphreys' book on linear algebraic groups, or page 256 of Borel.}
 \begin{itemize}
-	\item If $q$ is as big as possible, which is to say, $q = \frac{n}{2}$ or $q = \frac{n-1}{2}$ then the special orthogonal group $\SO(k,b)$ is called ``$k$-split" which for our purposes means it's already understood.
-	\item If $q$ is almost as big as possible, which it to say, $q = \frac{n}{2} - 1$ (or equivalently $2q + 2 = n$ so notably $n$ must be even) then $\SO(k,b)$ is quasisplit.
-	\item In the remaining case, $n > 2q+2$ and $\SO(k,b)$ is neither split nor quasisplit.
+	\item If $q$ is as big as possible, which is to say, $q = \frac{n}{2}$ (equivalently $n=2q$) or $q = \frac{n-1}{2}$ (equivalently $n=2q+1$) then the special orthogonal group $\SO(k,b)$ is called ``$k$-split" which for our purposes means it's already understood.
+	\item If $q$ is almost as big as possible, which is to say, $q = \frac{n}{2} - 1$ (equivalently $2q + 2 = n$ so notably $n$ must be even) then $\SO(k,b)$ is quasi-split.
+	\item In the remaining case, $n > 2q+2$ and $\SO(k,b)$ is neither split nor quasi-split.
 \end{itemize}
-We will always work in the case $q \ge 1$. The split case is already reasonably well understood, so we will ignore that case and assume $n \ge 2q+2$. Using the Witt decomposition, we can choose a basis of $V$ so that in that basis the bilinear form has the matrix
+We will always work in the case $q \ge 1$, since otherwise the group is what is called \tbf{anisotropic}. Using the Witt decomposition, we can choose a basis of $V$ so that in that basis the bilinear form has the matrix
 \[
 	B =
 	\begin{pmatrix}
@@ -2351,10 +2350,187 @@ We will always work in the case $q \ge 1$. The split case is already reasonably 
 		&& C
 	\end{pmatrix}
 \]
-where $I_q$ is the $q \times q$ identity matrix and $C$ is an $(n-2q) \times (n-2q)$ invertible diagonal matrix. When working on examples, the following list of minimal cases can be helpful. The small quasisplit cases are $(n,q) = (4,1), (6,2), (8,3)$ etc. and the small non-quasisplit cases are $(n,q) = (5, 1), (6,2), (7,2), (8, 3)$ etc.
+where $I_q$ is the $q \times q$ identity matrix and $C$ is an $(n-2q) \times (n-2q)$ invertible diagonal matrix. When working on examples, the following list of minimal cases can be helpful:
+\begin{itemize}
+	\item Split cases: $(n,q) = (4,2), (5,2), (6, 3), (7,3)$
+	\item Quasi-split cases: $(n,q) = (4,1), (6,2), (8,3)$
+	\item Non-quasi-split cases:   $(n,q) = (5, 1), (6,1), (7,2)$
+\end{itemize}
+In the minimal quasi-split case $(n,q) = (4,1)$, the root system is $\mathsf{B}_1$. The $\mathsf{B}_1$ and $\mathsf{A}_1$ root systems are isomorphic. $\mathsf{B}_1$ has just 2 elements.
+\[
+	\Phi = \lb \pm \alpha_1 \rb
+\]
+In the next smallest quasi-split example $(n,q) = (6,2)$, the root system is $\mathsf{B}_2$. Incidentally, $\mathsf{B}_2$ and $\mathsf{C}_2$ are isomorphic. $\mathsf{B}_2$ has 8 elements.
+\[
+	\Phi = \lb \pm \alpha_1, \pm \alpha_2, \pm \alpha_1 \pm \alpha_2 \rb
+\]
+The next smallest quasi-split example is $(n,q) = (8,3)$, where the root system is $\mathsf{B}_3$, which has 18 elements. (Note that $\mathsf{B}_3$ is not isomorphic to $\mathsf{C}_3$.)
+\[
+	\Phi = \lb \pm \alpha_1, \pm \alpha_2, \pm \alpha_3, \pm \alpha_1 \pm \alpha_2, \pm \alpha_1 \pm \alpha_3, \pm \alpha_2 \pm \alpha_3 \rb
+\]
+
+\subsection{Lie algebra}
+
+\begin{definition}
+Let $B$ be the $(n \times n)$ matrix of a nondegenerate symmetric bilinear form with Witt index $q \ge 1$, and let $\SO_{n,q}(k,b)$ be the associated special orthogonal group. The \tbf{special orthogonal Lie algebra} associated to $B$ is
+\[
+	\mathfrak{so}_{n,q}(k,b) = \lb X \in \M_n(k) : X^T B + BX = 0 \rb
+\]
+\end{definition}
 
 \begin{exercise}
-Let $B$ be the matrix above for the minimal quasisplit case $n=4, q=1$. 
+\label{general form so Lie algebra}
+Recall that we can write $B$ in the form
+\[
+	B = 
+	\begin{pmatrix}
+		& I_q \\
+		I_q \\
+		&& C  \\
+	\end{pmatrix}
+\]
+where $C$ is a $(n-2q) \times (n-2q)$ invertible matrix. Using this form, show that if $X \in \mathfrak{so}_{n,q}(k,b)$, then $X$ has the block form
+\[
+	X =
+	\begin{pmatrix}
+		X_{11} & X_{12} & X_{13} \\
+		X_{21} & X_{22} & X_{23} \\
+		X_{31} & X_{32} & X_{33}
+	\end{pmatrix}
+\]
+where the blocks have the same size as the corresponding blocks of $B$, and these blocks satisfy the matrix equations
+\begin{align*}
+	X_{21}^T + X_{21} &= 0 \\
+	X_{11}^T + X_{22} &= 0 \\
+	X_{31}^T C + X_{23} &= 0 \\
+	X_{22}^T + X_{11} &= 0 \\
+	X_{12}^T + X_{12} &= 0 \\
+	X_{32}^TC + X_{13} &= 0 \\
+	X_{23}^T + CX_{31} &= 0 \\
+	X_{13}^T + CX_{32} &= 0 \\
+	X_{33}^T C + CX_{33} &= 0
+\end{align*}
+Alternately, we can remove the redundant equations and do some manipulation to rewrite this as
+\begin{align*}
+	X_{21} &= - X_{21}^T \\
+	X_{12} &= - X_{12}^T \\
+	X_{22} &= - X_{11}^T \\
+	X_{23} &= - X_{31}^T C \\
+	X_{13} &= - X_{32}^T C \\
+	X_{33} &= - C \inv X_{33}^T C
+\end{align*}
+so $X$ has the form
+\[
+	X =
+	\begin{pmatrix}
+		X_{11} & X_{12} & -X_{32}^T C \\
+		X_{21} & -X_{11}^T & -X_{31}^T C \\
+		X_{31} & X_{32} & X_{33}
+	\end{pmatrix}
+\]
+where $X_{11}, X_{31}, X_{32}$ are arbitrary and $X_{21}, X_{12}, X_{33}$ are subject to the previous constraint equations.
+\end{exercise}
+
+\subsection{Torus and characters}
+
+\noi Let $q \ge 1$ and $n > 2q$, and let $B$ be the matrix of a nondegenerate symmetric bilinear form on $k^n$ with Witt index $q$. The assumption $n > 2q$ ensures that $C$ is not an empty block.
+\[
+	B = 
+	\begin{pmatrix}
+		& I_q \\
+		I_q \\
+		&& C  \\
+	\end{pmatrix}
+\]
+$C$ is an $(n-2q) \times (n-2q)$ diagonal matrix with entries $c_1, \ldots, c_{n-2q} \in k^\times$. Then consider the associated special orthogonal group $\SO(k,b)$.
+\[
+	\SO_{n,q}(k,b) = \SO_n(k,b) = \lb X \in \SL_n(k) : X^T BX = B \rb
+\]
+
+\begin{exercise}
+Suppose $s \in \SO_{n,q}(k,b)$ is a diagonal matrix. Show that $s$ has the form
+\[
+	s =
+	\begin{pmatrix}
+		s_1 \\
+		& \ddots \\
+		&& s_q \\
+		&&& s_1 \inv \\
+		&&&&& \ddots \\
+		&&&&&& s_q \inv \\
+		&&&&&&& \pm 1 \\
+		&&&&&&&& \ddots \\
+		&&&&&&&&& \pm 1 \\
+	\end{pmatrix}
+\]
+for some $s_1, \ldots, s_q \in k^\times$. (Each $\pm 1$ in the middle block has an independent sign.)
+\end{exercise}
+
+\begin{definition}
+The \tbf{diagonal torus} or \tbf{torus subgroup} of $\SO_{n,q}(k,b)$ is the following subgroup of diagonal matrices.
+\[
+	S(k) = \lb
+	\begin{pmatrix}
+		s_1 \\
+		& \ddots \\
+		&& s_q \\
+		&&& s_1 \inv \\
+		&&&&& \ddots \\
+		&&&&&& s_q \inv \\
+		&&&&&&& 1 \\
+		&&&&&&&& \ddots \\
+		&&&&&&&&& 1 \\
+	\end{pmatrix}
+	: s_1, \ldots, s_q \in k^\times \rb
+\]
+In other words, $S(k)$ is a subgroup of $\SO_{n,q}(k,b)$, but it does not consist of all diagonal matrices in $\SO(k,b)$. Rather, it only consists of those for which the bottom right diagonal block is the identity matrix.
+\end{definition}
+
+\begin{definition}
+For $i = 1, \ldots, n$, let $\alpha_i:S(k) \to k^\times$ be the map which picks off the $i$th diagonal entry of a diagonal matrix $s \in S(k)$. (The notation in Borel \cite{Borel-LAG} section 23.9 uses $y_i$ instead of $\alpha_i$, but means exactly the same thing.) You can verify that $\alpha_i$ is a group homomorphism.
+\end{definition}
+
+\begin{definition}
+The \tbf{character group} of $S(k)$ is the set of group homomorphisms from $S(k)$ to $k^\times$, and is denoted $X^*(S)$ or $\Hom(S(k), k^\times)$. $X^*(S)$ is an abelian group, and we call the operation ``character addition." For example, $\alpha_1$ and $\alpha_2$ are characters and $\alpha_1 + \alpha_2$ is another character described by the formula
+\[
+	(\alpha_1 + \alpha_2)(s) = \alpha_1(s) \alpha_2(s)
+\]
+or in more concrete matrix terms,
+\[
+	(\alpha_1 + \alpha_2)
+	\begin{pmatrix}
+		s_1 \\
+		& \ddots \\
+		&& s_q \\
+		&&& s_1 \inv \\
+		&&&&& \ddots \\
+		&&&&&& s_q \inv \\
+		&&&&&&& 1 \\
+		&&&&&&&& \ddots \\
+		&&&&&&&&& 1 \\
+	\end{pmatrix}
+	= s_1 s_2
+\]
+\end{definition}
+
+\begin{exercise}
+Assume $n > 2q$. Show that the root system of $\SO_{n,q}(k,b)$ is
+\[
+	\Phi = \Phi \Big( \SO_{n,q}(k,b), S(k) \Big) = \lb \pm \alpha_i : 1 \le i \le q \rb \cup \lb \pm \alpha_i \pm \alpha_j : 1 \le i,j \le q, i \neq j \rb
+\]
+This is the type $\mathsf{B}_q$ root system. (Note that if $n=2q$, the root system is type $\mathsf{D}_q$.) Elements of $\Phi$ are also elements of the character group $X^*(S)$, but we call them roots.
+\end{exercise}
+
+\begin{exercise}
+Show that if $q \ge 2$, then $\Phi$ as above contains $2q^2$ roots.
+\end{exercise}
+
+\subsection{Quasi-split groups}
+
+\subsubsection{The minimal example ($n=4, q=1$)}
+
+\begin{exercise}
+Let $B$ be the matrix of the bilinear form in the minimal quasi-split case $n=4, q=1$. 
 \[
 	B =
 	\begin{pmatrix}
@@ -2422,6 +2598,16 @@ Assume that the fixed basis of $V = k^n$ is $\lb e_1, \ldots, e_4 \rb$ where $e_
 		\rp
 		= 2x_1 x_2 + c_1 x_3^2 + c_2 x_4^2
 	\]
+	\item An arbitrary element of $\mathfrak{so}_{4,1}(k,b)$ has the form
+\[
+	X = \begin{pmatrix}
+		x_{11} & 0 & -c_1 x_{32}  & -c_2 x_{42} \\
+		0 & -x_{11} & -c_1 x_{31} & -c_2 x_{41} \\
+		x_{31} & x_{32} & 0 & x_{34} \\
+		x_{41} & x_{42} & - \frac{c_1}{c_2} x_{34} & 0
+	\end{pmatrix}
+\]
+where $x_{11}, x_{31}, x_{41}, x_{32}, x_{42}, x_{34}$ are arbitrary elements of $k$.
 \end{itemize}
 \end{exercise}
 
@@ -2438,685 +2624,303 @@ Generalize the previous descriptions of the bilinear and quadratic forms of $B$ 
 where $C = \diag(c_1, \ldots, c_{n-2q})$ and $q \ge 1$ and $n > 2q$.
 \end{exercise}
 
-\begin{definition}
-Let $B$ be the $(n \times n)$ matrix of a nondegenerate symmetric bilinear form with Witt index $q \ge 1$, and let $\SO_{n,q}(k,b)$ be the associated special orthogonal group. The \tbf{special orthogonal Lie algebra} associated to $B$ is
-\[
-	\mathfrak{so}_{n,q}(k,b) = \lb X \in \M_n(k) : X^T B + BX = 0 \rb
-\]
-\end{definition}
-
-\begin{exercise}
-\label{general form so Lie algebra}
-Recall that we can write $B$ in the form
-\[
-	B = 
-	\begin{pmatrix}
-		& I_q \\
-		I_q \\
-		&& C  \\
-	\end{pmatrix}
-\]
-where $C$ is a $(n-2q) \times (n-2q)$ invertible matrix. Using this form, show that if $X \in \mathfrak{so}_{n,q}(k,b)$, then $X$ has the block form
-\[
-	X =
-	\begin{pmatrix}
-		X_{11} & X_{12} & X_{13} \\
-		X_{21} & X_{22} & X_{23} \\
-		X_{31} & X_{32} & X_{33}
-	\end{pmatrix}
-\]
-where the blocks have the same size as the corresponding blocks of $B$, and these blocks satisfy the matrix equations
-\begin{align*}
-	X_{21}^T + X_{21} &= 0 \\
-	X_{11}^T + X_{22} &= 0 \\
-	X_{31}^T C + X_{23} &= 0 \\
-	X_{22}^T + X_{11} &= 0 \\
-	X_{12}^T + X_{12} &= 0 \\
-	X_{32}^TC + X_{13} &= 0 \\
-	X_{23}^T + CX_{31} &= 0 \\
-	X_{13}^T + CX_{32} &= 0 \\
-	X_{33}^T C + CX_{33} &= 0
-\end{align*}
-Alternately, we can remove the redundant equations and do some manipulation to rewrite this as
-\begin{align*}
-	X_{21} &= - X_{21}^T \\
-	X_{12} &= - X_{12}^T \\
-	X_{22} &= - X_{11}^T \\
-	X_{23} &= - X_{31}^T C \\
-	X_{13} &= - X_{32}^T C \\
-	X_{33} &= - C \inv X_{33}^T C
-\end{align*}
-so $X$ has the form
-\[
-	X =
-	\begin{pmatrix}
-		X_{11} & X_{12} & -X_{32}^T C \\
-		X_{21} & -X_{11}^T & -X_{31}^T C \\
-		X_{31} & X_{32} & X_{33}
-	\end{pmatrix}
-\]
-where $X_{11}, X_{31}, X_{32}$ are arbitrary and $X_{21}, X_{12}, X_{33}$ are subject to the previous constraint equations.
-\end{exercise}
-
-\noi Let $q \ge 1$ and $n > 2q$, and let $B$ be a the matrix of a nondegenerate symmetric bilinear form on $k^n$ with Witt index $q$. The assumption $n > 2q$ ensures that $C$ is not an empty block.
-\[
-	B = 
-	\begin{pmatrix}
-		& I_q \\
-		I_q \\
-		&& C  \\
-	\end{pmatrix}
-\]
-$C$ is an $(n-2q) \times (n-2q)$ diagonal matrix with entries $c_1, \ldots, c_{n-2q} \in k^\times$. Then consider the associated special orthogonal group $\SO(k,b)$.
-\[
-	\SO_{n,q}(k,b) = \SO_n(k,b) = \lb X \in \SL_n(k) : X^T BX = B \rb
-\]
-
-\begin{exercise}
-Suppose $s \in \SO_{n,q}(k,b)$ is a diagonal matrix. Show that $s$ has the form
+\begin{example}
+\label{roots for so41}
+In this example we work out the roots, root spaces, and root subgroups for $\SO_{4,1}(k,b)$. Let $X$ be an arbitrary element of $\frakso_{4,1}(k,b)$ as above. Let $s \in S(k)$ be an arbitrary element of the torus subgroup.
 \[
 	s =
 	\begin{pmatrix}
 		s_1 \\
-		& \ddots \\
-		&& s_q \\
-		&&& s_1 \inv \\
-		&&&&& \ddots \\
-		&&&&&& s_q \inv \\
-		&&&&&&& \pm 1 \\
-		&&&&&&&& \ddots \\
-		&&&&&&&&& \pm 1 \\
+		& s_1 \inv \\
+		&& 1 \\
+		&&& 1
 	\end{pmatrix}
 \]
-for some $s_1, \ldots, s_q \in k^\times$. (Each $\pm 1$ in the middle block has an independent sign.)
-\end{exercise}
-
-\begin{definition}
-The \tbf{diagonal torus} or \tbf{torus subgroup} of $\SO_{n,q}(k,b)$ is the following subgroup of diagonal matrices.
-\[
-	S(k) = \lb
+We simplify the conjugation $sXs \inv$.
+\begin{align*}
+	sXs \inv &=
 	\begin{pmatrix}
 		s_1 \\
-		& \ddots \\
-		&& s_q \\
-		&&& s_1 \inv \\
-		&&&&& \ddots \\
-		&&&&&& s_q \inv \\
-		&&&&&&& 1 \\
-		&&&&&&&& \ddots \\
-		&&&&&&&&& 1 \\
+		& s_1 \inv \\
+		&& 1 \\
+		&&& 1
 	\end{pmatrix}
-	: s_1, \ldots, s_q \in k^\times \rb
-\]
-In other words, $S(k)$ is a subgroup of $\SO_{n,q}(k,b)$, but it does not consist of all diagonal matrices in $\SO(k,b)$. Rather, it only consists of those for which the bottom right diagonal block is the identity matrix.
-\end{definition}
-
-\begin{definition}
-For $i = 1, \ldots, n$, let $\alpha_i:S(k) \to k^\times$ be the map which picks off the $i$th diagonal entry of a diagonal matrix $s \in S(k)$. (The notation in Borel \cite{Borel-LAG} section 23.9 uses $y_i$ instead of $\alpha_i$, but means exactly the same thing.) You can verify that $\alpha_i$ is a group homomorphism.
-\end{definition}
-
-\begin{definition}
-The \tbf{character group} of $S(k)$ is the set of group homomorphisms from $S(k)$ to $k^\times$, and is denoted $X^*(S)$ or $\Hom(S(k), k^\times$. $X^*(S)$ is an abelian group, and we call the operation ``character addition." For example, $\alpha_1$ and $\alpha_2$ are characters and $\alpha_1 + \alpha_2$ is another character described by the formula
-\[
-	(\alpha_1 + \alpha_2)(s) = \alpha_1(s) \alpha_2(s)
-\]
-or in more concrete matrix terms,
-\[
-	(\alpha_1 + \alpha_2)
+	\begin{pmatrix}
+		x_{11} & 0 & -c_1 x_{32}  & -c_2 x_{42} \\
+		0 & -x_{11} & -c_1 x_{31} & -c_2 x_{41} \\
+		x_{31} & x_{32} & 0 & x_{34} \\
+		x_{41} & x_{42} & - \frac{c_1}{c_2} x_{34} & 0
+	\end{pmatrix}
 	\begin{pmatrix}
 		s_1 \\
-		& \ddots \\
-		&& s_q \\
-		&&& s_1 \inv \\
-		&&&&& \ddots \\
-		&&&&&& s_q \inv \\
-		&&&&&&& 1 \\
-		&&&&&&&& \ddots \\
-		&&&&&&&&& 1 \\
+		& s_1 \inv \\
+		&& 1 \\
+		&&& 1
 	\end{pmatrix}
-	= s_1 s_2
-\]
+	\inv\\
+	&=
+	\begin{pmatrix}
+		s_1 x_{11} & 0 & - s_1 c_1 x_{32}  & - s_1 c_2 x_{42} \\
+		0 & - s_1 \inv x_{11} & - s_1 \inv c_1 x_{31} & - s_1 \inv c_2 x_{41} \\
+		x_{31} & x_{32} & 0 & x_{34} \\
+		x_{41} & x_{42} & - \frac{c_1}{c_2} x_{34} & 0
+	\end{pmatrix}
+	\begin{pmatrix}
+		s_1 \inv \\
+		& s_1 \\
+		&& 1 \\
+		&&& 1
+	\end{pmatrix}  \\
+	&=
+	\begin{pmatrix}
+		x_{11} & 0 & - s_1 c_1 x_{32}  & - s_1 c_2 x_{42} \\
+		0 & - x_{11} & - s_1 \inv c_1 x_{31} & - s_1 \inv c_2 x_{41} \\
+		s_1 \inv x_{31} & s_1 x_{32} & 0 & x_{34} \\
+		s_1 \inv x_{41} & s_1 x_{42} & - \frac{c_1}{c_2} x_{34} & 0
+	\end{pmatrix}
+\end{align*}
+If this is going to be equal to $\alpha(s) X$ for some $\alpha$, with $X$ being nonzero, this is only going to be possible if $\alpha(s) = s_1$ or $\alpha(s) = s_1 \inv$. That is, the roots are $\alpha_1$ and $-\alpha_1$, and
+\begin{align*}
+	\frakg_{\alpha_1} &= \lb
+	\begin{pmatrix}
+		0 && - c_1 x_{32}  & - c_2 x_{42} \\
+		& 0 &  \\
+		& x_{32} & 0 &  \\
+		& x_{42} && 0
+	\end{pmatrix}: x_{32}, x_{42} \in k \rb \\
+	\frakg_{-\alpha_1} &= 
+	\lb
+	\begin{pmatrix}
+		0   \\
+		& 0 & - c_1 x_{31} & - c_2 x_{41} \\
+		x_{31} & & 0 & \\
+		x_{41} & & & 0
+	\end{pmatrix}
+	: x_{31}, x_{41} \in k
+	\rb
+\end{align*}
+Thus it makes sense to define maps as below:
+\begin{align*}
+	X_{\alpha_1}& :k^2 \to \frakso_{4,1}(k,b) & X_{\alpha_1}(x_{32}, x_{42}) &=
+	\begin{pmatrix}
+		0 && - c_1 x_{32}  & - c_2 x_{42} \\
+		& 0 &  \\
+		& x_{32} & 0 &  \\
+		& x_{42} && 0
+	\end{pmatrix} \\
+	X_{-\alpha_1}&:k^2 \to \frakso_{4,1}(k,b) & X_{-\alpha_1}(x_{31}, x_{41}) &=
+	\begin{pmatrix}
+		0   \\
+		& 0 & - c_1 x_{31} & - c_2 x_{41} \\
+		x_{31} & & 0 & \\
+		x_{41} & & & 0
+	\end{pmatrix}
+\end{align*}
+\end{example}
+
+\begin{definition}
+We develop some notation to make referring to these rows in particular blocks easier. Given a row vector $v = (v_1, \ldots, v_{m}) \in k^{m}$, let $E_{i,\ell \le j \le \ell+m}(v)$ denote the matrix with the vector $v$ in the entries $E_{i\ell}, \ldots, E_{i, \ell+m}$. Similarly, $E_{\ell \le i \le \ell+m, j}(v^T)$ is the matrix with the column vector $v^T$ in the entries $E_{\ell j}, \ldots, E_{\ell+m,j}$. Using this notation,
+\begin{align*}
+	X_{\alpha_1}(v_1, v_2) &= X_{\alpha_1}(v) = E_{3 \le i \le 4, 2}(v^T) - E_{1, 3 \le 4 \le j}( vC) \\
+	X_{-\alpha_1}(v_1, v_2) &= X_{-\alpha_1}(v) = E_{3 \le i \le 4, 1} (v^T) - E_{2, 3 \le j \le 4} ( vC)
+\end{align*}
 \end{definition}
 
-\begin{remark}
-Assume $n > 2q$. Later, we will do a calculation to work out that the root system of $\SO_{n,q}(k,b)$ is
-\[
-	\Phi = \Phi \Big( \SO_{n,q}(k,b), S(k) \Big) = \lb \pm \alpha_i : 1 \le i \le q \rb \cup \lb \pm \alpha_i \pm \alpha_j : 1 \le i,j \le q, i \neq j \rb
-\]
-This is the type $\mathsf{B}_q$ root system. (Note that if $n=2q$, the root system is type $\mathsf{D}_q$, but we do not deal with this case.) Elements of $\Phi$ are also elements of the character group $X^*(S)$, but we call them roots.
-\end{remark}
+\noi We return to the previous example of $n=4, q=1$. There are two things going on with $\SO_{4,1}$ that did not happen in $\SL_2(k)$. First, $\frakg_{\pm \alpha_1}$ is two-dimensional, not one-dimensional. Second, elements of $\frakg_{\alpha_1}$ and $\frakg_{\alpha_2}$ do not square to zero.
+\begin{align*}
+	\begin{pmatrix}
+		0 && - c_1 x_{32}  & - c_2 x_{42} \\
+		& 0 &  \\
+		& x_{32} & 0 &  \\
+		& x_{42} && 0
+	\end{pmatrix}^2 =
+	\begin{pmatrix}
+		0 & - \lp c_1 x_{32}^2 + x_2 x_{42}^2 \rp  &  &  \\ 
+		 & 0 &  &  \\
+		 &  & 0 &  \\
+		 &  &  & 0
+	\end{pmatrix}=
+	\begin{pmatrix}
+		0 & -  Q_C \lp x_{32}, x_{42} \rp  &  &  \\ 
+		 & 0 &  &  \\
+		 &  & 0 &  \\
+		 &  &  & 0
+	\end{pmatrix}
+\end{align*}
+Interestingly, the thing that shows up is actually the output of the quadratic form $Q_C$ associated to $C$ applied to the vector $(x_{32}, x_{42})$. Setting this aside for now, we see that
+\begin{align*}
+	U_{\alpha_1} = \exp(\frakg_{\alpha_1}) &=
+	\lb
+	\begin{pmatrix}
+		1 & - \frac 12 \lp c_1 x_{32}^2 + c_2 x_{42}^2 \rp & - c_1 x_{32}  & - c_2 x_{42} \\
+		& 1 &  \\
+		& x_{32} & 1 &  \\
+		& x_{42} && 1
+	\end{pmatrix}  
+	: x_{32}, x_{42} \in k
+	\rb \\
+	&=
+	\lb
+	\begin{pmatrix}
+		1 & - \frac 12  Q_C \lp x_{32}, x_{42} \rp& - c_1 x_{32}  & - c_2 x_{42} \\
+		& 1 &  \\
+		& x_{32} & 1 &  \\
+		& x_{42} && 1
+	\end{pmatrix}  
+	\rb \\
+	U_{-\alpha_1} = \exp(\frakg_{-\alpha_1}) &= \lb
+	\begin{pmatrix}
+		1  \\
+		- \frac 12 \lp c_1 x_{31}^2 + x_2 x_{41}^2 \rp & 1 & - c_1 x_{31} & - c_2 x_{41} \\
+		x_{31} & & 1 & \\
+		x_{41} & & & 1
+	\end{pmatrix}
+	: x_{31}, x_{41} \in k
+	\rb \\
+	&= \lb
+	\begin{pmatrix}
+		1   \\
+		- \frac 12 Q_C \lp x_{31}, x_{41} \rp & 1 & - c_1 x_{31} & - c_2 x_{41} \\
+		x_{31} & & 1 & \\
+		x_{41} & & & 1
+	\end{pmatrix}
+	\rb
+\end{align*}
+Thus the pinning maps for $\SO_{4,1}(k,b)$ should be
+\begin{align*}
+	x_{\alpha_1}& :k^2 \to \SO_{4,1}(k,b) & x_{\alpha_1}(x_{32}, x_{42}) &=
+	\begin{pmatrix}
+		1 & - \frac 12 \lp c_1 x_{32}^2 + c_2 x_{42}^2 \rp & - c_1 x_{32}  & - c_2 x_{42} \\
+		& 1 &  \\
+		& x_{32} & 1 &  \\
+		& x_{42} && 1
+	\end{pmatrix}  \\
+	x_{-\alpha_1}&:k^2 \to \SO_{4,1}(k,b) & x_{-\alpha_1}(x_{31}, x_{41}) &=
+	\begin{pmatrix}
+		1 \\
+		- \frac 12 \lp c_1 x_{31}^2 + c_2 x_{41}^2 \rp & 1 & - c_1 x_{31} & - c_2 x_{41} \\
+		x_{31} & & 1 & \\
+		x_{41} & & & 1
+	\end{pmatrix}
+\end{align*}
 
-\begin{exercise}
-Show that if $q \ge 2$, then $\Phi$ as above contains $2q^2$ roots.
-\end{exercise}
+\subsubsection{Another example ($n=6,q=2$)}
 
-\begin{example}
-Our minimal case of interest is $(n,q) = (4,1)$, so the root system is $\mathsf{B}_1$. The $\mathsf{B}_1$ and $\mathsf{A}_1$ root systems are the same (they are isomorphic as root systems, whatever that means). $\mathsf{B}_1$ has just 2 elements.
+In this case, the matrix of our bilinear form is
 \[
-	\Phi = \lb \pm \alpha_1 \rb
+	B =
+	\begin{pmatrix}
+		&& 1 \\
+		&&& 1 \\
+		1 \\
+		& 1 \\
+		&&&& c_1 \\
+		&&&&& c_2
+	\end{pmatrix}
 \]
-The next smallest quasisplit example is $(n,q) = (6,2)$, where the root system is $\mathsf{B}_2$. Incidentally, $\mathsf{B}_2$ and $\mathsf{C}_2$ are isomorphic (as root systems). $\mathsf{B}_2$ has 8 elements.
+and the root system is type $\mathsf{B}_2$.
 \[
 	\Phi = \lb \pm \alpha_1, \pm \alpha_2, \pm \alpha_1 \pm \alpha_2 \rb
 \]
-And finally the next smallest is $(n,q) = (8,3)$, where the root system is $\mathsf{B}_3$, which has 18 elements. (Note that $\mathsf{B}_3$ is not isomorphic to $\mathsf{C}_3$.)
+
+\begin{exercise}
+\label{62 so Lie algebra}
+Using the calculations from Exercise \ref{general form so Lie algebra}, write down the general form of an element of the special orthogonal Lie algebra $\frakso_{6,2}(k,b)$.
+\end{exercise}
+
+\begin{exercise}
+\label{62 so root spaces}
+Mimic the calculation of Example \ref{roots for so41} to determine the root spaces for the Lie algebra $\frakso_{6,2}(k,b)$. That is, take $s \in S(k)$ an arbitrary element of the diagonal torus subgroup, and $X \in \frakso_{6,2}(k,b)$ an arbitrary element of the Lie algebra, and calculate $sXs \inv$. Then compare the result of that calculation with $\alpha(s) X$ to determine which characters $\alpha$ have nonzero root space $\frakg_\alpha$. Confirm that the roots are
 \[
-	\Phi = \lb \pm \alpha_1, \pm \alpha_2, \pm \alpha_3, \pm \alpha_1 \pm \alpha_2, \pm \alpha_1 \pm \alpha_3, \pm \alpha_2 \pm \alpha_3 \rb
+	\Phi = \lb \pm \alpha_1, \pm \alpha_2, \pm \alpha_1 \pm \alpha_2 \rb
 \]
-\end{example}
+(the $\mathsf{B}_2$ root system). Write out general forms for elements of the root spaces, and use these to determine what the maps $X_\alpha$ and $x_\alpha$ look like.
+\end{exercise}
 
-\subsection{Split case ($n=2q$ or $n=2q+1$)}
+\begin{remark}
+In the previous exercise, you should find that the dimensions of the root spaces are
+\[
+	\begin{array}{c|c}
+		\text{Root } \alpha & \text{Dimension of } \frakg_\alpha \\
+		\hline
+		\pm \alpha_i \pm \alpha_j & 1 \\
+		\pm \alpha_i & n-2q = 2
+	\end{array}
+\]
+\end{remark}
 
-\subsection{Quasi-split case ($n=2q+2$)}
+\subsubsection{The general quasi-split case $(n=2q+2$)}
+\label{so quasi split}
 
-\subsection{Non-split, non-quasi-split cases ($n > 2q + 2$)}
+Note that this includes the cases $(n,q) = (4,1)$ and $(n,q) = (6,2)$ that we studied above. Let $q \ge 1$ and let $n = 2q+2$, and let $b$ be a symmetric nondegenerate bilinear form on $k^n$ with Witt index $q$, and choose a basis of $k^n$ so that the matrix of $b$ has the form
+\[
+	B = 
+	\begin{pmatrix}
+		& I_q \\
+		I_q \\
+		&& c_1 \\
+		&&& c_2
+	\end{pmatrix}
+\]
+where $I_q$ is the $(q \times q)$ identity matrix, and $c_1, c_2 \in k^\times$.
 
-%
-%\subsection{Pinning special orthogonal groups}
-%
-%For the special orthogonal group $\SO_{n,q}(k,b)$, with root system $\Phi$, we describe a map $X_\alpha$ for every root $\alpha \in \Phi$ with all the various pinning properties.
-%
-%\subsubsection{$\SO_{4,1}(k,b)$ minimal quasisplit case}
-%
-%The smallest possible case of interest to study is the case where $V$ is a $k$-dimensional vector space of dimension 4, and $b$ is a bilinear form on $V$ with Witt index 1. Then the matrix $B$ of the bilinear form can be written as
-%\[
-%	B =
-%	\begin{pmatrix}
-%		& 1 \\
-%		1 & \\
-%		&& C
-%	\end{pmatrix}
-%	=
-%	\begin{pmatrix}
-%		& 1 \\
-%		1 & \\
-%		&& c_1 \\
-%		&&& c_2
-%	\end{pmatrix}
-%\]
-%In this case, the equations from Exercise \ref{general form so Lie algebra} imply that an arbitrary element of $\mathfrak{so}_{4,1}(k,b)$ has the form
-%\[
-%	X = \begin{pmatrix}
-%		x_{11} & 0 & -c_1 x_{32}  & -c_2 x_{42} \\
-%		0 & -x_{11} & -c_1 x_{31} & -c_2 x_{41} \\
-%		x_{31} & x_{32} & 0 & x_{34} \\
-%		x_{41} & x_{42} & - \frac{c_1}{c_2} x_{34} & 0
-%	\end{pmatrix}
-%\]
-%where $x_{11}, x_{31}, x_{41}, x_{32}, x_{42}, x_{34}$ are arbitrary elements of $k$.
-%
-%\begin{example}
-%\label{roots for so41}
-%Next we work out the roots, root spaces, and root subgroups for $\SO_{4,1}(k,b)$. Let $X$ be an arbitrary element of $\frakso_{4,1}(k,b)$ as above. Let $s \in S(k)$ be an arbitrary element of the torus subgroup.
-%\[
-%	s =
-%	\begin{pmatrix}
-%		s_1 \\
-%		& s_1 \inv \\
-%		&& 1 \\
-%		&&& 1
-%	\end{pmatrix}
-%\]
-%We then calculate the conjugation $sXs \inv$ in general.
-%\begin{align*}
-%	sXs \inv &=
-%	\begin{pmatrix}
-%		s_1 \\
-%		& s_1 \inv \\
-%		&& 1 \\
-%		&&& 1
-%	\end{pmatrix}
-%	\begin{pmatrix}
-%		x_{11} & 0 & -c_1 x_{32}  & -c_2 x_{42} \\
-%		0 & -x_{11} & -c_1 x_{31} & -c_2 x_{41} \\
-%		x_{31} & x_{32} & 0 & x_{34} \\
-%		x_{41} & x_{42} & - \frac{c_1}{c_2} x_{34} & 0
-%	\end{pmatrix}
-%	\begin{pmatrix}
-%		s_1 \\
-%		& s_1 \inv \\
-%		&& 1 \\
-%		&&& 1
-%	\end{pmatrix}
-%	\inv\\
-%	&=
-%	\begin{pmatrix}
-%		s_1 x_{11} & 0 & - s_1 c_1 x_{32}  & - s_1 c_2 x_{42} \\
-%		0 & - s_1 \inv x_{11} & - s_1 \inv c_1 x_{31} & - s_1 \inv c_2 x_{41} \\
-%		x_{31} & x_{32} & 0 & x_{34} \\
-%		x_{41} & x_{42} & - \frac{c_1}{c_2} x_{34} & 0
-%	\end{pmatrix}
-%	\begin{pmatrix}
-%		s_1 \inv \\
-%		& s_1 \\
-%		&& 1 \\
-%		&&& 1
-%	\end{pmatrix}  \\
-%	&=
-%	\begin{pmatrix}
-%		x_{11} & 0 & - s_1 c_1 x_{32}  & - s_1 c_2 x_{42} \\
-%		0 & - x_{11} & - s_1 \inv c_1 x_{31} & - s_1 \inv c_2 x_{41} \\
-%		s_1 \inv x_{31} & s_1 x_{32} & 0 & x_{34} \\
-%		s_1 \inv x_{41} & s_1 x_{42} & - \frac{c_1}{c_2} x_{34} & 0
-%	\end{pmatrix}
-%\end{align*}
-%If this is going to be equal to $\alpha(s) X$ for some $\alpha$, with $X$ being nonzero, this is only going to be possible if $\alpha(s) = s_1$ or $\alpha(s) = s_1 \inv$. That is, the roots are $\alpha_1$ and $-\alpha_1$, and
-%\begin{align*}
-%	\frakg_{\alpha_1} &= \lb
-%	\begin{pmatrix}
-%		0 && - c_1 x_{32}  & - c_2 x_{42} \\
-%		& 0 &  \\
-%		& x_{32} & 0 &  \\
-%		& x_{42} && 0
-%	\end{pmatrix}: x_{32}, x_{42} \in k \rb \\
-%	\frakg_{-\alpha_1} &= 
-%	\lb
-%	\begin{pmatrix}
-%		0   \\
-%		& 0 & - c_1 x_{31} & - c_2 x_{41} \\
-%		x_{31} & & 0 & \\
-%		x_{41} & & & 0
-%	\end{pmatrix}
-%	: x_{31}, x_{41} \in k
-%	\rb
-%\end{align*}
-%so the $\LieX_\alpha$ maps are
-%\begin{align*}
-%	\LieX_{\alpha_1}& :k^2 \to \SO_{4,1}(k,b) & \LieX_{\alpha_1}(x_{32}, x_{42}) &=
-%	\begin{pmatrix}
-%		0 && - c_1 x_{32}  & - c_2 x_{42} \\
-%		& 0 &  \\
-%		& x_{32} & 0 &  \\
-%		& x_{42} && 0
-%	\end{pmatrix} \\
-%	\LieX_{-\alpha_1}&:k^2 \to \SO_{4,1}(k,b) & \LieX_{-\alpha_1}(x_{31}, x_{41}) &=
-%	\begin{pmatrix}
-%		0   \\
-%		& 0 & - c_1 x_{31} & - c_2 x_{41} \\
-%		x_{31} & & 0 & \\
-%		x_{41} & & & 0
-%	\end{pmatrix}
-%\end{align*}
-%\end{example}
-%
-%\begin{definition}
-%We develop some notation to make referring to these rows in particular blocks easier. Given a row vector $v = (v_1, \ldots, v_{m}) \in k^{m}$, let $E_{i,\ell \le j \le \ell+m}(v)$ denote the matrix with the vector $v$ in the entries $E_{i\ell}, \ldots, E_{i, \ell+m}$. Similarly, $E_{\ell \le i \le \ell+m, j}(v^T)$ is the matrix with the column vector $v^T$ in the entries $E_{\ell j}, \ldots, E_{\ell+m,j}$. Using this notation,
-%\begin{align*}
-%	\LieX_{\alpha_1}(v_1, v_2) &= \LieX_{\alpha_1}(v) = E_{3 \le i \le 4, 2}(v^T) - E_{1, 3 \le 4 \le j}( vC) \\
-%	\LieX_{-\alpha_1}(v_1, v_2) &= \LieX_{-\alpha_1}(v) = E_{3 \le i \le 4, 1} (v^T) - E_{2, 3 \le j \le 4} ( vC)
-%\end{align*}
-%\end{definition}
-%
-%\noi There are two things going on with $\SO_{4,1}$ that did not happen in the $\SL_2(k)$ case. First, $\frakg_{\pm \alpha_1}$ is two-dimensional, not one-dimensional. Second, elements of $\frakg_{\alpha_1}$ and $\frakg_{\alpha_2}$ do not square to zero.
-%\begin{align*}
-%	\begin{pmatrix}
-%		0 && - c_1 x_{32}  & - c_2 x_{42} \\
-%		& 0 &  \\
-%		& x_{32} & 0 &  \\
-%		& x_{42} && 0
-%	\end{pmatrix}^2 =
-%	\begin{pmatrix}
-%		0 & - \lp c_1 x_{32}^2 + x_2 x_{42}^2 \rp  &  &  \\ 
-%		 & 0 &  &  \\
-%		 &  & 0 &  \\
-%		 &  &  & 0
-%	\end{pmatrix}=
-%	\begin{pmatrix}
-%		0 & -  Q_C \lp x_{32}, x_{42} \rp  &  &  \\ 
-%		 & 0 &  &  \\
-%		 &  & 0 &  \\
-%		 &  &  & 0
-%	\end{pmatrix}
-%\end{align*}
-%Interestingly, the thing that shows up is actually the output of the quadratic form $Q_C$ associated to $C$ applied to the vector $(x_{32}, x_{42})$. For this reason, it is probably good for us to understand more about quadratic forms. Putting this aside for now, we see that
-%\begin{align*}
-%	U_{\alpha_1} = \exp(\frakg_{\alpha_1}) &=
-%	\lb
-%	\begin{pmatrix}
-%		0 & - \frac 12 \lp c_1 x_{32}^2 + c_2 x_{42}^2 \rp & - c_1 x_{32}  & - c_2 x_{42} \\
-%		& 0 &  \\
-%		& x_{32} & 0 &  \\
-%		& x_{42} && 0
-%	\end{pmatrix}  
-%	: x_{32}, x_{42} \in k
-%	\rb \\
-%	&=
-%	\lb
-%	\begin{pmatrix}
-%		0 & - \frac 12  Q_C \lp x_{32}, x_{42} \rp& - c_1 x_{32}  & - c_2 x_{42} \\
-%		& 0 &  \\
-%		& x_{32} & 0 &  \\
-%		& x_{42} && 0
-%	\end{pmatrix}  
-%	\rb \\
-%	U_{-\alpha_1} = \exp(\frakg_{-\alpha_1}) &= \lb
-%	\begin{pmatrix}
-%		0   \\
-%		- \frac 12 \lp c_1 x_{31}^2 + x_2 x_{41}^2 \rp & 0 & - c_1 x_{31} & - c_2 x_{41} \\
-%		x_{31} & & 0 & \\
-%		x_{41} & & & 0
-%	\end{pmatrix}
-%	: x_{31}, x_{41} \in k
-%	\rb \\
-%	&= \lb
-%	\begin{pmatrix}
-%		0   \\
-%		- \frac 12 Q_C \lp x_{31}, x_{41} \rp & 0 & - c_1 x_{31} & - c_2 x_{41} \\
-%		x_{31} & & 0 & \\
-%		x_{41} & & & 0
-%	\end{pmatrix}
-%	\rb
-%\end{align*}
-%Thus the pinning maps for $\SO_{4,1}(k,b)$ are
-%\begin{align*}
-%	X_{\alpha_1}& :k^2 \to \SO_{4,1}(k,b) & X_{\alpha_1}(x_{32}, x_{42}) &=
-%	\begin{pmatrix}
-%		0 & - \frac 12 \lp c_1 x_{32}^2 + c_2 x_{42}^2 \rp & - c_1 x_{32}  & - c_2 x_{42} \\
-%		& 0 &  \\
-%		& x_{32} & 0 &  \\
-%		& x_{42} && 0
-%	\end{pmatrix}  \\
-%	X_{-\alpha_1}&:k^2 \to \SO_{4,1}(k,b) & X_{-\alpha_1}(x_{31}, x_{41}) &=
-%	\begin{pmatrix}
-%		0   \\
-%		- \frac 12 \lp c_1 x_{31}^2 + x_2 x_{41}^2 \rp & 0 & - c_1 x_{31} & - c_2 x_{41} \\
-%		x_{31} & & 0 & \\
-%		x_{41} & & & 0
-%	\end{pmatrix}
-%\end{align*}
-%
-%\begin{definition}[Weyl group elements]
-%Let $u = (u_1, u_2) \in k^2$ with $Q_C(u) \neq 0$ and let $\alpha \in \Phi$. The \tbf{Weyl group element} associated to $\alpha$ and $u$ is
-%\[
-%	w_\alpha(u) = X_\alpha(u) \cdot X_{-\alpha} \lp \frac{2u}{Q_C(u)} \rp \cdot X_\alpha(u)
-%\]
-%By direct computation, combined with some theoretical considerations, it is possible to verify that
-%\begin{itemize}
-%	\item $w_\alpha(u)^2 = \Id$ for any $\alpha, u$.
-%	\item For any $s \in S(k)$, $w_\alpha(u) \cdot s \cdot w_\alpha(u) \in S(k)$.
-%	\item For any $\alpha, \beta \in \Phi$ and $u,v \in k^2$,\footnote{Recall that $\sig_\alpha(\beta)$ is the reflection of $\beta$ across the hyperplane perpendicular to $\alpha$, for which we have the formula
-%		\[
-%			\sig_\alpha(\beta) = \beta - \frac{2 (\alpha,\beta)}{(\alpha,\alpha)} \alpha
-%		\]}
-%	\[
-%		w_\alpha(u) \cdot X_\beta(v) \cdot w_\alpha(u) \inv = X_{\sig_\alpha(\beta)} \Big( \varphi (v) \Big)
-%	\]
-%	where
-%	\[
-%		\varphi_{\alpha \beta} (v) = \incomplete
-%	\]
-%\end{itemize}
-%\end{definition}
-%
-%\noi We have done nothing with commutator coefficients $N_{ij}^{\alpha \beta}(u,v)$ for $\SO_{4,1}$, because there are no nontrivial commutator formulas for $\SO_{4,1}$. There are no roots that add up to another root, so the commutator formula is vacuous for this group.
-%
-%\subsubsection{$\SO_{6,2}(k,b)$ second smallest quasisplit case}
-%
-%Next we expand slightly to the case $(n,q) = (6,2)$. Now $B$ has the form
-%\[
-%%	B =
-%%	\begin{pmatrix}
-%%		&&&& 1 \\
-%%		&&&&& 1 \\
-%%		&& c_1 \\
-%%		&&& c_2 \\
-%%		1 \\
-%%		& 1
-%%	\end{pmatrix}
-%	B =
-%	\begin{pmatrix}
-%		&& 1 \\
-%		&&& 1 \\
-%		1 \\
-%		& 1 \\
-%		&&&& c_1 \\
-%		&&&&& c_2
-%	\end{pmatrix}
-%\]
-%and the root system is type $\mathsf{B}_2$.
-%\[
-%	\Phi = \lb \pm \alpha_1, \pm \alpha_2, \pm \alpha_1 \pm \alpha_2 \rb
-%\]
-%
-%\begin{exercise}
-%\label{62 so Lie algebra}
-%Using your general calculations from Exercise \ref{general form so Lie algebra}, write down the general form of an element of the special orthogonal Lie algebra $\frakso_{6,2}(k,b)$.
-%\end{exercise}
-%
-%\begin{exercise}
-%\label{62 so root spaces}
-%Mimic the calculation of Example \ref{roots for so41} to determine the root spaces for the Lie algebra $\frakso_{6,2}(k,b)$. That is, take $s \in S(k)$ an arbitrary element of the diagonal torus subgroup, and $X \in \frakso_{6,2}(k,b)$ an arbitrary element of the Lie algebra, and calculate $sXs \inv$. Then compare the result of that calculation with $\alpha(s) X$ to determine which characters $\alpha$ have nonzero root space $\frakg_\alpha$. Confirm that the roots are
-%\[
-%	\Phi = \lb \pm \alpha_1, \pm \alpha_2, \pm \alpha_1 \pm \alpha_2 \rb
-%\]
-%(the $\mathsf{B}_2$ root system). Write out general forms for elements of the root spaces, and use these to determine what the maps $\LieX_\alpha$ and $X_\alpha$ look like.
-%\end{exercise}
-%
-%\begin{remark}
-%In the previous exercise, you should find that the dimensions of the root spaces are
-%\[
-%	\begin{array}{c|c}
-%		\text{Root } \alpha & \text{Dimension of } \frakg_\alpha \\
-%		\hline
-%		\pm \alpha_i \pm \alpha_j & 1 \\
-%		\pm \alpha_i & n-2q = 2
-%	\end{array}
-%\]
-%\end{remark}
-%
-%\subsubsection{$\SO_{n,q}(k,b)$ with $n=2q+2$, general quasisplit case}
-%\label{so quasi split}
-%
-%Now we consider the general situation of a ``quasisplit" special orthogonal group, where $n=2q+2$. Note that this includes the cases $(n,q) = (4,1)$ and $(n,q) = (6,2)$ that we studied above. Let $q \ge 1$ and let $n = 2q+2$, and let $b$ be a symmetric nondegenerate bilinear form on $k^n$ with Witt index $q$, and choose a basis of $k^n$ so that the matrix of $b$ has the form
-%\[
-%	B = 
-%%	\begin{pmatrix}
-%%		 & && I_q \\
-%%		 & c_1 &  \\
-%%		&& c_2 \\
-%%		I_q &  & 
-%%	\end{pmatrix}
-%	\begin{pmatrix}
-%		& I_q \\
-%		I_q \\
-%		&& c_1 \\
-%		&&& c_2
-%	\end{pmatrix}
-%\]
-%where $I_q$ is the $(q \times q)$ identity matrix, and $c_1, c_2 \in k^\times$.
-%
-%\begin{exercise}
-%\label{quasi split so Lie algebra}
-%Generalize exercise \ref{62 so Lie algebra} to the case $n=2q+2$. That is, reuse the calculation from Exercise \ref{general form so Lie algebra} to write down the general form of an element of the special orthogonal Lie algebra $\frakso_{2q+2,q}(k,b)$.
-%\end{exercise}
-%
-%\begin{exercise}
-%\label{quasi split so root spaces}
-%Generalize exercise \ref{62 so root spaces} to the case $n=2q+2$. That is, take $s \in S(k)$ an arbitrary element of the diagonal torus subgroup, and $X \in \frakso_{2q+2,q}(k,b)$ an arbitrary element of the Lie algebra, calculate $sXs \inv$, and compare the result of that calculation with $\alpha(s) X$ to determine which characters $\alpha$ have nonzero root space $\frakg_\alpha$. Confirm that the set of roots is the $\mathsf{B}_q$ root system as described below.
-%\[
-%	\Phi = \Phi \Big( \SO_{2q+2,q}(k,b), S(k) \Big) = \lb \pm \alpha_i : 1 \le i \le q \rb \cup \lb \pm \alpha_i \pm \alpha_j : 1 \le i,j \le q, i \neq j \rb
-%\]
-%Write out general forms for elements of the root spaces, and use these to determine what the maps $\LieX_\alpha$ and $X_\alpha$ look like.
-%\end{exercise}
-%
-%\begin{remark}
-%In the previous exercise, you should find that the dimensions of the root spaces are
-%\[
-%	\begin{array}{c|c}
-%		\text{Root} \alpha & \text{Dimension of } \frakg_\alpha \\
-%		\hline
-%		\pm \alpha_i \pm \alpha_j & 1 \\
-%		\pm \alpha_i & n-2q = 2
-%	\end{array}
-%\]
-%\end{remark}
-%
-%\subsubsection{$\SO_{n,q}(k,b)$ with $1 \le q < \lfloor \frac{n}{2} \rfloor$, general non-split case}
-%
-%Let $n \ge 4$ and let $1 \le q < \lfloor \frac{n}{2} \rfloor$. Note that this includes the quasisplit case $n=2q+2$, but excludes the split cases $n=2q$ and $n=2q+1$. Let $b$ be a symmetric nondegenerate bilinear form on $k^n$ with Witt index $q$, and choose a basis of $k^n$ so that the matrix of $b$ is
-%\[
-%	B = 
-%	\begin{pmatrix}
-%		& I_q \\
-%		I_q \\
-%		&& C
-%	\end{pmatrix}
-%\]
-%where $I_q$ is the $(q \times q)$ identity matrix and $C = \diag(c_1, c_2, \ldots, c_{n-2q})$ is an $(n-2q) \times (n-2q)$ invertible diagonal matrix with entries in $k^\times$. There is not much to say about generalizing Exercise \ref{quasi split so Lie algebra} to the general non-split case, since there isn't much more to do than just copy down the general result of the calculations from Exercise \ref{general form so Lie algebra}.
-%
-%We generalize Exercise \ref{quasi split so root spaces} to the general non-split case, though we do not write out all the details. We start with $s \in S(k)$ and $X \in \frakso_{n,q}(k,b)$ and compute $sXs \inv$ to determine the roots and root spaces for $\SO_{n,q}(k,b)$, and what the maps $\LieX_\alpha$ and $X_\alpha$ look like. The dimensions of the root spaces are
-%\[
-%	\begin{array}{c|c}
-%		\text{Root } \alpha & \text{Dimension of } \frakg_\alpha \\
-%		\hline
-%		\pm \alpha_i \pm \alpha_j & 1 \\
-%		\pm \alpha_i & n-2q
-%	\end{array}
-%\]
-%Consider the long roots. As indicated in the table above, the root spaces and root subgroups are one-dimensional. There are two types of long roots: those of the form $\pm (\alpha_i - \alpha_j)$, and those of the form $\pm (\alpha_i + \alpha_j)$
-%\begin{align*}
-%	\LieX_{\alpha_i - \alpha_j}&:k \to \frakso_{n,q} & \LieX_{\alpha_i - \alpha_j}(u) &= E_{ij}(v) - E_{q+j,q+i}(v) \\
-%	\LieX_{\alpha_i + \alpha_j}&:k \to \frakso_{n,q} & \LieX_{\alpha_i + \alpha_j}(u) &= E_{i',j'+q}(v) - E_{j',i'+q}(v) \\
-%	\LieX_{-(\alpha_i + \alpha_j)}&:k \to \frakso_{n,q} & \LieX_{-(\alpha_i + \alpha_j}(u) &= E_{i'+q,j'}(v) - E_{j'+q,i'}(v)
-%\end{align*}
-%where $i' = \min(i,j)$ and $j' = \max(i,j)$. For short roots, the root spaces and root subgroups have dimension $n-2q$. Let $v = (v_1, \ldots, v_{n-2q}) \in k^{n-2q}$.
-%\begin{align*}
-%	\LieX_{\alpha_i}&:k^{n-2q} \to \frakso_{n,q} & \LieX_{\alpha_i}(v) &= \sum_{m=1}^{n-2q} \Big( E_{2q+m, q+i}(v_m) - E_{i,2q+m}( c_m v_m) \Big) \\
-%	\LieX_{-\alpha_i}&:k^{n-2q} \to \frakso_{n,q} & \LieX_{-\alpha_i}(v) &= \sum_{m=1}^{n-2q} \Big( E_{2q+m, i}(v_m) - E_{q+i, 2q+m}(c_m v_m) \Big)
-%\end{align*}
-%Below we give some concrete examples. First, the minimal quasisplit case is $(n,q)= (4,1)$ which has just two short roots. The maps are
-%\begin{align*}
-%	\LieX_{\alpha_1}(v) &= 
-%	\begin{pmatrix}
-%		0 && -c_1 v_1 & -c_2 v_2 \\
-%		& 0 \\
-%		& v_1 & 0 \\
-%		& v_2 && 0 
-%	\end{pmatrix}
-%	&
-%	\LieX_{-\alpha_1}(v) &=
-%	\begin{pmatrix}
-%		0  \\
-%		& 0 & -c_1 v_1 & -c_2 v_2 \\
-%		v_1 && 0 \\
-%		v_2 &&& 0 
-%	\end{pmatrix}
-%\end{align*}
-%The minimal non-quasisplit example is $(n,q) = (5,1)$, which looks essentially the same as $(4,1)$. The two maps for this case are depicted below.
-%\begin{align*}
-%	\LieX_{\alpha_1}(v) &= 
-%	\begin{pmatrix}
-%		0 && -c_1 v_1 & -c_2 v_2 & -c_3 v_3 \\
-%		& 0 \\
-%		& v_1 & 0 \\
-%		& v_2 && 0 \\
-%		& v_3 &&& 0
-%	\end{pmatrix}
-%	&
-%	\LieX_{-\alpha_1}(v) &=
-%	\begin{pmatrix}
-%		0  \\
-%		& 0 & -c_1 v_1 & -c_2 v_2 & -c_3 v_3 \\
-%		v_1 && 0 \\
-%		v_2 &&& 0  \\
-%		v_3 &&&& 0
-%	\end{pmatrix}
-%\end{align*}
-%The next smallest quasisplit example is $(n,q) = (6,2)$, but this looks very similar to the next non-quasisplit example of $(n,q) = (7,2)$, which we depict below.
-%\begin{align*}
-%	\LieX_{\alpha_1-\alpha_2}(v) &=
-%	\begin{pmatrix}
-%		0 & v \\
-%		& 0 \\
-%		&& 0 \\
-%		&& -v & 0 \\
-%		&& && 0 \\
-%		&&  &&& 0 \\
-%		&& &&&& 0
-%	\end{pmatrix} &
-%	\LieX_{\alpha_2-\alpha_1}(v) &=
-%	\begin{pmatrix}
-%		0  \\
-%		v & 0 \\
-%		&& 0 & -v \\
-%		&& & 0 \\
-%		&& && 0 \\
-%		&&  &&& 0 \\
-%		&& &&&& 0
-%	\end{pmatrix} \\
-%	\LieX_{\alpha_1+\alpha_2}(v) &=
-%	\begin{pmatrix}
-%		0 &&& v \\
-%		& 0 & -v \\
-%		&& 0 \\
-%		&&& 0 \\
-%		&& && 0 \\
-%		&&  &&& 0 \\
-%		&& &&&& 0
-%	\end{pmatrix} &
-%	\LieX_{-\alpha_1-\alpha_2}(v) &=
-%	\begin{pmatrix}
-%		0 \\
-%		& 0 \\
-%		& v & 0 \\
-%		-v &&& 0 \\
-%		&& && 0 \\
-%		&&  &&& 0 \\
-%		&& &&&& 0
-%	\end{pmatrix}
-%\end{align*}
-%\begin{align*}
-%	\LieX_{\alpha_1}(v) &=
-%	\begin{pmatrix}
-%		0 &&&& -c_1 v_1 & -c_2 v_2 & -c_3 v_3 \\
-%		& 0 \\
-%		&& 0 \\
-%		&&& 0 \\
-%		&& v_1 && 0 \\
-%		&& v_2 &&& 0 \\
-%		&& v_3 &&&& 0
-%	\end{pmatrix} \\
-%	\LieX_{-\alpha_1}(v) &=
-%	\begin{pmatrix}
-%		0 \\
-%		& 0 \\
-%		&& 0 && -c_1 v_1 & -c_2 v_2 & -c_3 v_3 \\
-%		&&& 0 \\
-%		v_1 && && 0 \\
-%		v_2 &&  &&& 0 \\
-%		v_3 && &&&& 0
-%	\end{pmatrix} \\
-%	\LieX_{\alpha_2}(v) &=
-%	\begin{pmatrix}
-%		0 \\
-%		& 0 & && -c_1 v_1 & -c_2 v_2 & -c_3 v_3\\
-%		&& 0  \\
-%		&&& 0 \\
-%		&&& v_1& 0 \\
-%		&&  & v_2 && 0 \\
-%		&& & v_3 &&& 0
-%	\end{pmatrix} \\
-%	\LieX_{-\alpha_2}(v) &=
-%	\begin{pmatrix}
-%		0 \\
-%		& 0 \\
-%		&& 0  \\
-%		&&& 0 & -c_1 v_1 & -c_2 v_2 & -c_3 v_3 \\
-%		& v_1 &&& 0 \\
-%		& v_2 &&&& 0 \\
-%		& v_3 &&&&& 0
-%	\end{pmatrix} \\
-%\end{align*}
+\begin{exercise}
+\label{quasi split so Lie algebra}
+Generalize exercise \ref{62 so Lie algebra} to the case $n=2q+2$. That is, reuse the calculation from Exercise \ref{general form so Lie algebra} to write down the general form of an element of the special orthogonal Lie algebra $\frakso_{2q+2,q}(k,b)$.
+\end{exercise}
+
+\begin{exercise}
+\label{quasi split so root spaces}
+Generalize exercise \ref{62 so root spaces} to the case $n=2q+2$. That is, take $s \in S(k)$ an arbitrary element of the diagonal torus subgroup, and $X \in \frakso_{2q+2,q}(k,b)$ an arbitrary element of the Lie algebra, calculate $sXs \inv$, and compare the result of that calculation with $\alpha(s) X$ to determine which characters $\alpha$ have nonzero root space $\frakg_\alpha$. Confirm that the set of roots is the $\mathsf{B}_q$ root system as described below.
+\[
+	\Phi = \Phi \Big( \SO_{2q+2,q}(k,b), S(k) \Big) = \lb \pm \alpha_i : 1 \le i \le q \rb \cup \lb \pm \alpha_i \pm \alpha_j : 1 \le i,j \le q, i \neq j \rb
+\]
+Write out general forms for elements of the root spaces, and use these to determine what the maps $X_\alpha$ and $x_\alpha$ look like.
+\end{exercise}
+
+\begin{remark}
+In the previous exercise, you should find that the dimensions of the root spaces are
+\[
+	\begin{array}{c|c}
+		\text{Root} \alpha & \text{Dimension of } \frakg_\alpha \\
+		\hline
+		\pm \alpha_i \pm \alpha_j & 1 \\
+		\pm \alpha_i & n-2q = 2
+	\end{array}
+\]
+\end{remark}
+
+\subsection{General non-split case ($n \ge 2q + 2$)}
+
+Let $b$ be a symmetric nondegenerate bilinear form on $k^n$ with Witt index $q$, and choose a basis of $k^n$ so that the matrix of $b$ is
+\[
+	B = 
+	\begin{pmatrix}
+		& I_q \\
+		I_q \\
+		&& C
+	\end{pmatrix}
+\]
+where $I_q$ is the $(q \times q)$ identity matrix and $C = \diag(c_1, c_2, \ldots, c_{n-2q})$ is an $(n-2q) \times (n-2q)$ invertible diagonal matrix with entries in $k^\times$. There is not much to say about generalizing Exercise \ref{quasi split so Lie algebra} to the general non-split case, since there isn't much more to do than just copy down the general result of the calculations from Exercise \ref{general form so Lie algebra}.
+
+We can generalize Exercise \ref{quasi split so root spaces} to the general non-split case, by starting with $s \in S(k)$ and $X \in \frakso_{n,q}(k,b)$ and computing $sXs \inv$ to determine the roots and root spaces for $\SO_{n,q}(k,b)$. The dimensions of the root spaces are
+\[
+	\begin{array}{c|c}
+		\text{Root } \alpha & \text{Dimension of } \frakg_\alpha \\
+		\hline
+		\pm \alpha_i \pm \alpha_j & 1 \\
+		\pm \alpha_i & n-2q
+	\end{array}
+\]
 
 \newpage
 \section{Special unitary groups}
 
-
-In this section, we study pinnings of special unitary groups. For the duration of this section, fix a quadratic field extension $L/k = k(\sqrt{d})/k$ and let $\sig(x) = \ov x$ be the standard involution
+In this section, we examine special unitary groups in more detail. For the duration of this section, fix a quadratic field extension $L/k = k(\sqrt{d})/k$ and let $\sig(x) = \ov x$ be the standard involution
 \[
 	\ov{a+b \sqrt{d}} = a-b \sqrt{d}
 \]
-(for $a,b \in k$). Also fix $n$, and fix a hermitian or skew-hermitian form $h$ on $V = L^{n}$. Fix a basis of $V$, and let $H$ be the matrix of $h$ in the basis $\beta$. Let $q$ be the Witt index of $h$. Via a ``hermitian version" of the Witt decomposition theorem, it is possible to choose a basis of $V$ so that the matrix $H$ has the form
+(for $a,b \in k$). Also fix $n$, and fix a hermitian or skew-hermitian form $h$ on $V = L^{n}$. Fix a basis of $V$, and let $H$ be the matrix of $h$ in a fixed basis. Let $q$ be the Witt index of $h$. Via a hermitian analog of the Witt decomposition theorem, it is possible to choose a basis of $V$ so that the matrix $H$ has the form
 \[
 	H =
 	\begin{pmatrix}
@@ -3139,11 +2943,11 @@ The \tbf{special unitary group} associated to $h$ is
 \[
 	\SU_{n,q}(L,h) = \lb X \in \SL_{n}(L) : X^*H X = H \rb
 \]
-Conceptually, we can think of $\SU_{n}(L,h)$ as linear transformations $V \to V$ which preserve $h$. But we will never make serious use of this point of view; rather we will focus on the concrete matrix equation $X^*HX = H$.
+Conceptually, we can think of $\SU_{n,q}(L,h)$ as linear transformations $V \to V$ which preserve $h$. But we will never make serious use of this point of view; rather we will focus on the concrete matrix equation $X^*HX = H$.
 \end{definition}
 
 \begin{remark}
-If $n=2q$, then $\SU_{n,q}$ is quasisplit, but if $n > 2q$ then $\SU_{n,q}$ is not quasisplit (and hence also not split). The case $n=2q$ was previously studied in \cite{Rapinchuk-Ruiter}, although in that paper we had $H$ in a different form than our general form in these notes. In particular, in that paper we put $H$ in the block diagonal form below.
+If $n=2q$, then $\SU_{n,q}$ is quasi-split, but if $n > 2q$ then $\SU_{n,q}$ is not quasi-split (and hence also not split). The case $n=2q$ was previously studied in \cite{Rapinchuk-Ruiter}, although in that paper we had $H$ in a different form than our general form in these notes. In particular, in that paper we put $H$ in the block diagonal form below.
 \[
 	\begin{pmatrix}
 		0 & 1 \\
@@ -3155,94 +2959,7 @@ If $n=2q$, then $\SU_{n,q}$ is quasisplit, but if $n > 2q$ then $\SU_{n,q}$ is n
 \]
 \end{remark}
 
-\subsection{Quasi-split case $(n=2q$)}
-
-%\subsubsection{$n=4, q=2$}
-%\label{SU4 maximal}
-%
-%As above, let $L/k$ be a quadratic field extension with conjugation $\sig(x) = \ov x$. Let $V$ be a 4-dimensional $L$-vector space, fix a basis of $V$, let $h$ be the hermitian or skew-hermitian form on $V$ with matrix
-%\[
-%	H =
-%	\begin{pmatrix}
-%		& I_2 \\
-%		\eps I_2
-%	\end{pmatrix}
-%	=
-%	\begin{pmatrix}
-%		&& 1 \\
-%		&&& 1 \\
-%		\eps 1 \\	
-%		& \eps 1
-%	\end{pmatrix}
-%\]
-%where $\eps = 1$ in the hermitian case and $\eps = -1$ for skew-hermitian. (It turns out that many things are the same regardless of $\eps$, though some minor things do depend on $\eps$.) Note that $h$ has Witt index 2. The associated special unitary group is
-%\[
-%	\SU_{4,2}(L,h) = \lb X \in \SL_4(L) : X^*H X = H \rb
-%\]
-%The 4 marks the fact that $\dim_L V = 4$, and the 2 records the Witt index of $h$.
-%
-%\begin{exercise}
-%\label{diagonal in SU4}
-%Show that if $t \in \SU_{4,2}(L,h)$ is a diagonal matrix, then $t$ has the form
-%\[
-%	t = 
-%	\begin{pmatrix}
-%		t_1 \\
-%		& t_2 \\
-%		&& \ov t_1 \inv \\
-%		&&& \ov t_2 \inv
-%	\end{pmatrix}
-%	\qquad t_1, t_2 \in L^\times
-%\]
-%\end{exercise}
-%
-%\begin{definition}
-%The subgroup of all diagonal matrices in $\SU_{4,2}(L,h)$ is called $T(k)$. In the general theory of algebraic groups, $T$ is called a ``maximal torus."
-%\end{definition}
-%
-%\begin{definition}
-%Rather than a maximal torus, what we need is actually something called a ``maximal $k$-split torus." For that role, we will need the following subgroup of $T(k)$, which we will call $S(k)$.
-%\[
-%	S(k) = 
-%	\lb
-%	\begin{pmatrix}
-%		s_1 \\
-%		& s_2 \\
-%		&& s_1 \inv \\
-%		&&& s_2 \inv
-%	\end{pmatrix}
-%	: s_1, s_2 \in k^\times
-%	\rb
-%\]
-%One way to think about this is that $S(k)$ is the set of fixed points of $T(k)$ under entry-wise conjugation. $S(k)$ will play the role that the diagonal subgroup played for $\SL_n$.
-%\end{definition}
-%
-%\begin{definition}
-%For $i = 1, \ldots, 4$ let $\alpha_i:S(k) \to k^\times$ be the map which picks off the $i$th diagonal entry.
-%\end{definition}
-%
-%\begin{definition}
-%The \tbf{character group of $S$}, denoted $X^*(S)$, is the group of group homomorphisms $S(k) \to k^\times$. Elements of $X^*(S)$ are called \tbf{characters}. The group operation in $X^*(S)$ looks like
-%\[
-%	(\alpha_i + \alpha_j) (s) = \alpha_i(s) \cdot \alpha_j(s)
-%\]
-%for any $1 \le i,j \le 4$ and $s \in S(k)$. The $\cdot$ on the right hand side is multiplication in $k$.
-%\end{definition}
-%
-%\begin{lemma}
-%$X^*(S)$ is isomorphic to $\Z \oplus \Z$ with basis $\lb \alpha_1, \alpha_2 \rb$.
-%\end{lemma}
-%
-%\begin{remark}
-%A calculation which we will do in much more generality later shows that the root system of $\SU_{4,2}(L,h)$ (with respect to $S$) is the following set of 8 characters.
-%\[
-%	\Phi_k = \lb \pm 2 \alpha_1, \pm 2\alpha_2, \pm (\alpha_1 - \alpha_2), \pm (\alpha_1 + \alpha_2) \rb
-%\]
-%This is the root system of type $\mathsf{C}_2$. Roots of the form $\pm 2 \alpha_i$ are long, and roots of the form $\pm \alpha_i \pm \alpha_j$ with $i \neq j$ are short. 
-%\end{remark}
-%
-%\subsubsection{$\SU_{n,q}(L,h)$ with $n=2q$, general quasisplit case}
-%\label{SU2n maximal}
+\subsection{Quasi-split case $(n=2q)$}
 
 Let $L/k$ be a quadratic extension and $\sig(x) = \ov x$ be the conjugation operation on $L$. Let $q \ge 1$ and let $n = 2q$ and let $V$ be an $n$-dimensional $L$-vector space, fix a basis of $V$, and let $h$ be the nondegenerate hermitian or skew-hermitian form on $V$ with matrix
 \[
@@ -3252,7 +2969,7 @@ H =
 		\eps I_q \\
 	\end{pmatrix}
 \]
-Note that $h$ has Witt index $q$, half the dimension of $V$. Since t Witt index can never be more than half the dimension, is equivalent to saying that the Witt index is maximal. The associated special unitary group to $h$ (and $H$) is
+Note that $h$ has Witt index $q$, half the dimension of $V$. Since the Witt index can never be more than half the dimension, this equivalent to saying that the Witt index is maximal. The associated special unitary group to $h$ (and $H$) is
 \[
 	\SU_{n,q}(L,h) = \SU_{2q,q}(L,h) = \lb X \in \SL_{2q}(L) : X^*H X = H \rb
 \]
@@ -3288,7 +3005,7 @@ The set $T(k)$ of all diagonal matrices in $\SU_{2q,q}(L,h)$ is a maximal torus,
 		: s_i \in k^\times
 	\rb
 \]
-For $i=1, 2, \ldots, n$ let $\alpha_i:S(k) \to k^\times$ be the map which picks off the $i$th diagonal entry.
+For $i=1, 2, \ldots, q$ let $\alpha_i:S(k) \to k^\times$ be the map which picks off the $i$th diagonal entry.
 \end{definition}
 
 \begin{lemma}
@@ -3298,13 +3015,13 @@ $X^*(S)$ is isomorphic to $\Z \oplus \cdots \oplus \Z = \Z^q$ with basis $\lb \a
 \begin{exercise}
 The root system of $\SU_{2q,q}(L,h)$ (with respect to $S$) has type $\mathsf{C}_q$.
 \[
-	\Phi_k = \lb \pm 2 \alpha_i \rb \cup \lb \pm \alpha_i \pm \alpha_j : i \neq j \rb \qquad 1 \le i,j, \le q
+	\Phi_k = \lb \pm 2 \alpha_i \rb \cup \lb \pm \alpha_i \pm \alpha_j : i \neq j \rb \qquad 1 \le i,j \le q
 \]
 How big is the set $\Phi_k$?
 \end{exercise}
 
 \begin{example}
-Consider the special case $(n,q) = (4,2)$. The root system is type $\mathsf{C}_2$.
+Consider the minimal example $(n,q) = (4,2)$. The root system is type $\mathsf{C}_2$.
 \[
 	\Phi_k = \lb \pm 2\alpha_1, \pm 2 \alpha_2, \pm \alpha_1 \pm \alpha_2 \rb
 \]
@@ -3322,34 +3039,34 @@ Define
 		k \sqrt{d} & \eps = 1
 	\end{cases} 
 \]
-The pinning maps for short roots are 
+The pinning maps for long roots are 
 \begin{align*}
-	X_{2\alpha_i}&: k \to \SU_{n,q}(L,h) & X_{2\alpha_i}(v) &=  1 + E_{i,q+i}(p_\eps v) \\
-	X_{-2\alpha_i}&: k \to \SU_{n,q}(L,h) & X_{-2\alpha_i}(v) &= 1 + E_{q+i,i}(p_\eps v)
+	x_{2\alpha_i}&: k \to \SU_{n,q}(L,h) & x_{2\alpha_i}(v) &=  1 + E_{i,q+i}(p_\eps v) \\
+	x_{-2\alpha_i}&: k \to \SU_{n,q}(L,h) & x_{-2\alpha_i}(v) &= 1 + E_{q+i,i}(p_\eps v)
 \end{align*}
 \begin{align*}
-	X_{2\alpha_1}(v) &=
+	x_{2\alpha_1}(v) &=
 	\begin{pmatrix}
 		1 && p_\eps v \\
 		& 1 \\
 		&& 1 \\
 		&&& 1
 	\end{pmatrix} &
-	X_{-2\alpha_1}(v) &=
+	x_{-2\alpha_1}(v) &=
 	\begin{pmatrix}
 		1 \\
 		& 1 \\
 		p_\eps v && 1 \\
 		&&& 1
 	\end{pmatrix} \\[2ex]
-	X_{2\alpha_2}(v) &=
+	x_{2\alpha_2}(v) &=
 	\begin{pmatrix}
 		1 \\
 		& 1 && p_\eps v \\
 		&& 1 \\
 		&&& 1
 	\end{pmatrix} &
-	X_{-2\alpha_2}(v) &=
+	x_{-2\alpha_2}(v) &=
 	\begin{pmatrix}
 		1 \\
 		& 1 \\
@@ -3359,13 +3076,13 @@ The pinning maps for short roots are
 \end{align*}
 The pinning maps for medium roots are
 \begin{align*}
-	X_{\alpha_i - \alpha_j}&:L \to \SU_{n,q}(L,h) & X_{\alpha_i - \alpha_j}(v) &= 1 + E_{ij}(v) - E_{q+j,q+i}(\ov v) \\
-	X_{\alpha_i + \alpha_j}&:L \to \SU_{n,q}(L,h) & X_{\alpha_i + \alpha_j}(v) &= 1 + E_{i',q+j'}(v) - \eps E_{j',q+i'}(\ov v) \\
-	X_{-(\alpha_i + \alpha_j)}&:L \to \SU_{n,q}(L,h) & X_{-(\alpha_i + \alpha_j)}(v) &= 1 + E_{q+j',i'}(v) - \eps E_{q+i',j'}( \ov v)
+	x_{\alpha_i - \alpha_j}&:L \to \SU_{n,q}(L,h) & x_{\alpha_i - \alpha_j}(v) &= 1 + E_{ij}(v) - E_{q+j,q+i}(\ov v) \\
+	x_{\alpha_i + \alpha_j}&:L \to \SU_{n,q}(L,h) & x_{\alpha_i + \alpha_j}(v) &= 1 + E_{i',q+j'}(v) - \eps E_{j',q+i'}(\ov v) \\
+	x_{-(\alpha_i + \alpha_j)}&:L \to \SU_{n,q}(L,h) & x_{-(\alpha_i + \alpha_j)}(v) &= 1 + E_{q+j',i'}(v) - \eps E_{q+i',j'}( \ov v)
 \end{align*}
 where $i' = \min(i,j)$ and $j' = \max(i,j)$. Explicitly, these look like
 \begin{align*}
-	X_{\alpha_1 - \alpha_2}(v) &=
+	x_{\alpha_1 - \alpha_2}(v) &=
 	\begin{pmatrix}
 		1 & v \\
 		& 1 \\
@@ -3373,14 +3090,14 @@ where $i' = \min(i,j)$ and $j' = \max(i,j)$. Explicitly, these look like
 		&& - \ov v & 1
 	\end{pmatrix}
 	 &
-	X_{\alpha_2 - \alpha_1}(v) &=
+	x_{\alpha_2 - \alpha_1}(v) &=
 	\begin{pmatrix}
 		1 \\
 		v & 1 && \\
 		&& 1 & - \ov v \\
 		&&& 1
 	\end{pmatrix} \\[2ex]
-	X_{\alpha_1 + \alpha_2}(v) &= 
+	x_{\alpha_1 + \alpha_2}(v) &= 
 		\begin{pmatrix}
 		1 &&& v \\
 		& 1 & - \eps \ov v \\
@@ -3388,7 +3105,7 @@ where $i' = \min(i,j)$ and $j' = \max(i,j)$. Explicitly, these look like
 		&&& 1
 	\end{pmatrix} 
 	&
-	X_{-\alpha_1 - \alpha_2}(v) &=
+	x_{-\alpha_1 - \alpha_2}(v) &=
 	\begin{pmatrix}
 		1 \\
 		& 1 \\
@@ -3403,13 +3120,13 @@ Let $\alpha = 2\alpha_1$ and $\beta = - \alpha_1 + \alpha_2$.
 \begin{enumerate}[(a)]
 	\item Verify that $\alpha + \beta$ and $\alpha + 2\beta$ are in $\Phi_k$, but that these are the only positive integer linear combinations of the form $i\alpha + j\beta$ which are in $\Phi_k$. In other words, on the right hand hand side of the commutator formula, we get something like
 	\[
-		\prod_{\substack{{i,j \ge 1} \\ i\alpha+j\beta \in \Phi_k}} X_{i\alpha+j\beta} \Big( N_{ij}^{\alpha \beta}(u,v) \Big) = X_{\alpha+\beta} \Big( ? \Big) \cdot X_{\alpha + 2\beta} \Big( ?\Big)
+		\prod_{\substack{{i,j \ge 1} \\ i\alpha+j\beta \in \Phi_k}} x_{i\alpha+j\beta} \Big( N_{ij}^{\alpha \beta}(u,v) \Big) = x_{\alpha+\beta} \Big( ? \Big) \cdot x_{\alpha + 2\beta} \Big( ?\Big)
 	\]
 	\item Calculate the left hand side of the commutator formula in this case:
 	\[
-		\Big[ X_{2\alpha_1}(u), X_{-\alpha_1 + \alpha_2}(v) \Big] = \; ?
+		\Big[ x_{2\alpha_1}(u), x_{-\alpha_1 + \alpha_2}(v) \Big] = \; ?
 	\]
-	\item Using your answer for part (b), work out what the inputs to $X_{\alpha+\beta}$ and $X_{\alpha+2\beta}$ should be in the formula in part (a). In other words, determine the two expressions below.
+	\item Using your answer for part (b), work out what the inputs to $x_{\alpha+\beta}$ and $x_{\alpha+2\beta}$ should be in the formula in part (a). In other words, determine the two expressions below.
 	\begin{align*}
 		N_{11}^{2\alpha_1, - \alpha_1 + \alpha_2}(u,v) &= \; ? \\
 		N_{12}^{2\alpha_1, - \alpha_1 + \alpha_2}(u,v) &= \; ?
@@ -3417,16 +3134,16 @@ Let $\alpha = 2\alpha_1$ and $\beta = - \alpha_1 + \alpha_2$.
 \end{enumerate}
 \end{exercise}
 
-\subsection{Non-quasi-split case $(n>2q$)}
+\subsection{Non-quasi-split case $(n>2q)$}
 
-\noi Let $L/k = k(\sqrt{d})/k$ be a quadratic extension with conjugation operation $\sig(x) = \ov x$, and let $V$ be an $n$-dimensional $L$-vector space. Fix a basis of $V$, and let $h$ an nondegenerate isotropic (meaning $q \ge 1$) hermitian or skew-hermitian form on $V$ with Witt index $q$, with associated (skew-)hermitian matrix $H$. Then the associated special unitary group is
+\noi Let $L/k = k(\sqrt{d})/k$ be a quadratic extension with conjugation operation $\sig(x) = \ov x$, and let $V$ be an $n$-dimensional $L$-vector space. Fix a basis of $V$, and let $h$ a nondegenerate isotropic (meaning $q \ge 1$) hermitian or skew-hermitian form on $V$ with Witt index $q$, with associated (skew-)hermitian matrix $H$. Then the associated special unitary group is
 \[
 	\SU_{n,q}(L,h) = \lb X \in \SL_{n}(L) : X^*HX = H \rb
 \]
 Note that we are no longer assuming that $h$ has maximal Witt index. Instead, we just know that $1 \le q \le \frac{n}{2}$. 
 
 \begin{example}
-Consider the smallest non-quaisi-split special unitary group of interest, the case $(n,q) = (5,2)$. In this case, $V$ is a 5-dimensional $L$-vector space, and $h$ is the hermitian or skew-hermitian form on $V$ with matrix
+The smallest non-quasi-split case is $(n,q) = (5,2)$. In this case, $V$ is a 5-dimensional $L$-vector space, and $h$ is the hermitian or skew-hermitian form on $V$ with matrix
 \[
 	H =
 	\begin{pmatrix}
@@ -3443,7 +3160,7 @@ Consider the smallest non-quaisi-split special unitary group of interest, the ca
 		&&&& c_1
 	\end{pmatrix}
 \]
-Note that $c_1 \in k$ in the hermitian case and $c_1 = k(\sqrt{d})$ in the skew-hermitian case, and $c \neq 0$ in either case. A general diagonal matrix in $\SU_{5,2}(L,h)$ has the form
+Note that $c_1 \in k$ in the hermitian case and $c_1 \in k(\sqrt{d})$ in the skew-hermitian case, and $c_1 \neq 0$ in either case. A general diagonal matrix in $\SU_{5,2}(L,h)$ has the form
 \[
 	t = 
 	\begin{pmatrix}
@@ -3463,16 +3180,17 @@ Let $T(k)$ be the subgroup of such matrices. The maximal $k$-split torus we need
 		s_1 \\
 		& s_2 \\
 		&& s_1 \inv \\
-		&&& s_2 \inv
+		&&& s_2 \inv \\
+		&&&& 1
 	\end{pmatrix}
 	: s_1, s_2 \in k^\times
 	\rb
 \]
-For $i = 1, \ldots, 4$ let $\alpha_i:S(k) \to k^\times$ be the map which picks off the $i$th diagonal entry. The character group of $S$ is the group of group homomorphisms $S(k) \to k^\times$, and it is isomorphic to $\Z \oplus \Z$ with basis $\lb \alpha_1, \alpha_2 \rb$. The root system of $\SU_{5,2}(L,h)$ (with respect to $S$) is the following set of 12 characters.
+For $i = 1, 2$ let $\alpha_i:S(k) \to k^\times$ be the map which picks off the $i$th diagonal entry. The character group of $S$ is the group of group homomorphisms $S(k) \to k^\times$, and it is isomorphic to $\Z \oplus \Z$ with basis $\lb \alpha_1, \alpha_2 \rb$. The root system of $\SU_{5,2}(L,h)$ (with respect to $S$) is the following set of 12 characters.
 \[
 	\Phi_k = \lb \pm \alpha_1, \pm \alpha_2, \pm 2 \alpha_1, \pm 2\alpha_2, \pm (\alpha_1 - \alpha_2), \pm (\alpha_1 + \alpha_2) \rb
 \]
-This is the root system of type $\mathsf{BC}_2$. This root system is called ``non-reduced" because it contains roots which are proportional but not negatives, e.g. $\alpha_1$ and $2\alpha_1$. Depending on where you look, this does not meet the definition of a root system. However, we do consider it a root system here, and the traditional definition is a ``reduced" root system. Note that $\mathsf{BC}_q$ is actually the only non-reduced root system, so expanding the definition in this way adds only one case.
+This is the root system of type $\mathsf{BC}_2$. This root system is called ``non-reduced" because it contains roots which are proportional but not negatives of each other, e.g. $\alpha_1$ and $2\alpha_1$. Depending on where you look, this does not meet the definition of a root system. However, we do consider it a root system here, and the traditional definition is a ``reduced" root system. Note that $\mathsf{BC}_q$ is actually the only non-reduced root system, so expanding the definition in this way adds only one case.
 \end{example}
 
 \noi We return to the general non-quasi-split case ($n > 2q$). Choose a basis of $V$ in which the matrix $H$ is
@@ -3485,26 +3203,27 @@ This is the root system of type $\mathsf{BC}_2$. This root system is called ``no
 	\end{pmatrix}
 \]
 with $C$ diagonal. When $H$ has this form, the full diagonal subgroup of $\SU_{n,q}(L,h)$ is
-\begin{align*}
-	T(k) &=
-	\lb
-		\begin{pmatrix}
-			T_1 \\
-			& \ov T_1 \inv \\
-			&& \pm 1 \\
-			&&& \ddots \\
-			&&&& \pm 1
-		\end{pmatrix} 
-	\rb
-\end{align*}
-where $T_1$ is an arbitrary $q \times q$ invertible diagonal matrix with entries in $L$, and there are $n-2q$ independent $\pm 1$ along the diagonal after $\ov T_1 \inv$. But the maximal $k$-split torus subgroup that we need is
+\[
+	T(k) = \left\{  
+	\begin{pmatrix} 
+	T_1 & & \\ & \overline{T}_1^{-1} & \\ & & D  
+	\end{pmatrix} 
+	\;\middle\vert{}\;
+		\begin{aligned} 	
+			&T_1 = \operatorname{diag}(s_1, \dots, s_q) \in \mathrm{GL}_q(L), \\
+			&D = \operatorname{diag}(d_1, \dots, d_{n-2q}), \; \mathrm{N}_{L/k}(d_j) = 1, \\ 	
+			&\prod_{i=1}^q s_i \overline{s_i}^{-1} \cdot \prod_{j=1}^{n-2q} d_j = 1 
+		\end{aligned} 
+	\right\}
+\]
+where $T_1$ is an arbitrary $q \times q$ invertible diagonal matrix with entries in $L$, each $d_j \in L^\times$ satisfies $\mathrm{N}_{L/k}(d_j) = 1$, and determinant of the overall matrix is 1. But the maximal $k$-split torus subgroup that we need is
 \[
 	S(k) =
 	\lb
 	\begin{pmatrix}
 		S_1 \\
-		&& S_1 \inv \\
-		&&& I_{n-2q}
+		& S_1 \inv \\
+		&& I_{n-2q}
 	\end{pmatrix}
 	=
 	\begin{pmatrix}
@@ -3537,7 +3256,7 @@ We will work out what a general element of $\fraksu_{n,q}(L,h)$ looks like. Let 
 		X_{31} & X_{32} & X_{33}
 		\end{pmatrix}
 \end{align*}
-with the block sizes corresponding to those in $H$. That is, $X_{11}, X_{12}, X_{21}, X_{22}$ are all $q \times q$, $X_{13}$ and $X_{23}$ have $q$ rows and $(n-2q)$ columnes, while $X_{31}$ and $X_{32}$ are have $q$ columns and $(n-2q)$ rows, and $X_{33}$ is $(n-2q) \times (n-2q)$. Then $X^* H + HX$ becomes
+with the block sizes corresponding to those in $H$. That is, $X_{11}, X_{12}, X_{21}, X_{22}$ are all $q \times q$, $X_{13}$ and $X_{23}$ have $q$ rows and $(n-2q)$ columns, while $X_{31}$ and $X_{32}$ have $q$ columns and $(n-2q)$ rows, and $X_{33}$ is $(n-2q) \times (n-2q)$. Then $X^* H + HX$ becomes
 \begin{align*}
 		X^* H + H X &=
 		\begin{pmatrix}
@@ -3668,11 +3387,9 @@ where each $X_{ij}$ is a block matrix as described below.
 		\vdots & \ddots & \vdots \\
 		(s_q s_1) \inv x_{2q,1} & \cdots & s_q^{-2} x_{2q,q}
 	\end{pmatrix} \\
-\end{align*}
-\begin{align*}
 	X_{22} &= \lp s_{i} \inv s_{j} x_{q+i,q+j} \rp =
 	\begin{pmatrix}
-	 	x_{q+1, q+1} & \cdots & s_{q+1} \inv s_{q} x_{q+1, 2q} \\
+	 	x_{q+1, q+1} & \cdots & s_{1} \inv s_{q} x_{q+1, 2q} \\
 	 	\vdots & \ddots & \vdots \\
 	 	s_{q} \inv s_{1} x_{2q, q+1} & \cdots & x_{2q, 2q}
 	\end{pmatrix} \\
@@ -3682,6 +3399,8 @@ where each $X_{ij}$ is a block matrix as described below.
 		\vdots & \ddots & \vdots \\
 		s_{q} \inv x_{2q, 2q+1} & \cdots & s_{q} \inv x_{2q, n}
 	\end{pmatrix} \\
+\end{align*}
+\begin{align*}
 	X_{31} &= \lp s_j \inv x_{2q+i, j} \rp = 
 	\begin{pmatrix}
 		s_1 \inv x_{2q+1, 1} & \cdots & s_q \inv x_{2q+1, q} \\
@@ -3740,10 +3459,10 @@ Then we can describe the root spaces as
 \end{align*}
 Consequently, the root space maps and root subgroup maps are simple to describe.
 \begin{align*}
-	\LieX_{2\alpha_i}&:k \to \fraksu_{n,q} & \LieX_{2\alpha_i}(v) &= E_{i,q+i}(p_\eps v) \\
-	\LieX_{-2\alpha_i}&:k \to \fraksu_{n,q} & \LieX_{-2\alpha_i}(v) &= E_{q+i, i}(p_\eps v) \\
-	X_{2\alpha_i}&:k \to \SU_{n,q} & X_{2\alpha_i}(v) &= 1 + E_{i,q+i}(p_\eps v) \\
-	X_{-2\alpha_i}&:k \to \SU_{n,q} & X_{-2\alpha_i}(v) &= 1 + E_{q+i,i}(p_\eps v)
+	X_{2\alpha_i}&:k \to \fraksu_{n,q} & X_{2\alpha_i}(v) &= E_{i,q+i}(p_\eps v) \\
+	X_{-2\alpha_i}&:k \to \fraksu_{n,q} & X_{-2\alpha_i}(v) &= E_{q+i, i}(p_\eps v) \\
+	x_{2\alpha_i}&:k \to \SU_{n,q} & x_{2\alpha_i}(v) &= 1 + E_{i,q+i}(p_\eps v) \\
+	x_{-2\alpha_i}&:k \to \SU_{n,q} & x_{-2\alpha_i}(v) &= 1 + E_{q+i,i}(p_\eps v)
 \end{align*}
 Next, we describe the root spaces and root subgroup maps for medium length roots, those of the form $\pm \alpha_i \pm \alpha_j$ with $i \neq j$. Their root spaces live in the $X_{11}, X_{12}, X_{21},$ and $X_{22}$ blocks. Since $X_{12}$ and $X_{21}$ are hermitian or skew-hermitian, the root spaces for $\pm (\alpha_i + \alpha_j)$ occur in transpose-pairs of entries. Since $X_{22} = - X_{11}^*$, the root spaces for $\alpha_i - \alpha_j$ occur in pairs of entries, one from $X_{11}$ and the accompanying entry of $X_{22}$ determined by that entry.
 \begin{align*}
@@ -3757,13 +3476,13 @@ Next, we describe the root spaces and root subgroup maps for medium length roots
 \end{align*}
 For each of these roots, the specific listed entries of an arbitrary element $X = (x_{ij}) \in \fraksu_{n,q}$ can be anything, besides their pairwise dependency. So each root space has dimension 1 over $L$, hence dimension 2 over $k$.
 \begin{align*}
-	\LieX_{\alpha_i - \alpha_j}&:L \to \fraksu_{n,q} & \LieX_{\alpha_i -\alpha_j}(v) &= E_{ij}(v) - E_{q+j,q+i}(\ov v) \\
-	\LieX_{\alpha_i + \alpha_j}&:L \to \fraksu_{n,q} & \LieX_{\alpha_i + \alpha_j}(v) &= E_{i',q+j'}(v) - E_{j',q+i'}( \eps \ov v) \\
-	\LieX_{-\alpha_i - \alpha_j}&:L \to \fraksu_{n,q} & \LieX_{-\alpha_i - \alpha_j}(v) &= E_{q+j',i'}(v) - E_{q+i',j'}(\eps \ov v)
+	X_{\alpha_i - \alpha_j}&:L \to \fraksu_{n,q} & X_{\alpha_i -\alpha_j}(v) &= E_{ij}(v) - E_{q+j,q+i}(\ov v) \\
+	X_{\alpha_i + \alpha_j}&:L \to \fraksu_{n,q} & X_{\alpha_i + \alpha_j}(v) &= E_{i',q+j'}(v) - E_{j',q+i'}( \eps \ov v) \\
+	X_{-\alpha_i - \alpha_j}&:L \to \fraksu_{n,q} & X_{-\alpha_i - \alpha_j}(v) &= E_{q+j',i'}(v) - E_{q+i',j'}(\eps \ov v)
 \end{align*}
-where $i' = \min(i,j)$ and $j' = \max(i,j)$. The conventions on $\LieX_{\pm (\alpha_i + \alpha_j)}$ are chosen so that
+where $i' = \min(i,j)$ and $j' = \max(i,j)$. The conventions on $X_{\pm (\alpha_i + \alpha_j)}$ are chosen so that
 \[
-	\LieX_{-\alpha_i - \alpha_j}(v) = \LieX_{\alpha_i + \alpha_j}(v)^T
+	X_{-\alpha_i - \alpha_j}(v) = X_{\alpha_i + \alpha_j}(v)^T
 \]
 Finally, we describe the root spaces and root subgroup maps for short roots, those of the form $\pm \alpha_i$. For $+\alpha_i$, the root space lives in the $X_{13}$ and $X_{32}$ blocks, while for $-\alpha_i$ it lives in the $X_{23}$ and $X_{31}$ blocks. The root space takes up a whole row or column of each block. Since $X_{13} = - \eps X_{32}^* C$, the entries of a row in $X_{13}$ are determined by the entries of a corresponding column in $X_{32}$. There are $n-2q$ of these entries, which can be any element of $L$, so the root space associated to $\pm \alpha_i$ has dimension $2(n-2q)$ over $k$.
 \begin{align*}
@@ -3787,7 +3506,7 @@ where
 	X_{13} = - \eps X_{32}^* C =
 	\begin{pmatrix}
 		0 & \cdots & 0 \\
-		- \eps c_1 \ov v_1 & \cdots & - \eps c_{n-2q} \ov v_n \\
+		- \eps c_1 \ov v_1 & \cdots & - \eps c_{n-2q} \ov v_{n-2q} \\
 		0 & \cdots & 0 \\
 	\end{pmatrix}
 	\qquad
@@ -3814,7 +3533,7 @@ where
 	X_{23} = - X_{31}^* C =
 	\begin{pmatrix}
 		0 & \cdots & 0 \\
-		-  c_1 \ov v_1 & \cdots & -   c_{n-2q} \ov v_n \\
+		-  c_1 \ov v_1 & \cdots & -   c_{n-2q} \ov v_{n-2q} \\
 		0 & \cdots & 0 \\
 	\end{pmatrix}
 	\qquad
