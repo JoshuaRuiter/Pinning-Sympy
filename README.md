@@ -11,6 +11,7 @@ A Python project for symbolic computation with pinned algebraic groups, root sys
 - computation and verification of commutator and conjugation formulas,
 - automatic generation of LaTeX summary output files,
 - support for classical groups: special linear, special orthogonal, and special unitary
+- a notes document with some theoretical background
 
 ## Installation
 
@@ -108,7 +109,6 @@ installation with `pdflatex`.
 ## Current development notes
 
 The project is still in experimental development. Potential future work includes:
-- update the notes document,
 - improving performance and reducing brute-force search in the Weyl element solver,
 - keeping experimental Weyl construction and validation helpers outside the core class while they are being tested,
 - implement a belongs_to_generated_subgroup method for pinned_group in a computational feasible way,
